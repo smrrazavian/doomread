@@ -1,0 +1,4 @@
+# Brainstorm companion sessions
+.superpowers/
+# Locally installed agent skills (third-party, installed per machine)
+.claude/skills/

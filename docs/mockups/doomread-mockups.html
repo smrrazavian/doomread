@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Doomread mockups</title>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,500&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600&family=Vazirmatn:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* color */
+    --night:#18213A;--wall:#222C49;--deep:#141B2F;--panel:#1F2945;--raise:#2A3456;--line:#2E3A5E;
+    --lamp:#F6C453;--me:#FFE29A;--paper:#EDE6D6;--soft:#C9C3B6;--mute:#9AA3BD;
+    /* space: 4pt base */
+    --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;--s7:48px;
+    --gutter:24px;--radius-s:10px;--radius-m:16px;--radius-pill:999px;--tap:48px;
+    /* type, latin */
+    --f-ui:"Bricolage Grotesque",sans-serif;--f-book:Literata,serif;
+    --t-cap:13px;--t-small:15px;--t-body:16px;--t-title:19px;--t-head:26px;--t-clock:72px;
+    --lh-body:1.5;--lh-head:1.2;
+  }
+  :lang(fa){
+    --f-ui:Vazirmatn,sans-serif;--f-book:"Noto Naskh Arabic",serif;
+    --t-cap:13px;--t-small:15px;--t-body:16px;--t-title:19px;--t-head:23px;--t-clock:68px;
+    --lh-body:1.8;--lh-head:1.55;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#E7E4DF;color:#23211F;font-family:"Bricolage Grotesque",sans-serif;padding:40px 16px 96px}
+  .doc{max-width:1180px;margin:0 auto}
+  .doc h1{font-family:Literata,serif;font-weight:500;font-size:30px;margin:0 0 8px}
+  .doc > p{margin:0 0 8px;max-width:70ch;line-height:1.55;opacity:.85}
+  .doc h3{font-family:Literata,serif;font-weight:500;font-size:21px;margin:56px 0 20px}
+  .pairs{display:grid;grid-template-columns:repeat(auto-fill,minmax(680px,1fr));gap:48px 40px}
+  .pair{margin:0}
+  .pair .phones{display:flex;gap:24px;flex-wrap:wrap}
+  .pair figcaption{margin-top:16px;max-width:66ch;line-height:1.55;font-size:14px}
+  .pair figcaption b{font-family:Literata,serif;font-size:17px;font-weight:500;display:block;margin-bottom:2px}
+
+  /* ---------- phone shell ---------- */
+  .phone{width:320px;height:680px;border-radius:44px;overflow:hidden;display:flex;flex-direction:column;background:var(--night);color:var(--paper);font-family:var(--f-ui);font-size:var(--t-body);line-height:var(--lh-body);box-shadow:0 30px 60px -20px rgba(20,24,40,.45);text-align:start}
+  .status{height:32px;flex:none;display:flex;align-items:center;justify-content:space-between;padding-inline:28px 24px;font-size:12px;color:var(--soft);font-family:var(--f-ui)}
+  .status .ic{display:flex;gap:6px;align-items:center}
+  .gesture{height:20px;flex:none;display:grid;place-items:center}
+  .gesture i{width:108px;height:4px;border-radius:2px;background:#4A5680}
+  .content{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;padding:var(--s4) var(--gutter) 0}
+  .foot{padding:var(--s3) var(--gutter) var(--s4);display:flex;flex-direction:column;gap:var(--s1)}
+  .stack{display:flex;flex-direction:column}
+  .g1{gap:var(--s1)}.g2{gap:var(--s2)}.g3{gap:var(--s3)}.g4{gap:var(--s4)}.g5{gap:var(--s5)}.g6{gap:var(--s6)}
+  .grow{flex:1}
+  .art{display:block;flex:none}
+
+  h2{font-family:var(--f-book);font-weight:500;font-size:var(--t-head);line-height:var(--lh-head);margin:0}
+  :lang(fa) h2{font-family:Vazirmatn,sans-serif;font-weight:700}
+  p{margin:0}
+  .soft{color:var(--soft)}
+  .mute{color:var(--mute);font-size:var(--t-small)}
+  .cap{color:var(--mute);font-size:var(--t-cap)}
+  .num{font-variant-numeric:tabular-nums}
+  .book-t{font-family:var(--f-book);font-size:var(--t-title);line-height:1.3}
+  :lang(fa) .book-t{line-height:1.6}
+
+  button{font:inherit;cursor:pointer;border:0;color:inherit}
+  button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid var(--lamp);outline-offset:3px}
+  .go{background:var(--lamp);color:var(--night);border-radius:var(--radius-pill);min-height:52px;padding:0 var(--s5);font-weight:600;font-size:17px;width:100%}
+  .quiet{background:none;color:var(--mute);font-size:var(--t-small);min-height:var(--tap);width:100%}
+  .two{display:flex;gap:var(--s2)}
+  .two button{flex:1;min-height:var(--tap);border-radius:var(--radius-pill);background:var(--raise);font-size:var(--t-small)}
+  .chip{align-self:flex-start;background:var(--me);color:var(--night);border-radius:8px;padding:2px 10px;font-size:var(--t-cap);font-weight:600;line-height:1.6}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-m);padding:var(--s4)}
+  .row{display:flex;align-items:center;gap:var(--s3)}
+  .tap{min-height:var(--tap)}
+  .chev{margin-inline-start:auto;flex:none;color:var(--mute)}
+  :dir(rtl) .chev, [dir=rtl] .chev{transform:scaleX(-1)}
+
+  /* cover: spine sits on the binding side, which flips for Persian books */
+  .cover{width:40px;height:58px;flex:none;border-radius:2px 6px 6px 2px;background:#6B2E2E;border-inline-start:6px solid #0E1426;position:relative}
+  [dir=rtl] .cover{border-radius:6px 2px 2px 6px}
+  .cover::after{content:"";position:absolute;inset-block-start:14px;inset-inline:8px 10px;height:2px;background:#E8C98A;box-shadow:0 6px 0 #E8C98A}
+
+  /* road to the last page, built with logical properties so it mirrors itself */
+  .road{position:relative;height:28px}
+  .road .track,.road .done{position:absolute;inset-block-start:12px;height:4px;border-radius:2px}
+  .road .track{inset-inline:0;background:var(--raise)}
+  .road .done{inset-inline-start:0;background:var(--lamp)}
+  .road .tick{position:absolute;inset-block-start:8px;width:2px;height:12px;background:#4A5680}
+  .road .tick.past{background:#B48B3C}
+  .road .here{position:absolute;inset-block-start:5px;width:18px;height:18px;margin-inline-start:-9px;border-radius:50%;background:var(--me);box-shadow:0 0 0 4px rgba(255,226,154,.18)}
+  .road .flag{position:absolute;inset-block-start:0;inset-inline-end:-2px;width:14px;height:22px}
+  [dir=rtl] .road .flag{transform:scaleX(-1)}
+
+  .week{display:grid;grid-template-columns:repeat(7,1fr);gap:var(--s2);text-align:center}
+  .week i{display:block;height:24px;border-radius:3px;background:#1A2238;border:1px solid var(--line)}
+  .week i.on{background:var(--lamp);border-color:var(--lamp)}
+  .week i.today{background:transparent;border:2px dashed var(--me)}
+  .week span{font-size:12px;color:var(--mute);display:block;margin-top:var(--s1)}
+
+  .clock{font-family:var(--f-book);font-size:var(--t-clock);line-height:1;font-weight:400}
+  :lang(fa) .clock{font-family:Vazirmatn,sans-serif;font-weight:400}
+  .steps{display:flex;gap:6px}
+  .steps i{flex:1;height:6px;border-radius:3px;background:var(--raise)}
+  .steps i.on{background:var(--me)}
+
+  label{font-size:var(--t-small);color:var(--mute);display:block}
+  .field{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:var(--s3) var(--s4);color:var(--paper);font:inherit;width:100%;text-align:start}
+  textarea.field{height:96px;resize:none;font-family:var(--f-book);line-height:var(--lh-body)}
+  :lang(fa) textarea.field{line-height:1.85}
+  .pageno{font-family:var(--f-book);font-size:30px;width:104px;text-align:center;padding:var(--s1) var(--s2);min-height:56px}
+  .iconbtn{width:var(--tap);height:var(--tap);border-radius:var(--radius-s);background:var(--raise);display:grid;place-items:center;flex:none}
+  .tally{display:flex;gap:var(--s5)}
+  .tally strong{font-family:var(--f-book);font-size:24px;font-weight:500;display:block;line-height:1.3}
+  :lang(fa) .tally strong{font-family:Vazirmatn,sans-serif;font-weight:700}
+
+  .notes{list-style:none;margin:0;padding:0}
+  .notes li{padding:var(--s3) 0;border-bottom:1px solid var(--line);font-family:var(--f-book);font-size:var(--t-small);line-height:1.5}
+  :lang(fa) .notes li{line-height:1.85}
+  .notes li span{display:block;font-family:var(--f-ui);font-size:12px;color:var(--mute);margin-bottom:2px}
+  .floors{list-style:none;margin:0;padding:0}
+  .floors li{display:flex;gap:var(--s3);align-items:center;padding:var(--s3) 0;border-bottom:1px solid var(--line)}
+  .floors li:last-child{border-bottom:0}
+  .floors b{font-weight:500;display:block}
+  .floors .sw{width:10px;height:36px;border-radius:2px;flex:none}
+  .person{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) 0;border-bottom:1px solid var(--line)}
+  .person:last-child{border-bottom:0}
+  .ini{width:40px;height:40px;border-radius:var(--radius-s);display:grid;place-items:center;font-weight:600;background:var(--raise);flex:none}
+  .ini.now{background:var(--lamp);color:var(--night)}
+  .person p{font-size:var(--t-small);line-height:1.45}
+
+  nav{display:flex;justify-content:space-around;padding:var(--s2) var(--s3) 0;border-top:1px solid var(--line);flex:none}
+  nav a{display:flex;flex-direction:column;align-items:center;gap:var(--s1);font-size:12px;color:var(--mute);text-decoration:none;min-width:64px;min-height:56px;justify-content:center}
+  nav a .pill{width:56px;height:30px;border-radius:15px;display:grid;place-items:center}
+  nav a[aria-current] {color:var(--paper)}
+  nav a[aria-current] .pill{background:#3A4469;color:var(--lamp)}
+  nav svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+  .lit{fill:var(--lamp)} .dim{fill:#2A3350;stroke:#E2B65A;stroke-width:1.5;stroke-opacity:.6} .off{fill:#1A2238}
+  .me{fill:var(--me);stroke:#FFF6DD;stroke-width:2.5}
+  .glow{fill:var(--lamp);opacity:.18;filter:blur(6px)}
+  .pulse{animation:pulse 3.2s ease-in-out infinite}
+  .in{animation:on .5s ease-out both}
+  @keyframes pulse{50%{opacity:.72}}
+  @keyframes on{from{opacity:0}}
+
+  .brand{display:flex;align-items:center;gap:20px;margin-bottom:16px}
+  .appicon{width:84px;height:84px;border-radius:20px;box-shadow:0 14px 30px -12px rgba(20,24,40,.5)}
+  .wordmark{font-family:Literata,serif;font-weight:500;font-size:40px;line-height:1.1;letter-spacing:-.01em}
+  .fa-mark{font-family:Vazirmatn,sans-serif;font-weight:700;font-size:30px;letter-spacing:0;line-height:1.5}
+  .tone{display:flex;flex-direction:column;gap:var(--s2)}
+  .opt{display:flex;flex-direction:column;gap:var(--s1);text-align:start;width:100%;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-m);padding:var(--s3) var(--s4);min-height:var(--tap)}
+  .opt[aria-checked=true]{border:2px solid var(--lamp);padding:calc(var(--s3) - 1px) calc(var(--s4) - 1px)}
+  .opt b{font-weight:600}
+  .opt q{quotes:none;font-family:var(--f-book);font-size:var(--t-small);color:var(--me)}
+  .lock{background:radial-gradient(120% 70% at 50% 0%,#2B3560 0%,#18213A 55%,#121829 100%)}
+  .bigtime{font-family:var(--f-ui);font-weight:400;font-size:76px;line-height:1;text-align:center;margin-top:var(--s5)}
+  :lang(fa) .bigtime{font-family:Vazirmatn,sans-serif}
+  .date{text-align:center;color:var(--soft);margin-top:var(--s2)}
+  .note-card{background:rgba(237,230,214,.1);backdrop-filter:blur(12px);border-radius:20px;padding:var(--s3) var(--s4);display:flex;flex-direction:column;gap:var(--s1)}
+  .note-card .who{display:flex;align-items:center;gap:var(--s2);font-size:12px;color:var(--soft)}
+  .note-card .who i{width:18px;height:18px;border-radius:5px;background:#F6C453;display:block}
+  .chipbar{align-self:center;display:flex;align-items:center;gap:var(--s2);background:#2A3456;border-radius:999px;padding:4px 12px 4px 6px;font-size:13px;margin-top:var(--s2)}
+  .chipbar i{width:18px;height:18px;border-radius:50%;background:var(--lamp);display:block}
+  .home{background:linear-gradient(180deg,#233057,#18213A 60%)}
+  .widget{background:rgba(24,33,58,.88);border:1px solid var(--line);border-radius:24px;padding:var(--s4);display:flex;flex-direction:column;gap:var(--s2)}
+  .apps{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s4) var(--s2);text-align:center;font-size:11px;color:var(--soft)}
+  .apps i{display:block;width:52px;height:52px;border-radius:14px;margin:0 auto var(--s1);background:#2A3456}
+  .apps svg{width:52px;height:52px;display:block;margin:0 auto var(--s1);border-radius:14px}
+
+  /* ---------- system sheet ---------- */
+  .sheet{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:32px;background:#F4F2EE;border-radius:20px;padding:32px}
+  .sheet h4{font-family:Literata,serif;font-weight:500;font-size:18px;margin:0 0 12px}
+  .scale{display:flex;flex-direction:column;gap:8px;font-size:14px}
+  .scale div{display:flex;align-items:center;gap:12px}
+  .scale i{display:block;height:12px;background:#F6C453;border-radius:2px}
+  .scale code{width:84px;font-size:13px;color:#555}
+  .types{width:100%;border-collapse:collapse;font-size:14px}
+  .types td{padding:8px 6px;border-bottom:1px solid #DDD8CF;vertical-align:baseline}
+  .types td:first-child{color:#666;width:80px}
+  .rules{margin:0;padding-inline-start:18px;line-height:1.6;font-size:14px}
+  .rules li{margin-bottom:6px}
+
+  .desk{margin-top:0}
+  .screen{border-radius:14px;overflow:hidden;box-shadow:0 30px 60px -20px rgba(20,24,40,.45);display:flex;height:480px;max-width:1060px}
+  .browser{flex:1;display:flex;flex-direction:column;background:#F3F2EF;color:#333}
+  .bar{height:40px;background:#DCDAD5;display:flex;align-items:center;padding:0 14px;font-size:13px}
+  .bar span{background:#fff;border-radius:8px;padding:5px 12px;flex:1;color:#666}
+  .video{margin:24px;flex:1;border-radius:10px;background:#20242E;display:grid;place-items:center;color:#9aa;font-size:14px}
+  .side{width:312px;background:var(--night);color:var(--paper);padding:var(--s5);display:flex;flex-direction:column;gap:var(--s4);font-family:var(--f-ui)}
+  .side .clock{font-size:56px}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+  @media (max-width:760px){.pairs{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="doc">
+  <div class="brand">
+    <svg class="appicon" viewBox="0 0 96 96" role="img" aria-label="Doomread app icon"><rect width="96" height="96" rx="22" fill="#18213A"/><path d="M22 96V30h22V22h8v8h22v66z" fill="#222C49"/><rect x="30" y="40" width="12" height="14" rx="1.5" fill="#2A3350" stroke="#E2B65A" stroke-opacity=".6" stroke-width="1.5"/><rect x="54" y="40" width="12" height="14" rx="1.5" fill="#F6C453"/><rect x="42" y="62" width="12" height="14" rx="1.5" fill="#FFE29A" stroke="#FFF6DD" stroke-width="2"/><circle cx="76" cy="16" r="5" fill="#EDE6D6"/></svg>
+    <div><div class="wordmark">Doomread</div><div class="wordmark fa-mark" lang="fa" dir="rtl">باز گوشی؟!</div></div>
+  </div>
+  <p>Final mockups with the new name and voice. English shows the default <b>Spicy</b> tone, and Persian shows <b>Mom mode</b> (مامان‌مود). The rule behind the jokes: roast the urge, never the person, and stay kind right after a slip.</p>
+
+  <h3>The system</h3>
+  <div class="sheet">
+    <div>
+      <h4>Spacing, on a 4-point grid</h4>
+      <div class="scale">
+        <div><code>4px</code><i style="width:4px"></i>icon to its label</div>
+        <div><code>8px</code><i style="width:8px"></i>between buttons, label to field</div>
+        <div><code>12px</code><i style="width:12px"></i>list rows, items inside a card</div>
+        <div><code>16px</code><i style="width:16px"></i>card padding, space above the main button</div>
+        <div><code>24px</code><i style="width:24px"></i>screen edges, between groups</div>
+        <div><code>32px</code><i style="width:32px"></i>before a new section</div>
+        <div><code>48px</code><i style="width:48px"></i>minimum height of anything you tap</div>
+      </div>
+    </div>
+    <div>
+      <h4>Type, English and Persian</h4>
+      <table class="types">
+        <tr><td>Heading</td><td>Literata 26 / 1.2</td><td dir="rtl" style="font-family:Vazirmatn">وزیرمتن ۲۳، ارتفاع خط ۱٫۵۵</td></tr>
+        <tr><td>Book text</td><td>Literata 15 / 1.5</td><td dir="rtl" style="font-family:'Noto Naskh Arabic'">نسخ ۱۵، ارتفاع خط ۱٫۸۵</td></tr>
+        <tr><td>Body</td><td>Bricolage 16 / 1.5</td><td dir="rtl" style="font-family:Vazirmatn">وزیرمتن ۱۶، ارتفاع خط ۱٫۸</td></tr>
+        <tr><td>Small</td><td>Bricolage 15</td><td dir="rtl" style="font-family:Vazirmatn">وزیرمتن ۱۵</td></tr>
+        <tr><td>Caption</td><td>Bricolage 13</td><td dir="rtl" style="font-family:Vazirmatn">وزیرمتن ۱۳</td></tr>
+      </table>
+      <p style="font-size:13px;color:#666;margin-top:10px">Persian headings are a step smaller but get taller lines, because Persian letters reach further above and below the line than Latin ones.</p>
+    </div>
+    <div>
+      <h4>Persian rules</h4>
+      <ul class="rules">
+        <li>The layout uses start and end instead of left and right, so the road, the cover spine, chevrons and the finish flag all mirror themselves.</li>
+        <li>Clocks, digits and the play button keep their direction. Only the layout flips.</li>
+        <li>Persian digits (۱۲۳), the ٪ sign, and dates in the Persian calendar: started ۱۷ مهر.</li>
+        <li>The week starts on Saturday (ش ی د س چ پ ج), so "this week" means the same thing it does in Iran.</li>
+        <li>No letter spacing, no italics and no capital-letter styling, since Persian letters must connect and the script has none of these.</li>
+        <li>Proper half-spaces (نیم‌فاصله): می‌خوانند، کتاب‌ها.</li>
+        <li>Book titles go in «guillemets» and are isolated, so a Latin title never scrambles the sentence around it.</li>
+        <li>Persian book covers have their binding on the right.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>An evening of reading</h3>
+  <div class="pairs" id="evening"></div>
+
+  <h3>Finishing what you started</h3>
+  <div class="pairs" id="finishing"></div>
+
+  <h3>Tone, lock screen and widget</h3>
+  <div class="pairs" id="outside"></div>
+
+  <h3>Linux desktop</h3>
+  <section class="desk">
+    <div class="screen">
+      <div class="browser">
+        <div class="bar"><span>youtube.com, a 2 hour 41 minute podcast</span></div>
+        <div class="video">Podcast playing, 1:12:20 of 2:41:00</div>
+      </div>
+      <aside class="side" lang="en">
+        <p class="mute">Doomread, podcast part 2 of 3</p>
+        <div class="stack g2"><div class="clock num">11:40</div><p class="soft">Aim: 15 minutes in one go.</p></div>
+        <div class="stack g2">
+          <div class="road"><div class="track"></div><div class="done" style="width:45%"></div><i class="tick past" style="inset-inline-start:33%"></i><i class="tick" style="inset-inline-start:66%"></i><div class="here" style="inset-inline-start:45%"></div><svg class="flag"><use href="#i-flag"/></svg></div>
+          <p class="mute">Break planned at 1:20:00.</p>
+        </div>
+        <div class="grow"></div>
+        <p class="mute">Open Shorts in a tab and it gets covered: "Skill issue. Break at 1:20:00."</p>
+      </aside>
+    </div>
+    <p style="margin-top:16px;max-width:66ch;line-height:1.55;font-size:14px"><b style="font-family:Literata,serif;font-size:17px;font-weight:500;display:block">Desktop companion</b>A slim panel next to whatever you're watching, with the same road, planned break and building as on your phone. The Persian version flips the panel to the left edge.</p>
+  </section>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 21V9l8-5 8 5v12"/><path d="M10 21v-5h4v5"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5.5C6.5 4 9.5 4 12 6c2.5-2 5.5-2 8-.5V19c-2.5-1.5-5.5-1.5-8 .5-2.5-2-5.5-2-8-.5z"/><path d="M12 6v13.5"/></symbol>
+  <symbol id="i-build" viewBox="0 0 24 24"><path d="M5 21V4h10v17"/><path d="M15 9h4v12"/><path d="M8 8h1M11 8h1M8 12h1M11 12h1M8 16h1M11 16h1"/><path d="M3 21h18"/></symbol>
+  <symbol id="i-people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.8-3.2 3-5 5.5-5s4.7 1.8 5.5 5"/><circle cx="17" cy="9" r="2.4"/><path d="M16 14.2c2.3.1 3.9 1.7 4.5 4.8"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 14 22"><path d="M1.5 21V1.5" stroke="#EDE6D6" stroke-width="1.6" fill="none"/><path d="M2 2h10l-2.5 3.5L12 9H2z" fill="#EDE6D6"/></symbol>
+  <symbol id="i-cup" viewBox="0 0 34 34"><path d="M7 12h17v7a7 7 0 0 1-7 7h-3a7 7 0 0 1-7-7z" fill="none" stroke="#F6C453" stroke-width="1.8"/><path d="M24 14h2.5a3 3 0 0 1 0 6H24" fill="none" stroke="#F6C453" stroke-width="1.8"/><path d="M12 5c-1 2 1 3 0 5M17 5c-1 2 1 3 0 5" stroke="#F6C453" stroke-width="1.6" fill="none" stroke-linecap="round"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 34 34"><rect x="7" y="13" width="20" height="12" rx="3" fill="none" stroke="#F6C453" stroke-width="1.8"/><path d="M11 9h12" stroke="#F6C453" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+</svg>
+
+<script>
+const T = {
+  en: {
+    dir: 'ltr', time: '21:34', brand: 'Doomread',
+    nav: ['Tonight', 'Books', 'Building', 'Friends'],
+    book: 'The Remains of the Day',
+    tonight: {h: 'Tonight', presence: 'Three people are locked in right now. You?', meta: 'Page 142 of 245, chapter 6', left: '103 pages left. About four evenings if you lock in.', plan: 'After chapter 6, 5 minutes of legal brainrot', week: 'This week', days: ['M','T','W','T','F','S','S'], weekState: ['on','.','on','today','.','.','.'], weekNote: '2 nights so far. Lowkey him.', cta: 'Start reading'},
+    reading: {meta: 'Chapter 6, paper book', clock: '5:12', aim: 'Aim: 7 minutes in one go. Two to go.', plan: 'Your break is 9 pages away, at the end of chapter 6.', down: 'Phone face down. Yes, now.', pause: 'Pause', stop: 'Stop for tonight'},
+    urge: {h: 'Skill issue. Instagram waits till chapter 6 ends.', sub: "That's 9 pages. You planned this yourself, remember?", cta: 'Back to the book', quiet: 'Open Instagram anyway'},
+    slip: {h: 'Fumbled. It happens.', sub: 'You were 6 minutes in, on page 149. Pick it back up?', cta: 'Back in', quiet: 'Done for tonight'},
+    brk: {chip: 'Chapter 6 done', h: '5 minutes of brainrot. Fully legal.', sub: 'Reels, messages, memes. Go wild.', clock: '5:00', back: "Back to chapter 7 at 21:42. Don't make me come get you.", card: 'Chapter 7 is 18 pages. Your best stretch tonight is 9 minutes.', cta: 'Start my 5 minutes', quiet: 'Keep reading instead'},
+    done: {chip: 'New best stretch', h: '9 minutes locked in. Aura +10.', pageL: 'Which page did you stop at?', page: '156', pageN: 'of 245, started at 142', noteL: 'One sentence. What happened?', note: 'Stevens finally admits he misses Miss Kenton, but only to himself.', mic: 'Speak instead', t1: ['2', 'urges ignored'], t2: ['1', 'legal break'], cta: 'Save and turn off the light'},
+    bookp: {by: 'Kazuo Ishiguro, started October 9', left: '89 pages left. You read faster near the end. Science.', story: 'The story so far, in your words', notes: [
+      ['p. 142–156', 'Stevens finally admits he misses Miss Kenton, but only to himself.'],
+      ['p. 128–142', 'The car breaks down and a village mistakes him for a gentleman.'],
+      ['p. 117–128', 'Back to the night his father died while he kept serving dinner.'],
+      ['p. 104–117', 'He drives west, arguing with himself about what "dignity" means.']]},
+    fin: {h: '245 pages doomread. Respect.', sub: 'The Remains of the Day, done in 12 evenings. Your building grew a floor.', t1: ['18 min', 'longest stretch'], t2: ['31', 'notes written'], cta: 'Read the story in your words', quiet: 'Flex on Ali and Sara'},
+    bld: {h: 'Your building', sub: 'One floor for every book you actually finished.', floors: [['The Remains of the Day', '12 evenings, October', '#6B2E2E'], ['Dark, season 1', '10 episodes, October', '#5C4B8A'], ['Atomic Habits', '9 evenings, September', '#3D5A80']], stat: 'Longest stretch: from 5 to 18 minutes. Goldfish who?'},
+    fr: {h: 'Friends', sub: 'Read the same night and a light joins your buildings.', you: 'You', ali: 'Ali', people: [['A', 'Ali is reading Dune', 'Right now, page 212 of 412', 1], ['S', 'Sara finished Piranesi', 'Tonight, after 9 evenings'], ['M', 'Mehdi is on Dark, episode 6', 'Last night, 2 episodes']], cta: "Ask who's down tonight"},
+    tone: {h: 'How should I talk to you?', sub: 'You can change it any time.', opts: [['Chill', 'Gentle reminders. No roasting.', 'Instagram can wait until chapter 6 ends.'], ['Spicy', 'A little roast before the slip, kind after it.', 'Skill issue. 9 pages left.'], ['Mom mode', 'Full Iranian mom. You asked for this.', 'باز گوشی دستته؟!']], on: 1, rule: 'After a slip, every tone is kind.', cta: 'Save'},
+    lock: {time: '21:38', date: 'Thursday, October 22', chip: '5:12, 9 pages to break', live: 'Chapter 6, 5:12 in one go', liveSub: 'Break in about 9 pages', app: 'Doomread', n1: "Break's over. Don't make me come get you.", n1t: 'now', n2: 'Ali just started reading. Down?', n2t: '2 min ago'},
+    home: {road: 'p. 156 of 245', left: 'About three evenings left', start: 'Start', apps: ['Doomread', 'Instagram', 'Telegram', 'YouTube']},
+  },
+  fa: {
+    dir: 'rtl', time: '۲۱:۳۴', brand: 'باز گوشی؟!',
+    nav: ['امشب', 'کتاب‌ها', 'ساختمون', 'دوستا'],
+    book: 'بازمانده‌ی روز',
+    tonight: {h: 'امشب', presence: 'سه نفر الان دارن می‌خونن. تو چی؟', meta: 'صفحه‌ی ۱۴۲ از ۲۴۵، فصل ۶', left: '۱۰۳ صفحه مونده. اگه گوشی رو ول کنی، چهار شب دیگه.', plan: 'بعد از فصل ۶، پنج دقیقه اسکرول حلالت', week: 'این هفته', days: ['ش','ی','د','س','چ','پ','ج'], weekState: ['on','on','.','on','on','today','.'], weekNote: '۴ شب. دمت گرم.', cta: 'شروع خوندن'},
+    reading: {meta: 'فصل ۶، کتاب کاغذی', clock: '۵:۱۲', aim: 'هدف: ۷ دقیقه یکسره. دو دقیقه دیگه.', plan: 'استراحتت ۹ صفحه دیگه‌ست، آخر فصل ۶.', down: 'گوشی رو بذار رو به پایین. همین الان.', pause: 'یه لحظه', stop: 'بسه برای امشب'},
+    urge: {h: 'باز گوشی دستته؟! ۹ صفحه مونده!', sub: 'آخر فصل ۶ اینستاگرام مال خودت. خودت قول دادی.', cta: 'باشه، برمی‌گردم سر کتاب', quiet: 'نه، اینستاگرام رو باز کن'},
+    slip: {h: 'اشکال نداره، برگرد.', sub: '۶ دقیقه خونده بودی، تا صفحه‌ی ۱۴۹. ادامه بدیم؟', cta: 'برمی‌گردم', quiet: 'بسه برای امشب'},
+    brk: {chip: 'فصل ۶ تموم شد', h: 'پنج دقیقه اسکرول حلالت.', sub: 'ریلز، پیام، میم. هرچی دلت می‌خواد.', clock: '۵:۰۰', back: 'ساعت ۲۱:۴۲ برمی‌گردی سر فصل ۷. خودم صدات می‌کنم.', card: 'فصل ۷ هجده صفحه‌ست. بهترین تمرکز امشبت ۹ دقیقه بوده.', cta: 'شروع ۵ دقیقه', quiet: 'نه، ادامه می‌دم'},
+    done: {chip: 'رکورد جدید', h: '۹ دقیقه یکسره! آفرین، همینه.', pageL: 'تا کدوم صفحه خوندی؟', page: '۱۵۶', pageN: 'از ۲۴۵، شروع از ۱۴۲', noteL: 'یه جمله بگو، چی شد؟', note: 'استیونز بالاخره قبول می‌کنه دلش برای دوشیزه کنتون تنگ شده، ولی فقط پیش خودش.', mic: 'به‌جاش بگو', t1: ['۲', 'وسوسه که رد کردی'], t2: ['۱', 'استراحت حلال'], cta: 'ذخیره کن و چراغ رو خاموش کن'},
+    bookp: {by: 'کازوئو ایشی‌گورو، شروع ۱۷ مهر', left: '۸۹ صفحه مونده. نزدیک آخرش تندتر می‌خونی.', story: 'داستان تا اینجا، به زبون خودت', notes: [
+      ['ص ۱۴۲ تا ۱۵۶', 'استیونز بالاخره قبول می‌کنه دلش برای دوشیزه کنتون تنگ شده، ولی فقط پیش خودش.'],
+      ['ص ۱۲۸ تا ۱۴۲', 'ماشین خراب می‌شه و اهالی یه روستا فکر می‌کنن اون یه آقای اشراف‌زاده‌ست.'],
+      ['ص ۱۱۷ تا ۱۲۸', 'برمی‌گرده به شبی که پدرش مُرد و اون هنوز داشت شام سرو می‌کرد.'],
+      ['ص ۱۰۴ تا ۱۱۷', 'به سمت غرب رانندگی می‌کنه و با خودش سر معنی «وقار» کلنجار می‌ره.']]},
+    fin: {h: 'دمت گرم! «بازمانده‌ی روز» تموم شد.', sub: '۲۴۵ صفحه در ۱۲ شب. حالا پاشو یه چایی بخور.', t1: ['۱۸ دقیقه', 'طولانی‌ترین تمرکز'], t2: ['۳۱', 'یادداشت'], cta: 'داستان رو به زبون خودت بخون', quiet: 'به علی و سارا پز بده'},
+    bld: {h: 'ساختمون تو', sub: 'برای هر کتابی که واقعاً تموم کردی، یه طبقه.', floors: [['بازمانده‌ی روز', '۱۲ شب، مهر', '#6B2E2E'], ['دارک، فصل ۱', '۱۰ قسمت، مهر', '#5C4B8A'], ['عادت‌های اتمی', '۹ شب، شهریور', '#3D5A80']], stat: 'طولانی‌ترین تمرکزت از ۵ به ۱۸ دقیقه رسید. ماشالا.'},
+    fr: {h: 'دوستا', sub: 'اگه یه شب با هم بخونید، یه چراغ ساختمون‌هاتون رو به هم وصل می‌کنه.', you: 'تو', ali: 'علی', people: [['ع', 'علی داره «تلماسه» می‌خونه', 'همین الان، صفحه‌ی ۲۱۲ از ۴۱۲', 1], ['س', 'سارا «پیرانزی» رو تموم کرد', 'امشب، بعد از ۹ شب'], ['م', 'مهدی داره «دارک» می‌بینه، قسمت ۶', 'دیشب، ۲ قسمت']], cta: 'کی امشب پایه‌ست؟'},
+    tone: {h: 'چطوری باهات حرف بزنم؟', sub: 'هر وقت خواستی عوضش کن.', opts: [['آروم', 'یادآوری مهربون، بدون تیکه.', 'اینستاگرام تا آخر فصل ۶ صبر می‌کنه.'], ['تند', 'قبل از وسوسه یه کم تیکه، بعدش مهربون.', 'اسکیل ایشو. ۹ صفحه مونده.'], ['مامان‌مود', 'یه مامان ایرانی تمام‌عیار. خودت خواستی.', 'باز گوشی دستته؟!']], on: 2, rule: 'بعد از هر لغزش، همه‌ی لحن‌ها مهربونن.', cta: 'ذخیره'},
+    lock: {time: '۲۱:۳۸', date: 'پنجشنبه ۳۰ مهر', chip: '۵:۱۲، ۹ صفحه تا استراحت', live: 'فصل ۶، ۵:۱۲ یکسره', liveSub: 'حدود ۹ صفحه تا استراحت', app: 'باز گوشی؟!', n1: 'پنج دقیقه‌ت تموم شد. پاشو.', n1t: 'الان', n2: 'علی همین الان شروع کرد. پایه‌ای؟', n2t: '۲ دقیقه پیش'},
+    home: {road: 'صفحه‌ی ۱۵۶ از ۲۴۵', left: 'حدود سه شب مونده', start: 'شروع', apps: ['باز گوشی؟!', 'اینستاگرام', 'تلگرام', 'یوتیوب']},
+  },
+};
+
+/* ---------- pieces ---------- */
+const cls = {l: 'lit', d: 'dim', m: 'me', '.': 'off'};
+function windows(map, x0, y0, dx, dy, w, h, animate) {
+  let out = '', i = 0;
+  map.forEach((row, r) => [...row].forEach((c, k) => {
+    const x = x0 + k * dx, y = y0 + r * dy;
+    if (c === 'l' || c === 'm') out += `<rect x="${x - 5}" y="${y - 5}" width="${w + 10}" height="${h + 10}" class="glow"/>`;
+    const st = animate && c !== '.' ? ` style="animation-delay:${(0.3 + (i++) * 0.18).toFixed(2)}s"` : '';
+    out += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1.5" class="${cls[c]}${animate && c !== '.' ? ' in' : ''}"${st}/>`;
+    if (c === 'm') out += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1.5" class="me pulse"/>`;
+  }));
+  return out;
+}
+// illustrations mirror for RTL so the moon and the neighbours swap sides
+const scene = (L, w, h, inner, label) => `<svg class="art" viewBox="0 0 ${w} ${h}" ${label ? `role="img" aria-label="${label}"` : 'aria-hidden="true"'}><g ${L.dir === 'rtl' ? `transform="matrix(-1 0 0 1 ${w} 0)"` : ''}>${inner}</g></svg>`;
+const road = (pct, ticks, past) => `<div class="road" role="img" aria-label="${pct}%"><div class="track"></div><div class="done" style="width:${pct}%"></div>${ticks.map(t => `<i class="tick${t < past ? ' past' : ''}" style="inset-inline-start:${t}%"></i>`).join('')}<div class="here" style="inset-inline-start:${pct}%"></div><svg class="flag"><use href="#i-flag"/></svg></div>`;
+const status = L => `<div class="status"><span class="num">${L.time}</span><span class="ic" aria-hidden="true"><svg width="16" height="11" viewBox="0 0 16 11"><path d="M1 10h2V7H1zM5 10h2V5H5zM9 10h2V3H9zM13 10h2V1h-2z" fill="#C9C3B6"/></svg><svg width="22" height="11" viewBox="0 0 22 11"><rect x=".5" y=".5" width="18" height="10" rx="2.5" fill="none" stroke="#C9C3B6"/><rect x="2" y="2" width="11" height="7" rx="1.2" fill="#C9C3B6"/><rect x="19.5" y="3.5" width="1.5" height="4" rx=".7" fill="#C9C3B6"/></svg></span></div>`;
+const nav = (L, at) => `<nav>${['i-home', 'i-book', 'i-build', 'i-people'].map((ic, i) => `<a href="#" ${i === at ? 'aria-current="page"' : ''}><span class="pill"><svg><use href="#${ic}"/></svg></span>${L.nav[i]}</a>`).join('')}</nav>`;
+const shell = (L, body, at) => `<div class="phone" lang="${L === T.fa ? 'fa' : 'en'}" dir="${L.dir}">${status(L)}${body}${at === undefined ? '' : nav(L, at)}<div class="gesture"><i></i></div></div>`;
+const cover = '<div class="cover" aria-hidden="true"></div>';
+const building = (L, label) => scene(L, 320, 250, `
+  <rect width="320" height="250" fill="#18213A"/><circle cx="262" cy="36" r="14" fill="#EDE6D6" opacity=".9"/>
+  <path d="M0 250 V170 H34 V146 H46 V250Z M274 250 V130 H296 V110 H320 V250Z" fill="#141B2F"/>
+  <path d="M58 250 V64 H120 V46 H138 V64 H262 V250Z" fill="#222C49"/><rect x="140" y="222" width="40" height="28" rx="2" fill="#141B2F"/>
+  ${windows(['..d..l', 'd...d.', '..m...', '.d..d.'], 74, 82, 30, 34, 18, 20, true)}`, label);
+
+/* ---------- screens ---------- */
+const S = {
+  tonight: L => { const t = L.tonight; return shell(L, `
+    <div class="content stack g4">
+      <div class="stack g1"><h2>${t.h}</h2><p class="cap">${t.presence}</p></div>
+      <div class="card stack g3">
+        <div class="row">${cover}<div class="stack g1"><div class="book-t"><bdi>${L.book}</bdi></div><p class="cap">${t.meta}</p></div></div>
+        ${road(58, [14, 27, 40, 52, 66, 79, 90], 58)}
+        <p class="mute">${t.left}</p>
+      </div>
+      <button class="card row tap" style="text-align:start;width:100%;padding-block:var(--s2)"><svg width="34" height="34"><use href="#i-cup"/></svg><span>${t.plan}</span><svg class="chev" width="20" height="20"><use href="#i-chev"/></svg></button>
+      <div class="stack g2">
+        <div class="row" style="justify-content:space-between"><span class="mute">${t.week}</span><span class="cap">${t.weekNote}</span></div>
+        <div class="week">${t.days.map((d, i) => `<div><i class="${t.weekState[i] === '.' ? '' : t.weekState[i]}"></i><span>${d}</span></div>`).join('')}</div>
+      </div>
+    </div>
+    <div class="foot"><button class="go">${t.cta}</button></div>`, 0); },
+
+  reading: L => { const t = L.reading; return shell(L, `
+    <div class="content stack g4" style="padding-top:var(--s5)">
+      <div class="stack g2"><p class="mute">${t.meta}</p><div class="clock num">${t.clock}</div><p class="soft">${t.aim}</p></div>
+      <div class="steps" aria-hidden="true">${'<i class="on"></i>'.repeat(5)}<i></i><i></i></div>
+      <div class="stack g2">
+        <div class="card row"><svg width="34" height="34" style="flex:none"><use href="#i-cup"/></svg><p style="font-size:var(--t-small)">${t.plan}</p></div>
+        <div class="card row"><svg width="34" height="34" style="flex:none"><use href="#i-phone"/></svg><p style="font-size:var(--t-small)">${t.down}</p></div>
+      </div>
+      <div class="grow"></div>
+      ${scene(L, 272, 100, `<path d="M0 100 V8 H272 V100Z" fill="#222C49"/>${windows(['d.l.....', '...m..l.'], 22, 26, 31, 34, 16, 18)}`)}
+    </div>
+    <div class="foot"><div class="two"><button>${t.pause}</button><button>${t.stop}</button></div></div>`); },
+
+  urge: L => { const t = L.urge; return shell(L, `
+    ${building(L)}
+    <div class="content stack g2" style="padding-top:var(--s5)"><h2>${t.h}</h2><p class="soft">${t.sub}</p></div>
+    <div class="foot"><button class="go">${t.cta}</button><button class="quiet">${t.quiet}</button></div>`); },
+
+  brk: L => { const t = L.brk; return shell(L, `
+    <div class="content stack g5" style="padding-top:var(--s5)">
+      <div class="stack g3"><span class="chip">${t.chip}</span><h2>${t.h}</h2><p class="soft">${t.sub}</p></div>
+      <div class="stack g2"><div class="clock num">${t.clock}</div><p class="mute">${t.back}</p></div>
+      <div class="card"><p style="font-size:var(--t-small)">${t.card}</p></div>
+    </div>
+    <div class="foot"><button class="go">${t.cta}</button><button class="quiet">${t.quiet}</button></div>`); },
+
+  done: L => { const t = L.done; return shell(L, `
+    <div class="content stack g5" style="padding-top:var(--s5)">
+      <div class="stack g3"><span class="chip">${t.chip}</span><h2>${t.h}</h2></div>
+      <div class="stack g2"><label>${t.pageL}</label><div class="row"><input class="field pageno num" value="${t.page}" inputmode="numeric" aria-label="${t.pageL}"><span class="mute">${t.pageN}</span></div></div>
+      <div class="stack g2"><label>${t.noteL}</label><div class="row" style="align-items:flex-start"><textarea class="field" aria-label="${t.noteL}">${t.note}</textarea><button class="iconbtn" aria-label="${t.mic}"><svg width="22" height="22"><use href="#i-mic"/></svg></button></div></div>
+      <div class="tally"><div><strong class="num">${t.t1[0]}</strong><span class="cap">${t.t1[1]}</span></div><div><strong class="num">${t.t2[0]}</strong><span class="cap">${t.t2[1]}</span></div></div>
+    </div>
+    <div class="foot"><button class="go">${t.cta}</button></div>`); },
+
+  bookp: L => { const t = L.bookp; return shell(L, `
+    <div class="content stack g5">
+      <div class="stack g3">
+        <div class="row">${cover}<div class="stack g1"><div class="book-t"><bdi>${L.book}</bdi></div><p class="cap">${t.by}</p></div></div>
+        ${road(64, [14, 27, 40, 52, 66, 79, 90], 64)}
+        <p class="mute">${t.left}</p>
+      </div>
+      <div class="stack g1" style="flex:1;min-height:0;overflow:hidden"><p>${t.story}</p><ul class="notes">${t.notes.map(n => `<li><span>${n[0]}</span>${n[1]}</li>`).join('')}</ul></div>
+    </div>`, 1); },
+
+  fin: L => { const t = L.fin; return shell(L, `
+    ${scene(L, 320, 220, `<rect width="320" height="220" fill="#18213A"/><path d="M0 220 V150 H40 V220Z M280 220 V120 H320 V220Z" fill="#141B2F"/><path d="M70 220 V64 H250 V220Z" fill="#222C49"/><path d="M70 64 V30 H250 V64Z" fill="#2B3758" class="in" style="animation-duration:1.2s"/>${windows(['mmmmmm'], 92, 38, 26, 0, 16, 18, true)}${windows(['d.l..l', 'l.d.l.', '.l..d.'], 92, 84, 26, 38, 16, 20)}`)}
+    <div class="content stack g4" style="padding-top:var(--s5)">
+      <div class="stack g2"><h2>${t.h}</h2><p class="soft">${t.sub}</p></div>
+      <div class="tally"><div><strong class="num">${t.t1[0]}</strong><span class="cap">${t.t1[1]}</span></div><div><strong class="num">${t.t2[0]}</strong><span class="cap">${t.t2[1]}</span></div></div>
+    </div>
+    <div class="foot"><button class="go">${t.cta}</button><button class="quiet">${t.quiet}</button></div>`); },
+
+  bld: L => { const t = L.bld; return shell(L, `
+    <div class="content stack g4">
+      <div class="stack g1"><h2>${t.h}</h2><p class="mute">${t.sub}</p></div>
+      ${scene(L, 272, 150, `<path d="M70 150 V12 H202 V150Z" fill="#222C49"/>${windows(['mmmm'], 86, 24, 28, 0, 16, 20)}${windows(['llll', 'llll'], 86, 70, 28, 44, 16, 20)}<path d="M70 58 H202 M70 104 H202" stroke="#18213A" stroke-width="3"/>`)}
+      <ul class="floors">${t.floors.map(f => `<li><i class="sw" style="background:${f[2]}"></i><div><b><bdi>${f[0]}</bdi></b><span class="cap">${f[1]}</span></div></li>`).join('')}</ul>
+      <p class="cap">${t.stat}</p>
+    </div>`, 2); },
+
+  fr: L => { const t = L.fr; return shell(L, `
+    <div class="content stack g4">
+      <div class="stack g1"><h2>${t.h}</h2><p class="mute">${t.sub}</p></div>
+      <div class="stack g1">
+        ${scene(L, 272, 80, `<path d="M10 80 V14 H90 V80Z M182 80 V22 H262 V80Z" fill="#222C49"/><path d="M90 30 Q136 56 182 38" fill="none" stroke="#F6C453" stroke-width="1.6" stroke-dasharray="1 7" stroke-linecap="round"/>${windows(['lml', 'l.d'], 22, 28, 22, 26, 14, 16)}${windows(['dlm', '.l.'], 194, 36, 22, 22, 14, 16)}`)}
+        <div class="row" style="justify-content:space-between;padding-inline:28px"><span class="cap">${t.you}</span><span class="cap">${t.ali}</span></div>
+      </div>
+      <div>${t.people.map(p => `<div class="person"><div class="ini${p[3] ? ' now' : ''}">${p[0]}</div><div><p>${p[1]}</p><span class="cap">${p[2]}</span></div></div>`).join('')}</div>
+    </div>
+    <div class="foot"><button class="go">${t.cta}</button></div>`, 3); },
+
+  slip: L => { const t = L.slip; return shell(L, `
+    ${building(L)}
+    <div class="content stack g2" style="padding-top:var(--s5)"><h2>${t.h}</h2><p class="soft">${t.sub}</p></div>
+    <div class="foot"><button class="go">${t.cta}</button><button class="quiet">${t.quiet}</button></div>`); },
+
+  tone: L => { const t = L.tone; return shell(L, `
+    <div class="content stack g4">
+      <div class="stack g1"><h2>${t.h}</h2><p class="mute">${t.sub}</p></div>
+      <div class="tone" role="radiogroup" aria-label="${t.h}">${t.opts.map((o, i) => `<button class="opt" role="radio" aria-checked="${i === t.on}"><b>${o[0]}</b><span class="cap">${o[1]}</span><q dir="auto">${o[2]}</q></button>`).join('')}</div>
+      <p class="cap">${t.rule}</p>
+    </div>
+    <div class="foot"><button class="go">${t.cta}</button></div>`); },
+
+  lock: L => { const t = L.lock; return `<div class="phone lock" lang="${L === T.fa ? 'fa' : 'en'}" dir="${L.dir}">${status(L)}
+    <div class="chipbar"><i></i><span class="num">${t.chip}</span></div>
+    <div class="bigtime num">${t.time}</div><p class="date">${t.date}</p>
+    <div class="grow"></div>
+    <div class="content stack g2" style="flex:none;padding-bottom:var(--s5)">
+      <div class="note-card"><div class="who"><i></i>${t.app}</div><b style="font-weight:500">${t.live}</b><span class="cap">${t.liveSub}</span>${road(68, [100], 0).replace('class="road"', 'class="road" style="height:22px"')}</div>
+      <div class="note-card"><div class="who"><i></i>${t.app}<span style="margin-inline-start:auto">${t.n1t}</span></div><span>${t.n1}</span></div>
+      <div class="note-card"><div class="who"><i></i>${t.app}<span style="margin-inline-start:auto">${t.n2t}</span></div><span>${t.n2}</span></div>
+    </div><div class="gesture"><i></i></div></div>`; },
+
+  home: L => { const t = L.home; return `<div class="phone home" lang="${L === T.fa ? 'fa' : 'en'}" dir="${L.dir}">${status(L)}
+    <div class="content stack g6" style="padding-top:var(--s5)">
+      <div class="widget">
+        <div class="row">${cover}<div class="stack g1"><div class="book-t" style="font-size:17px"><bdi>${L.book}</bdi></div><span class="cap">${t.road}</span></div>
+          <svg width="30" height="34" viewBox="0 0 30 34" style="margin-inline-start:auto;flex:none" aria-hidden="true"><rect x="5" y="6" width="20" height="24" rx="2" fill="#F6C453"/><rect x="0" y="1" width="30" height="34" rx="3" fill="#F6C453" opacity=".15"/></svg></div>
+        ${road(64, [14, 27, 40, 52, 66, 79, 90], 64)}
+        <div class="row" style="justify-content:space-between"><span class="cap">${t.left}</span><button class="go" style="width:auto;min-height:40px;padding:0 20px;font-size:15px">${t.start}</button></div>
+      </div>
+      <div class="grow"></div>
+      <div class="apps">
+        <div><svg viewBox="0 0 96 96" aria-hidden="true"><rect width="96" height="96" rx="22" fill="#18213A"/><path d="M22 96V30h22V22h8v8h22v66z" fill="#222C49"/><rect x="30" y="40" width="12" height="14" rx="1.5" fill="#2A3350" stroke="#E2B65A" stroke-opacity=".6" stroke-width="1.5"/><rect x="54" y="40" width="12" height="14" rx="1.5" fill="#F6C453"/><rect x="42" y="62" width="12" height="14" rx="1.5" fill="#FFE29A" stroke="#FFF6DD" stroke-width="2"/><circle cx="76" cy="16" r="5" fill="#EDE6D6"/></svg>${t.apps[0]}</div>
+        <div><i style="background:linear-gradient(45deg,#F9A13A,#D62976,#7A3CC0)"></i>${t.apps[1]}</div>
+        <div><i style="background:#2AA3DF"></i>${t.apps[2]}</div>
+        <div><i style="background:#E33A2F"></i>${t.apps[3]}</div>
+      </div>
+    </div><div class="gesture" style="margin-top:var(--s5)"><i></i></div></div>`; },
+};
+
+const pair = (key, title, note) => `<figure class="pair"><div class="phones">${S[key](T.en)}${S[key](T.fa)}</div><figcaption><b>${title}</b>${note}</figcaption></figure>`;
+document.getElementById('evening').innerHTML = [
+  pair('tonight', 'Tonight', 'The book and its road come first, with the planned break as one tappable row. The week strip starts on Monday in English and Saturday in Persian.'),
+  pair('reading', 'Reading', 'Almost nothing to do, and the copy gets a little bossy.'),
+  pair('urge', 'When the urge comes', 'The roast lands before the slip. Spicy in English, Mom mode in Persian.'),
+  pair('slip', 'After a slip', 'Every tone turns kind right after giving in, because a roast here triggers the "I already ruined it" spiral.'),
+  pair('brk', 'The planned break', '"Legal brainrot": the break is allowed, timed, and the return is named in advance.'),
+  pair('done', 'End of the evening', 'A page number and one sentence. Aura +10.'),
+].join('');
+document.getElementById('finishing').innerHTML = [
+  pair('bookp', 'The book', 'Your notes, newest first, as the story in your own words. Persian notes are in everyday spoken Persian.'),
+  pair('fin', 'The last page', 'The finishing flex. "Flex on Ali and Sara" shares it.'),
+  pair('bld', 'Your building', 'One floor for every finished book or series.'),
+  pair('fr', 'Friends', '"Who\'s down tonight?" / «کی امشب پایه‌ست؟»'),
+].join('');
+document.getElementById('outside').innerHTML = [
+  pair('tone', 'Tone', 'Chill, Spicy or Mom mode. Every option shows a real sample line, and the kindness-after-a-slip rule is stated right there.'),
+  pair('lock', 'Lock screen', 'A Live Update chip and an ongoing card while the phone lies face down, plus the only two kinds of notification most people will ever get.'),
+  pair('home', 'Home screen widget', 'The road for the current book with one-tap Start. The icon is a lit window in your building.'),
+].join('');
+</script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Urge moment v3</title>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,500;7..72,700&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--page:#E7E4DF;--ink:#23211F}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--page);color:var(--ink);font-family:"Bricolage Grotesque",sans-serif;padding:40px 16px 80px}
+  header{max-width:980px;margin:0 auto 32px}
+  header h1{font-family:Literata,serif;font-weight:500;font-size:28px;margin:0 0 8px}
+  header p{margin:0;max-width:62ch;line-height:1.55;opacity:.8}
+  .row{display:flex;gap:40px;flex-wrap:wrap;justify-content:center}
+  figure{margin:0}
+  figcaption{max-width:320px;margin-top:14px;line-height:1.5;font-size:14px}
+  figcaption b{font-family:Literata,serif;font-size:17px;font-weight:500;display:block;margin-bottom:2px}
+  .phone{width:320px;height:680px;border-radius:44px;overflow:hidden;position:relative;display:flex;flex-direction:column;box-shadow:0 30px 60px -20px rgba(20,24,40,.45);cursor:pointer;outline-offset:6px}
+  .phone.selected{outline:3px solid #2E5BFF}
+  button{font:inherit;cursor:pointer}
+  button:focus-visible{outline:3px solid currentColor;outline-offset:3px}
+
+  /* ---------- Windows ---------- */
+  .win{background:#18213A;color:#EDE6D6;font-family:Literata,serif}
+  .win svg{display:block}
+  .win .sky{padding:0 0 0}
+  .win .lit{fill:#F6C453;animation:on .5s ease-out both}
+  .win .glow{fill:#F6C453;opacity:.18;filter:blur(6px)}
+  .win .dim{fill:#2A3350;stroke:#E2B65A;stroke-width:1.5;stroke-opacity:.6;animation:on .5s ease-out both}
+  .win .off{fill:#1A2238}
+  .win .me{fill:#FFE29A;stroke:#FFF6DD;stroke-width:2.5;animation:me 3.2s ease-in-out infinite}
+  @keyframes on{from{opacity:0}to{opacity:1}}
+  @keyframes ondim{from{opacity:0}to{opacity:.28}}
+  @keyframes me{50%{opacity:.75}}
+  .win .body{padding:18px 26px 24px;display:flex;flex-direction:column;flex:1}
+  .win h2{font-size:27px;line-height:1.18;font-weight:500;margin:0 0 10px}
+  .win p{margin:0;font-size:16px;line-height:1.5;color:#C9C3B6}
+  .win .legend{display:flex;gap:14px;font-size:13px;color:#9AA3BD;font-family:"Bricolage Grotesque",sans-serif;margin-top:12px}
+  .win .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-inline-end:6px;vertical-align:-1px}
+  .win .grow{min-height:16px}
+  .win .goal{color:#EDE6D6}
+  .win .grow{flex:1}
+  .win .go{background:#F6C453;color:#18213A;border:0;border-radius:999px;padding:17px;font-weight:700;font-size:17px;width:100%}
+  .win .anyway{background:none;border:0;color:#9AA3BD;margin-top:14px;font-size:14px;width:100%}
+
+  /* ---------- Tide ---------- */
+  .tide{background:#EFE9DA;color:#0F3A40;font-family:"Bricolage Grotesque",sans-serif}
+  .tide .top{padding:48px 26px 0;position:relative;z-index:2}
+  .tide h2{font-family:Literata,serif;font-weight:500;font-size:30px;line-height:1.12;margin:0 0 12px}
+  .tide p{margin:0;font-size:16px;line-height:1.5}
+  .tide .prints{margin-top:22px;display:flex;gap:10px;align-items:center;font-size:14px}
+  .tide .water{position:absolute;inset:auto 0 0 0;height:50%;background:#0F5A63;animation:ebb 40s cubic-bezier(.3,.1,.3,1) forwards}
+  .tide .water svg{position:absolute;top:-23px;left:0;width:200%;height:24px;animation:roll 7s linear infinite}
+  .tide .breath{position:absolute;inset:0;animation:breathe 8s ease-in-out infinite}
+  @keyframes ebb{to{transform:translateY(22%)}}
+  @keyframes roll{to{transform:translateX(-50%)}}
+  @keyframes breathe{50%{transform:translateY(-12px)}}
+  .tide .say{position:absolute;left:0;right:0;top:120px;text-align:center;font-family:Literata,serif;font-size:22px;color:#CFE6E1;z-index:3}
+  .tide .say span{position:absolute;left:0;right:0;animation:say 8s ease-in-out infinite}
+  .tide .say span+span{animation-delay:-4s}
+  @keyframes say{0%,10%{opacity:0}20%,40%{opacity:1}50%,100%{opacity:0}}
+  .tide .bottom{position:absolute;inset:auto 0 0 0;padding:26px;z-index:3;color:#E9F3EF}
+  .tide .bottom .cue{font-size:15px;margin-bottom:16px;opacity:.9}
+  .tide .go{background:#EFE9DA;color:#0F3A40;border:0;border-radius:18px;padding:17px;font-weight:600;font-size:17px;width:100%}
+  .tide .anyway{background:none;border:0;color:#A9CFCB;margin-top:14px;font-size:14px;width:100%}
+
+  .fa{direction:rtl;font-family:Vazirmatn,sans-serif}
+  .fa h2,.fa .go,.fa p{font-family:Vazirmatn,sans-serif}
+  .fa h2{font-weight:700;font-size:27px;line-height:1.35}
+
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <h1>The urge moment, two directions</h1>
+  <p>This is what you see instead of Instagram at minute 4. Click a phone to choose it. The third phone is your pick in Persian, and the motion is real.</p>
+</header>
+
+<div class="row">
+  <figure>
+    <div class="phone win" data-choice="windows" onclick="toggleSelect(this)" tabindex="0">
+      <svg viewBox="0 0 320 300" aria-label="Apartment block at night. Bright windows are people reading now, dim ones read earlier tonight, the outlined one is you.">
+        <rect width="320" height="300" fill="#18213A"/>
+        <circle cx="262" cy="44" r="14" fill="#EDE6D6" opacity=".9"/>
+        <path d="M0 300 V214 H34 V190 H46 V300Z M274 300 V170 H296 V150 H320 V300Z" fill="#141B2F"/>
+        <path d="M58 300 V78 H120 V60 H138 V78 H262 V300Z" fill="#222C49"/>
+        <rect x="54" y="74" width="212" height="6" fill="#2B3758"/>
+        <rect x="140" y="270" width="40" height="30" rx="2" fill="#141B2F"/>
+        <g id="grid"></g>
+      </svg>
+      <div class="body">
+        <h2>Four minutes into chapter three.</h2>
+        <p class="goal">You told yourself you'd finish it tonight.</p>
+        <div class="legend"><span><i style="background:#F6C453"></i>reading now</span><span><i style="border:1.5px solid #E2B65A"></i>earlier tonight</span><span><i style="background:#FFE29A;box-shadow:0 0 0 2px #FFF6DD"></i>you</span></div>
+        <div class="grow"></div>
+        <button class="go">Back to the book</button>
+        <button class="anyway">Open Instagram in 5</button>
+      </div>
+    </div>
+    <figcaption><b>Windows</b>Every lit window is a reader. Bright means right now, dim means earlier tonight. The one glowing slowly is you. Night ink and lamplight.</figcaption>
+  </figure>
+
+  <figure>
+    <div class="phone tide" data-choice="tide" onclick="toggleSelect(this)" tabindex="0">
+      <div class="top">
+        <h2>This pull is a wave. Let it go out.</h2>
+        <p>Chapter three is waiting on the shore.</p>
+        <div class="prints">
+          <svg width="46" height="22" viewBox="0 0 46 22" aria-hidden="true"><g fill="#0F3A40" opacity=".55"><ellipse cx="6" cy="15" rx="4" ry="6"/><ellipse cx="18" cy="7" rx="4" ry="6"/><ellipse cx="30" cy="15" rx="4" ry="6"/><ellipse cx="42" cy="7" rx="4" ry="6"/></g></svg>
+          Sara walked here tonight and read for 22 minutes.
+        </div>
+      </div>
+      <div class="breath"><div class="water"><div class="say" aria-live="off"><span>Breathe in</span><span>Breathe out</span></div>
+        <svg viewBox="0 0 640 24" preserveAspectRatio="none" aria-hidden="true"><path d="M0 12 Q40 0 80 12 T160 12 T240 12 T320 12 T400 12 T480 12 T560 12 T640 12 V24 H0Z" fill="#0F5A63"/></svg>
+      </div></div>
+      <div class="bottom">
+        <div class="cue">The water is already lower than when you came.</div>
+        <button class="go">Back to the book</button>
+        <button class="anyway">Open Instagram in 5</button>
+      </div>
+    </div>
+    <figcaption><b>Tide</b>The whole screen is the urge, and it slowly goes out while you breathe. Earlier readers show up as footprints. Sand and sea-glass, daylight.</figcaption>
+  </figure>
+
+  <figure>
+    <div class="phone win fa" tabindex="0">
+      <svg viewBox="0 0 320 300" aria-hidden="true">
+        <rect width="320" height="300" fill="#18213A"/>
+        <circle cx="58" cy="44" r="14" fill="#EDE6D6" opacity=".9"/>
+        <path d="M0 300 V214 H34 V190 H46 V300Z M274 300 V170 H296 V150 H320 V300Z" fill="#141B2F"/>
+        <path d="M58 300 V78 H120 V60 H138 V78 H262 V300Z" fill="#222C49"/>
+        <rect x="54" y="74" width="212" height="6" fill="#2B3758"/>
+        <rect x="140" y="270" width="40" height="30" rx="2" fill="#141B2F"/>
+        <g class="grid2"></g>
+      </svg>
+      <div class="body">
+        <h2>چهار دقیقه از فصل سوم گذشته.</h2>
+        <p class="goal">به خودت گفته بودی امشب تمامش می‌کنی.</p>
+        <div class="legend" style="font-family:Vazirmatn,sans-serif"><span><i style="background:#F6C453"></i>همین حالا</span><span><i style="border:1.5px solid #E2B65A"></i>اوایل امشب</span><span><i style="background:#FFE29A;box-shadow:0 0 0 2px #FFF6DD"></i>تو</span></div>
+        <div class="grow"></div>
+        <button class="go">برگرد سراغ کتاب</button>
+        <button class="anyway">اینستاگرام تا ۵ ثانیه‌ی دیگر</button>
+      </div>
+    </div>
+    <figcaption><b>Windows in Persian</b>Right-to-left all the way through, with Vazirmatn type and Persian digits. The moon moves to the other side.</figcaption>
+  </figure>
+</div>
+
+<script>
+  // windows: 6 cols x 5 rows; l=reading now, d=earlier tonight, m=you, .=dark
+  const map = ['..d..l','d...d.','..m...','.d..d.','l....d'];
+  const NS = 'http://www.w3.org/2000/svg';
+  document.querySelectorAll('#grid, .grid2').forEach(g => {
+    let i = 0;
+    map.forEach((row, r) => [...row].forEach((c, k) => {
+      const x = 74 + k * 30, y = 98 + r * 34;
+      if (c === 'l' || c === 'm') {
+        const h = document.createElementNS(NS, 'rect');
+        Object.entries({x: x - 6, y: y - 6, width: 30, height: 32, class: 'glow'}).forEach(([a, v]) => h.setAttribute(a, v));
+        g.appendChild(h);
+      }
+      const el = document.createElementNS(NS, 'rect');
+      Object.entries({x, y, width: 18, height: 20, rx: 1.5, class: {l:'lit', d:'dim', m:'me', '.':'off'}[c]}).forEach(([a, v]) => el.setAttribute(a, v));
+      if (c !== '.') el.style.animationDelay = (0.3 + (i++) * 0.18) + 's';
+      g.appendChild(el);
+    }));
+  });
+</script>
+</body>
+</html>
