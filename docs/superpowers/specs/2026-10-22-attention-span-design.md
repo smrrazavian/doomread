@@ -60,8 +60,7 @@ The design leans on these findings. The builder should keep the copy honest to t
 
 - **Android and Linux desktop first. iOS later.** iOS is constrained further by Apple sanctions for Iran-based developers and by the Screen Time entitlement process.
 - **Built with Flutter** (the owner's call was delegated; this is my call, see section 11). Native code is used only where Flutter can't reach: widgets, Android app detection, live notifications, and later the iOS Screen Time extensions.
-- **Distribution:** direct APK, Google Play, Cafe Bazaar, F-Droid. These are separate build flavours of one codebase:
-  - **fdroid**: only free/open-source dependencies (no Google Play services, no Firebase, no proprietary SDKs), buildable from source by F-Droid, and no self-updater.
+- **Distribution:** direct APK, Google Play, Cafe Bazaar. F-Droid is deferred (see ADR-0004); the code stays F-Droid-friendly. These are separate build flavours of one codebase:
   - **play**: the Accessibility declaration and an in-app prominent disclosure (see section 7.1).
   - **bazaar**: updates through Cafe Bazaar. **Its rules on accessibility services are not yet verified.**
   - **apk**: includes a "new version available" check against our server.
@@ -73,7 +72,7 @@ Most users are inside Iran. Therefore:
 - **Offline first.** The core works with no internet at all: sessions, books, the road, notes, the building, the urge screen and planned breaks. Social features sync when a connection exists, and the app tolerates international links being down.
 - **Our own small server,** reachable from inside Iran (hosting location left to the builder, but it must keep working on the domestic network).
 - **Accounts (decided).** One account syncs the library, sessions and notes between the phone and the Linux app. The app works fully without signing in, and without a connection, then syncs when it can. There's no Google or Apple sign-in. The sign-in method is left to the builder, but it must work inside Iran (for example email or a username with a passkey/password; SMS would need an Iranian provider).
-- **No Firebase/FCM.** Push uses **UnifiedPush with a self-hosted ntfy** server, which is open source and fine for F-Droid. While the app is open, it uses its own live connection. Linux push is deferred.
+- **No Firebase/FCM.** Push uses **UnifiedPush with a self-hosted ntfy** server by default (phase 2 may add a closed Iranian push SDK behind a seam in `bazaar`/`apk` only; see ADR-0004). While the app is open, it uses its own live connection. Linux push is deferred.
 - **All assets bundled:** fonts, illustrations, everything. No Google Fonts and no CDNs at runtime.
 - **The Persian calendar (Solar Hijri) and a Saturday-first week** are the default in the Persian locale.
 
@@ -154,7 +153,7 @@ Bottom navigation: **Tonight, Books, Building, Friends**.
   - On Play this needs the Accessibility declaration in Play Console (including a short video) and an in-app prominent disclosure that requires an affirmative tap. Review risk is moderate.
   - The service must never stop the user from disabling or uninstalling anything.
 - **Fallback: UsageStatsManager** (`PACKAGE_USAGE_STATS`, granted in Settings) polling `ACTIVITY_RESUMED`, plus an overlay window. It's needed because Android 17 Advanced Protection reportedly revokes accessibility access for non-tool apps.
-- **YouTube Shorts** uses the same package as YouTube and can only be told apart by heuristics on the accessibility node tree. These are fragile, so **the detection rules must be data that can be updated without an app release**. The update channel is left to the builder, but it must work for the F-Droid flavour too.
+- **YouTube Shorts** uses the same package as YouTube and can only be told apart by heuristics on the accessibility node tree. These are fragile, so **the detection rules must be data that can be updated without an app release**. The update channel is left to the builder.
 - **Onboarding** explains each permission plainly, in both languages, before asking.
 
 ### 7.2 Android: timer, alarms, notifications
@@ -242,7 +241,7 @@ Bottom navigation: **Tonight, Books, Building, Friends**.
    - content on the phone itself, including Shorts detection;
    - the urge screen on Android, and the browser extension on Linux;
    - break-over notifications, the session live notification, and the home widget;
-   - the build flavours (apk, play, bazaar, fdroid);
+   - the build flavours (apk, play, bazaar);
    - **accounts and a small server for syncing the user's own data between the phone and the laptop**.
 
    The house shows the user's own past evenings only.
@@ -269,4 +268,4 @@ Bottom navigation: **Tonight, Books, Building, Friends**.
 - **Cafe Bazaar's policy** on accessibility services, which must be checked before release.
 
 ## 13. Left to the builder
-Architecture, state management, local database, sync protocol, server stack and hosting, the remotely updatable detection-rule channel, the extension-to-desktop transport, how break points are marked and detected, the light theme, the test strategy, CI and reproducible F-Droid builds.
+Architecture, state management, local database, sync protocol, server stack and hosting, the remotely updatable detection-rule channel, the extension-to-desktop transport, how break points are marked and detected, the light theme, the test strategy and CI.
