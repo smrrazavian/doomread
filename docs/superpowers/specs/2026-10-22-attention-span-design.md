@@ -58,6 +58,7 @@ The design leans on these findings. The builder should keep the copy honest to t
 
 ## 4. Platforms, distribution, licence (decided)
 
+- **Minimum Android version: 10 (API 29)**, decided by the owner. It gives `UsageEvents` `ACTIVITY_RESUMED` for the fallback watcher, and targets the latest stable SDK.
 - **Android and Linux desktop first. iOS later.** iOS is constrained further by Apple sanctions for Iran-based developers and by the Screen Time entitlement process.
 - **Built with Flutter** (the owner's call was delegated; this is my call, see section 11). Native code is used only where Flutter can't reach: widgets, Android app detection, live notifications, and later the iOS Screen Time extensions.
 - **Distribution:** direct APK, Google Play, Cafe Bazaar. F-Droid is deferred (see ADR-0004); the code stays F-Droid-friendly. These are separate build flavours of one codebase:
