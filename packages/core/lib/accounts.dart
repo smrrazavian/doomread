@@ -39,10 +39,10 @@ class Credentials {
 }
 
 /// A signed-in device: the bearer token the server issued, and whose it is.
-class Session {
-  const Session({required this.token, required this.username});
+class SignIn {
+  const SignIn({required this.token, required this.username});
 
-  factory Session.fromJson(Map<String, Object?> json) => Session(
+  factory SignIn.fromJson(Map<String, Object?> json) => SignIn(
     token: json['token']! as String,
     username: json['username']! as String,
   );
@@ -53,5 +53,5 @@ class Session {
   Map<String, Object?> toJson() => {'token': token, 'username': username};
 
   @override
-  String toString() => 'Session($username)';
+  String toString() => 'SignIn($username)';
 }

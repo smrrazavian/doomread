@@ -12,7 +12,8 @@ int? parseNumber(String text) {
     final c = m[0]!.codeUnitAt(0);
     return '${c >= 0x06F0 ? c - 0x06F0 : c - 0x0660}';
   });
-  return int.tryParse(latin);
+  // Digits only: int.tryParse would also take "+5" or "0x1F".
+  return RegExp(r'^\d+$').hasMatch(latin) ? int.parse(latin) : null;
 }
 
 /// A list of numbers separated by Latin or Persian commas (،) or spaces.
@@ -21,3 +22,9 @@ List<int>? parseNumbers(String text) {
   final numbers = parts.map(parseNumber).toList();
   return numbers.contains(null) ? null : numbers.cast<int>();
 }
+
+/// [numbers] in the digits and list separator of [locale], for prefilling a
+/// field the user may edit: "۳۴، ۶۶" in Persian, "34, 66" in English.
+String formatNumbers(List<int> numbers, Locale locale) => numbers
+    .map((n) => formatNumber(n, locale))
+    .join(locale.languageCode == 'fa' ? '، ' : ', ');

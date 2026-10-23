@@ -30,8 +30,8 @@ void accountStoreContract(AccountStore Function() store) {
   test('deletes a session once', () async {
     final name = freshName();
     await store().createAccount(name, 'hash');
-    await store().createSession(name, 'token-of-$name');
-    expect(await store().deleteSession('token-of-$name'), isTrue);
-    expect(await store().deleteSession('token-of-$name'), isFalse);
+    await store().createSignIn(name, 'token-of-$name');
+    expect(await store().deleteSignIn('token-of-$name'), isTrue);
+    expect(await store().deleteSignIn('token-of-$name'), isFalse);
   });
 }

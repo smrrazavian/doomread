@@ -26,6 +26,10 @@ abstract class Command<T> extends ChangeNotifier {
     notifyListeners();
     try {
       _result = await action();
+    } on Exception catch (e) {
+      // A failure the action didn't expect (say, the database) is still shown,
+      // not thrown out of a button handler.
+      _result = Result.error(e);
     } finally {
       _running = false;
       notifyListeners();

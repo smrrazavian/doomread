@@ -50,11 +50,11 @@ void main() {
     expect(await withServer(200).username(), 'sara');
   });
 
-  test('signing in posts to /sessions', () async {
+  test('signing in posts to /sign-ins', () async {
     final result = await withServer(200, session).signIn(sara);
 
     expect((result as Ok<String>).value, 'sara');
-    expect(requests.single.url.path, '/sessions');
+    expect(requests.single.url.path, '/sign-ins');
   });
 
   test('turns server refusals into failures it can explain', () async {
@@ -107,7 +107,7 @@ void main() {
     await withServer(204).signOut();
 
     expect(requests.single.method, 'DELETE');
-    expect(requests.single.url.path, '/sessions/current');
+    expect(requests.single.url.path, '/sign-ins/current');
     expect(requests.single.headers['authorization'], 'Bearer tok-123');
     expect(await withServer(200).username(), isNull);
   });

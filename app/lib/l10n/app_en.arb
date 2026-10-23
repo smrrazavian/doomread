@@ -72,5 +72,6 @@
   "accountErrorTaken": "That username is taken.",
   "accountErrorWrong": "Wrong username or password.",
   "accountErrorRejected": "The server didn't accept that. Try again.",
-  "accountErrorUnreachable": "Can't reach the server. Everything else still works; try again later."
+  "accountErrorUnreachable": "Can't reach the server. Everything else still works; try again later.",
+  "changeBook": "Change book"
 }

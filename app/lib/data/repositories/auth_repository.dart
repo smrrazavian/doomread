@@ -8,6 +8,8 @@ import 'package:http/http.dart' as http;
 /// The sync server. Pick another with
 /// `--dart-define=DOOMREAD_SERVER=http://192.168.1.20:8080`
 /// (a phone can't reach the laptop's localhost).
+// ponytail: release builds have no HTTPS server address yet; set one with
+// --dart-define before shipping (ticket #17).
 final Uri defaultServer = Uri.parse(
   const String.fromEnvironment(
     'DOOMREAD_SERVER',
@@ -51,9 +53,13 @@ class AuthRepository {
 
   final AppDatabase _db;
   final http.Client _client;
+
+  /// Blackholed connections (common during outages in Iran) never error on
+  /// their own, so give up and say "can't reach the server" instead.
+  static const _timeout = Duration(seconds: 12);
   final Uri _server;
 
-  // ponytail: the session token sits in the app's own SQLite file, unencrypted.
+  // ponytail: the sign-in token sits in the app's own SQLite file, unencrypted.
   // Move it to the platform keystore once sync gives it something to protect.
   static const _tokenKey = 'session.token';
   static const _usernameKey = 'session.username';
@@ -63,11 +69,11 @@ class AuthRepository {
 
   /// Creates an account and signs this device in to it. Returns the username.
   Future<Result<String>> signUp(Credentials credentials) =>
-      _startSession('accounts', credentials);
+      _startSignIn('accounts', credentials);
 
   /// Signs this device in to an existing account. Returns the username.
   Future<Result<String>> signIn(Credentials credentials) =>
-      _startSession('sessions', credentials);
+      _startSignIn('sign-ins', credentials);
 
   /// Forgets the session on this device, and on the server when it can be
   /// reached. Always succeeds, even offline.
@@ -78,17 +84,19 @@ class AuthRepository {
     )..where((s) => s.key.isIn([_tokenKey, _usernameKey]))).go();
     if (token == null) return;
     try {
-      await _client.delete(
-        _server.resolve('sessions/current'),
-        headers: {'authorization': 'Bearer $token'},
-      );
+      await _client
+          .delete(
+            _server.resolve('sign-ins/current'),
+            headers: {'authorization': 'Bearer $token'},
+          )
+          .timeout(_timeout);
     } on Exception {
-      // ponytail: an offline sign-out leaves the session alive on the server
-      // until it is cleaned up there; no session expiry yet.
+      // ponytail: an offline sign-out leaves the sign-in alive on the server
+      // until it expires there, and sign-ins don't expire yet.
     }
   }
 
-  Future<Result<String>> _startSession(
+  Future<Result<String>> _startSignIn(
     String path,
     Credentials credentials,
   ) async {
@@ -99,13 +107,15 @@ class AuthRepository {
         return const Result.error(AuthException(AuthFailure.password));
       case null:
     }
-    final Session session;
+    final SignIn session;
     try {
-      final response = await _client.post(
-        _server.resolve(path),
-        headers: {'content-type': 'application/json'},
-        body: jsonEncode(credentials.toJson()),
-      );
+      final response = await _client
+          .post(
+            _server.resolve(path),
+            headers: {'content-type': 'application/json'},
+            body: jsonEncode(credentials.toJson()),
+          )
+          .timeout(_timeout);
       final failure = switch (response.statusCode) {
         200 || 201 => null,
         409 => AuthFailure.usernameTaken,
@@ -114,7 +124,7 @@ class AuthRepository {
         _ => AuthFailure.unreachable,
       };
       if (failure != null) return Result.error(AuthException(failure));
-      session = Session.fromJson(
+      session = SignIn.fromJson(
         jsonDecode(response.body) as Map<String, Object?>,
       );
     } on Exception {

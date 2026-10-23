@@ -110,7 +110,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get accountSignedOutHint =>
-      'با حساب کاربری، کتاب‌خوندنت روی همهٔ دستگاه‌هات باهاته. بدون حساب هم برنامه کامل کار می‌کنه.';
+      'با حساب کاربری، کتاب‌خوندنت روی همه‌ی دستگاه‌هات باهاته. بدون حساب هم برنامه کامل کار می‌کنه.';
 
   @override
   String get accountUsername => 'نام کاربری';
@@ -151,4 +151,7 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get accountErrorUnreachable =>
       'به سرور وصل نمی‌شه. بقیهٔ برنامه کار می‌کنه؛ بعداً دوباره امتحان کن.';
+
+  @override
+  String get changeBook => 'عوض کردن کتاب';
 }

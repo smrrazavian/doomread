@@ -158,4 +158,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get accountErrorUnreachable =>
       'Can\'t reach the server. Everything else still works; try again later.';
+
+  @override
+  String get changeBook => 'Change book';
 }

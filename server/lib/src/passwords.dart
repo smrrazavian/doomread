@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:isolate';
 import 'dart:math';
 
 import 'package:cryptography/cryptography.dart';
@@ -46,15 +47,17 @@ class Passwords {
     List<int> salt,
     int memory,
     int iterations,
-  ) async {
-    final key = await Argon2id(
-      parallelism: 1,
-      memory: memory,
-      iterations: iterations,
-      hashLength: 32,
-    ).deriveKey(secretKey: SecretKey(utf8.encode(password)), nonce: salt);
-    return await key.extractBytes();
-  }
+  ) =>
+      // A worker isolate, so a slow hash doesn't stall every other request.
+      Isolate.run(() async {
+        final key = await Argon2id(
+          parallelism: 1,
+          memory: memory,
+          iterations: iterations,
+          hashLength: 32,
+        ).deriveKey(secretKey: SecretKey(utf8.encode(password)), nonce: salt);
+        return await key.extractBytes();
+      });
 }
 
 final _random = Random.secure();

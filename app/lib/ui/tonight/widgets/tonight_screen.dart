@@ -103,6 +103,13 @@ class _WorkCard extends StatelessWidget {
             ),
             if (next != null)
               Text(l10n.nextCheckpoint(next), style: text.bodySmall),
+            Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: TextButton(
+                onPressed: () => context.go('/books'),
+                child: Text(l10n.changeBook),
+              ),
+            ),
           ],
         ),
       ),

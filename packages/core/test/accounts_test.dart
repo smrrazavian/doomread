@@ -2,13 +2,13 @@ import 'package:doomread_core/accounts.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('credentials and sessions survive a trip through JSON', () {
+  test('credentials and sign-ins survive a trip through JSON', () {
     const credentials = Credentials(username: 'sara', password: 'longenough');
     final back = Credentials.fromJson(credentials.toJson());
     expect((back.username, back.password), ('sara', 'longenough'));
 
-    const session = Session(token: 'abc', username: 'sara');
-    final s = Session.fromJson(session.toJson());
+    const session = SignIn(token: 'abc', username: 'sara');
+    final s = SignIn.fromJson(session.toJson());
     expect((s.token, s.username), ('abc', 'sara'));
   });
 

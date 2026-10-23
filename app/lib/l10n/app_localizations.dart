@@ -325,6 +325,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Can\'t reach the server. Everything else still works; try again later.'**
   String get accountErrorUnreachable;
+
+  /// No description provided for @changeBook.
+  ///
+  /// In en, this message translates to:
+  /// **'Change book'**
+  String get changeBook;
 }
 
 class _AppLocalizationsDelegate

@@ -34,12 +34,21 @@ class _WorkForm extends StatefulWidget {
 class _WorkFormState extends State<_WorkForm> {
   late final _title = TextEditingController(text: widget.editing?.title);
   late final _author = TextEditingController(text: widget.editing?.author);
-  late final _pages = TextEditingController(
-    text: widget.editing?.totalPages.toString(),
-  );
-  late final _checkpoints = TextEditingController(
-    text: widget.editing?.checkpoints.join(', '),
-  );
+  final _pages = TextEditingController();
+  final _checkpoints = TextEditingController();
+  var _prefilled = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Prefill numbers in the user's digits, once the locale is known.
+    final editing = widget.editing;
+    if (_prefilled || editing == null) return;
+    _prefilled = true;
+    final locale = Localizations.localeOf(context);
+    _pages.text = formatNumber(editing.totalPages, locale);
+    _checkpoints.text = formatNumbers(editing.checkpoints, locale);
+  }
 
   @override
   void dispose() {

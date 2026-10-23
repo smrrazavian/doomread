@@ -38,7 +38,7 @@ class PostgresAccountStore implements AccountStore {
         created_at timestamptz not null default now()
       )''');
     await db.execute('''
-      create table if not exists sessions (
+      create table if not exists sign_ins (
         token_hash text primary key,
         account_id bigint not null references accounts on delete cascade,
         created_at timestamptz not null default now()
@@ -70,10 +70,10 @@ class PostgresAccountStore implements AccountStore {
   }
 
   @override
-  Future<void> createSession(String username, String tokenHash) async {
+  Future<void> createSignIn(String username, String tokenHash) async {
     await _db.execute(
       Sql.named(
-        'insert into sessions (token_hash, account_id) '
+        'insert into sign_ins (token_hash, account_id) '
         'select @t, id from accounts where username = @u',
       ),
       parameters: {'t': tokenHash, 'u': username},
@@ -81,9 +81,9 @@ class PostgresAccountStore implements AccountStore {
   }
 
   @override
-  Future<bool> deleteSession(String tokenHash) async {
+  Future<bool> deleteSignIn(String tokenHash) async {
     final result = await _db.execute(
-      Sql.named('delete from sessions where token_hash = @t'),
+      Sql.named('delete from sign_ins where token_hash = @t'),
       parameters: {'t': tokenHash},
     );
     return result.affectedRows == 1;

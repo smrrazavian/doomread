@@ -44,7 +44,7 @@ void main() {
   test('signing up creates the account and signs the device in', () async {
     final r = await send('POST', '/accounts', body: sara);
     expect(r.statusCode, 201);
-    final session = Session.fromJson(await json(r));
+    final session = SignIn.fromJson(await json(r));
     expect(session.username, 'sara');
     expect(session.token, hasLength(greaterThanOrEqualTo(40)));
   });
@@ -71,12 +71,12 @@ void main() {
   });
 
   test('signing in with the right password starts a new session', () async {
-    final first = Session.fromJson(
+    final first = SignIn.fromJson(
       await json(await send('POST', '/accounts', body: sara)),
     );
-    final r = await send('POST', '/sessions', body: sara);
+    final r = await send('POST', '/sign-ins', body: sara);
     expect(r.statusCode, 200);
-    final second = Session.fromJson(await json(r));
+    final second = SignIn.fromJson(await json(r));
     expect(second.username, 'sara');
     expect(second.token, isNot(first.token));
   });
@@ -86,30 +86,34 @@ void main() {
     for (final wrong in [
       const Credentials(username: 'sara', password: 'wrong horse'),
       const Credentials(username: 'nobody', password: 'correct horse'),
-      // Refused before hashing, so a huge password can't tie up the server.
-      Credentials(username: 'sara', password: 'x' * 100000),
     ]) {
-      final r = await send('POST', '/sessions', body: wrong);
+      final r = await send('POST', '/sign-ins', body: wrong);
       expect(r.statusCode, 401, reason: wrong.username);
     }
   });
 
-  test('signing out ends the session', () async {
-    final session = Session.fromJson(
+  test('an oversized body is refused before it is read or hashed', () async {
+    final huge = Credentials(username: 'sara', password: 'x' * 100000);
+    final r = await send('POST', '/sign-ins', body: huge);
+    expect(r.statusCode, 400);
+  });
+
+  test('signing out ends the sign-in', () async {
+    final session = SignIn.fromJson(
       await json(await send('POST', '/accounts', body: sara)),
     );
-    final out = await send('DELETE', '/sessions/current', token: session.token);
+    final out = await send('DELETE', '/sign-ins/current', token: session.token);
     expect(out.statusCode, 204);
     final again = await send(
       'DELETE',
-      '/sessions/current',
+      '/sign-ins/current',
       token: session.token,
     );
     expect(again.statusCode, 401);
   });
 
   test('stores neither the password nor the token in the clear', () async {
-    final session = Session.fromJson(
+    final session = SignIn.fromJson(
       await json(await send('POST', '/accounts', body: sara)),
     );
     final stored = store.toString();
@@ -122,7 +126,7 @@ void main() {
     await runZoned(
       () async {
         await send('POST', '/accounts', body: sara);
-        await send('POST', '/sessions', body: sara);
+        await send('POST', '/sign-ins', body: sara);
       },
       zoneSpecification: ZoneSpecification(
         print: (_, _, _, line) => logged.writeln(line),

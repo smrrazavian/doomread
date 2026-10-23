@@ -8,6 +8,8 @@ abstract final class Palette {
   static const raise = Color(0xFF2A3456);
   static const line = Color(0xFF2E3A5E);
   static const indicator = Color(0xFF3A4469);
+  static const tickPassed = Color(0xFFB48B3C);
+  static const tickAhead = Color(0xFF4A5680);
   static const lamp = Color(0xFFF6C453);
   static const me = Color(0xFFFFE29A);
   static const paper = Color(0xFFEDE6D6);

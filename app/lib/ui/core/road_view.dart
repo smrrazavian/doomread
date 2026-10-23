@@ -1,6 +1,7 @@
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' show NumberFormat;
 
 /// The Road drawn as a track: done part, Checkpoint ticks, "you are here" and
 /// the finish flag. Positions are start-relative, so it mirrors in Persian.
@@ -13,7 +14,10 @@ class RoadView extends StatelessWidget {
   Widget build(BuildContext context) {
     final total = road.work.totalPages;
     return Semantics(
-      label: '${(road.progress * 100).round()}%',
+      // ۵۸٪ in Persian, 58% in English.
+      label: NumberFormat.percentPattern(
+        Localizations.localeOf(context).languageCode,
+      ).format(road.progress),
       child: SizedBox(
         height: 28,
         child: LayoutBuilder(
@@ -32,8 +36,8 @@ class RoadView extends StatelessWidget {
                       width: 2,
                       height: 12,
                       color: c <= road.position
-                          ? const Color(0xFFB48B3C)
-                          : const Color(0xFF4A5680),
+                          ? Palette.tickPassed
+                          : Palette.tickAhead,
                     ),
                   ),
                 PositionedDirectional(
