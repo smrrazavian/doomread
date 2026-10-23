@@ -36,7 +36,11 @@
   "accountErrorPassword": "رمز حداقل ۸ تا کاراکتر باشه.",
   "accountErrorTaken": "این نام کاربری قبلاً گرفته شده.",
   "accountErrorWrong": "نام کاربری یا رمز اشتباهه.",
-  "accountErrorRejected": "سرور قبولش نکرد. دوباره امتحان کن.",
+  "accountErrorTooMany": "زیادی پشت سر هم امتحان کردی. چند دقیقه صبر کن، بعد دوباره امتحان کن.",
+  "@accountErrorTooMany": {
+    "description": "TODO(owner): review this Persian copy."
+  },
+  "accountErrorRejected":"سرور قبولش نکرد. دوباره امتحان کن.",
   "accountErrorUnreachable": "به سرور وصل نمی‌شه. بقیهٔ برنامه کار می‌کنه؛ بعداً دوباره امتحان کن.",
   "changeBook": "عوض کردن کتاب",
   "startReading": "شروع خوندن",

@@ -146,6 +146,10 @@ class AppLocalizationsFa extends AppLocalizations {
   String get accountErrorWrong => 'نام کاربری یا رمز اشتباهه.';
 
   @override
+  String get accountErrorTooMany =>
+      'زیادی پشت سر هم امتحان کردی. چند دقیقه صبر کن، بعد دوباره امتحان کن.';
+
+  @override
   String get accountErrorRejected => 'سرور قبولش نکرد. دوباره امتحان کن.';
 
   @override

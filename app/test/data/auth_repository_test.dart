@@ -6,16 +6,20 @@ import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread/utils/result.dart';
 import 'package:doomread_core/accounts.dart';
 import 'package:drift/native.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
 void main() {
   late AppDatabase db;
+  late Map<String, String> secure;
   final requests = <http.Request>[];
 
   setUp(() {
     db = AppDatabase(NativeDatabase.memory());
+    secure = {};
+    FlutterSecureStorage.setMockInitialValues(secure);
     requests.clear();
   });
   tearDown(() => db.close());
@@ -50,6 +54,42 @@ void main() {
     expect(await withServer(200).username(), 'sara');
   });
 
+  test('keeps the session in secure storage, not in settings', () async {
+    await withServer(201, session).signUp(sara);
+
+    expect(secure, {'session.token': 'tok-123', 'session.username': 'sara'});
+    expect(await db.select(db.settings).get(), isEmpty);
+  });
+
+  test('moves a session from settings on first read', () async {
+    await db.batch(
+      (b) => b.insertAll(db.settings, [
+        SettingsCompanion.insert(key: 'session.token', value: 'old-tok'),
+        SettingsCompanion.insert(key: 'session.username', value: 'sara'),
+      ]),
+    );
+
+    expect(await withServer(200).username(), 'sara');
+    expect(secure, {'session.token': 'old-tok', 'session.username': 'sara'});
+    expect(await db.select(db.settings).get(), isEmpty);
+  });
+
+  test('signs out a session that was still in settings', () async {
+    await db.batch(
+      (b) => b.insertAll(db.settings, [
+        SettingsCompanion.insert(key: 'session.token', value: 'old-tok'),
+        SettingsCompanion.insert(key: 'session.username', value: 'sara'),
+      ]),
+    );
+
+    await withServer(204).signOut();
+
+    expect(requests.single.headers['authorization'], 'Bearer old-tok');
+    expect(await withServer(200).username(), isNull);
+    expect(secure, isEmpty);
+    expect(await db.select(db.settings).get(), isEmpty);
+  });
+
   test('signing in posts to /sign-ins', () async {
     final result = await withServer(200, session).signIn(sara);
 
@@ -61,6 +101,7 @@ void main() {
     final cases = {
       409: AuthFailure.usernameTaken,
       401: AuthFailure.wrongCredentials,
+      429: AuthFailure.tooManyAttempts,
       400: AuthFailure.rejected,
       500: AuthFailure.unreachable,
     };

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:doomread_core/accounts.dart';
 import 'package:doomread_server/server.dart';
@@ -9,11 +10,17 @@ import 'package:test/test.dart';
 void main() {
   late InMemoryAccountStore store;
   late Handler handler;
+  late DateTime now;
 
   setUp(() {
     store = InMemoryAccountStore();
-    // Cheap hashing: the real cost would make every test take seconds.
-    handler = doomreadServer(store, passwords: const Passwords.cheapForTests());
+    now = DateTime.utc(2026, 10, 22, 21);
+    handler = doomreadServer(
+      store,
+      // Cheap hashing: the real cost would make every test take seconds.
+      passwords: const Passwords.cheapForTests(),
+      clock: () => now,
+    );
   });
 
   Future<Response> send(
@@ -21,12 +28,15 @@ void main() {
     String path, {
     Credentials? body,
     String? token,
+    String ip = '10.0.0.1',
   }) async => await handler(
     Request(
       method,
       Uri.parse('http://localhost$path'),
       body: body == null ? null : jsonEncode(body.toJson()),
       headers: {'authorization': ?(token == null ? null : 'Bearer $token')},
+      // What shelf_io puts there for a real connection.
+      context: {'shelf.io.connection_info': _Peer(ip)},
     ),
   );
 
@@ -112,6 +122,15 @@ void main() {
     expect(again.statusCode, 401);
   });
 
+  test('a sign-in left unused for the idle limit has expired', () async {
+    final session = SignIn.fromJson(
+      await json(await send('POST', '/accounts', body: sara)),
+    );
+    now = now.add(signInIdleLimit);
+    final out = await send('DELETE', '/sign-ins/current', token: session.token);
+    expect(out.statusCode, 401);
+  });
+
   test('stores neither the password nor the token in the clear', () async {
     final session = SignIn.fromJson(
       await json(await send('POST', '/accounts', body: sara)),
@@ -135,4 +154,59 @@ void main() {
     expect(logged.toString(), contains('/accounts')); // requests are logged
     expect(logged.toString(), isNot(contains(sara.password)));
   });
+
+  group('too many attempts', () {
+    const wrong = Credentials(username: 'sara', password: 'wrong horse');
+
+    test('on one username get 429, from any address', () async {
+      for (var i = 0; i < attemptsPerUsername; i++) {
+        final r = await send('POST', '/sign-ins', body: wrong, ip: '10.0.0.$i');
+        expect(r.statusCode, 401);
+      }
+      final r = await send('POST', '/sign-ins', body: sara, ip: '10.9.9.9');
+      expect(r.statusCode, 429);
+      expect(r.headers['retry-after'], '${attemptsWindow.inSeconds}');
+      expect(await json(r), {'error': 'too_many_attempts'});
+    });
+
+    test('from one address get 429, whatever the username', () async {
+      for (var i = 0; i < attemptsPerIp; i++) {
+        final r = await send(
+          'POST',
+          '/sign-ins',
+          body: Credentials(username: 'user$i', password: 'wrong horse'),
+        );
+        expect(r.statusCode, 401);
+      }
+      final r = await send('POST', '/accounts', body: sara);
+      expect(r.statusCode, 429);
+      // Another address still gets through.
+      final other = await send('POST', '/accounts', body: sara, ip: '10.1.1.1');
+      expect(other.statusCode, 201);
+    });
+
+    test('are forgiven once the window has passed', () async {
+      for (var i = 0; i < attemptsPerUsername; i++) {
+        await send('POST', '/sign-ins', body: wrong);
+      }
+      now = now.add(attemptsWindow - const Duration(seconds: 90));
+      final early = await send('POST', '/sign-ins', body: wrong);
+      expect(early.headers['retry-after'], '90');
+
+      now = now.add(const Duration(seconds: 90));
+      final r = await send('POST', '/sign-ins', body: wrong);
+      expect(r.statusCode, 401);
+    });
+  });
+}
+
+class _Peer implements HttpConnectionInfo {
+  _Peer(String ip) : remoteAddress = InternetAddress(ip);
+
+  @override
+  final InternetAddress remoteAddress;
+  @override
+  int get remotePort => 40000;
+  @override
+  int get localPort => 8080;
 }

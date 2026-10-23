@@ -6,6 +6,7 @@ import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread_core/accounts.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -13,6 +14,8 @@ import 'package:http/testing.dart';
 import '../../helpers.dart';
 
 void main() {
+  setUp(() => FlutterSecureStorage.setMockInitialValues({}));
+
   Future<void> openAccount(
     WidgetTester tester,
     AppDatabase db,

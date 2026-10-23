@@ -314,6 +314,12 @@ abstract class AppLocalizations {
   /// **'Wrong username or password.'**
   String get accountErrorWrong;
 
+  /// The server answered 429: too many sign-in or sign-up attempts in a short time.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many tries. Wait a few minutes, then try again.'**
+  String get accountErrorTooMany;
+
   /// No description provided for @accountErrorRejected.
   ///
   /// In en, this message translates to:

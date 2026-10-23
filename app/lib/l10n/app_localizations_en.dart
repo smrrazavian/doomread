@@ -152,6 +152,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountErrorWrong => 'Wrong username or password.';
 
   @override
+  String get accountErrorTooMany =>
+      'Too many tries. Wait a few minutes, then try again.';
+
+  @override
   String get accountErrorRejected =>
       'The server didn\'t accept that. Try again.';
 
