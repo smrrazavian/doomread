@@ -1,0 +1,7 @@
+*
+!pubspec.yaml
+!pubspec.lock
+!packages/core/
+!server/
+**/.dart_tool/
+**/build/

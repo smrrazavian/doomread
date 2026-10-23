@@ -46,4 +46,18 @@ Replug the phone, accept "Allow USB debugging", and `tool/dev adb devices` lists
 
 VS Code users can also "Reopen in Container" with `.devcontainer/`.
 
+### The server
+
+The sync and accounts server (`server/`, ADR-0007) runs with Postgres and ntfy under docker compose:
+
+```sh
+docker compose up -d --wait                          # server on :8080, ntfy on :8090
+tool/dev sh -c 'cd server && dart test'              # needs the compose Postgres
+tool/dev sh -c 'cd server && dart test -x postgres'  # without it
+```
+
+Compose can't build on the host network, so if your proxy listens on the host's localhost, build the server image yourself first: `docker build --network host --build-arg HTTPS_PROXY -t doomread-server -f server/Dockerfile .`
+
+The app talks to `http://localhost:8080` by default. A phone can't reach your laptop's localhost, so pass your laptop's address: `flutter run --flavor apk --dart-define=DOOMREAD_SERVER=http://192.168.1.20:8080`. The app works fully without an account.
+
 Golden screenshots are rendered inside the container. To update them, run `tool/dev sh -c 'cd app && flutter test --update-goldens'`.

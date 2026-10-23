@@ -22,12 +22,12 @@ class WorkFormViewModel extends ChangeNotifier {
   Future<Result<String>> _save(WorkDraft draft) async {
     problems = draft.problems;
     notifyListeners();
-    if (problems.isNotEmpty) return Error(InvalidWork(problems));
+    if (problems.isNotEmpty) return Result.error(InvalidWork(problems));
     final title = draft.title.trim();
     final author = draft.author.trim();
     final editing = this.editing;
     if (editing == null) {
-      return Ok(
+      return Result.ok(
         await _works.add(
           title: title,
           author: author,
@@ -43,7 +43,7 @@ class WorkFormViewModel extends ChangeNotifier {
       totalPages: draft.totalPages,
       checkpoints: draft.checkpoints,
     );
-    return Ok(editing.id);
+    return Result.ok(editing.id);
   }
 }
 

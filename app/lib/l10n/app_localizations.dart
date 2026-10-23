@@ -241,6 +241,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save'**
   String get save;
+
+  /// No description provided for @account.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get account;
+
+  /// No description provided for @accountSignedOutHint.
+  ///
+  /// In en, this message translates to:
+  /// **'An account keeps your reading on all your devices. The app works fully without one.'**
+  String get accountSignedOutHint;
+
+  /// No description provided for @accountUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get accountUsername;
+
+  /// No description provided for @accountPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get accountPassword;
+
+  /// No description provided for @accountSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get accountSignIn;
+
+  /// No description provided for @accountSignUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Create account'**
+  String get accountSignUp;
+
+  /// No description provided for @accountSignOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get accountSignOut;
+
+  /// No description provided for @accountSignedInAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in as {username}'**
+  String accountSignedInAs(String username);
+
+  /// No description provided for @accountErrorUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Use 3 to 32 lowercase letters, digits, _ or .'**
+  String get accountErrorUsername;
+
+  /// No description provided for @accountErrorPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Use at least 8 characters.'**
+  String get accountErrorPassword;
+
+  /// No description provided for @accountErrorTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'That username is taken.'**
+  String get accountErrorTaken;
+
+  /// No description provided for @accountErrorWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong username or password.'**
+  String get accountErrorWrong;
+
+  /// No description provided for @accountErrorRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'The server didn\'t accept that. Try again.'**
+  String get accountErrorRejected;
+
+  /// No description provided for @accountErrorUnreachable.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t reach the server. Everything else still works; try again later.'**
+  String get accountErrorUnreachable;
 }
 
 class _AppLocalizationsDelegate

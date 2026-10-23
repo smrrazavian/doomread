@@ -1,3 +1,4 @@
+import 'package:doomread/data/repositories/auth_repository.dart';
 import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/data/services/app_database.dart';
@@ -10,9 +11,13 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class DoomreadApp extends StatefulWidget {
-  const DoomreadApp({required this.db, super.key});
+  const DoomreadApp({required this.db, this.auth, super.key});
 
   final AppDatabase db;
+
+  /// The account on the sync server. Tests that never open the Account
+  /// screen leave it out.
+  final AuthRepository? auth;
 
   @override
   State<DoomreadApp> createState() => _DoomreadAppState();
@@ -37,6 +42,7 @@ class _DoomreadAppState extends State<DoomreadApp> {
     providers: [
       Provider.value(value: _works),
       ChangeNotifierProvider.value(value: _settings),
+      if (widget.auth case final auth?) Provider.value(value: auth),
     ],
     child: ListenableBuilder(
       listenable: _settings,

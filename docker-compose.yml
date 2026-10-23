@@ -1,0 +1,69 @@
+# Doomread's server side (ADR-0007): `docker compose up --wait` starts it all.
+# ponytail: the credentials below are for development; set POSTGRES_PASSWORD
+# (and put the server behind TLS) before hosting it anywhere real.
+name: doomread
+
+services:
+  server:
+    # Built on first `up`. Behind a proxy on the host's localhost, build it
+    # once with `docker build` instead (see the README): compose won't build
+    # on the host network.
+    image: doomread-server
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    environment:
+      PGHOST: postgres
+      PGPASSWORD: ${POSTGRES_PASSWORD:-doomread}
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "/server", "healthcheck"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:18-alpine@sha256:898c60cb390d1085bc97bdd6a1ae968757421df394b071848b52b1c09c89d6a5
+    environment:
+      POSTGRES_USER: doomread
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-doomread}
+      POSTGRES_DB: doomread
+    ports:
+      # Loopback only: tests and tool/dev reach it on localhost, nobody else.
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "doomread", "-d", "doomread"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  # Push for the app goes through UnifiedPush to this ntfy (ADR-0002).
+  ntfy:
+    image: binwiederhier/ntfy:v2.33.1@sha256:29bc952294d58957f6ca6638eca9a653a33555989224edbdf4bb9433ee606497
+    command: serve
+    environment:
+      NTFY_BASE_URL: http://localhost:8090
+      NTFY_CACHE_FILE: /var/cache/ntfy/cache.db
+    ports:
+      - "8090:80"
+    volumes:
+      - ntfy:/var/cache/ntfy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --tries=1 http://localhost:80/v1/health -O - | grep -Eo '\"healthy\"\\s*:\\s*true' || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    restart: unless-stopped
+
+volumes:
+  postgres:
+  ntfy:
