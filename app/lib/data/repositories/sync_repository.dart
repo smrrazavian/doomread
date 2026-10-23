@@ -2,8 +2,6 @@ import 'dart:convert';
 
 import 'package:doomread/data/repositories/auth_repository.dart'
     show defaultServer, sendsSecurely;
-import 'package:doomread/data/repositories/work_repository.dart'
-    show WorkRepository;
 import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread/utils/result.dart';
 import 'package:doomread_core/doomread_core.dart';
@@ -317,7 +315,10 @@ class SyncRepository {
       'author': w.author,
       'kind': w.kind.name,
       'totalPages': w.totalPages,
-      'checkpoints': WorkRepository.toWork(w).checkpoints,
+      'checkpoints': [
+        for (final c in w.checkpoints.split(','))
+          if (c.isNotEmpty) int.parse(c),
+      ],
       'position': w.position,
       'positionAt': (w.positionAt ?? w.updatedAt).microsecondsSinceEpoch,
     },
