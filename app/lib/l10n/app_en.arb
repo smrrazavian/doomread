@@ -763,5 +763,97 @@
       }
     }
   },
-  "keepGoing": "Keep going instead"
+  "keepGoing": "Keep going instead",
+  "urgeTitle": "Not yet. {app} waits for your break.",
+  "@urgeTitle": {
+    "description": "The Urge screen's headline, when a Watched app opens mid-Session. Says \"not yet\", never \"don't\". {app} is the app's name.",
+    "placeholders": {
+      "app": {
+        "type": "String"
+      }
+    }
+  },
+  "urgeBody": "You planned that break yourself, remember?",
+  "@urgeBody": {
+    "description": "Under the Urge headline and the distance to the next Planned break."
+  },
+  "backToBook": "Back to the book",
+  "@backToBook": {
+    "description": "The big button on the Urge screen for a book: going back is Let pass."
+  },
+  "openAnyway": "Open {app} anyway",
+  "@openAnyway": {
+    "description": "The full-size, always-allowed button on the Urge screen; it records a Slip and opens the app.",
+    "placeholders": {
+      "app": {
+        "type": "String"
+      }
+    }
+  },
+  "openItAnyway": "Open it anyway",
+  "@openItAnyway": {
+    "description": "The same as openAnyway when the app's name isn't known, say after a restart."
+  },
+  "slipTitle": "Fumbled. It happens.",
+  "@slipTitle": {
+    "description": "After a slip: always kind, whatever the Tone. Never roast here."
+  },
+  "slipBody": "You were {minutes} min in. Pick it back up?",
+  "@slipBody": {
+    "description": "After a slip: how long the Stretch the Slip ended was.",
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "backIn": "Back in",
+  "@backIn": {
+    "description": "After a slip: resumes the Session."
+  },
+  "doneForTonight": "Done for tonight",
+  "@doneForTonight": {
+    "description": "After a slip: stops the Session and goes to End of the evening."
+  },
+  "watchedApps": "Watched apps",
+  "@watchedApps": {
+    "description": "Settings entry and screen title: the apps that bring up the \"not yet\" screen during a Session."
+  },
+  "watchedAppsHint": "Open one of these mid-Session and the \"not yet\" screen comes up. Outside a Session, and on your Planned break, nothing happens.",
+  "@watchedAppsHint": {
+    "description": "At the top of the Watched apps screen."
+  },
+  "watchOff": "The \"not yet\" screen is off.",
+  "@watchOff": {
+    "description": "On the Watched apps screen while the accessibility service is not turned on."
+  },
+  "watchTurnOn": "Turn it on",
+  "@watchTurnOn": {
+    "description": "Opens the prominent disclosure, then Android's Accessibility settings."
+  },
+  "watchAskTitle": "Doomread uses Accessibility",
+  "@watchAskTitle": {
+    "description": "Prominent disclosure title (Google Play policy), shown before the Accessibility settings."
+  },
+  "watchAskBody": "To bring up the \"not yet\" screen, Doomread uses Android's Accessibility service to see which app you open during a Session. It only notices which app is in front. It never reads what's on your screen or what you type. Nothing it sees leaves your phone or is shared with anyone.\n\nYou can turn it off any time in Settings. Doomread never stops you turning it off or uninstalling anything.",
+  "@watchAskBody": {
+    "description": "Prominent disclosure body (Google Play policy): what is accessed, how it's used, that it isn't collected or shared, and how to turn it off."
+  },
+  "watchAskAgree": "Agree and turn on",
+  "@watchAskAgree": {
+    "description": "The affirmative tap on the disclosure; opens Android's Accessibility settings."
+  },
+  "watchAskNotNow": "Not now",
+  "@watchAskNotNow": {
+    "description": "Declines the disclosure; nothing is turned on."
+  },
+  "urgeTitleAnyApp": "Not yet. It can wait for your break.",
+  "@urgeTitleAnyApp": {
+    "description": "The Urge headline when the app's name isn't known, say after a restart."
+  },
+  "watchRestricted": "If Android says it's a restricted setting: open Doomread's App info, tap the three-dot menu, then Allow restricted settings, and try again.",
+  "@watchRestricted": {
+    "description": "Under watchOff. Android 13+ restricts Accessibility for apps installed outside an app store (the apk flavour, and Cafe Bazaar)."
+  }
 }

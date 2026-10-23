@@ -3,7 +3,8 @@ import 'package:doomread_core/src/calendar.dart';
 /// What the user did during a Session, as stored in the journal.
 ///
 /// A Planned break starts with [breakStart] and ends with [breakEnd] (or a
-/// Resume, or Stop). A [nudge] moves the offered Planned break later.
+/// Resume, or Stop). A [nudge] moves the offered Planned break later. An
+/// [urge] is the "not yet" screen coming up; it ends as [letPass] or [slip].
 enum SessionEventKind {
   start,
   pause,
@@ -12,6 +13,9 @@ enum SessionEventKind {
   breakStart,
   breakEnd,
   nudge,
+  urge,
+  letPass,
+  slip,
 }
 
 /// One timestamped entry in a Session's journal. Entries are only ever
@@ -24,8 +28,7 @@ class SessionEvent {
 }
 
 /// What ended a Stretch.
-// ponytail: Slips also end a Stretch; they arrive with Urges (#6).
-enum StretchEnd { pause, stop, plannedBreak }
+enum StretchEnd { pause, stop, plannedBreak, slip }
 
 /// A Planned break the user took: when it started and, once they're back,
 /// when it ended.
@@ -73,6 +76,8 @@ class Session {
     DateTime? startedAt;
     DateTime? runningSince;
     var stopped = false;
+    var urgeOpen = false;
+    var slipped = false;
     final stretches = <Stretch>[];
     final breaks = <BreakTaken>[];
     final nudges = <DateTime>[];
@@ -105,21 +110,47 @@ class Session {
           endBreak(e.at);
         case SessionEventKind.resume:
           runningSince ??= e.at;
+          slipped = false;
         case SessionEventKind.breakStart:
           if (onBreak()) continue;
           close(e.at, StretchEnd.plannedBreak);
           breaks.add((start: e.at, end: null));
+          urgeOpen = false;
+          slipped = false;
+        // Only while a Stretch runs: a Pause is never a failure, so it has
+        // nothing for a Slip to end.
+        case SessionEventKind.urge:
+          if (runningSince != null) urgeOpen = true;
+        // Letting it pass leaves the Stretch running: riding out the Urge is
+        // the point.
+        case SessionEventKind.letPass:
+          urgeOpen = false;
+        case SessionEventKind.slip:
+          if (!urgeOpen) continue;
+          urgeOpen = false;
+          close(e.at, StretchEnd.slip);
+          slipped = true;
         case SessionEventKind.nudge:
           if (!onBreak()) nudges.add(e.at);
         case SessionEventKind.stop:
           close(e.at, StretchEnd.stop);
           endBreak(e.at);
           runningSince = null;
+          urgeOpen = false;
+          slipped = false;
           stopped = true;
       }
     }
     if (runningSince != null) stretches.add(Stretch(runningSince!, now, null));
-    return Session._(startedAt, stretches, breaks, nudges, stopped: stopped);
+    return Session._(
+      startedAt,
+      stretches,
+      breaks,
+      nudges,
+      stopped: stopped,
+      urgeOpen: urgeOpen,
+      slipped: slipped,
+    );
   }
 
   Session._(
@@ -128,6 +159,8 @@ class Session {
     List<BreakTaken> breaks,
     List<DateTime> nudges, {
     required this.stopped,
+    required this.urgeOpen,
+    required this.slipped,
   }) : stretches = List.unmodifiable(stretches),
        breaks = List.unmodifiable(breaks),
        nudges = List.unmodifiable(nudges);
@@ -146,6 +179,13 @@ class Session {
   final List<DateTime> nudges;
 
   final bool stopped;
+
+  /// The "not yet" screen is up: an Urge neither let pass nor slipped yet.
+  final bool urgeOpen;
+
+  /// The user went on into a Watched app and hasn't resumed since. Coming
+  /// back, they see the kind After-a-slip screen.
+  final bool slipped;
 
   /// Started, not stopped, no Stretch running, and not on a Planned break.
   bool get paused =>

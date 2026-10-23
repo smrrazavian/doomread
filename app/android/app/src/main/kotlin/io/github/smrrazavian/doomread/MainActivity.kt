@@ -1,6 +1,7 @@
 package io.github.smrrazavian.doomread
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -13,9 +14,17 @@ class MainActivity : FlutterActivity() {
     private var widget: MethodChannel? = null
     private var asking: MethodChannel.Result? = null
 
+    /** Whether Dart was already running, say for WatchService, before this Activity. */
+    private var warm = false
+
+    // The cached engine (ADR 0014), never destroyed with this Activity.
+    override fun provideFlutterEngine(context: Context): FlutterEngine {
+        warm = Engine.running() != null
+        return Engine.get(context)
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        BreakAlarm.listen(applicationContext, flutterEngine.dartExecutor.binaryMessenger)
         val channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "doomread/session_notification")
         this.channel = channel
         widget = HomeWidget.register(this, flutterEngine.dartExecutor.binaryMessenger)
@@ -53,11 +62,21 @@ class MainActivity : FlutterActivity() {
                 else -> result.notImplemented()
             }
         }
+        // Dart asked for the starting tap long ago, so hand it over as a new one.
+        if (warm) {
+            delivered(intent)
+            intent.removeExtra(SessionNotification.EXTRA_SESSION)
+            intent.removeExtra(HomeWidget.EXTRA_START)
+        }
     }
 
     // A tap on the notification or the widget while the app is alive (singleTop).
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        delivered(intent)
+    }
+
+    private fun delivered(intent: Intent) {
         intent.getStringExtra(SessionNotification.EXTRA_SESSION)?.let {
             channel?.invokeMethod("tapped", it)
         }

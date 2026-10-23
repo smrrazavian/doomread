@@ -915,4 +915,74 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get keepGoing => 'نه، ادامه می‌دم';
+
+  @override
+  String urgeTitle(String app) {
+    return 'هنوز نه! $app تا استراحتت صبر می‌کنه.';
+  }
+
+  @override
+  String get urgeBody => 'خودت قرار این استراحت رو گذاشتی، یادته؟';
+
+  @override
+  String get backToBook => 'باشه، برمی‌گردم سر کتاب';
+
+  @override
+  String openAnyway(String app) {
+    return 'نه، $app رو باز کن';
+  }
+
+  @override
+  String get openItAnyway => 'نه، بازش کن';
+
+  @override
+  String get slipTitle => 'اشکال نداره، برگرد.';
+
+  @override
+  String slipBody(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '$minutesString دقیقه پشت هم جلو رفته بودی. ادامه بدیم؟';
+  }
+
+  @override
+  String get backIn => 'برمی‌گردم';
+
+  @override
+  String get doneForTonight => 'بسه برای امشب';
+
+  @override
+  String get watchedApps => 'اپ‌های زیر نظر';
+
+  @override
+  String get watchedAppsHint =>
+      'اگه وسط خوندن یکی از اینا رو باز کنی، صفحه‌ی «هنوز نه» میاد. بیرون از خوندن، و وسط استراحتت، هیچ اتفاقی نمی‌افته.';
+
+  @override
+  String get watchOff => 'صفحه‌ی «هنوز نه» خاموشه.';
+
+  @override
+  String get watchTurnOn => 'روشنش کن';
+
+  @override
+  String get watchAskTitle => 'باز گوشی؟! از دسترس‌پذیری استفاده می‌کنه';
+
+  @override
+  String get watchAskBody =>
+      'برای این‌که صفحه‌ی «هنوز نه» بیاد، باز گوشی؟! از سرویس دسترس‌پذیری (Accessibility) اندروید استفاده می‌کنه تا بفهمه وسط خوندن کدوم اپ رو باز کردی. فقط می‌بینه کدوم اپ جلوئه. هیچ‌وقت چیزی که رو صفحه‌ست یا چیزی که تایپ می‌کنی رو نمی‌خونه. هیچ‌کدوم از اینا از گوشیت بیرون نمی‌ره و با هیچ‌کس هم به اشتراک گذاشته نمی‌شه.\n\nهر وقت بخوای می‌تونی از تنظیمات خاموشش کنی. باز گوشی؟! هیچ‌وقت جلوی خاموش کردنش یا پاک کردن هیچ اپی رو نمی‌گیره.';
+
+  @override
+  String get watchAskAgree => 'قبوله، روشنش کن';
+
+  @override
+  String get watchAskNotNow => 'الان نه';
+
+  @override
+  String get urgeTitleAnyApp => 'هنوز نه! بذارش برای استراحتت.';
+
+  @override
+  String get watchRestricted =>
+      'اگه اندروید گفت تنظیمات محدودشده‌ست: «اطلاعات برنامه»ی باز گوشی؟! رو باز کن، منوی سه‌نقطه رو بزن، بعد «اجازه دادن به تنظیمات محدودشده»، و دوباره امتحان کن.';
 }

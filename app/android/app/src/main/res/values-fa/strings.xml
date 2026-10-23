@@ -7,4 +7,7 @@
     <string name="break_channel">تموم شدن استراحت</string>
     <!-- The home screen widget's description in the widget picker. -->
     <string name="widget_description">چیزی که دستته، پنجره‌ی امشب و دکمه‌ی شروع</string>
+    <!-- WatchService in the system's Accessibility settings (ADR 0014). -->
+    <string name="watch_label">باز گوشی؟!: صفحه‌ی «هنوز نه»</string>
+    <string name="watch_description">وسط خوندن، باز گوشی؟! فقط می‌بینه کدوم اپ رو باز می‌کنی. اگه یکی از اپ‌های زیر نظرت باشه، صفحه‌ی «هنوز نه» رو نشون می‌ده، با یه راه برگشت سر کتاب و یه راه برای رفتن سراغ اون اپ. هیچ‌وقت چیزی که رو صفحه‌ست یا چیزی که تایپ می‌کنی رو نمی‌خونه، و هیچی از گوشیت بیرون نمی‌ره.</string>
 </resources>

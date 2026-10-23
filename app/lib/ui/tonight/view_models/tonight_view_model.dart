@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
+import 'package:doomread/data/services/app_watch.dart';
 import 'package:doomread/data/services/session_notification.dart';
 import 'package:doomread/utils/command.dart';
 import 'package:doomread/utils/result.dart';
@@ -15,6 +16,7 @@ class TonightViewModel extends ChangeNotifier {
     this._sessions,
     this._settings,
     this._notification,
+    this._watch,
   ) {
     start = Command0(_start);
     _subs = [
@@ -33,6 +35,7 @@ class TonightViewModel extends ChangeNotifier {
   final SessionRepository _sessions;
   final SettingsRepository _settings;
   final SessionNotification _notification;
+  final AppWatch _watch;
   late final List<StreamSubscription<Object?>> _subs;
   List<SessionRecord> _history = const [];
 
@@ -92,6 +95,20 @@ class TonightViewModel extends ChangeNotifier {
   Future<void> answerNotification({required bool allow}) async {
     await _settings.setNotificationsAsked();
     if (allow) await _notification.ask();
+  }
+
+  /// Whether to offer the "not yet" screen before this Start: once, and
+  /// only where it can be turned on and isn't yet.
+  Future<bool> shouldOfferWatch() async =>
+      _watch.available &&
+      !await _settings.watchAsked() &&
+      !await _watch.enabled();
+
+  /// Remembers the offer was answered, and on yes opens the system's
+  /// Accessibility settings. Either way the Session starts.
+  Future<void> answerWatch({required bool agree}) async {
+    await _settings.setWatchAsked();
+    if (agree) await _watch.openSettings();
   }
 
   Future<Result<String>> _start() async =>

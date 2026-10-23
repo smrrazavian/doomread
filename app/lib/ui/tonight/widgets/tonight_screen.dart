@@ -1,12 +1,14 @@
 import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
+import 'package:doomread/data/services/app_watch.dart';
 import 'package:doomread/data/services/session_notification.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/road_view.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/work_text.dart';
 import 'package:doomread/ui/tonight/view_models/tonight_view_model.dart';
+import 'package:doomread/ui/watch/widgets/watch_disclosure.dart';
 import 'package:doomread/utils/result.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +25,7 @@ class TonightScreen extends StatelessWidget {
       c.read<SessionRepository>(),
       c.read<SettingsRepository>(),
       c.read<SessionNotification>(),
+      c.read<AppWatch>(),
     ),
     child: const _Tonight(),
   );
@@ -115,6 +118,11 @@ Future<void> _start(BuildContext context, TonightViewModel vm) async {
       builder: (_) => const _NotificationExplainer(),
     );
     await vm.answerNotification(allow: allow ?? false);
+    if (!context.mounted) return;
+  }
+  if (await vm.shouldOfferWatch()) {
+    if (!context.mounted) return;
+    await vm.answerWatch(agree: await askToWatch(context));
     if (!context.mounted) return;
   }
   await vm.start.execute();

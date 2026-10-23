@@ -5,11 +5,15 @@ import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/planned_break/widgets/next_break_card.dart';
 import 'package:doomread/ui/reading/view_models/reading_view_model.dart';
 import 'package:doomread/ui/reading/widgets/house_view.dart';
+import 'package:doomread/ui/urge/urge_watch.dart';
+import 'package:doomread/ui/urge/widgets/urge_view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 /// The Reading screen: a quiet timer, the Aim, the House, Pause and Stop.
+/// While an Urge is open it's the "not yet" screen, and after a Slip the
+/// kind After-a-slip one, both straight from the journal.
 class ReadingScreen extends StatelessWidget {
   const ReadingScreen({required this.sessionId, super.key});
 
@@ -41,6 +45,27 @@ class _Reading extends StatelessWidget {
     final record = vm.record;
     final session = vm.session;
     if (record == null || session == null) return const Scaffold();
+    if (session.urgeOpen) {
+      final urges = context.read<UrgeWatch>();
+      return UrgeView(
+        record: record,
+        house: vm.house,
+        app: urges.app?.label,
+        onBack: vm.letPass.execute,
+        onOpen: () async {
+          await vm.slip.execute();
+          await urges.openApp();
+        },
+      );
+    }
+    if (session.slipped) {
+      return AfterSlipView(
+        session: session,
+        house: vm.house,
+        onBackIn: vm.resume.execute,
+        onDone: () => _stop(context, vm),
+      );
+    }
 
     final current = session.current;
     final aim = vm.aim;

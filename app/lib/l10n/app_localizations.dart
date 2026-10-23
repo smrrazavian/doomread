@@ -1075,6 +1075,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Keep going instead'**
   String get keepGoing;
+
+  /// The Urge screen's headline, when a Watched app opens mid-Session. Says "not yet", never "don't". {app} is the app's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Not yet. {app} waits for your break.'**
+  String urgeTitle(String app);
+
+  /// Under the Urge headline and the distance to the next Planned break.
+  ///
+  /// In en, this message translates to:
+  /// **'You planned that break yourself, remember?'**
+  String get urgeBody;
+
+  /// The big button on the Urge screen for a book: going back is Let pass.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to the book'**
+  String get backToBook;
+
+  /// The full-size, always-allowed button on the Urge screen; it records a Slip and opens the app.
+  ///
+  /// In en, this message translates to:
+  /// **'Open {app} anyway'**
+  String openAnyway(String app);
+
+  /// The same as openAnyway when the app's name isn't known, say after a restart.
+  ///
+  /// In en, this message translates to:
+  /// **'Open it anyway'**
+  String get openItAnyway;
+
+  /// After a slip: always kind, whatever the Tone. Never roast here.
+  ///
+  /// In en, this message translates to:
+  /// **'Fumbled. It happens.'**
+  String get slipTitle;
+
+  /// After a slip: how long the Stretch the Slip ended was.
+  ///
+  /// In en, this message translates to:
+  /// **'You were {minutes} min in. Pick it back up?'**
+  String slipBody(int minutes);
+
+  /// After a slip: resumes the Session.
+  ///
+  /// In en, this message translates to:
+  /// **'Back in'**
+  String get backIn;
+
+  /// After a slip: stops the Session and goes to End of the evening.
+  ///
+  /// In en, this message translates to:
+  /// **'Done for tonight'**
+  String get doneForTonight;
+
+  /// Settings entry and screen title: the apps that bring up the "not yet" screen during a Session.
+  ///
+  /// In en, this message translates to:
+  /// **'Watched apps'**
+  String get watchedApps;
+
+  /// At the top of the Watched apps screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open one of these mid-Session and the \"not yet\" screen comes up. Outside a Session, and on your Planned break, nothing happens.'**
+  String get watchedAppsHint;
+
+  /// On the Watched apps screen while the accessibility service is not turned on.
+  ///
+  /// In en, this message translates to:
+  /// **'The \"not yet\" screen is off.'**
+  String get watchOff;
+
+  /// Opens the prominent disclosure, then Android's Accessibility settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn it on'**
+  String get watchTurnOn;
+
+  /// Prominent disclosure title (Google Play policy), shown before the Accessibility settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Doomread uses Accessibility'**
+  String get watchAskTitle;
+
+  /// Prominent disclosure body (Google Play policy): what is accessed, how it's used, that it isn't collected or shared, and how to turn it off.
+  ///
+  /// In en, this message translates to:
+  /// **'To bring up the \"not yet\" screen, Doomread uses Android\'s Accessibility service to see which app you open during a Session. It only notices which app is in front. It never reads what\'s on your screen or what you type. Nothing it sees leaves your phone or is shared with anyone.\n\nYou can turn it off any time in Settings. Doomread never stops you turning it off or uninstalling anything.'**
+  String get watchAskBody;
+
+  /// The affirmative tap on the disclosure; opens Android's Accessibility settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Agree and turn on'**
+  String get watchAskAgree;
+
+  /// Declines the disclosure; nothing is turned on.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get watchAskNotNow;
+
+  /// The Urge headline when the app's name isn't known, say after a restart.
+  ///
+  /// In en, this message translates to:
+  /// **'Not yet. It can wait for your break.'**
+  String get urgeTitleAnyApp;
+
+  /// Under watchOff. Android 13+ restricts Accessibility for apps installed outside an app store (the apk flavour, and Cafe Bazaar).
+  ///
+  /// In en, this message translates to:
+  /// **'If Android says it\'s a restricted setting: open Doomread\'s App info, tap the three-dot menu, then Allow restricted settings, and try again.'**
+  String get watchRestricted;
 }
 
 class _AppLocalizationsDelegate

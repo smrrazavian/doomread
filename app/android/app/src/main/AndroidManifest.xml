@@ -51,6 +51,20 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/home_widget"/>
         </receiver>
+        <!-- Reports which app comes to the front, for the "not yet" screen
+             (ADR 0014). Only the system can bind it. -->
+        <service
+            android:name=".WatchService"
+            android:exported="true"
+            android:label="@string/watch_label"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/watch_service"/>
+        </service>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
@@ -63,6 +77,12 @@
 
          In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
     <queries>
+        <!-- The launchable apps, to pick Watched apps from and to open one
+             after a Slip; not QUERY_ALL_PACKAGES. -->
+        <intent>
+            <action android:name="android.intent.action.MAIN"/>
+            <category android:name="android.intent.category.LAUNCHER"/>
+        </intent>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>

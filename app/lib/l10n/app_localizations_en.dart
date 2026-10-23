@@ -1035,4 +1035,74 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get keepGoing => 'Keep going instead';
+
+  @override
+  String urgeTitle(String app) {
+    return 'Not yet. $app waits for your break.';
+  }
+
+  @override
+  String get urgeBody => 'You planned that break yourself, remember?';
+
+  @override
+  String get backToBook => 'Back to the book';
+
+  @override
+  String openAnyway(String app) {
+    return 'Open $app anyway';
+  }
+
+  @override
+  String get openItAnyway => 'Open it anyway';
+
+  @override
+  String get slipTitle => 'Fumbled. It happens.';
+
+  @override
+  String slipBody(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'You were $minutesString min in. Pick it back up?';
+  }
+
+  @override
+  String get backIn => 'Back in';
+
+  @override
+  String get doneForTonight => 'Done for tonight';
+
+  @override
+  String get watchedApps => 'Watched apps';
+
+  @override
+  String get watchedAppsHint =>
+      'Open one of these mid-Session and the \"not yet\" screen comes up. Outside a Session, and on your Planned break, nothing happens.';
+
+  @override
+  String get watchOff => 'The \"not yet\" screen is off.';
+
+  @override
+  String get watchTurnOn => 'Turn it on';
+
+  @override
+  String get watchAskTitle => 'Doomread uses Accessibility';
+
+  @override
+  String get watchAskBody =>
+      'To bring up the \"not yet\" screen, Doomread uses Android\'s Accessibility service to see which app you open during a Session. It only notices which app is in front. It never reads what\'s on your screen or what you type. Nothing it sees leaves your phone or is shared with anyone.\n\nYou can turn it off any time in Settings. Doomread never stops you turning it off or uninstalling anything.';
+
+  @override
+  String get watchAskAgree => 'Agree and turn on';
+
+  @override
+  String get watchAskNotNow => 'Not now';
+
+  @override
+  String get urgeTitleAnyApp => 'Not yet. It can wait for your break.';
+
+  @override
+  String get watchRestricted =>
+      'If Android says it\'s a restricted setting: open Doomread\'s App info, tap the three-dot menu, then Allow restricted settings, and try again.';
 }

@@ -1,5 +1,6 @@
 import 'package:doomread/app.dart';
 import 'package:doomread/data/services/app_database.dart';
+import 'package:doomread/data/services/app_watch.dart';
 import 'package:doomread/data/services/break_over_notification.dart';
 import 'package:doomread/data/services/home_widget.dart';
 import 'package:doomread/data/services/session_notification.dart';
@@ -39,6 +40,7 @@ Future<void> pumpApp(
   bool reduceMotion = true,
   BreakOverNotification? breakOver,
   HomeWidget? homeWidget,
+  AppWatch? watch,
 }) async {
   if (reduceMotion) {
     tester.platformDispatcher.accessibilityFeaturesTestValue =
@@ -52,6 +54,7 @@ Future<void> pumpApp(
       notification: notification,
       breakOver: breakOver,
       homeWidget: homeWidget,
+      watch: watch ?? FakeAppWatch(),
     ),
   );
   await tester.pumpAndSettle();
@@ -152,4 +155,50 @@ class FakeHomeWidget implements HomeWidget {
     opened = null;
     return id;
   }
+}
+
+/// Stands in for the Android app watcher and records what the app did.
+class FakeAppWatch implements AppWatch {
+  FakeAppWatch({this.isEnabled = true, this.installed = const []});
+
+  /// Whether the user has turned the service on.
+  bool isEnabled;
+
+  final List<LaunchableApp> installed;
+
+  /// What the app last said about watching.
+  bool watching = false;
+
+  /// How many times the app came to the front for an Urge.
+  int fronts = 0;
+
+  /// The app launched last, after a Slip.
+  String? opened;
+
+  /// How many times the system settings were opened.
+  int settingsOpened = 0;
+
+  @override
+  bool get available => true;
+
+  @override
+  void Function(String package, String label)? onForeground;
+
+  @override
+  Future<bool> enabled() async => isEnabled;
+
+  @override
+  Future<void> openSettings() async => settingsOpened++;
+
+  @override
+  Future<List<LaunchableApp>> apps() async => installed;
+
+  @override
+  Future<void> setWatching({required bool on}) async => watching = on;
+
+  @override
+  Future<void> bringToFront() async => fronts++;
+
+  @override
+  Future<void> open(String package) async => opened = package;
 }

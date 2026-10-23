@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/data/services/app_database.dart';
+import 'package:doomread_core/doomread_core.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -34,4 +35,18 @@ void main() {
     expect(row.read<String>('v'), '3.54.1');
     await db.close();
   });
+
+  test(
+    'Watches Instagram and TikTok until the user picks, even none',
+    () async {
+      final db = AppDatabase(NativeDatabase.memory());
+      addTearDown(db.close);
+      final settings = SettingsRepository(db);
+      expect(await settings.watchedApps(), defaultWatched);
+      await settings.setWatchedApps({'org.example.feed'});
+      expect(await settings.watchedApps(), {'org.example.feed'});
+      await settings.setWatchedApps({});
+      expect(await settings.watchedApps(), isEmpty);
+    },
+  );
 }

@@ -1,0 +1,102 @@
+import 'dart:async';
+
+import 'package:doomread/data/repositories/session_repository.dart';
+import 'package:doomread/data/services/app_watch.dart';
+import 'package:doomread/ui/settings/view_models/settings_view_model.dart';
+import 'package:doomread_core/doomread_core.dart';
+
+/// Hears which app comes to the front during a Session and raises the Urge
+/// when core says it's a Watched app. The Urge itself is a journal event,
+/// and Reading shows it from the journal, so after a restart an Urge left
+/// open is still there.
+class UrgeWatch {
+  UrgeWatch(this._sessions, this._watch, this._settings) {
+    _sub = _sessions.watchAll().listen((all) {
+      _all = all;
+      _sync();
+    });
+    _settings.addListener(_sync);
+    _watch.onForeground = _foreground;
+  }
+
+  final SessionRepository _sessions;
+  final AppWatch _watch;
+  final SettingsViewModel _settings;
+  late final StreamSubscription<List<SessionRecord>> _sub;
+  List<SessionRecord>? _all;
+
+  /// Called with the Session to show when an Urge comes up.
+  void Function(String sessionId)? onUrge;
+
+  /// The app that raised the Urge showing now, for "Open it anyway"; null
+  /// when the app was restarted since.
+  LaunchableApp? get app => _app;
+  LaunchableApp? _app;
+
+  /// An app reported before the journal loaded, say when the service
+  /// started Doomread to hear it.
+  LaunchableApp? _pending;
+
+  /// What was last told to the service.
+  bool? _watching;
+
+  /// The most recent open Session, whatever its Work.
+  SessionRecord? _open(List<SessionRecord> all, DateTime now) => all.reversed
+      .where((r) => r.at(now).startedAt != null && !r.at(now).stopped)
+      .firstOrNull;
+
+  void _sync() {
+    final all = _all;
+    if (all == null) return;
+    final watching = _open(all, _sessions.now()) != null;
+    if (watching != _watching) {
+      _watching = watching;
+      unawaited(_watch.setWatching(on: watching));
+    }
+    if (_pending case final p?) {
+      _pending = null;
+      _foreground(p.package, p.label);
+    }
+  }
+
+  void _foreground(String package, String label) {
+    final all = _all;
+    // Not before the user's own Watched apps have loaded, either.
+    if (all == null || !_settings.loaded) {
+      _pending = (package: package, label: label);
+      return;
+    }
+    unawaited(_raise(all, package, label));
+  }
+
+  Future<void> _raise(
+    List<SessionRecord> all,
+    String package,
+    String label,
+  ) async {
+    final now = _sessions.now();
+    final open = _open(all, now);
+    if (open == null) return;
+    final session = open.at(now);
+    final rules = _settings.watchRules;
+    if (raisesUrge(session, package, rules)) {
+      await _sessions.add(open, SessionEventKind.urge);
+    } else if (!bringsUrgeBack(session, package, rules)) {
+      return;
+    }
+    _app = (package: package, label: label);
+    onUrge?.call(open.id);
+    await _watch.bringToFront();
+  }
+
+  /// After a Slip, opens the app that raised the Urge, if it's known.
+  Future<void> openApp() async {
+    if (_app case final a?) await _watch.open(a.package);
+  }
+
+  void dispose() {
+    _watch.onForeground = null;
+    _settings.removeListener(_sync);
+    unawaited(_sub.cancel());
+  }
+}

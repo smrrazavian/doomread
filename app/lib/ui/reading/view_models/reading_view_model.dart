@@ -6,12 +6,15 @@ import 'package:doomread/utils/result.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/foundation.dart';
 
-/// One Session under way: its timer, Pause and Resume, and Stop.
+/// One Session under way: its timer, Pause and Resume, Stop, and the way
+/// out of an Urge.
 class ReadingViewModel extends ChangeNotifier {
   ReadingViewModel(this._sessions, this.id) {
     pause = Command0(() => _add(SessionEventKind.pause));
     resume = Command0(() => _add(SessionEventKind.resume));
     stop = Command0(() => _add(SessionEventKind.stop));
+    letPass = Command0(() => _add(SessionEventKind.letPass));
+    slip = Command0(() => _add(SessionEventKind.slip));
     _sub = _sessions.watchAll().listen((all) {
       _record = all.where((r) => r.id == id).firstOrNull;
       _before = all.where((r) => r.id != id).toList();
@@ -37,6 +40,10 @@ class ReadingViewModel extends ChangeNotifier {
   late final Command0<void> pause;
   late final Command0<void> resume;
   late final Command0<void> stop;
+
+  /// The way out of an Urge: back to the Work, or on into the Watched app.
+  late final Command0<void> letPass;
+  late final Command0<void> slip;
 
   Session? get session => record?.at(_sessions.now());
 

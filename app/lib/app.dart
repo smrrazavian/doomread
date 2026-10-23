@@ -6,6 +6,7 @@ import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/data/repositories/sync_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/data/services/app_database.dart';
+import 'package:doomread/data/services/app_watch.dart';
 import 'package:doomread/data/services/auto_sync.dart';
 import 'package:doomread/data/services/break_over_notification.dart';
 import 'package:doomread/data/services/home_widget.dart';
@@ -18,6 +19,7 @@ import 'package:doomread/ui/planned_break/break_over_alarm.dart';
 import 'package:doomread/ui/reading/live_notification.dart';
 import 'package:doomread/ui/settings/view_models/settings_view_model.dart';
 import 'package:doomread/ui/tonight/live_home_widget.dart';
+import 'package:doomread/ui/urge/urge_watch.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -31,6 +33,7 @@ class DoomreadApp extends StatefulWidget {
     this.notification,
     this.breakOver,
     this.homeWidget,
+    this.watch,
     super.key,
   });
 
@@ -60,6 +63,10 @@ class DoomreadApp extends StatefulWidget {
   /// one, which does nothing on other platforms.
   final HomeWidget? homeWidget;
 
+  /// Which app is in front, for Urges. Tests pass a fake; the app uses the
+  /// Android one, which does nothing on other platforms.
+  final AppWatch? watch;
+
   @override
   State<DoomreadApp> createState() => _DoomreadAppState();
 }
@@ -86,6 +93,8 @@ class _DoomreadAppState extends State<DoomreadApp> {
   AutoSync? _autoSync;
   late final HomeWidget _homeWidget = widget.homeWidget ?? HomeWidget();
   late final LiveHomeWidget _liveWidget;
+  late final AppWatch _watch = widget.watch ?? AppWatch();
+  late final UrgeWatch _urges;
   final GoRouter _router = buildRouter();
 
   @override
@@ -107,6 +116,7 @@ class _DoomreadAppState extends State<DoomreadApp> {
     }
     _liveWidget = LiveHomeWidget(_works, _sessions, _settings, _homeWidget);
     _homeWidget.onStart = _startFromWidget;
+    _urges = UrgeWatch(_sessions, _watch, _settings)..onUrge = _openReading;
     unawaited(_startIfWidgetTapped());
   }
 
@@ -148,6 +158,9 @@ class _DoomreadAppState extends State<DoomreadApp> {
     _breakOver.dispose();
     _homeWidget.onStart = null;
     _liveWidget.dispose();
+    _urges
+      ..onUrge = null
+      ..dispose();
     _settings.dispose();
     _router.dispose();
     super.dispose();
@@ -160,6 +173,8 @@ class _DoomreadAppState extends State<DoomreadApp> {
       Provider.value(value: _sessions),
       Provider.value(value: _settingsRepository),
       Provider.value(value: _notification),
+      Provider.value(value: _watch),
+      Provider.value(value: _urges),
       ChangeNotifierProvider.value(value: _settings),
       if (widget.auth case final auth?) Provider.value(value: auth),
     ],
