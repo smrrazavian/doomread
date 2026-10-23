@@ -174,9 +174,18 @@ class _WorkCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(work.title, style: text.titleLarge),
-            if (work.author.isNotEmpty)
-              Text(work.author, style: text.bodySmall),
+            // The title opens the Book page: the Road and the Notes so far.
+            InkWell(
+              onTap: () => context.push('/book/${work.id}'),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(work.title, style: text.titleLarge),
+                  if (work.author.isNotEmpty)
+                    Text(work.author, style: text.bodySmall),
+                ],
+              ),
+            ),
             const SizedBox(height: 12),
             RoadView(road: road),
             const SizedBox(height: 12),

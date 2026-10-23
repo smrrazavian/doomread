@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-// ponytail: Building and Friends get real screens in tickets #10 and #16.
+// ponytail: Friends gets a real screen in ticket #16.
 class SectionPlaceholder extends StatelessWidget {
   const SectionPlaceholder({required this.title, super.key});
 

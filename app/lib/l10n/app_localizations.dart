@@ -517,6 +517,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Paused at {time}'**
   String notificationPaused(String time);
+
+  /// No description provided for @buildingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your building'**
+  String get buildingTitle;
+
+  /// No description provided for @buildingSub.
+  ///
+  /// In en, this message translates to:
+  /// **'One floor for every book you finish.'**
+  String get buildingSub;
+
+  /// No description provided for @buildingEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No floors yet. Finish a book and the first one lights up.'**
+  String get buildingEmpty;
+
+  /// No description provided for @floorDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'{pages, plural, =1{1 page} other{{pages} pages}}, {evenings, plural, =1{1 evening} other{{evenings} evenings}}'**
+  String floorDetails(int pages, int evenings);
+
+  /// No description provided for @finishedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You finished {title}.'**
+  String finishedTitle(String title);
+
+  /// No description provided for @finishedSub.
+  ///
+  /// In en, this message translates to:
+  /// **'{pages, plural, =1{1 page} other{{pages} pages}} over {evenings, plural, =1{1 evening} other{{evenings} evenings}}. Your building grew a floor.'**
+  String finishedSub(int pages, int evenings);
+
+  /// No description provided for @minutesShort.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String minutesShort(int minutes);
+
+  /// No description provided for @longestStretchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'longest stretch'**
+  String get longestStretchLabel;
+
+  /// The caption under the number of Notes on the finishing screen; the number itself is shown above it.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{note written} other{notes written}}'**
+  String notesWritten(int count);
+
+  /// No description provided for @readTheStory.
+  ///
+  /// In en, this message translates to:
+  /// **'Read the story in your words'**
+  String get readTheStory;
+
+  /// No description provided for @seeYourBuilding.
+  ///
+  /// In en, this message translates to:
+  /// **'See your building'**
+  String get seeYourBuilding;
+
+  /// No description provided for @storySoFar.
+  ///
+  /// In en, this message translates to:
+  /// **'The story so far, in your words'**
+  String get storySoFar;
+
+  /// No description provided for @storyEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'After each evening, the sentence you write about it lands here.'**
+  String get storyEmpty;
+
+  /// No description provided for @bookFinished.
+  ///
+  /// In en, this message translates to:
+  /// **'Finished, every last page.'**
+  String get bookFinished;
+
+  /// No description provided for @pageRange.
+  ///
+  /// In en, this message translates to:
+  /// **'p. {from}–{to}'**
+  String pageRange(int from, int to);
 }
 
 class _AppLocalizationsDelegate

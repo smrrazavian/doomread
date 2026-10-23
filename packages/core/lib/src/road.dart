@@ -13,6 +13,9 @@ class Road {
   /// How far along, from 0 to 1.
   double get progress => position / work.totalPages;
 
+  /// Whether the Position has reached the Work's end: the Finish.
+  bool get finished => position >= work.totalPages;
+
   /// Checkpoints at or behind the Position.
   List<int> get passed =>
       work.checkpoints.where((c) => c <= position).toList(growable: false);

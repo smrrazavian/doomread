@@ -41,7 +41,11 @@ class _EveningState extends State<_Evening> {
 
   Future<void> _save(EveningViewModel vm) async {
     await vm.save.execute((page: parseNumber(_page.text), note: _note.text));
-    if (mounted && vm.save.completed) context.go('/tonight');
+    if (!mounted || !vm.save.completed) return;
+    // Entering the last page is the Finish: the Building grows a floor.
+    context.go(
+      vm.finished ? '/building/finish/${vm.record!.road.work.id}' : '/tonight',
+    );
   }
 
   @override
@@ -124,12 +128,8 @@ class _EveningState extends State<_Evening> {
                     minLines: 3,
                     maxLines: 5,
                     textCapitalization: TextCapitalization.sentences,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontFamily:
-                          Localizations.localeOf(context).languageCode == 'fa'
-                          ? 'NotoNaskhArabic'
-                          : 'Literata',
-                    ),
+                    style: Theme.of(context).textTheme.bodyLarge
+                        ?.copyWith(fontFamily: bookFamily(context)),
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                     ),

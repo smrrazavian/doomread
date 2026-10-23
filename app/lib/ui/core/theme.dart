@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 abstract final class Palette {
   static const night = Color(0xFF18213A);
   static const wall = Color(0xFF222C49);
+  static const deep = Color(0xFF141B2F);
+
+  /// The wall of the floor a Finish has just added.
+  static const newFloor = Color(0xFF2B3758);
   static const panel = Color(0xFF1F2945);
   static const raise = Color(0xFF2A3456);
   static const line = Color(0xFF2E3A5E);
@@ -78,6 +82,12 @@ ThemeData buildTheme(Locale locale) {
     ),
   );
 }
+
+/// The typeface for book titles and Notes: Literata, or Naskh in Persian.
+String bookFamily(BuildContext context) =>
+    Localizations.localeOf(context).languageCode == 'fa'
+    ? 'NotoNaskhArabic'
+    : 'Literata';
 
 /// Material's default styles letter-space labels and titles;
 /// Persian must not be.

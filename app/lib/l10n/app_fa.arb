@@ -40,7 +40,7 @@
   "@accountErrorTooMany": {
     "description": "TODO(owner): review this Persian copy."
   },
-  "accountErrorRejected":"سرور قبولش نکرد. دوباره امتحان کن.",
+  "accountErrorRejected": "سرور قبولش نکرد. دوباره امتحان کن.",
   "accountErrorUnreachable": "به سرور وصل نمی‌شه. بقیهٔ برنامه کار می‌کنه؛ بعداً دوباره امتحان کن.",
   "changeBook": "عوض کردن کتاب",
   "startReading": "شروع خوندن",
@@ -79,8 +79,7 @@
   "@stretchTrendEmpty": {
     "description": "TODO(owner): review this Persian copy."
   },
-  "stretchTrendDates": "از {from} تا {to}."
-,
+  "stretchTrendDates": "از {from} تا {to}.",
   "notificationAskTitle": "تایمر رو صفحه‌ی قفل هم باشه؟",
   "notificationAskBody": "وقتی داری می‌خونی، یه نوتیفیکیشن بی‌صدا تایمر و کتابت رو نشون می‌ده. وقتی تموم کنی خودش می‌ره، و کار دیگه‌ای هم باهاش نداریم.",
   "@notificationAskBody": {
@@ -88,5 +87,20 @@
   },
   "notificationAskAllow": "باشه",
   "notificationAskNotNow": "الان نه",
-  "notificationPaused": "رو {time} مکث کردی"
+  "notificationPaused": "رو {time} مکث کردی",
+  "buildingTitle": "ساختمون تو",
+  "buildingSub": "هر کتابی که تموم کنی، یه طبقه.",
+  "buildingEmpty": "هنوز طبقه‌ای نداره. یه کتاب رو تموم کن تا اولین طبقه روشن شه.",
+  "floorDetails": "{pages} صفحه، {evenings} شب",
+  "finishedTitle": "«{title}» رو تموم کردی.",
+  "finishedSub": "{pages} صفحه توی {evenings} شب. ساختمونت یه طبقه بلندتر شد.",
+  "minutesShort": "{minutes} دقیقه",
+  "longestStretchLabel": "طولانی‌ترین تمرکز",
+  "notesWritten": "یادداشت",
+  "readTheStory": "داستان رو به زبون خودت بخون",
+  "seeYourBuilding": "ساختمونت رو ببین",
+  "storySoFar": "داستان تا اینجا، به زبون خودت",
+  "storyEmpty": "بعد از هر شب، جمله‌ای که درباره‌ش می‌نویسی اینجا میاد.",
+  "bookFinished": "تمومش کردی، تا صفحه‌ی آخر.",
+  "pageRange": "ص {from} تا {to}"
 }

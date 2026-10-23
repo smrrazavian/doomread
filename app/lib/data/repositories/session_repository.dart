@@ -10,6 +10,7 @@ class SessionRecord {
     required this.road,
     required this.events,
     this.pages,
+    this.note = '',
   });
 
   final String id;
@@ -20,6 +21,9 @@ class SessionRecord {
 
   /// The page range it covered, once ended on End of the evening.
   final ({int from, int to})? pages;
+
+  /// The Note written then; empty when there's none.
+  final String note;
 
   /// The Session derived from its journal, measured at [now].
   Session at(DateTime now) => Session.fromEvents(events, now: now);
@@ -103,8 +107,26 @@ class SessionRepository {
           ),
       ],
       pages: note == null ? null : (from: note.fromPage, to: note.toPage),
+      note: note?.body ?? '',
     );
   }
+
+  /// Every Finish, the most recent first. Each is worked out from its Work's
+  /// Position and Sessions; none is stored.
+  Stream<List<Finish>> watchFinishes() => watchAll().map((all) {
+    final now = this.now();
+    final byWork = <String, List<SessionRecord>>{};
+    for (final r in all) {
+      byWork.putIfAbsent(r.road.work.id, () => []).add(r);
+    }
+    return newestFirst([
+      for (final records in byWork.values)
+        ?Finish.of(records.first.road, [
+          for (final r in records)
+            (session: r.at(now), toPage: r.pages?.to, note: r.note),
+        ]),
+    ]);
+  });
 
   /// Ends [session] at [page]: moves the Work's Position there and saves the
   /// Note against the pages it covered.

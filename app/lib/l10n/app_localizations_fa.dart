@@ -339,4 +339,90 @@ class AppLocalizationsFa extends AppLocalizations {
   String notificationPaused(String time) {
     return 'رو $time مکث کردی';
   }
+
+  @override
+  String get buildingTitle => 'ساختمون تو';
+
+  @override
+  String get buildingSub => 'هر کتابی که تموم کنی، یه طبقه.';
+
+  @override
+  String get buildingEmpty =>
+      'هنوز طبقه‌ای نداره. یه کتاب رو تموم کن تا اولین طبقه روشن شه.';
+
+  @override
+  String floorDetails(int pages, int evenings) {
+    final intl.NumberFormat pagesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String pagesString = pagesNumberFormat.format(pages);
+    final intl.NumberFormat eveningsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String eveningsString = eveningsNumberFormat.format(evenings);
+
+    return '$pagesString صفحه، $eveningsString شب';
+  }
+
+  @override
+  String finishedTitle(String title) {
+    return '«$title» رو تموم کردی.';
+  }
+
+  @override
+  String finishedSub(int pages, int evenings) {
+    final intl.NumberFormat pagesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String pagesString = pagesNumberFormat.format(pages);
+    final intl.NumberFormat eveningsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String eveningsString = eveningsNumberFormat.format(evenings);
+
+    return '$pagesString صفحه توی $eveningsString شب. ساختمونت یه طبقه بلندتر شد.';
+  }
+
+  @override
+  String minutesShort(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '$minutesString دقیقه';
+  }
+
+  @override
+  String get longestStretchLabel => 'طولانی‌ترین تمرکز';
+
+  @override
+  String notesWritten(int count) {
+    return 'یادداشت';
+  }
+
+  @override
+  String get readTheStory => 'داستان رو به زبون خودت بخون';
+
+  @override
+  String get seeYourBuilding => 'ساختمونت رو ببین';
+
+  @override
+  String get storySoFar => 'داستان تا اینجا، به زبون خودت';
+
+  @override
+  String get storyEmpty =>
+      'بعد از هر شب، جمله‌ای که درباره‌ش می‌نویسی اینجا میاد.';
+
+  @override
+  String get bookFinished => 'تمومش کردی، تا صفحه‌ی آخر.';
+
+  @override
+  String pageRange(int from, int to) {
+    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String fromString = fromNumberFormat.format(from);
+    final intl.NumberFormat toNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String toString = toNumberFormat.format(to);
+
+    return 'ص $fromString تا $toString';
+  }
 }
