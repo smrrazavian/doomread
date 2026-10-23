@@ -607,6 +607,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'p. {from}–{to}'**
   String pageRange(int from, int to);
+
+  /// On Reading: how far away the next Planned break is, in minutes of reading, when it is at a chapter end.
+  ///
+  /// In en, this message translates to:
+  /// **'Your break: the end of chapter {chapter}, in about {minutes} min.'**
+  String nextBreakAtCheckpoint(int chapter, int minutes);
+
+  /// No description provided for @nextBreakAtPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your break: in about {minutes} min, at the end of the page you\'re on.'**
+  String nextBreakAtPage(int minutes);
+
+  /// No description provided for @breakDueAtCheckpoint.
+  ///
+  /// In en, this message translates to:
+  /// **'Break time at the end of chapter {chapter}.'**
+  String breakDueAtCheckpoint(int chapter);
+
+  /// No description provided for @breakDueAtPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Break time. Finish the page you\'re on.'**
+  String get breakDueAtPage;
+
+  /// No description provided for @takeBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m there'**
+  String get takeBreak;
+
+  /// No description provided for @nudgeBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get nudgeBreak;
+
+  /// No description provided for @onBreakUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'On your break until {time}.'**
+  String onBreakUntil(String time);
+
+  /// No description provided for @showBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the timer'**
+  String get showBreak;
+
+  /// No description provided for @chapterDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Chapter {chapter} done'**
+  String chapterDone(int chapter);
+
+  /// No description provided for @breakHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Your break is here.'**
+  String get breakHere;
+
+  /// No description provided for @breakAnything.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes, plural, =1{One minute} other{{minutes} minutes}} of Reels, messages, anything.'**
+  String breakAnything(int minutes);
+
+  /// The return time, named before the Planned break starts.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to chapter {chapter} at {time}.'**
+  String backToChapterAt(int chapter, String time);
+
+  /// No description provided for @backToBookAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to the book at {time}.'**
+  String backToBookAt(String time);
+
+  /// No description provided for @bestTonight.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes, plural, =0{Your best stretch tonight is under a minute.} =1{Your best stretch tonight is 1 minute.} other{Your best stretch tonight is {minutes} minutes.}}'**
+  String bestTonight(int minutes);
+
+  /// No description provided for @startMyBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes, plural, =1{Start my minute} other{Start my {minutes} minutes}}'**
+  String startMyBreak(int minutes);
+
+  /// No description provided for @keepReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep reading instead'**
+  String get keepReading;
+
+  /// No description provided for @onBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'On your break.'**
+  String get onBreak;
+
+  /// No description provided for @imBack.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m back'**
+  String get imBack;
+
+  /// No description provided for @breakOver.
+  ///
+  /// In en, this message translates to:
+  /// **'Break\'s over.'**
+  String get breakOver;
+
+  /// No description provided for @chapterWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'Chapter {chapter} is waiting.'**
+  String chapterWaiting(int chapter);
+
+  /// No description provided for @workWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'{title} is waiting.'**
+  String workWaiting(String title);
 }
 
 class _AppLocalizationsDelegate

@@ -6,6 +6,7 @@ library;
 export 'src/calendar.dart';
 export 'src/finish.dart';
 export 'src/pace.dart';
+export 'src/planned_break.dart';
 export 'src/reading_week.dart';
 export 'src/road.dart';
 export 'src/session.dart';

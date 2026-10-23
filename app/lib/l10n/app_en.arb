@@ -285,5 +285,129 @@
         "format": "decimalPattern"
       }
     }
-  }
+  },
+  "nextBreakAtCheckpoint": "Your break: the end of chapter {chapter}, in about {minutes} min.",
+  "@nextBreakAtCheckpoint": {
+    "description": "On Reading: how far away the next Planned break is, in minutes of reading, when it is at a chapter end.",
+    "placeholders": {
+      "chapter": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "nextBreakAtPage": "Your break: in about {minutes} min, at the end of the page you're on.",
+  "@nextBreakAtPage": {
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "breakDueAtCheckpoint": "Break time at the end of chapter {chapter}.",
+  "@breakDueAtCheckpoint": {
+    "placeholders": {
+      "chapter": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "breakDueAtPage": "Break time. Finish the page you're on.",
+  "takeBreak": "I'm there",
+  "nudgeBreak": "Later",
+  "onBreakUntil": "On your break until {time}.",
+  "@onBreakUntil": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "showBreak": "Show the timer",
+  "chapterDone": "Chapter {chapter} done",
+  "@chapterDone": {
+    "placeholders": {
+      "chapter": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "breakHere": "Your break is here.",
+  "breakAnything": "{minutes, plural, =1{One minute} other{{minutes} minutes}} of Reels, messages, anything.",
+  "@breakAnything": {
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "backToChapterAt": "Back to chapter {chapter} at {time}.",
+  "@backToChapterAt": {
+    "description": "The return time, named before the Planned break starts.",
+    "placeholders": {
+      "chapter": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "backToBookAt": "Back to the book at {time}.",
+  "@backToBookAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "bestTonight": "{minutes, plural, =0{Your best stretch tonight is under a minute.} =1{Your best stretch tonight is 1 minute.} other{Your best stretch tonight is {minutes} minutes.}}",
+  "@bestTonight": {
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "startMyBreak": "{minutes, plural, =1{Start my minute} other{Start my {minutes} minutes}}",
+  "@startMyBreak": {
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "keepReading": "Keep reading instead",
+  "onBreak": "On your break.",
+  "imBack": "I'm back",
+  "breakOver": "Break's over.",
+  "chapterWaiting": "Chapter {chapter} is waiting.",
+  "@chapterWaiting": {
+    "placeholders": {
+      "chapter": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "workWaiting": "{title} is waiting.",
+  "@workWaiting": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "backToReading": "Back to reading"
 }

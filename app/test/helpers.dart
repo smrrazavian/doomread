@@ -1,5 +1,6 @@
 import 'package:doomread/app.dart';
 import 'package:doomread/data/services/app_database.dart';
+import 'package:doomread/data/services/break_over_notification.dart';
 import 'package:doomread/data/services/session_notification.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/widgets.dart';
@@ -30,9 +31,15 @@ Future<void> pumpApp(
   AppDatabase db, {
   DateTime Function()? clock,
   SessionNotification? notification,
+  BreakOverNotification? breakOver,
 }) async {
   await tester.pumpWidget(
-    DoomreadApp(db: db, clock: clock, notification: notification),
+    DoomreadApp(
+      db: db,
+      clock: clock,
+      notification: notification,
+      breakOver: breakOver,
+    ),
   );
   await tester.pumpAndSettle();
 }
@@ -89,4 +96,21 @@ class FakeSessionNotification implements SessionNotification {
     opened = null;
     return id;
   }
+}
+
+/// Stands in for the Android "break's over" notification.
+class FakeBreakOverNotification implements BreakOverNotification {
+  /// What's set now; null when nothing is.
+  ({String sessionId, DateTime at, String title, String text})? set;
+
+  @override
+  Future<void> schedule({
+    required String sessionId,
+    required DateTime at,
+    required String title,
+    required String text,
+  }) async => set = (sessionId: sessionId, at: at, title: title, text: text);
+
+  @override
+  Future<void> cancel() async => set = null;
 }
