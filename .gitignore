@@ -8,3 +8,5 @@ tool/cache/
 .dart_tool/
 build/
 **/test/**/failures/
+# Agent worktrees (parallel tickets)
+.claude/worktrees/
