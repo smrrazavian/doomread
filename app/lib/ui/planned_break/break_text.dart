@@ -1,6 +1,5 @@
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/number_format.dart';
-import 'package:doomread/ui/planned_break/view_models/planned_break_view_model.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/widgets.dart';
 

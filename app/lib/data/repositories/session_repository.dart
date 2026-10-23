@@ -27,27 +27,15 @@ class SessionRecord {
 
   /// The Session derived from its journal, measured at [now].
   Session at(DateTime now) => Session.fromEvents(events, now: now);
+
+  /// The same, with its Work and pages, for the domain rules in core.
+  WorkSession measured(DateTime now) =>
+      (road: road, session: at(now), pages: pages);
 }
 
-/// The Sessions in [all] on Works the user reads, or else watches, like a
-/// Work of [kind]. The Longest stretch and the Aim are kept apart for the
-/// two, so watching a film can't set the bar for reading.
-Iterable<SessionRecord> alike(Iterable<SessionRecord> all, WorkKind kind) =>
-    all.where((r) => r.road.work.kind.watched == kind.watched);
-
-/// About how many evenings until [road]'s Finish, at the pace of its
-/// ended Sessions in [history]; null until there's a pace. Works in any
-/// unit, since it only compares how much each evening covered.
-int? eveningsLeftOn(Road road, Iterable<SessionRecord> history, DateTime now) =>
-    eveningsLeft(
-      pagesLeft: road.work.totalPages - road.position,
-      sittings: [
-        for (final r in history)
-          if (r.road.work.id == road.work.id)
-            if ((r.pages, r.at(now).startedAt) case (final p?, final at?))
-              (startedAt: at, pages: p.to - p.from),
-      ],
-    );
+/// Every Session in [records], measured at [now], for the domain rules.
+Iterable<WorkSession> measured(Iterable<SessionRecord> records, DateTime now) =>
+    records.map((r) => r.measured(now));
 
 /// Sessions: the append-only journal of what happened, and how each ended.
 class SessionRepository {

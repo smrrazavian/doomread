@@ -118,7 +118,7 @@ HomeWidgetState homeWidgetState({
   final work = road.work;
   final mine = history.where((r) => r.road.work.id == work.id);
   final open = mine.where((r) => !r.at(now).stopped).lastOrNull?.id;
-  final evenings = eveningsLeftOn(road, mine, now);
+  final evenings = eveningsLeftOn(road, measured(mine, now));
   return (
     title: work.title,
     road: positionOf(l10n, locale, road),

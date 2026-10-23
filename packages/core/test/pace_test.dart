@@ -2,8 +2,11 @@ import 'package:doomread_core/doomread_core.dart';
 import 'package:test/test.dart';
 
 void main() {
-  ({DateTime startedAt, int pages}) sat(int day, int hour, int pages) =>
-      (startedAt: DateTime(2026, 10, day, hour), pages: pages);
+  PaceSitting sat(int day, int hour, int pages) => (
+    startedAt: DateTime(2026, 10, day, hour),
+    reading: const Duration(minutes: 30),
+    pages: pages,
+  );
 
   test('no estimate before any Session ends', () {
     expect(eveningsLeft(pagesLeft: 103, sittings: const []), isNull);
@@ -43,8 +46,11 @@ void main() {
   });
 
   group('time per page', () {
-    ({Duration reading, int pages}) read(int minutes, int pages) =>
-        (reading: Duration(minutes: minutes), pages: pages);
+    PaceSitting read(int minutes, int pages) => (
+      startedAt: DateTime(2026, 10, 20, 21),
+      reading: Duration(minutes: minutes),
+      pages: pages,
+    );
 
     test('is unknown before any pages were read', () {
       expect(timePerPage(const []), isNull);
