@@ -9,15 +9,18 @@ int? eveningsLeft({
   required Iterable<({DateTime startedAt, int pages})> sittings,
 }) {
   if (pagesLeft <= 0) return null;
-  final evenings = <DateTime>{};
   var pages = 0;
   for (final s in sittings) {
-    evenings.add(_evening(s.startedAt));
     if (s.pages > 0) pages += s.pages;
   }
   if (pages == 0) return null;
-  return (pagesLeft * evenings.length / pages).ceil();
+  final evenings = eveningsSpent(sittings.map((s) => s.startedAt));
+  return (pagesLeft * evenings / pages).ceil();
 }
+
+/// How many different evenings Sessions started at [starts] fall on.
+int eveningsSpent(Iterable<DateTime> starts) =>
+    starts.map(_evening).toSet().length;
 
 /// The evening a time belongs to. Reading past midnight still counts toward
 /// the evening before, so the day turns over at 4 in the morning.

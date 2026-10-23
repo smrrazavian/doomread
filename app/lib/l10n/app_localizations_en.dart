@@ -291,4 +291,120 @@ class AppLocalizationsEn extends AppLocalizations {
 
     return 'A page from $fromString to $totalString';
   }
+
+  @override
+  String get buildingTitle => 'Your building';
+
+  @override
+  String get buildingSub => 'One floor for every book you finish.';
+
+  @override
+  String get buildingEmpty =>
+      'No floors yet. Finish a book and the first one lights up.';
+
+  @override
+  String floorDetails(int pages, int evenings) {
+    final intl.NumberFormat pagesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String pagesString = pagesNumberFormat.format(pages);
+    final intl.NumberFormat eveningsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String eveningsString = eveningsNumberFormat.format(evenings);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      pages,
+      locale: localeName,
+      other: '$pagesString pages',
+      one: '1 page',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      evenings,
+      locale: localeName,
+      other: '$eveningsString evenings',
+      one: '1 evening',
+    );
+    return '$_temp0, $_temp1';
+  }
+
+  @override
+  String finishedTitle(String title) {
+    return 'You finished $title.';
+  }
+
+  @override
+  String finishedSub(int pages, int evenings) {
+    final intl.NumberFormat pagesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String pagesString = pagesNumberFormat.format(pages);
+    final intl.NumberFormat eveningsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String eveningsString = eveningsNumberFormat.format(evenings);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      pages,
+      locale: localeName,
+      other: '$pagesString pages',
+      one: '1 page',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      evenings,
+      locale: localeName,
+      other: '$eveningsString evenings',
+      one: '1 evening',
+    );
+    return '$_temp0 over $_temp1. Your building grew a floor.';
+  }
+
+  @override
+  String minutesShort(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '$minutesString min';
+  }
+
+  @override
+  String get longestStretchLabel => 'longest stretch';
+
+  @override
+  String notesWritten(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'notes written',
+      one: 'note written',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get readTheStory => 'Read the story in your words';
+
+  @override
+  String get seeYourBuilding => 'See your building';
+
+  @override
+  String get storySoFar => 'The story so far, in your words';
+
+  @override
+  String get storyEmpty =>
+      'After each evening, the sentence you write about it lands here.';
+
+  @override
+  String get bookFinished => 'Finished, every last page.';
+
+  @override
+  String pageRange(int from, int to) {
+    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String fromString = fromNumberFormat.format(from);
+    final intl.NumberFormat toNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String toString = toNumberFormat.format(to);
+
+    return 'p. $fromString–$toString';
+  }
 }

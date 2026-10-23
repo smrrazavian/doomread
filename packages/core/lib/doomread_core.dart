@@ -3,6 +3,7 @@
 /// Pure Dart, no Flutter. See CONTEXT.md for the vocabulary.
 library;
 
+export 'src/finish.dart';
 export 'src/pace.dart';
 export 'src/road.dart';
 export 'src/session.dart';

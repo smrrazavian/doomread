@@ -35,6 +35,12 @@ class WorkRepository {
     });
   }
 
+  /// The Work with [id] on its Road, or null if there's no such Work.
+  Stream<Road?> watchRoad(String id) =>
+      (_db.select(_db.works)..where((w) => w.id.equals(id)))
+          .watchSingleOrNull()
+          .map((w) => w == null ? null : Road(toWork(w), position: w.position));
+
   /// Adds a Work and returns its id. The first Work becomes the current one.
   Future<String> add({
     required String title,

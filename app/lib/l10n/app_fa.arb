@@ -61,5 +61,20 @@
   "whatHappened": "تو یه جمله، چی شد؟",
   "saveAndLightsOut": "ذخیره کن و چراغ رو خاموش کن",
   "problemNoPage": "کدوم صفحه؟ فقط عددش رو بنویس.",
-  "problemPageOutOfRange": "یه صفحه از {from} تا {total}"
+  "problemPageOutOfRange": "یه صفحه از {from} تا {total}",
+  "buildingTitle": "ساختمون تو",
+  "buildingSub": "هر کتابی که تموم کنی، یه طبقه.",
+  "buildingEmpty": "هنوز طبقه‌ای نداره. یه کتاب رو تموم کن تا اولین طبقه روشن شه.",
+  "floorDetails": "{pages} صفحه، {evenings} شب",
+  "finishedTitle": "«{title}» رو تموم کردی.",
+  "finishedSub": "{pages} صفحه توی {evenings} شب. ساختمونت یه طبقه بلندتر شد.",
+  "minutesShort": "{minutes} دقیقه",
+  "longestStretchLabel": "طولانی‌ترین تمرکز",
+  "notesWritten": "یادداشت",
+  "readTheStory": "داستان رو به زبون خودت بخون",
+  "seeYourBuilding": "ساختمونت رو ببین",
+  "storySoFar": "داستان تا اینجا، به زبون خودت",
+  "storyEmpty": "بعد از هر شب، جمله‌ای که درباره‌ش می‌نویسی اینجا میاد.",
+  "bookFinished": "تمومش کردی، تا صفحه‌ی آخر.",
+  "pageRange": "ص {from} تا {to}"
 }

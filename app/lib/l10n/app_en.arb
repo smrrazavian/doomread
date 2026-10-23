@@ -152,5 +152,79 @@
         "format": "decimalPattern"
       }
     }
+  },
+  "buildingTitle": "Your building",
+  "buildingSub": "One floor for every book you finish.",
+  "buildingEmpty": "No floors yet. Finish a book and the first one lights up.",
+  "floorDetails": "{pages, plural, =1{1 page} other{{pages} pages}}, {evenings, plural, =1{1 evening} other{{evenings} evenings}}",
+  "@floorDetails": {
+    "placeholders": {
+      "pages": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "evenings": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "finishedTitle": "You finished {title}.",
+  "@finishedTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "finishedSub": "{pages, plural, =1{1 page} other{{pages} pages}} over {evenings, plural, =1{1 evening} other{{evenings} evenings}}. Your building grew a floor.",
+  "@finishedSub": {
+    "placeholders": {
+      "pages": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "evenings": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "minutesShort": "{minutes} min",
+  "@minutesShort": {
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "longestStretchLabel": "longest stretch",
+  "notesWritten": "{count, plural, =1{note written} other{notes written}}",
+  "@notesWritten": {
+    "description": "The caption under the number of Notes on the finishing screen; the number itself is shown above it.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "readTheStory": "Read the story in your words",
+  "seeYourBuilding": "See your building",
+  "storySoFar": "The story so far, in your words",
+  "storyEmpty": "After each evening, the sentence you write about it lands here.",
+  "bookFinished": "Finished, every last page.",
+  "pageRange": "p. {from}–{to}",
+  "@pageRange": {
+    "placeholders": {
+      "from": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "to": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
   }
 }

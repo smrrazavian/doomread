@@ -40,6 +40,11 @@ class EveningViewModel extends ChangeNotifier {
   Duration get longestTonight =>
       record?.at(_sessions.now()).longestStretch ?? Duration.zero;
 
+  /// Whether the saved page reached the end of the Work: the Finish. Saving
+  /// the last page again on a Work already finished isn't a new one.
+  bool get finished => _finished;
+  bool _finished = false;
+
   /// Whether this Session grew the Longest stretch.
   bool get newBest {
     final record = this.record;
@@ -60,6 +65,8 @@ class EveningViewModel extends ChangeNotifier {
       return Result.error(InvalidSessionEnd(_problems));
     }
     await _sessions.end(record, page: input.page!, note: input.note);
+    _finished =
+        !record.road.finished && input.page! >= record.road.work.totalPages;
     return const Result.ok(null);
   }
 
