@@ -580,4 +580,339 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get widgetDark => 'امشب پنجره‌ت هنوز خاموشه';
+
+  @override
+  String get kindPaperBook => 'کتاب';
+
+  @override
+  String get kindEbook => 'ای‌بوک';
+
+  @override
+  String get kindSeries => 'سریال';
+
+  @override
+  String get kindFilm => 'فیلم';
+
+  @override
+  String get kindPodcast => 'پادکست';
+
+  @override
+  String get fieldCreator => 'سازنده';
+
+  @override
+  String get fieldEpisodes => 'تعداد قسمت‌ها';
+
+  @override
+  String get fieldDuration => 'مدتش';
+
+  @override
+  String get fieldDurationHint => 'مثلاً ۲:۴۱:۰۰';
+
+  @override
+  String get fieldTimestamps => 'جاهایی که هر بخش تموم می‌شه (اختیاری)';
+
+  @override
+  String get fieldTimestampsHint => 'مثلاً ۴۲:۳۰، ۱:۱۵:۰۰';
+
+  @override
+  String get problemNoEpisodes => 'چند قسمته؟';
+
+  @override
+  String get problemNoDuration => 'چقدر طول می‌کشه؟ مثلاً ۲:۴۱:۰۰';
+
+  @override
+  String get problemTimestampPastEnd => 'زمان‌ها باید توی مدتش باشن';
+
+  @override
+  String episodeOf(int episode, int total) {
+    final intl.NumberFormat episodeNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String episodeString = episodeNumberFormat.format(episode);
+    final intl.NumberFormat totalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String totalString = totalNumberFormat.format(total);
+
+    return 'قسمت $episodeString از $totalString';
+  }
+
+  @override
+  String timeOf(String time, String total) {
+    return '$time از $total';
+  }
+
+  @override
+  String episodesLeft(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString قسمت مونده';
+  }
+
+  @override
+  String timeLeft(String time) {
+    return '$time مونده';
+  }
+
+  @override
+  String nextEpisode(int episode) {
+    final intl.NumberFormat episodeNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String episodeString = episodeNumberFormat.format(episode);
+
+    return 'قسمت بعدی: $episodeString';
+  }
+
+  @override
+  String nextTimestamp(String time) {
+    return 'بخش بعدی $time تموم می‌شه';
+  }
+
+  @override
+  String startWork(String kind) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'series': 'شروع دیدن',
+      'film': 'شروع دیدن',
+      'podcast': 'شروع گوش دادن',
+      'other': 'شروع خوندن',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String backToWork(String kind) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'series': 'برگرد سراغ دیدن',
+      'film': 'برگرد سراغ دیدن',
+      'podcast': 'برگرد سراغ گوش دادن',
+      'other': 'برگرد سراغ خوندن',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String workNow(String kind) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'series': 'در حال دیدن',
+      'film': 'در حال دیدن',
+      'podcast': 'در حال گوش دادن',
+      'other': 'در حال خوندن',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get whichEpisode => 'تا کدوم قسمت دیدی؟';
+
+  @override
+  String get whereStopped => 'تا کجاش رفتی؟';
+
+  @override
+  String ofStartedAtTime(String total, String from) {
+    return 'از $total، از $from شروع کردی';
+  }
+
+  @override
+  String get problemNoEpisode => 'کدوم قسمت؟ فقط عددش رو بنویس.';
+
+  @override
+  String get problemNoTime => 'کجاش؟ مثلاً ۱:۱۲:۲۰';
+
+  @override
+  String problemEpisodeOutOfRange(int from, int total) {
+    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String fromString = fromNumberFormat.format(from);
+    final intl.NumberFormat totalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String totalString = totalNumberFormat.format(total);
+
+    return 'یه قسمت از $fromString تا $totalString';
+  }
+
+  @override
+  String problemTimeOutOfRange(String from, String total) {
+    return 'یه زمان از $from تا $total';
+  }
+
+  @override
+  String episodeRange(int from, int to) {
+    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String fromString = fromNumberFormat.format(from);
+    final intl.NumberFormat toNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String toString = toNumberFormat.format(to);
+
+    return 'قسمت $fromString تا $toString';
+  }
+
+  @override
+  String timeRange(String from, String to) {
+    return '$from تا $to';
+  }
+
+  @override
+  String finishedSubEpisodes(int episodes, int evenings) {
+    final intl.NumberFormat episodesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String episodesString = episodesNumberFormat.format(episodes);
+    final intl.NumberFormat eveningsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String eveningsString = eveningsNumberFormat.format(evenings);
+
+    return '$episodesString قسمت توی $eveningsString شب. ساختمونت یه طبقه بلندتر شد.';
+  }
+
+  @override
+  String finishedSubTime(String time, int evenings) {
+    final intl.NumberFormat eveningsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String eveningsString = eveningsNumberFormat.format(evenings);
+
+    return '$time توی $eveningsString شب. ساختمونت یه طبقه بلندتر شد.';
+  }
+
+  @override
+  String floorDetailsEpisodes(int episodes, int evenings) {
+    final intl.NumberFormat episodesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String episodesString = episodesNumberFormat.format(episodes);
+    final intl.NumberFormat eveningsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String eveningsString = eveningsNumberFormat.format(evenings);
+
+    return '$episodesString قسمت، $eveningsString شب';
+  }
+
+  @override
+  String floorDetailsTime(String time, int evenings) {
+    final intl.NumberFormat eveningsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String eveningsString = eveningsNumberFormat.format(evenings);
+
+    return '$time، $eveningsString شب';
+  }
+
+  @override
+  String get watchedFinished => 'تمومش کردی، تا آخرش.';
+
+  @override
+  String get trendReading => 'خوندن';
+
+  @override
+  String get trendWatching => 'دیدن';
+
+  @override
+  String ofStartedAtEpisode(int total, int from) {
+    final intl.NumberFormat totalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String totalString = totalNumberFormat.format(total);
+    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String fromString = fromNumberFormat.format(from);
+
+    return 'از $totalString، از قسمت $fromString شروع کردی';
+  }
+
+  @override
+  String inOneGoTonightWatched(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: 'امشب $minutesString دقیقه یه‌سره پاش نشستی.',
+      zero: 'امشب کمتر از یه دقیقه یه‌سره پاش نشستی.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nextBreakAtEpisode(int episode, int minutes) {
+    final intl.NumberFormat episodeNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String episodeString = episodeNumberFormat.format(episode);
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'استراحتت: آخر قسمت $episodeString، حدوداً $minutesString دقیقه‌ی دیگه.';
+  }
+
+  @override
+  String breakDueAtEpisode(int episode) {
+    final intl.NumberFormat episodeNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String episodeString = episodeNumberFormat.format(episode);
+
+    return 'آخر قسمت $episodeString وقت استراحته.';
+  }
+
+  @override
+  String nextBreakAtTimestamp(String timestamp, int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'استراحتت: سر $timestamp، حدوداً $minutesString دقیقه‌ی دیگه.';
+  }
+
+  @override
+  String breakDueAtTimestamp(String timestamp) {
+    return 'سر $timestamp وقت استراحته.';
+  }
+
+  @override
+  String nextBreakWatching(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'استراحتت: حدوداً $minutesString دقیقه‌ی دیگه، هر وقت این تیکه تموم شد.';
+  }
+
+  @override
+  String get breakDueWatching => 'وقت استراحته. این تیکه که تموم شد، نگهش دار.';
+
+  @override
+  String episodeDone(int episode) {
+    final intl.NumberFormat episodeNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String episodeString = episodeNumberFormat.format(episode);
+
+    return 'قسمت $episodeString تموم شد';
+  }
+
+  @override
+  String episodeWaiting(int episode) {
+    final intl.NumberFormat episodeNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String episodeString = episodeNumberFormat.format(episode);
+
+    return 'قسمت $episodeString منتظرته.';
+  }
+
+  @override
+  String backToEpisodeAt(int episode, String time) {
+    final intl.NumberFormat episodeNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String episodeString = episodeNumberFormat.format(episode);
+
+    return 'ساعت $time برمی‌گردیم سراغ قسمت $episodeString.';
+  }
+
+  @override
+  String backToWorkAt(String time) {
+    return 'ساعت $time برمی‌گردیم سراغش.';
+  }
+
+  @override
+  String get keepGoing => 'نه، ادامه می‌دم';
 }

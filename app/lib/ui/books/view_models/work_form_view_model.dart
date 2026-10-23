@@ -34,6 +34,7 @@ class WorkFormViewModel extends ChangeNotifier {
           author: author,
           totalPages: draft.totalPages,
           checkpoints: draft.checkpoints,
+          kind: draft.kind,
         ),
       );
     }

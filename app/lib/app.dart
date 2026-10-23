@@ -55,6 +55,7 @@ class DoomreadApp extends StatefulWidget {
   /// The "break's over" notification. Tests pass a fake; the app uses the
   /// Android one, which does nothing on other platforms.
   final BreakOverNotification? breakOver;
+
   /// The home screen widget. Tests pass a fake; the app uses the Android
   /// one, which does nothing on other platforms.
   final HomeWidget? homeWidget;

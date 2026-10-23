@@ -15,13 +15,17 @@ class Settings extends Table {
   Set<Column<Object>> get primaryKey => {key};
 }
 
-/// Works the user is getting through. Checkpoints are page numbers, stored as
-/// comma-separated text since they're only ever read and written whole.
+/// Works the user is getting through. The length, Checkpoints and Position
+/// are in the kind's unit (pages, episodes or seconds); Checkpoints are stored
+/// as comma-separated text since they're only ever read and written whole.
 @DataClassName('WorkRow')
 class Works extends Table {
   TextColumn get id => text()();
   TextColumn get title => text()();
   TextColumn get author => text()();
+  // Works from before kinds existed were all paper books.
+  TextColumn get kind =>
+      textEnum<WorkKind>().withDefault(Constant(WorkKind.paperBook.name))();
   IntColumn get totalPages => integer()();
   TextColumn get checkpoints => text()();
   IntColumn get position => integer().withDefault(const Constant(0))();
@@ -52,7 +56,8 @@ class SessionEvents extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
-/// How a Session ended: the page range it covered and the Note about it.
+/// How a Session ended: the range it covered, in its Work's unit, and the
+/// Note about it.
 /// The text is empty when the user wrote no Note.
 @DataClassName('NoteRow')
 class Notes extends Table {
@@ -84,7 +89,7 @@ class AppDatabase extends _$AppDatabase {
   )..where((s) => s.key.equals(key))).getSingleOrNull())?.value;
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -100,6 +105,7 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(sessionEvents, sessionEvents.synced);
         await m.addColumn(notes, notes.syncedAt);
       }
+      if (from >= 2 && from < 5) await m.addColumn(works, works.kind);
     },
   );
 }

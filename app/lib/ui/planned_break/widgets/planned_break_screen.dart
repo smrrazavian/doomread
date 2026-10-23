@@ -3,6 +3,7 @@ import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/date_format.dart';
 import 'package:doomread/ui/core/number_format.dart';
 import 'package:doomread/ui/core/theme.dart';
+import 'package:doomread/ui/planned_break/break_text.dart';
 import 'package:doomread/ui/planned_break/view_models/planned_break_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -56,9 +57,7 @@ class _PlannedBreak extends StatelessWidget {
 
     final work = record.road.work;
     final checkpoint = offer.checkpoint;
-    final chapter = checkpoint == null
-        ? null
-        : chapterEndingAt(work, checkpoint);
+    final done = checkpointDone(l10n, work, checkpoint);
     final minutes = offer.length.inMinutes;
     final on = session.onBreak;
     final over = on && vm.left == Duration.zero;
@@ -68,9 +67,7 @@ class _PlannedBreak extends StatelessWidget {
     final String sub;
     if (over) {
       heading = l10n.breakOver;
-      sub = chapter != null
-          ? l10n.chapterWaiting(chapter + 1)
-          : l10n.workWaiting(work.title);
+      sub = waitingAfter(l10n, work, checkpoint);
     } else {
       heading = on ? l10n.onBreak : l10n.breakHere;
       sub = l10n.breakAnything(minutes);
@@ -84,10 +81,10 @@ class _PlannedBreak extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (chapter != null) ...[
+              if (done != null) ...[
                 Align(
                   alignment: AlignmentDirectional.centerStart,
-                  child: _Chip(l10n.chapterDone(chapter)),
+                  child: _Chip(done),
                 ),
                 const SizedBox(height: 12),
               ],
@@ -111,9 +108,7 @@ class _PlannedBreak extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                chapter != null
-                    ? l10n.backToChapterAt(chapter + 1, at)
-                    : l10n.backToBookAt(at),
+                backAt(l10n, work, checkpoint, at),
                 style: text.bodySmall?.copyWith(color: Palette.mute),
               ),
               const SizedBox(height: 24),
@@ -136,7 +131,9 @@ class _PlannedBreak extends StatelessWidget {
                 FilledButton(
                   onPressed: () =>
                       _thenRead(context, vm.back.execute, record.id),
-                  child: Text(over ? l10n.backToReading : l10n.imBack),
+                  child: Text(
+                    over ? l10n.backToWork(work.kind.name) : l10n.imBack,
+                  ),
                 )
               else ...[
                 FilledButton(
@@ -147,7 +144,9 @@ class _PlannedBreak extends StatelessWidget {
                 TextButton(
                   onPressed: () =>
                       _thenRead(context, vm.nudge.execute, record.id),
-                  child: Text(l10n.keepReading),
+                  child: Text(
+                    work.kind.watched ? l10n.keepGoing : l10n.keepReading,
+                  ),
                 ),
               ],
             ],

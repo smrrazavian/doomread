@@ -4,6 +4,7 @@ import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/book/view_models/book_view_model.dart';
 import 'package:doomread/ui/core/road_view.dart';
 import 'package:doomread/ui/core/theme.dart';
+import 'package:doomread/ui/core/work_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -63,8 +64,8 @@ class _Book extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             road.finished
-                ? l10n.bookFinished
-                : l10n.pagesLeft(work.totalPages - road.position),
+                ? (work.kind.watched ? l10n.watchedFinished : l10n.bookFinished)
+                : amountLeft(context, road),
             style: text.bodyMedium,
           ),
           const SizedBox(height: 32),
@@ -88,7 +89,7 @@ class _Book extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    l10n.pageRange(note.from, note.to),
+                    rangeOf(context, work, note.from, note.to),
                     style: text.bodySmall?.copyWith(color: Palette.mute),
                   ),
                   const SizedBox(height: 2),

@@ -252,7 +252,7 @@ class SyncRepository {
   }
 
   // How each row travels. The server never reads `data`, so a Work can
-  // gain fields (#12) by changing only these two Work functions.
+  // gain fields by changing only these two Work functions.
 
   static SyncItem _workItem(WorkRow w) => SyncItem(
     kind: SyncKind.work,
@@ -261,6 +261,7 @@ class SyncRepository {
     data: {
       'title': w.title,
       'author': w.author,
+      'kind': w.kind.name,
       'totalPages': w.totalPages,
       'checkpoints': WorkRepository.toWork(w).checkpoints,
       'position': w.position,
@@ -271,6 +272,10 @@ class SyncRepository {
     id: i.id,
     title: i.data['title']! as String,
     author: i.data['author']! as String,
+    // Devices from before kinds only had paper books.
+    kind: Value(
+      WorkKind.values.asNameMap()[i.data['kind']] ?? WorkKind.paperBook,
+    ),
     totalPages: i.data['totalPages']! as int,
     checkpoints: (i.data['checkpoints']! as List<Object?>).join(','),
     position: Value(i.data['position']! as int),

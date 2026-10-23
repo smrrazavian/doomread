@@ -7,8 +7,9 @@ import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/foundation.dart';
 
 /// The Planned break of [record] at [now], from the journal alone: the
-/// Sessions in [all] before it give the Longest stretch, and those in the
-/// same Work give the pace. Null when the Finish comes first.
+/// Sessions in [all] before it, read or watched alike, give the Longest
+/// stretch, and those in the same Work give the pace (time per page,
+/// episode or second). Null when the Finish comes first.
 PlannedBreak? plannedBreakOf(
   SessionRecord record,
   List<SessionRecord> all,
@@ -21,7 +22,9 @@ PlannedBreak? plannedBreakOf(
   final work = record.road.work;
   return plannedBreak(
     record.at(now),
-    longestStretch: longestStretch(before.map((r) => r.at(now))),
+    longestStretch: longestStretch(
+      alike(before, work.kind).map((r) => r.at(now)),
+    ),
     startPage: record.pages?.from ?? record.road.position,
     totalPages: work.totalPages,
     checkpoints: work.checkpoints,

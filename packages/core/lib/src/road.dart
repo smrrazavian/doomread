@@ -7,7 +7,8 @@ class Road {
 
   final Work work;
 
-  /// The page the user has reached.
+  /// How far the user has got, in the Work's unit: a page, an episode, or
+  /// seconds in.
   final int position;
 
   /// How far along, from 0 to 1.

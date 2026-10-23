@@ -135,6 +135,30 @@ void main() {
     expect(await b.numbers(), await a.numbers());
   });
 
+  test(
+    "a podcast's kind and timestamp Position reach the other device",
+    () async {
+      final id = await a.works.add(
+        title: 'Radio Marz',
+        author: '',
+        totalPages: 9660,
+        checkpoints: const [2550, 4500],
+        kind: WorkKind.podcast,
+      );
+      await a.sessions.start(id);
+      a.now = a.now.add(const Duration(minutes: 20));
+      await a.sessions.add(await a.last(), SessionEventKind.stop);
+      await a.sessions.end(await a.last(), page: 4340);
+      expect(await a.sync(), isA<Ok<void>>());
+      expect(await b.sync(), isA<Ok<void>>());
+
+      final there = (await b.works.watchCurrent().first)!;
+      expect(there.work.kind, WorkKind.podcast);
+      expect(there.work.checkpoints, [2550, 4500]);
+      expect(there.position, 4340);
+    },
+  );
+
   test('Sessions recorded on both devices meet on both', () async {
     final workId = await addDune(a);
     await a.sync();
@@ -357,5 +381,6 @@ void main() {
     expect(there.road.work.title, 'Dune');
     expect(there.road.position, 30);
     expect(there.note, 'Sand.');
+    expect(there.road.work.kind, WorkKind.paperBook);
   });
 }

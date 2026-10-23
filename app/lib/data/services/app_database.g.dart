@@ -240,6 +240,16 @@ class $WorksTable extends Works with TableInfo<$WorksTable, WorkRow> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  @override
+  late final GeneratedColumnWithTypeConverter<WorkKind, String> kind =
+      GeneratedColumn<String>(
+        'kind',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: Constant(WorkKind.paperBook.name),
+      ).withConverter<WorkKind>($WorksTable.$converterkind);
   static const VerificationMeta _totalPagesMeta = const VerificationMeta(
     'totalPages',
   );
@@ -301,6 +311,7 @@ class $WorksTable extends Works with TableInfo<$WorksTable, WorkRow> {
     id,
     title,
     author,
+    kind,
     totalPages,
     checkpoints,
     position,
@@ -400,6 +411,12 @@ class $WorksTable extends Works with TableInfo<$WorksTable, WorkRow> {
         DriftSqlType.string,
         data['${effectivePrefix}author'],
       )!,
+      kind: $WorksTable.$converterkind.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}kind'],
+        )!,
+      ),
       totalPages: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}total_pages'],
@@ -427,12 +444,16 @@ class $WorksTable extends Works with TableInfo<$WorksTable, WorkRow> {
   $WorksTable createAlias(String alias) {
     return $WorksTable(attachedDatabase, alias);
   }
+
+  static JsonTypeConverter2<WorkKind, String, String> $converterkind =
+      const EnumNameConverter<WorkKind>(WorkKind.values);
 }
 
 class WorkRow extends DataClass implements Insertable<WorkRow> {
   final String id;
   final String title;
   final String author;
+  final WorkKind kind;
   final int totalPages;
   final String checkpoints;
   final int position;
@@ -445,6 +466,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
     required this.id,
     required this.title,
     required this.author,
+    required this.kind,
     required this.totalPages,
     required this.checkpoints,
     required this.position,
@@ -457,6 +479,9 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
     map['id'] = Variable<String>(id);
     map['title'] = Variable<String>(title);
     map['author'] = Variable<String>(author);
+    {
+      map['kind'] = Variable<String>($WorksTable.$converterkind.toSql(kind));
+    }
     map['total_pages'] = Variable<int>(totalPages);
     map['checkpoints'] = Variable<String>(checkpoints);
     map['position'] = Variable<int>(position);
@@ -472,6 +497,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
       id: Value(id),
       title: Value(title),
       author: Value(author),
+      kind: Value(kind),
       totalPages: Value(totalPages),
       checkpoints: Value(checkpoints),
       position: Value(position),
@@ -491,6 +517,9 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
       id: serializer.fromJson<String>(json['id']),
       title: serializer.fromJson<String>(json['title']),
       author: serializer.fromJson<String>(json['author']),
+      kind: $WorksTable.$converterkind.fromJson(
+        serializer.fromJson<String>(json['kind']),
+      ),
       totalPages: serializer.fromJson<int>(json['totalPages']),
       checkpoints: serializer.fromJson<String>(json['checkpoints']),
       position: serializer.fromJson<int>(json['position']),
@@ -505,6 +534,9 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
       'id': serializer.toJson<String>(id),
       'title': serializer.toJson<String>(title),
       'author': serializer.toJson<String>(author),
+      'kind': serializer.toJson<String>(
+        $WorksTable.$converterkind.toJson(kind),
+      ),
       'totalPages': serializer.toJson<int>(totalPages),
       'checkpoints': serializer.toJson<String>(checkpoints),
       'position': serializer.toJson<int>(position),
@@ -517,6 +549,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
     String? id,
     String? title,
     String? author,
+    WorkKind? kind,
     int? totalPages,
     String? checkpoints,
     int? position,
@@ -526,6 +559,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
     id: id ?? this.id,
     title: title ?? this.title,
     author: author ?? this.author,
+    kind: kind ?? this.kind,
     totalPages: totalPages ?? this.totalPages,
     checkpoints: checkpoints ?? this.checkpoints,
     position: position ?? this.position,
@@ -537,6 +571,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
       id: data.id.present ? data.id.value : this.id,
       title: data.title.present ? data.title.value : this.title,
       author: data.author.present ? data.author.value : this.author,
+      kind: data.kind.present ? data.kind.value : this.kind,
       totalPages: data.totalPages.present
           ? data.totalPages.value
           : this.totalPages,
@@ -555,6 +590,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
           ..write('id: $id, ')
           ..write('title: $title, ')
           ..write('author: $author, ')
+          ..write('kind: $kind, ')
           ..write('totalPages: $totalPages, ')
           ..write('checkpoints: $checkpoints, ')
           ..write('position: $position, ')
@@ -569,6 +605,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
     id,
     title,
     author,
+    kind,
     totalPages,
     checkpoints,
     position,
@@ -582,6 +619,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
           other.id == this.id &&
           other.title == this.title &&
           other.author == this.author &&
+          other.kind == this.kind &&
           other.totalPages == this.totalPages &&
           other.checkpoints == this.checkpoints &&
           other.position == this.position &&
@@ -593,6 +631,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
   final Value<String> id;
   final Value<String> title;
   final Value<String> author;
+  final Value<WorkKind> kind;
   final Value<int> totalPages;
   final Value<String> checkpoints;
   final Value<int> position;
@@ -603,6 +642,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
     this.id = const Value.absent(),
     this.title = const Value.absent(),
     this.author = const Value.absent(),
+    this.kind = const Value.absent(),
     this.totalPages = const Value.absent(),
     this.checkpoints = const Value.absent(),
     this.position = const Value.absent(),
@@ -614,6 +654,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
     required String id,
     required String title,
     required String author,
+    this.kind = const Value.absent(),
     required int totalPages,
     required String checkpoints,
     this.position = const Value.absent(),
@@ -630,6 +671,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
     Expression<String>? id,
     Expression<String>? title,
     Expression<String>? author,
+    Expression<String>? kind,
     Expression<int>? totalPages,
     Expression<String>? checkpoints,
     Expression<int>? position,
@@ -641,6 +683,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
       if (id != null) 'id': id,
       if (title != null) 'title': title,
       if (author != null) 'author': author,
+      if (kind != null) 'kind': kind,
       if (totalPages != null) 'total_pages': totalPages,
       if (checkpoints != null) 'checkpoints': checkpoints,
       if (position != null) 'position': position,
@@ -654,6 +697,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
     Value<String>? id,
     Value<String>? title,
     Value<String>? author,
+    Value<WorkKind>? kind,
     Value<int>? totalPages,
     Value<String>? checkpoints,
     Value<int>? position,
@@ -665,6 +709,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
       id: id ?? this.id,
       title: title ?? this.title,
       author: author ?? this.author,
+      kind: kind ?? this.kind,
       totalPages: totalPages ?? this.totalPages,
       checkpoints: checkpoints ?? this.checkpoints,
       position: position ?? this.position,
@@ -685,6 +730,11 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
     }
     if (author.present) {
       map['author'] = Variable<String>(author.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>(
+        $WorksTable.$converterkind.toSql(kind.value),
+      );
     }
     if (totalPages.present) {
       map['total_pages'] = Variable<int>(totalPages.value);
@@ -713,6 +763,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
           ..write('id: $id, ')
           ..write('title: $title, ')
           ..write('author: $author, ')
+          ..write('kind: $kind, ')
           ..write('totalPages: $totalPages, ')
           ..write('checkpoints: $checkpoints, ')
           ..write('position: $position, ')
@@ -1798,6 +1849,7 @@ typedef $$WorksTableCreateCompanionBuilder = WorksCompanion Function({
   required String id,
   required String title,
   required String author,
+  Value<WorkKind> kind,
   required int totalPages,
   required String checkpoints,
   Value<int> position,
@@ -1809,6 +1861,7 @@ typedef $$WorksTableUpdateCompanionBuilder = WorksCompanion Function({
   Value<String> id,
   Value<String> title,
   Value<String> author,
+  Value<WorkKind> kind,
   Value<int> totalPages,
   Value<String> checkpoints,
   Value<int> position,
@@ -1839,6 +1892,12 @@ class $$WorksTableFilterComposer extends Composer<_$AppDatabase, $WorksTable> {
     column: $table.author,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnWithTypeConverterFilters<WorkKind, WorkKind, String> get kind =>
+      $composableBuilder(
+        column: $table.kind,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
 
   ColumnFilters<int> get totalPages => $composableBuilder(
     column: $table.totalPages,
@@ -1890,6 +1949,11 @@ class $$WorksTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get totalPages => $composableBuilder(
     column: $table.totalPages,
     builder: (column) => ColumnOrderings(column),
@@ -1933,6 +1997,9 @@ class $$WorksTableAnnotationComposer
 
   GeneratedColumn<String> get author =>
       $composableBuilder(column: $table.author, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<WorkKind, String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
 
   GeneratedColumn<int> get totalPages => $composableBuilder(
     column: $table.totalPages,
@@ -1985,6 +2052,7 @@ class $$WorksTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> title = const Value.absent(),
                 Value<String> author = const Value.absent(),
+                Value<WorkKind> kind = const Value.absent(),
                 Value<int> totalPages = const Value.absent(),
                 Value<String> checkpoints = const Value.absent(),
                 Value<int> position = const Value.absent(),
@@ -1995,6 +2063,7 @@ class $$WorksTableTableManager
                 id: id,
                 title: title,
                 author: author,
+                kind: kind,
                 totalPages: totalPages,
                 checkpoints: checkpoints,
                 position: position,
@@ -2007,6 +2076,7 @@ class $$WorksTableTableManager
                 required String id,
                 required String title,
                 required String author,
+                Value<WorkKind> kind = const Value.absent(),
                 required int totalPages,
                 required String checkpoints,
                 Value<int> position = const Value.absent(),
@@ -2017,6 +2087,7 @@ class $$WorksTableTableManager
                 id: id,
                 title: title,
                 author: author,
+                kind: kind,
                 totalPages: totalPages,
                 checkpoints: checkpoints,
                 position: position,

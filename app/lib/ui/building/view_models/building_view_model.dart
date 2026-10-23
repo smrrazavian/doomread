@@ -16,7 +16,10 @@ class BuildingViewModel extends ChangeNotifier {
       }),
       sessions.watchAll().listen((all) {
         final now = sessions.now();
-        _rises = longestStretchTrend([for (final r in all) r.at(now)]);
+        List<StretchRise> trend(WorkKind kind) =>
+            longestStretchTrend([for (final r in alike(all, kind)) r.at(now)]);
+        _rises = trend(WorkKind.paperBook);
+        _watchingRises = trend(WorkKind.series);
         notifyListeners();
       }),
     ];
@@ -31,9 +34,13 @@ class BuildingViewModel extends ChangeNotifier {
   bool get loaded => _loaded;
   bool _loaded = false;
 
-  /// Each evening the Longest stretch grew, oldest first.
+  /// Each evening the Longest stretch for reading grew, oldest first.
   List<StretchRise> get rises => _rises;
   List<StretchRise> _rises = const [];
+
+  /// The same for watching, kept apart; empty until something is watched.
+  List<StretchRise> get watchingRises => _watchingRises;
+  List<StretchRise> _watchingRises = const [];
 
   @override
   void dispose() {

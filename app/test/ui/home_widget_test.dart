@@ -3,6 +3,7 @@ import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread/l10n/app_localizations.dart';
+import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -155,5 +156,33 @@ void main() {
     final id = await SessionRepository(db, clock: () => now).start(work);
     await tester.pumpAndSettle();
     expect(widget.shown?.sessionId, id);
+  });
+
+  testApp('a podcast on the widget is a timestamp, and listening', (
+    tester,
+    db,
+  ) async {
+    now = start;
+    await WorkRepository(db).add(
+      title: 'Radio Marz',
+      author: '',
+      totalPages: 9660,
+      checkpoints: const [],
+      kind: WorkKind.podcast,
+    );
+    await SettingsRepository(db).setLocale(const Locale('en'));
+    final widget = FakeHomeWidget();
+    await pumpApp(tester, db, clock: () => now, homeWidget: widget);
+    expect(widget.shown?.road, en.timeOf('0:00', '2:41:00'));
+    expect(widget.shown?.button, en.startWork('podcast'));
+
+    await tap(tester, find.text(en.startWork('podcast')));
+    await wait(tester, const Duration(minutes: 20));
+    await tap(tester, find.text(en.stopForTonight));
+    await tester.enterText(find.byKey(const Key('page')), '1:12:20');
+    await tap(tester, find.text(en.saveAndLightsOut));
+    expect(widget.shown?.road, en.timeOf('1:12:20', '2:41:00'));
+    // 4340 seconds in one evening, 5320 to go: about 2 more.
+    expect(widget.shown?.evenings, en.widgetEvenings(2));
   });
 }

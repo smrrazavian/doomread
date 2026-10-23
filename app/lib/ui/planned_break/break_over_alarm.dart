@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/data/services/break_over_notification.dart';
 import 'package:doomread/l10n/app_localizations.dart';
+import 'package:doomread/ui/planned_break/break_text.dart';
 import 'package:doomread/ui/planned_break/view_models/planned_break_view_model.dart';
 import 'package:doomread/ui/settings/view_models/settings_view_model.dart';
 
@@ -46,10 +47,7 @@ class BreakOverAlarm {
     final at = onBreak.at(now).breaks.last.start.add(offer.length);
     final l10n = lookupAppLocalizations(_settings.locale);
     final work = onBreak.road.work;
-    final checkpoint = offer.checkpoint;
-    final text = checkpoint == null
-        ? l10n.workWaiting(work.title)
-        : l10n.chapterWaiting(chapterEndingAt(work, checkpoint) + 1);
+    final text = waitingAfter(l10n, work, offer.checkpoint);
     final set = (onBreak.id, at, text);
     if (set == _last) return;
     _last = set;

@@ -2,6 +2,7 @@ import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/books/view_models/work_form_view_model.dart';
 import 'package:doomread/ui/core/number_format.dart';
+import 'package:doomread/ui/core/work_text.dart';
 import 'package:doomread/utils/result.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +39,11 @@ class _WorkFormState extends State<_WorkForm> {
   final _checkpoints = TextEditingController();
   var _prefilled = false;
 
+  /// Chosen when adding; an existing Work keeps its kind, since its Position
+  /// is already in that kind's unit.
+  late WorkKind _kind = widget.editing?.kind ?? WorkKind.paperBook;
+  bool get _timed => _kind.unit == WorkUnit.second;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -46,8 +52,13 @@ class _WorkFormState extends State<_WorkForm> {
     if (_prefilled || editing == null) return;
     _prefilled = true;
     final locale = Localizations.localeOf(context);
-    _pages.text = formatNumber(editing.totalPages, locale);
-    _checkpoints.text = formatNumbers(editing.checkpoints, locale);
+    if (_timed) {
+      _pages.text = formatClock(Duration(seconds: editing.totalPages), locale);
+      _checkpoints.text = formatClocks(editing.checkpoints, locale);
+    } else {
+      _pages.text = formatNumber(editing.totalPages, locale);
+      _checkpoints.text = formatNumbers(editing.checkpoints, locale);
+    }
   }
 
   @override
@@ -63,9 +74,12 @@ class _WorkFormState extends State<_WorkForm> {
       WorkDraft(
         title: _title.text,
         author: _author.text,
-        totalPages: parseNumber(_pages.text) ?? 0,
+        totalPages: (_timed ? parseClock : parseNumber)(_pages.text) ?? 0,
         // Unreadable chapter ends count as out of range, so the user is told.
-        checkpoints: parseNumbers(_checkpoints.text) ?? const [-1],
+        checkpoints:
+            (_timed ? parseClocks : parseNumbers)(_checkpoints.text) ??
+            const [-1],
+        kind: _kind,
       ),
     );
     if (mounted && vm.save.result is Ok) context.pop();
@@ -86,6 +100,24 @@ class _WorkFormState extends State<_WorkForm> {
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
+          if (widget.editing == null) ...[
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final kind in WorkKind.values)
+                  ChoiceChip(
+                    key: Key(kind.name),
+                    avatar: Icon(kindIcon(kind)),
+                    label: Text(kindName(l10n, kind)),
+                    showCheckmark: false,
+                    selected: kind == _kind,
+                    onSelected: (_) => setState(() => _kind = kind),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
           TextField(
             key: const Key('title'),
             controller: _title,
@@ -100,32 +132,58 @@ class _WorkFormState extends State<_WorkForm> {
             key: const Key('author'),
             controller: _author,
             textInputAction: TextInputAction.next,
-            decoration: InputDecoration(labelText: l10n.fieldAuthor),
+            decoration: InputDecoration(
+              labelText: _kind.watched ? l10n.fieldCreator : l10n.fieldAuthor,
+            ),
           ),
           const SizedBox(height: 16),
           TextField(
             key: const Key('pages'),
             controller: _pages,
-            keyboardType: TextInputType.number,
+            keyboardType: _timed
+                ? TextInputType.datetime
+                : TextInputType.number,
+            // Timestamps read like a clock, which never mirrors.
+            textDirection: _timed ? TextDirection.ltr : null,
             textInputAction: TextInputAction.next,
             decoration: InputDecoration(
-              labelText: l10n.fieldPages,
-              errorText: problem(WorkProblem.noPages, l10n.problemNoPages),
+              labelText: switch (_kind.unit) {
+                WorkUnit.page => l10n.fieldPages,
+                WorkUnit.episode => l10n.fieldEpisodes,
+                WorkUnit.second => l10n.fieldDuration,
+              },
+              hintText: _timed ? l10n.fieldDurationHint : null,
+              errorText: problem(WorkProblem.noPages, switch (_kind.unit) {
+                WorkUnit.page => l10n.problemNoPages,
+                WorkUnit.episode => l10n.problemNoEpisodes,
+                WorkUnit.second => l10n.problemNoDuration,
+              }),
             ),
           ),
-          const SizedBox(height: 16),
-          TextField(
-            key: const Key('checkpoints'),
-            controller: _checkpoints,
-            decoration: InputDecoration(
-              labelText: l10n.fieldCheckpoints,
-              hintText: l10n.fieldCheckpointsHint,
-              errorText: problem(
-                WorkProblem.checkpointPastEnd,
-                l10n.problemCheckpointPastEnd,
+          // A series' Checkpoints are its episodes, so there's nothing to ask.
+          if (_kind != WorkKind.series) ...[
+            const SizedBox(height: 16),
+            TextField(
+              key: const Key('checkpoints'),
+              controller: _checkpoints,
+              keyboardType: _timed ? TextInputType.datetime : null,
+              textDirection: _timed ? TextDirection.ltr : null,
+              decoration: InputDecoration(
+                labelText: _timed
+                    ? l10n.fieldTimestamps
+                    : l10n.fieldCheckpoints,
+                hintText: _timed
+                    ? l10n.fieldTimestampsHint
+                    : l10n.fieldCheckpointsHint,
+                errorText: problem(
+                  WorkProblem.checkpointPastEnd,
+                  _timed
+                      ? l10n.problemTimestampPastEnd
+                      : l10n.problemCheckpointPastEnd,
+                ),
               ),
             ),
-          ),
+          ],
           const SizedBox(height: 32),
           FilledButton(
             onPressed: vm.save.running ? null : () => _save(vm),

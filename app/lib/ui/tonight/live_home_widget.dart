@@ -4,6 +4,7 @@ import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/data/services/home_widget.dart';
 import 'package:doomread/l10n/app_localizations.dart';
+import 'package:doomread/ui/core/work_text.dart';
 import 'package:doomread/ui/settings/view_models/settings_view_model.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/widgets.dart';
@@ -116,30 +117,19 @@ HomeWidgetState homeWidgetState({
   final work = road.work;
   final mine = history.where((r) => r.road.work.id == work.id);
   final open = mine.where((r) => !r.at(now).stopped).lastOrNull?.id;
-  // ponytail: the same pace as TonightViewModel.evenings; share one once
-  // #12 brings Works measured in episodes and minutes.
-  final evenings = eveningsLeft(
-    pagesLeft: work.totalPages - road.position,
-    sittings: [
-      for (final r in mine)
-        if ((r.pages, r.at(now).startedAt) case (final p?, final at?))
-          (startedAt: at, pages: p.to - p.from),
-    ],
-  );
+  final evenings = eveningsLeftOn(road, mine, now);
   return (
     title: work.title,
-    road: roadText(road, l10n),
+    road: positionOf(l10n, locale, road),
     evenings: evenings == null ? null : l10n.widgetEvenings(evenings),
     lit: common.lit,
     dark: common.dark,
     litUntil: common.litUntil,
-    button: open == null ? l10n.startReading : l10n.backToReading,
+    button: open == null
+        ? l10n.startWork(work.kind.name)
+        : l10n.backToWork(work.kind.name),
     sessionId: open,
     workId: open == null ? work.id : null,
     rtl: common.rtl,
   );
 }
-
-/// The Position on the Road in words: "Page 156 of 245".
-String roadText(Road road, AppLocalizations l10n) =>
-    l10n.pageOf(road.position, road.work.totalPages);

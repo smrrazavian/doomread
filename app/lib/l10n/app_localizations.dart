@@ -763,6 +763,318 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your window is still dark tonight'**
   String get widgetDark;
+
+  /// No description provided for @kindPaperBook.
+  ///
+  /// In en, this message translates to:
+  /// **'Book'**
+  String get kindPaperBook;
+
+  /// No description provided for @kindEbook.
+  ///
+  /// In en, this message translates to:
+  /// **'Ebook'**
+  String get kindEbook;
+
+  /// No description provided for @kindSeries.
+  ///
+  /// In en, this message translates to:
+  /// **'Series'**
+  String get kindSeries;
+
+  /// No description provided for @kindFilm.
+  ///
+  /// In en, this message translates to:
+  /// **'Film'**
+  String get kindFilm;
+
+  /// No description provided for @kindPodcast.
+  ///
+  /// In en, this message translates to:
+  /// **'Podcast'**
+  String get kindPodcast;
+
+  /// No description provided for @fieldCreator.
+  ///
+  /// In en, this message translates to:
+  /// **'Made by'**
+  String get fieldCreator;
+
+  /// No description provided for @fieldEpisodes.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of episodes'**
+  String get fieldEpisodes;
+
+  /// No description provided for @fieldDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Length'**
+  String get fieldDuration;
+
+  /// No description provided for @fieldDurationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 2:41:00'**
+  String get fieldDurationHint;
+
+  /// No description provided for @fieldTimestamps.
+  ///
+  /// In en, this message translates to:
+  /// **'Where segments end (optional)'**
+  String get fieldTimestamps;
+
+  /// No description provided for @fieldTimestampsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 42:30, 1:15:00'**
+  String get fieldTimestampsHint;
+
+  /// No description provided for @problemNoEpisodes.
+  ///
+  /// In en, this message translates to:
+  /// **'How many episodes does it have?'**
+  String get problemNoEpisodes;
+
+  /// No description provided for @problemNoDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'How long is it? Like 2:41:00'**
+  String get problemNoDuration;
+
+  /// No description provided for @problemTimestampPastEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Times must be within its length'**
+  String get problemTimestampPastEnd;
+
+  /// No description provided for @episodeOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Episode {episode} of {total}'**
+  String episodeOf(int episode, int total);
+
+  /// No description provided for @timeOf.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} of {total}'**
+  String timeOf(String time, String total);
+
+  /// No description provided for @episodesLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 episode left} other{{count} episodes left}}'**
+  String episodesLeft(int count);
+
+  /// No description provided for @timeLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} left'**
+  String timeLeft(String time);
+
+  /// No description provided for @nextEpisode.
+  ///
+  /// In en, this message translates to:
+  /// **'Next up: episode {episode}'**
+  String nextEpisode(int episode);
+
+  /// No description provided for @nextTimestamp.
+  ///
+  /// In en, this message translates to:
+  /// **'Next segment ends at {time}'**
+  String nextTimestamp(String time);
+
+  /// kind is a WorkKind name: paperBook, ebook, series, film or podcast.
+  ///
+  /// In en, this message translates to:
+  /// **'{kind, select, series{Start watching} film{Start watching} podcast{Start listening} other{Start reading}}'**
+  String startWork(String kind);
+
+  /// kind is a WorkKind name: paperBook, ebook, series, film or podcast.
+  ///
+  /// In en, this message translates to:
+  /// **'{kind, select, series{Back to watching} film{Back to watching} podcast{Back to listening} other{Back to reading}}'**
+  String backToWork(String kind);
+
+  /// kind is a WorkKind name: paperBook, ebook, series, film or podcast.
+  ///
+  /// In en, this message translates to:
+  /// **'{kind, select, series{Watching now} film{Watching now} podcast{Listening now} other{Reading now}}'**
+  String workNow(String kind);
+
+  /// No description provided for @whichEpisode.
+  ///
+  /// In en, this message translates to:
+  /// **'Which episode did you get to?'**
+  String get whichEpisode;
+
+  /// No description provided for @whereStopped.
+  ///
+  /// In en, this message translates to:
+  /// **'Where did you stop?'**
+  String get whereStopped;
+
+  /// No description provided for @ofStartedAtTime.
+  ///
+  /// In en, this message translates to:
+  /// **'of {total}, started at {from}'**
+  String ofStartedAtTime(String total, String from);
+
+  /// No description provided for @problemNoEpisode.
+  ///
+  /// In en, this message translates to:
+  /// **'Which episode? Just the number.'**
+  String get problemNoEpisode;
+
+  /// No description provided for @problemNoTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Where? Like 1:12:20'**
+  String get problemNoTime;
+
+  /// No description provided for @problemEpisodeOutOfRange.
+  ///
+  /// In en, this message translates to:
+  /// **'An episode from {from} to {total}'**
+  String problemEpisodeOutOfRange(int from, int total);
+
+  /// No description provided for @problemTimeOutOfRange.
+  ///
+  /// In en, this message translates to:
+  /// **'A time from {from} to {total}'**
+  String problemTimeOutOfRange(String from, String total);
+
+  /// No description provided for @episodeRange.
+  ///
+  /// In en, this message translates to:
+  /// **'ep. {from}–{to}'**
+  String episodeRange(int from, int to);
+
+  /// No description provided for @timeRange.
+  ///
+  /// In en, this message translates to:
+  /// **'{from}–{to}'**
+  String timeRange(String from, String to);
+
+  /// No description provided for @finishedSubEpisodes.
+  ///
+  /// In en, this message translates to:
+  /// **'{episodes, plural, =1{1 episode} other{{episodes} episodes}} over {evenings, plural, =1{1 evening} other{{evenings} evenings}}. Your building grew a floor.'**
+  String finishedSubEpisodes(int episodes, int evenings);
+
+  /// No description provided for @finishedSubTime.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} over {evenings, plural, =1{1 evening} other{{evenings} evenings}}. Your building grew a floor.'**
+  String finishedSubTime(String time, int evenings);
+
+  /// No description provided for @floorDetailsEpisodes.
+  ///
+  /// In en, this message translates to:
+  /// **'{episodes, plural, =1{1 episode} other{{episodes} episodes}}, {evenings, plural, =1{1 evening} other{{evenings} evenings}}'**
+  String floorDetailsEpisodes(int episodes, int evenings);
+
+  /// No description provided for @floorDetailsTime.
+  ///
+  /// In en, this message translates to:
+  /// **'{time}, {evenings, plural, =1{1 evening} other{{evenings} evenings}}'**
+  String floorDetailsTime(String time, int evenings);
+
+  /// No description provided for @watchedFinished.
+  ///
+  /// In en, this message translates to:
+  /// **'Finished, right to the end.'**
+  String get watchedFinished;
+
+  /// No description provided for @trendReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading'**
+  String get trendReading;
+
+  /// No description provided for @trendWatching.
+  ///
+  /// In en, this message translates to:
+  /// **'Watching'**
+  String get trendWatching;
+
+  /// No description provided for @ofStartedAtEpisode.
+  ///
+  /// In en, this message translates to:
+  /// **'of {total}, started at episode {from}'**
+  String ofStartedAtEpisode(int total, int from);
+
+  /// inOneGoTonight for a Work that is watched or listened to, not read.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes, plural, =0{Under a minute in one go tonight.} =1{1 minute in one go tonight.} other{{minutes} minutes in one go tonight.}}'**
+  String inOneGoTonightWatched(int minutes);
+
+  /// No description provided for @nextBreakAtEpisode.
+  ///
+  /// In en, this message translates to:
+  /// **'Your break: the end of episode {episode}, in about {minutes} min.'**
+  String nextBreakAtEpisode(int episode, int minutes);
+
+  /// No description provided for @breakDueAtEpisode.
+  ///
+  /// In en, this message translates to:
+  /// **'Break time at the end of episode {episode}.'**
+  String breakDueAtEpisode(int episode);
+
+  /// No description provided for @nextBreakAtTimestamp.
+  ///
+  /// In en, this message translates to:
+  /// **'Your break: at {timestamp}, in about {minutes} min.'**
+  String nextBreakAtTimestamp(String timestamp, int minutes);
+
+  /// No description provided for @breakDueAtTimestamp.
+  ///
+  /// In en, this message translates to:
+  /// **'Break time at {timestamp}.'**
+  String breakDueAtTimestamp(String timestamp);
+
+  /// No description provided for @nextBreakWatching.
+  ///
+  /// In en, this message translates to:
+  /// **'Your break: in about {minutes} min, when this segment ends.'**
+  String nextBreakWatching(int minutes);
+
+  /// No description provided for @breakDueWatching.
+  ///
+  /// In en, this message translates to:
+  /// **'Break time. Pause when this segment ends.'**
+  String get breakDueWatching;
+
+  /// No description provided for @episodeDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Episode {episode} done'**
+  String episodeDone(int episode);
+
+  /// No description provided for @episodeWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'Episode {episode} is waiting.'**
+  String episodeWaiting(int episode);
+
+  /// No description provided for @backToEpisodeAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to episode {episode} at {time}.'**
+  String backToEpisodeAt(int episode, String time);
+
+  /// No description provided for @backToWorkAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to it at {time}.'**
+  String backToWorkAt(String time);
+
+  /// No description provided for @keepGoing.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep going instead'**
+  String get keepGoing;
 }
 
 class _AppLocalizationsDelegate

@@ -4,6 +4,7 @@ import 'package:doomread/ui/building/view_models/building_view_model.dart';
 import 'package:doomread/ui/building/widgets/building_view.dart';
 import 'package:doomread/ui/core/number_format.dart';
 import 'package:doomread/ui/core/theme.dart';
+import 'package:doomread/ui/core/work_text.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -60,10 +61,7 @@ class _Finish extends StatelessWidget {
                     style: text.headlineSmall,
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    l10n.finishedSub(finish.pages, finish.evenings),
-                    style: text.bodyMedium,
-                  ),
+                  Text(finishedSub(context, finish), style: text.bodyMedium),
                   const SizedBox(height: 24),
                   Row(
                     children: [
