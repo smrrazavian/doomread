@@ -1,0 +1,159 @@
+import 'package:doomread/data/repositories/session_repository.dart';
+import 'package:doomread/data/repositories/settings_repository.dart';
+import 'package:doomread/data/repositories/work_repository.dart';
+import 'package:doomread/data/services/app_database.dart';
+import 'package:doomread/l10n/app_localizations.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import '../helpers.dart';
+
+void main() {
+  final start = DateTime(2026, 10, 22, 21);
+  final fourAm = DateTime(2026, 10, 23, 4);
+  var now = start;
+  final en = lookupAppLocalizations(const Locale('en'));
+  final fa = lookupAppLocalizations(const Locale('fa'));
+
+  Future<String> addBook(AppDatabase db, {String lang = 'en'}) async {
+    now = start;
+    await WorkRepository(db).add(
+      title: 'The Remains of the Day',
+      author: 'Kazuo Ishiguro',
+      totalPages: 245,
+      checkpoints: const [],
+    );
+    await SettingsRepository(db).setLocale(Locale(lang));
+    return (await db.select(db.works).getSingle()).id;
+  }
+
+  Future<void> wait(WidgetTester tester, Duration d) async {
+    now = now.add(d);
+    await tester.pump(const Duration(seconds: 1));
+  }
+
+  Future<void> tap(WidgetTester tester, Finder finder) async {
+    await tester.tap(finder);
+    await tester.pumpAndSettle();
+  }
+
+  testApp('with no Work yet, the widget asks for one', (tester, db) async {
+    final widget = FakeHomeWidget();
+    await pumpApp(tester, db, clock: () => now, homeWidget: widget);
+    expect(widget.shown?.title, en.appTitle);
+    expect(widget.shown?.road, en.tonightEmpty);
+    expect(widget.shown?.button, en.tonightAddBook);
+    expect(widget.shown?.workId, isNull);
+    expect(widget.shown?.sessionId, isNull);
+    expect(widget.shown?.litUntil, isNull);
+  });
+
+  testApp("the widget follows the Road and tonight's Window", (
+    tester,
+    db,
+  ) async {
+    final work = await addBook(db);
+    final widget = FakeHomeWidget();
+    await pumpApp(tester, db, clock: () => now, homeWidget: widget);
+    expect(widget.shown, (
+      title: 'The Remains of the Day',
+      road: en.pageOf(0, 245),
+      evenings: null,
+      lit: en.widgetLit,
+      dark: en.widgetDark,
+      litUntil: null,
+      button: en.startReading,
+      sessionId: null,
+      workId: work,
+      rtl: false,
+    ));
+
+    await tap(tester, find.text(en.startReading));
+    final session = (await db.select(db.sessionEvents).get()).first.sessionId;
+    expect(
+      widget.shown?.litUntil,
+      fourAm,
+      reason: 'lit until the evening ends',
+    );
+    expect(widget.shown?.button, en.backToReading);
+    expect(widget.shown?.sessionId, session);
+    expect(widget.shown?.workId, isNull);
+
+    final sent = widget.sent.length;
+    await wait(tester, const Duration(minutes: 5));
+    await tap(tester, find.text(en.pause));
+    expect(widget.sent, hasLength(sent), reason: 'nothing on it changed');
+
+    await tap(tester, find.text(en.stopForTonight));
+    await tester.enterText(find.byKey(const Key('page')), '35');
+    await tap(tester, find.text(en.saveAndLightsOut));
+    expect(widget.shown?.road, en.pageOf(35, 245));
+    expect(widget.shown?.evenings, en.widgetEvenings(6));
+    expect(widget.shown?.button, en.startReading);
+    expect(widget.shown?.workId, work);
+    expect(widget.shown?.litUntil, fourAm, reason: 'still tonight');
+  });
+
+  testApp('the widget speaks Persian, right to left, with Persian digits', (
+    tester,
+    db,
+  ) async {
+    await addBook(db, lang: 'fa');
+    final widget = FakeHomeWidget();
+    await pumpApp(tester, db, clock: () => now, homeWidget: widget);
+    expect(widget.shown?.rtl, isTrue);
+    expect(widget.shown?.road, fa.pageOf(0, 245));
+    expect(widget.shown?.road, contains('۲۴۵'));
+    expect(widget.shown?.button, fa.startReading);
+
+    await tap(tester, find.byIcon(Icons.tune));
+    await tap(tester, find.text('English'));
+    expect(widget.shown?.rtl, isFalse, reason: 'it follows the app language');
+    expect(widget.shown?.road, en.pageOf(0, 245));
+  });
+
+  testApp('Start on the widget opens straight into a Session', (
+    tester,
+    db,
+  ) async {
+    final work = await addBook(db);
+    final widget = FakeHomeWidget(opened: work);
+    await pumpApp(tester, db, clock: () => now, homeWidget: widget);
+    expect(find.text('0:00'), findsOne);
+    expect(widget.shown?.button, en.backToReading);
+  });
+
+  testApp('Start on the widget while the app is alive', (tester, db) async {
+    final work = await addBook(db);
+    final widget = FakeHomeWidget();
+    await pumpApp(tester, db, clock: () => now, homeWidget: widget);
+
+    widget.onStart!(work);
+    await tester.pumpAndSettle();
+    expect(find.text('0:00'), findsOne);
+
+    // A stale widget still says Start: it goes back to the open Session.
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    await wait(tester, const Duration(minutes: 3));
+    widget.onStart!(work);
+    await tester.pumpAndSettle();
+    expect(find.text('3:00'), findsOne);
+    final sessions = (await db.select(db.sessionEvents).get())
+        .map((e) => e.sessionId)
+        .toSet();
+    expect(sessions, hasLength(1));
+  });
+
+  testApp('a Session started elsewhere shows on the widget', (
+    tester,
+    db,
+  ) async {
+    final work = await addBook(db);
+    final widget = FakeHomeWidget();
+    await pumpApp(tester, db, clock: () => now, homeWidget: widget);
+    final id = await SessionRepository(db, clock: () => now).start(work);
+    await tester.pumpAndSettle();
+    expect(widget.shown?.sessionId, id);
+  });
+}

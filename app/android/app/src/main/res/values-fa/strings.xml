@@ -3,4 +3,6 @@
     <string name="app_name">باز گوشی؟!</string>
     <!-- The notification channel for the timer while a Session runs. -->
     <string name="session_channel">تایمر خوندن</string>
+    <!-- The home screen widget's description in the widget picker. -->
+    <string name="widget_description">کتابت، پنجره‌ی امشب و دکمه‌ی شروع</string>
 </resources>

@@ -3,4 +3,6 @@
     <string name="app_name">Doomread</string>
     <!-- The notification channel for the timer while a Session runs. -->
     <string name="session_channel">Reading timer</string>
+    <!-- The home screen widget's description in the widget picker. -->
+    <string name="widget_description">Your book, tonight’s window and Start</string>
 </resources>

@@ -102,5 +102,8 @@
   "storySoFar": "داستان تا اینجا، به زبون خودت",
   "storyEmpty": "بعد از هر شب، جمله‌ای که درباره‌ش می‌نویسی اینجا میاد.",
   "bookFinished": "تمومش کردی، تا صفحه‌ی آخر.",
-  "pageRange": "ص {from} تا {to}"
+  "pageRange": "ص {from} تا {to}",
+  "widgetEvenings": "حدوداً {count} شب دیگه مونده",
+  "widgetLit": "امشب پنجره‌ت روشنه",
+  "widgetDark": "امشب پنجره‌ت هنوز خاموشه"
 }

@@ -483,4 +483,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
     return 'p. $fromString–$toString';
   }
+
+  @override
+  String widgetEvenings(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'about $countString evenings left',
+      one: 'about 1 evening left',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get widgetLit => 'Your window is lit tonight';
+
+  @override
+  String get widgetDark => 'Your window is still dark tonight';
 }

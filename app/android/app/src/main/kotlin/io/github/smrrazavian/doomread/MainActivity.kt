@@ -10,12 +10,14 @@ import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
     private var channel: MethodChannel? = null
+    private var widget: MethodChannel? = null
     private var asking: MethodChannel.Result? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         val channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "doomread/session_notification")
         this.channel = channel
+        widget = HomeWidget.register(this, flutterEngine.dartExecutor.binaryMessenger)
         channel.setMethodCallHandler { call, result ->
             when (call.method) {
                 "canAsk" -> result.success(
@@ -52,11 +54,14 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    // A tap on the notification while the app is alive (singleTop).
+    // A tap on the notification or the widget while the app is alive (singleTop).
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         intent.getStringExtra(SessionNotification.EXTRA_SESSION)?.let {
             channel?.invokeMethod("tapped", it)
+        }
+        intent.getStringExtra(HomeWidget.EXTRA_START)?.let {
+            widget?.invokeMethod("start", it)
         }
     }
 
