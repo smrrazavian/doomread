@@ -17,6 +17,8 @@ Licensed under [GPL-3.0](LICENSE).
 
 Everything runs in a Docker dev container, so the laptop needs only Docker. `tool/dev <command>` runs a command inside it. The first run pulls the prebuilt image from `ghcr.io/smrrazavian/doomread-dev`, which CI publishes whenever `tool/Dockerfile` changes. If that fails, it builds the image locally from pinned, checksummed official downloads (Flutter 3.47.7 and the Android SDK). If you're behind an HTTP proxy, set `HTTPS_PROXY`; `tool/dev` passes it on to pub and Gradle. Inside Iran, Google's Maven repositories answer 404, so also set `MAVEN_MIRROR=https://maven.myket.ir`. Gradle then tries that mirror first, and nothing in the project's build files changes.
 
+Each checkout, git worktrees included, gets its own container with its own Gradle and Kotlin daemons, so several can build at once, each from its own files. Downloaded packages are shared between them.
+
 ```sh
 tool/dev flutter pub get
 tool/dev sh -c 'cd app && flutter test'              # unit, widget and golden tests
