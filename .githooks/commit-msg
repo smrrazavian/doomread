@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Checks the first line against CONTRIBUTING.md's commit message format.
+set -euo pipefail
+first=$(head -n1 "$1")
+case $first in Merge\ *|Revert\ *|fixup!\ *|squash!\ *) exit 0 ;; esac
+
+types='feat|fix|refactor|perf|test|docs|build|ci|chore'
+scopes='app|core|server|tool|ci|docs'
+pattern="^($types)(\\(($scopes)(,($scopes))*\\))?!?: [a-z0-9].*[^.]$"
+
+if ! [[ $first =~ $pattern ]]; then
+  echo "commit-msg: first line must look like 'type(scope): summary'" >&2
+  echo "  types:  ${types//|/, }" >&2
+  echo "  scopes: ${scopes//|/, } (optional, comma-separated)" >&2
+  echo "  got:    $first" >&2
+  echo "See CONTRIBUTING.md." >&2
+  exit 1
+fi
+if (( ${#first} > 72 )); then
+  echo "commit-msg: first line is ${#first} characters; keep it to 72." >&2
+  exit 1
+fi
+if grep -qi '^co-authored-by:' "$1"; then
+  echo "commit-msg: no Co-Authored-By trailers in this repo." >&2
+  exit 1
+fi

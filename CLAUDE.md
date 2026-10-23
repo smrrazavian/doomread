@@ -1,6 +1,6 @@
 # Doomread
 
-Read `CONTEXT.md` for the domain language and `docs/superpowers/specs/2026-10-22-attention-span-design.md` for the design. Never add a `Co-Authored-By` trailer or other AI attribution to commit messages.
+Read `CONTEXT.md` for the domain language and `docs/superpowers/specs/2026-10-22-attention-span-design.md` for the design. Commit messages follow `CONTRIBUTING.md` (Conventional Commits: `type(scope): summary`, with `Closes #n` footers). Never add a `Co-Authored-By` trailer or other AI attribution to commit messages.
 
 ## Agent skills
 
