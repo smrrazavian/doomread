@@ -55,13 +55,14 @@ class LiveHomeWidget {
     unawaited(_widget.update(state));
   }
 
-  /// The Session the widget's Start opens: the one still open with [workId]
-  /// if the widget was out of date, or a new one.
+  /// The Session the widget's Start opens: one still open if the widget was
+  /// out of date, whatever its Work, or else a new one with [workId].
   Future<String> start(String workId) async {
     final now = _sessions.now();
     final all = _all ?? await _sessions.watchAll().first;
     for (final r in all.reversed) {
-      if (r.road.work.id == workId && !r.at(now).stopped) return r.id;
+      final s = r.at(now);
+      if (s.startedAt != null && !s.stopped) return r.id;
     }
     return await _sessions.start(workId);
   }
