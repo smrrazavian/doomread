@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread/utils/result.dart';
 import 'package:doomread_core/accounts.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 /// The sync server. Pick another with
@@ -50,20 +51,22 @@ class AuthException implements Exception {
 ///
 /// Being signed out is a normal state: everything else in the app works
 /// without an account, and nothing here runs until the user asks.
+///
+/// The session lives in the platform's secure storage (ADR-0008), which
+/// tests fake with `FlutterSecureStorage.setMockInitialValues`.
 class AuthRepository {
   AuthRepository(this._db, this._client, {Uri? server})
     : _server = server ?? defaultServer;
 
   final AppDatabase _db;
   final http.Client _client;
+  static const _secure = FlutterSecureStorage();
 
   /// Blackholed connections (common during outages in Iran) never error on
   /// their own, so give up and say "can't reach the server" instead.
   static const _timeout = Duration(seconds: 12);
   final Uri _server;
 
-  // ponytail: the sign-in token sits in the app's own SQLite file, unencrypted.
-  // Move it to the platform keystore once sync gives it something to protect.
   static const _tokenKey = 'session.token';
   static const _usernameKey = 'session.username';
 
@@ -82,9 +85,8 @@ class AuthRepository {
   /// reached. Always succeeds, even offline.
   Future<void> signOut() async {
     final token = await _read(_tokenKey);
-    await (_db.delete(
-      _db.settings,
-    )..where((s) => s.key.isIn([_tokenKey, _usernameKey]))).go();
+    await _secure.delete(key: _tokenKey);
+    await _secure.delete(key: _usernameKey);
     if (token == null) return;
     try {
       await _client
@@ -94,8 +96,8 @@ class AuthRepository {
           )
           .timeout(_timeout);
     } on Exception {
-      // ponytail: an offline sign-out leaves the sign-in alive on the server
-      // until it expires there, and sign-ins don't expire yet.
+      // Offline, the sign-in stays alive on the server until it has gone
+      // unused for the server's idle limit (90 days).
     }
   }
 
@@ -134,16 +136,29 @@ class AuthRepository {
     } on Exception {
       return const Result.error(AuthException(AuthFailure.unreachable));
     }
-    await _db.batch(
-      (b) => b.insertAllOnConflictUpdate(_db.settings, [
-        SettingsCompanion.insert(key: _tokenKey, value: session.token),
-        SettingsCompanion.insert(key: _usernameKey, value: session.username),
-      ]),
-    );
+    // Moved first, so an old session can't later overwrite this one.
+    await _moved;
+    await _secure.write(key: _tokenKey, value: session.token);
+    await _secure.write(key: _usernameKey, value: session.username);
     return Result.ok(session.username);
   }
 
-  Future<String?> _read(String key) async => (await (_db.select(
-    _db.settings,
-  )..where((s) => s.key.equals(key))).getSingleOrNull())?.value;
+  Future<String?> _read(String key) async {
+    await _moved;
+    return await _secure.read(key: key);
+  }
+
+  /// Sessions from before secure storage sat in the settings table. The
+  /// first use copies one over and only then deletes it there.
+  late final Future<void> _moved = () async {
+    final keys = [_tokenKey, _usernameKey];
+    final old = await (_db.select(
+      _db.settings,
+    )..where((s) => s.key.isIn(keys))).get();
+    if (old.isEmpty) return;
+    for (final row in old) {
+      await _secure.write(key: row.key, value: row.value);
+    }
+    await (_db.delete(_db.settings)..where((s) => s.key.isIn(keys))).go();
+  }();
 }
