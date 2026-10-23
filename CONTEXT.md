@@ -59,7 +59,7 @@ _Avoid_: Pause, reward, cheat time
 ### The pull toward the phone
 
 **Watched app**:
-An app or site the user has said tends to pull them away, such as Instagram, TikTok or YouTube Shorts. Opening it during a Session (outside the Planned break) raises an **Urge**.
+An app or site the user has said tends to pull them away, such as Instagram, TikTok or YouTube Shorts. Opening it while a **Stretch** runs (so not on a **Pause** or the **Planned break**) raises an **Urge**.
 _Avoid_: Blocked app, distraction, bad app
 
 **Work app**:
@@ -67,7 +67,7 @@ An app that holds the **Work** itself for this Session, such as an ebook reader 
 _Avoid_: Allowed app, whitelist
 
 **Urge**:
-One moment where the user opens a **Watched app** during a Session, shown as the "not yet" screen. It ends either as **Let pass** or as a **Slip**.
+One moment where the user opens a **Watched app** while a **Stretch** runs, shown as the "not yet" screen. A **Pause** has no Stretch for a **Slip** to end, so it raises none. It ends either as **Let pass** or as a **Slip**.
 _Avoid_: Distraction, temptation, violation
 
 **Let pass**:
