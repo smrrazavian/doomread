@@ -285,5 +285,13 @@
         "format": "decimalPattern"
       }
     }
+  },
+  "houseEmpty": "Only your light is on for now. Each evening you read lights another.",
+  "@houseEmpty": {
+    "description": "Under the House on the Reading screen when only the user's own Window is lit."
+  },
+  "houseYours": "Every other light here is yours too, from an evening you read.",
+  "@houseYours": {
+    "description": "Under the House when it has other lit Windows; before Friends exist, they are all the user's own earlier Sessions."
   }
 }

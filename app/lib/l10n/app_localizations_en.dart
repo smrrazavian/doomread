@@ -483,4 +483,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
     return 'p. $fromString–$toString';
   }
+
+  @override
+  String get houseEmpty =>
+      'Only your light is on for now. Each evening you read lights another.';
+
+  @override
+  String get houseYours =>
+      'Every other light here is yours too, from an evening you read.';
 }

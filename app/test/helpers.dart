@@ -25,12 +25,22 @@ void testApp(
 
 /// Starts the app on [db] and waits for it to settle. Widget tests run on
 /// fake time, so Session tests pass a [clock] they move by hand.
+///
+/// Reduced motion is on unless [reduceMotion] is false: the user's Window in
+/// the House pulses for as long as the Reading screen is open, so the app
+/// would otherwise never settle.
 Future<void> pumpApp(
   WidgetTester tester,
   AppDatabase db, {
   DateTime Function()? clock,
   SessionNotification? notification,
+  bool reduceMotion = true,
 }) async {
+  if (reduceMotion) {
+    tester.platformDispatcher.accessibilityFeaturesTestValue =
+        const FakeAccessibilityFeatures(disableAnimations: true);
+    addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+  }
   await tester.pumpWidget(
     DoomreadApp(db: db, clock: clock, notification: notification),
   );

@@ -123,6 +123,58 @@ void main() {
       );
     });
 
+    testApp('Reading on a first evening, the House empty, in $lang', (
+      tester,
+      db,
+    ) async {
+      await addRemains(db, lang);
+      await openIn(tester, db, lang);
+      await tap(tester, find.byType(FilledButton));
+      now = now.add(const Duration(minutes: 2, seconds: 30));
+      await tester.pump(const Duration(seconds: 1));
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('reading_house_empty_$lang.png'),
+      );
+    });
+
+    testApp('Reading after an earlier Session tonight in $lang', (
+      tester,
+      db,
+    ) async {
+      final id = await addRemains(db, lang);
+      await addEarlierEvenings(tester, db, id);
+      // A first sitting at 19:00 tonight, six minutes long.
+      final sessions = SessionRepository(db, clock: () => now);
+      now = DateTime(2026, 10, 22, 19);
+      final record = SessionRecord(
+        id: await sessions.start(id),
+        road: Road(
+          Work(
+            id: id,
+            title: '',
+            author: '',
+            totalPages: 245,
+            checkpoints: const [],
+          ),
+          position: 0,
+        ),
+        events: const [],
+      );
+      now = now.add(const Duration(minutes: 6));
+      await sessions.add(record, SessionEventKind.stop);
+      await sessions.end(record, page: 148);
+      now = DateTime(2026, 10, 22, 21);
+      await openIn(tester, db, lang);
+      await tap(tester, find.byType(FilledButton));
+      now = now.add(const Duration(minutes: 4, seconds: 3));
+      await tester.pump(const Duration(seconds: 1));
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('reading_house_$lang.png'),
+      );
+    });
+
     testApp('Asking for the Session notification in $lang', (tester, db) async {
       await addEarlierEvenings(tester, db, await addRemains(db, lang));
       await openIn(
