@@ -672,16 +672,828 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
   }
 }
 
+class $SessionEventsTable extends SessionEvents
+    with TableInfo<$SessionEventsTable, SessionEventRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SessionEventsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sessionIdMeta = const VerificationMeta(
+    'sessionId',
+  );
+  @override
+  late final GeneratedColumn<String> sessionId = GeneratedColumn<String>(
+    'session_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _workIdMeta = const VerificationMeta('workId');
+  @override
+  late final GeneratedColumn<String> workId = GeneratedColumn<String>(
+    'work_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<SessionEventKind, String> kind =
+      GeneratedColumn<String>(
+        'kind',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<SessionEventKind>($SessionEventsTable.$converterkind);
+  static const VerificationMeta _atMeta = const VerificationMeta('at');
+  @override
+  late final GeneratedColumn<DateTime> at = GeneratedColumn<DateTime>(
+    'at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, sessionId, workId, kind, at];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'session_events';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SessionEventRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('session_id')) {
+      context.handle(
+        _sessionIdMeta,
+        sessionId.isAcceptableOrUnknown(data['session_id']!, _sessionIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sessionIdMeta);
+    }
+    if (data.containsKey('work_id')) {
+      context.handle(
+        _workIdMeta,
+        workId.isAcceptableOrUnknown(data['work_id']!, _workIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_workIdMeta);
+    }
+    if (data.containsKey('at')) {
+      context.handle(_atMeta, at.isAcceptableOrUnknown(data['at']!, _atMeta));
+    } else if (isInserting) {
+      context.missing(_atMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SessionEventRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SessionEventRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      sessionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}session_id'],
+      )!,
+      workId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}work_id'],
+      )!,
+      kind: $SessionEventsTable.$converterkind.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}kind'],
+        )!,
+      ),
+      at: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}at'],
+      )!,
+    );
+  }
+
+  @override
+  $SessionEventsTable createAlias(String alias) {
+    return $SessionEventsTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<SessionEventKind, String, String> $converterkind =
+      const EnumNameConverter<SessionEventKind>(SessionEventKind.values);
+}
+
+class SessionEventRow extends DataClass implements Insertable<SessionEventRow> {
+  final String id;
+  final String sessionId;
+  final String workId;
+  final SessionEventKind kind;
+  final DateTime at;
+  const SessionEventRow({
+    required this.id,
+    required this.sessionId,
+    required this.workId,
+    required this.kind,
+    required this.at,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['session_id'] = Variable<String>(sessionId);
+    map['work_id'] = Variable<String>(workId);
+    {
+      map['kind'] = Variable<String>(
+        $SessionEventsTable.$converterkind.toSql(kind),
+      );
+    }
+    map['at'] = Variable<DateTime>(at);
+    return map;
+  }
+
+  SessionEventsCompanion toCompanion(bool nullToAbsent) {
+    return SessionEventsCompanion(
+      id: Value(id),
+      sessionId: Value(sessionId),
+      workId: Value(workId),
+      kind: Value(kind),
+      at: Value(at),
+    );
+  }
+
+  factory SessionEventRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SessionEventRow(
+      id: serializer.fromJson<String>(json['id']),
+      sessionId: serializer.fromJson<String>(json['sessionId']),
+      workId: serializer.fromJson<String>(json['workId']),
+      kind: $SessionEventsTable.$converterkind.fromJson(
+        serializer.fromJson<String>(json['kind']),
+      ),
+      at: serializer.fromJson<DateTime>(json['at']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'sessionId': serializer.toJson<String>(sessionId),
+      'workId': serializer.toJson<String>(workId),
+      'kind': serializer.toJson<String>(
+        $SessionEventsTable.$converterkind.toJson(kind),
+      ),
+      'at': serializer.toJson<DateTime>(at),
+    };
+  }
+
+  SessionEventRow copyWith({
+    String? id,
+    String? sessionId,
+    String? workId,
+    SessionEventKind? kind,
+    DateTime? at,
+  }) => SessionEventRow(
+    id: id ?? this.id,
+    sessionId: sessionId ?? this.sessionId,
+    workId: workId ?? this.workId,
+    kind: kind ?? this.kind,
+    at: at ?? this.at,
+  );
+  SessionEventRow copyWithCompanion(SessionEventsCompanion data) {
+    return SessionEventRow(
+      id: data.id.present ? data.id.value : this.id,
+      sessionId: data.sessionId.present ? data.sessionId.value : this.sessionId,
+      workId: data.workId.present ? data.workId.value : this.workId,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      at: data.at.present ? data.at.value : this.at,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SessionEventRow(')
+          ..write('id: $id, ')
+          ..write('sessionId: $sessionId, ')
+          ..write('workId: $workId, ')
+          ..write('kind: $kind, ')
+          ..write('at: $at')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, sessionId, workId, kind, at);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SessionEventRow &&
+          other.id == this.id &&
+          other.sessionId == this.sessionId &&
+          other.workId == this.workId &&
+          other.kind == this.kind &&
+          other.at == this.at);
+}
+
+class SessionEventsCompanion extends UpdateCompanion<SessionEventRow> {
+  final Value<String> id;
+  final Value<String> sessionId;
+  final Value<String> workId;
+  final Value<SessionEventKind> kind;
+  final Value<DateTime> at;
+  final Value<int> rowid;
+  const SessionEventsCompanion({
+    this.id = const Value.absent(),
+    this.sessionId = const Value.absent(),
+    this.workId = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.at = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SessionEventsCompanion.insert({
+    required String id,
+    required String sessionId,
+    required String workId,
+    required SessionEventKind kind,
+    required DateTime at,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       sessionId = Value(sessionId),
+       workId = Value(workId),
+       kind = Value(kind),
+       at = Value(at);
+  static Insertable<SessionEventRow> custom({
+    Expression<String>? id,
+    Expression<String>? sessionId,
+    Expression<String>? workId,
+    Expression<String>? kind,
+    Expression<DateTime>? at,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (sessionId != null) 'session_id': sessionId,
+      if (workId != null) 'work_id': workId,
+      if (kind != null) 'kind': kind,
+      if (at != null) 'at': at,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SessionEventsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? sessionId,
+    Value<String>? workId,
+    Value<SessionEventKind>? kind,
+    Value<DateTime>? at,
+    Value<int>? rowid,
+  }) {
+    return SessionEventsCompanion(
+      id: id ?? this.id,
+      sessionId: sessionId ?? this.sessionId,
+      workId: workId ?? this.workId,
+      kind: kind ?? this.kind,
+      at: at ?? this.at,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (sessionId.present) {
+      map['session_id'] = Variable<String>(sessionId.value);
+    }
+    if (workId.present) {
+      map['work_id'] = Variable<String>(workId.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>(
+        $SessionEventsTable.$converterkind.toSql(kind.value),
+      );
+    }
+    if (at.present) {
+      map['at'] = Variable<DateTime>(at.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SessionEventsCompanion(')
+          ..write('id: $id, ')
+          ..write('sessionId: $sessionId, ')
+          ..write('workId: $workId, ')
+          ..write('kind: $kind, ')
+          ..write('at: $at, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $NotesTable extends Notes with TableInfo<$NotesTable, NoteRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $NotesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sessionIdMeta = const VerificationMeta(
+    'sessionId',
+  );
+  @override
+  late final GeneratedColumn<String> sessionId = GeneratedColumn<String>(
+    'session_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _workIdMeta = const VerificationMeta('workId');
+  @override
+  late final GeneratedColumn<String> workId = GeneratedColumn<String>(
+    'work_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _fromPageMeta = const VerificationMeta(
+    'fromPage',
+  );
+  @override
+  late final GeneratedColumn<int> fromPage = GeneratedColumn<int>(
+    'from_page',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _toPageMeta = const VerificationMeta('toPage');
+  @override
+  late final GeneratedColumn<int> toPage = GeneratedColumn<int>(
+    'to_page',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  @override
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+    'body',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    sessionId,
+    workId,
+    fromPage,
+    toPage,
+    body,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'notes';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<NoteRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('session_id')) {
+      context.handle(
+        _sessionIdMeta,
+        sessionId.isAcceptableOrUnknown(data['session_id']!, _sessionIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sessionIdMeta);
+    }
+    if (data.containsKey('work_id')) {
+      context.handle(
+        _workIdMeta,
+        workId.isAcceptableOrUnknown(data['work_id']!, _workIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_workIdMeta);
+    }
+    if (data.containsKey('from_page')) {
+      context.handle(
+        _fromPageMeta,
+        fromPage.isAcceptableOrUnknown(data['from_page']!, _fromPageMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fromPageMeta);
+    }
+    if (data.containsKey('to_page')) {
+      context.handle(
+        _toPageMeta,
+        toPage.isAcceptableOrUnknown(data['to_page']!, _toPageMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_toPageMeta);
+    }
+    if (data.containsKey('body')) {
+      context.handle(
+        _bodyMeta,
+        body.isAcceptableOrUnknown(data['body']!, _bodyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_bodyMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  NoteRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return NoteRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      sessionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}session_id'],
+      )!,
+      workId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}work_id'],
+      )!,
+      fromPage: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}from_page'],
+      )!,
+      toPage: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}to_page'],
+      )!,
+      body: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}body'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $NotesTable createAlias(String alias) {
+    return $NotesTable(attachedDatabase, alias);
+  }
+}
+
+class NoteRow extends DataClass implements Insertable<NoteRow> {
+  final String id;
+  final String sessionId;
+  final String workId;
+  final int fromPage;
+  final int toPage;
+  final String body;
+  final DateTime updatedAt;
+  const NoteRow({
+    required this.id,
+    required this.sessionId,
+    required this.workId,
+    required this.fromPage,
+    required this.toPage,
+    required this.body,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['session_id'] = Variable<String>(sessionId);
+    map['work_id'] = Variable<String>(workId);
+    map['from_page'] = Variable<int>(fromPage);
+    map['to_page'] = Variable<int>(toPage);
+    map['body'] = Variable<String>(body);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  NotesCompanion toCompanion(bool nullToAbsent) {
+    return NotesCompanion(
+      id: Value(id),
+      sessionId: Value(sessionId),
+      workId: Value(workId),
+      fromPage: Value(fromPage),
+      toPage: Value(toPage),
+      body: Value(body),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory NoteRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return NoteRow(
+      id: serializer.fromJson<String>(json['id']),
+      sessionId: serializer.fromJson<String>(json['sessionId']),
+      workId: serializer.fromJson<String>(json['workId']),
+      fromPage: serializer.fromJson<int>(json['fromPage']),
+      toPage: serializer.fromJson<int>(json['toPage']),
+      body: serializer.fromJson<String>(json['body']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'sessionId': serializer.toJson<String>(sessionId),
+      'workId': serializer.toJson<String>(workId),
+      'fromPage': serializer.toJson<int>(fromPage),
+      'toPage': serializer.toJson<int>(toPage),
+      'body': serializer.toJson<String>(body),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  NoteRow copyWith({
+    String? id,
+    String? sessionId,
+    String? workId,
+    int? fromPage,
+    int? toPage,
+    String? body,
+    DateTime? updatedAt,
+  }) => NoteRow(
+    id: id ?? this.id,
+    sessionId: sessionId ?? this.sessionId,
+    workId: workId ?? this.workId,
+    fromPage: fromPage ?? this.fromPage,
+    toPage: toPage ?? this.toPage,
+    body: body ?? this.body,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  NoteRow copyWithCompanion(NotesCompanion data) {
+    return NoteRow(
+      id: data.id.present ? data.id.value : this.id,
+      sessionId: data.sessionId.present ? data.sessionId.value : this.sessionId,
+      workId: data.workId.present ? data.workId.value : this.workId,
+      fromPage: data.fromPage.present ? data.fromPage.value : this.fromPage,
+      toPage: data.toPage.present ? data.toPage.value : this.toPage,
+      body: data.body.present ? data.body.value : this.body,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NoteRow(')
+          ..write('id: $id, ')
+          ..write('sessionId: $sessionId, ')
+          ..write('workId: $workId, ')
+          ..write('fromPage: $fromPage, ')
+          ..write('toPage: $toPage, ')
+          ..write('body: $body, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, sessionId, workId, fromPage, toPage, body, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is NoteRow &&
+          other.id == this.id &&
+          other.sessionId == this.sessionId &&
+          other.workId == this.workId &&
+          other.fromPage == this.fromPage &&
+          other.toPage == this.toPage &&
+          other.body == this.body &&
+          other.updatedAt == this.updatedAt);
+}
+
+class NotesCompanion extends UpdateCompanion<NoteRow> {
+  final Value<String> id;
+  final Value<String> sessionId;
+  final Value<String> workId;
+  final Value<int> fromPage;
+  final Value<int> toPage;
+  final Value<String> body;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const NotesCompanion({
+    this.id = const Value.absent(),
+    this.sessionId = const Value.absent(),
+    this.workId = const Value.absent(),
+    this.fromPage = const Value.absent(),
+    this.toPage = const Value.absent(),
+    this.body = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  NotesCompanion.insert({
+    required String id,
+    required String sessionId,
+    required String workId,
+    required int fromPage,
+    required int toPage,
+    required String body,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       sessionId = Value(sessionId),
+       workId = Value(workId),
+       fromPage = Value(fromPage),
+       toPage = Value(toPage),
+       body = Value(body),
+       updatedAt = Value(updatedAt);
+  static Insertable<NoteRow> custom({
+    Expression<String>? id,
+    Expression<String>? sessionId,
+    Expression<String>? workId,
+    Expression<int>? fromPage,
+    Expression<int>? toPage,
+    Expression<String>? body,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (sessionId != null) 'session_id': sessionId,
+      if (workId != null) 'work_id': workId,
+      if (fromPage != null) 'from_page': fromPage,
+      if (toPage != null) 'to_page': toPage,
+      if (body != null) 'body': body,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  NotesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? sessionId,
+    Value<String>? workId,
+    Value<int>? fromPage,
+    Value<int>? toPage,
+    Value<String>? body,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return NotesCompanion(
+      id: id ?? this.id,
+      sessionId: sessionId ?? this.sessionId,
+      workId: workId ?? this.workId,
+      fromPage: fromPage ?? this.fromPage,
+      toPage: toPage ?? this.toPage,
+      body: body ?? this.body,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (sessionId.present) {
+      map['session_id'] = Variable<String>(sessionId.value);
+    }
+    if (workId.present) {
+      map['work_id'] = Variable<String>(workId.value);
+    }
+    if (fromPage.present) {
+      map['from_page'] = Variable<int>(fromPage.value);
+    }
+    if (toPage.present) {
+      map['to_page'] = Variable<int>(toPage.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NotesCompanion(')
+          ..write('id: $id, ')
+          ..write('sessionId: $sessionId, ')
+          ..write('workId: $workId, ')
+          ..write('fromPage: $fromPage, ')
+          ..write('toPage: $toPage, ')
+          ..write('body: $body, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $SettingsTable settings = $SettingsTable(this);
   late final $WorksTable works = $WorksTable(this);
+  late final $SessionEventsTable sessionEvents = $SessionEventsTable(this);
+  late final $NotesTable notes = $NotesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [settings, works];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    settings,
+    works,
+    sessionEvents,
+    notes,
+  ];
 }
 
 typedef $$SettingsTableCreateCompanionBuilder = SettingsCompanion Function({
@@ -1060,6 +1872,454 @@ typedef $$WorksTableProcessedTableManager =
       WorkRow,
       PrefetchHooks Function()
     >;
+typedef $$SessionEventsTableCreateCompanionBuilder =
+    SessionEventsCompanion Function({
+      required String id,
+      required String sessionId,
+      required String workId,
+      required SessionEventKind kind,
+      required DateTime at,
+      Value<int> rowid,
+    });
+typedef $$SessionEventsTableUpdateCompanionBuilder =
+    SessionEventsCompanion Function({
+      Value<String> id,
+      Value<String> sessionId,
+      Value<String> workId,
+      Value<SessionEventKind> kind,
+      Value<DateTime> at,
+      Value<int> rowid,
+    });
+
+class $$SessionEventsTableFilterComposer
+    extends Composer<_$AppDatabase, $SessionEventsTable> {
+  $$SessionEventsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sessionId => $composableBuilder(
+    column: $table.sessionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get workId => $composableBuilder(
+    column: $table.workId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<SessionEventKind, SessionEventKind, String>
+  get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<DateTime> get at => $composableBuilder(
+    column: $table.at,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SessionEventsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SessionEventsTable> {
+  $$SessionEventsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sessionId => $composableBuilder(
+    column: $table.sessionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get workId => $composableBuilder(
+    column: $table.workId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get at => $composableBuilder(
+    column: $table.at,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SessionEventsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SessionEventsTable> {
+  $$SessionEventsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get sessionId =>
+      $composableBuilder(column: $table.sessionId, builder: (column) => column);
+
+  GeneratedColumn<String> get workId =>
+      $composableBuilder(column: $table.workId, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<SessionEventKind, String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get at =>
+      $composableBuilder(column: $table.at, builder: (column) => column);
+}
+
+class $$SessionEventsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SessionEventsTable,
+          SessionEventRow,
+          $$SessionEventsTableFilterComposer,
+          $$SessionEventsTableOrderingComposer,
+          $$SessionEventsTableAnnotationComposer,
+          $$SessionEventsTableCreateCompanionBuilder,
+          $$SessionEventsTableUpdateCompanionBuilder,
+          (
+            SessionEventRow,
+            BaseReferences<_$AppDatabase, $SessionEventsTable, SessionEventRow>,
+          ),
+          SessionEventRow,
+          PrefetchHooks Function()
+        > {
+  $$SessionEventsTableTableManager(_$AppDatabase db, $SessionEventsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SessionEventsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SessionEventsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SessionEventsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> sessionId = const Value.absent(),
+                Value<String> workId = const Value.absent(),
+                Value<SessionEventKind> kind = const Value.absent(),
+                Value<DateTime> at = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SessionEventsCompanion(
+                id: id,
+                sessionId: sessionId,
+                workId: workId,
+                kind: kind,
+                at: at,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String sessionId,
+                required String workId,
+                required SessionEventKind kind,
+                required DateTime at,
+                Value<int> rowid = const Value.absent(),
+              }) => SessionEventsCompanion.insert(
+                id: id,
+                sessionId: sessionId,
+                workId: workId,
+                kind: kind,
+                at: at,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$SessionEventsTable, SessionEventRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $SessionEventsTable,
+                    SessionEventRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SessionEventsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SessionEventsTable,
+      SessionEventRow,
+      $$SessionEventsTableFilterComposer,
+      $$SessionEventsTableOrderingComposer,
+      $$SessionEventsTableAnnotationComposer,
+      $$SessionEventsTableCreateCompanionBuilder,
+      $$SessionEventsTableUpdateCompanionBuilder,
+      (
+        SessionEventRow,
+        BaseReferences<_$AppDatabase, $SessionEventsTable, SessionEventRow>,
+      ),
+      SessionEventRow,
+      PrefetchHooks Function()
+    >;
+typedef $$NotesTableCreateCompanionBuilder = NotesCompanion Function({
+  required String id,
+  required String sessionId,
+  required String workId,
+  required int fromPage,
+  required int toPage,
+  required String body,
+  required DateTime updatedAt,
+  Value<int> rowid,
+});
+typedef $$NotesTableUpdateCompanionBuilder = NotesCompanion Function({
+  Value<String> id,
+  Value<String> sessionId,
+  Value<String> workId,
+  Value<int> fromPage,
+  Value<int> toPage,
+  Value<String> body,
+  Value<DateTime> updatedAt,
+  Value<int> rowid,
+});
+
+class $$NotesTableFilterComposer extends Composer<_$AppDatabase, $NotesTable> {
+  $$NotesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sessionId => $composableBuilder(
+    column: $table.sessionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get workId => $composableBuilder(
+    column: $table.workId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get fromPage => $composableBuilder(
+    column: $table.fromPage,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get toPage => $composableBuilder(
+    column: $table.toPage,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$NotesTableOrderingComposer
+    extends Composer<_$AppDatabase, $NotesTable> {
+  $$NotesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sessionId => $composableBuilder(
+    column: $table.sessionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get workId => $composableBuilder(
+    column: $table.workId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get fromPage => $composableBuilder(
+    column: $table.fromPage,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get toPage => $composableBuilder(
+    column: $table.toPage,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$NotesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $NotesTable> {
+  $$NotesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get sessionId =>
+      $composableBuilder(column: $table.sessionId, builder: (column) => column);
+
+  GeneratedColumn<String> get workId =>
+      $composableBuilder(column: $table.workId, builder: (column) => column);
+
+  GeneratedColumn<int> get fromPage =>
+      $composableBuilder(column: $table.fromPage, builder: (column) => column);
+
+  GeneratedColumn<int> get toPage =>
+      $composableBuilder(column: $table.toPage, builder: (column) => column);
+
+  GeneratedColumn<String> get body =>
+      $composableBuilder(column: $table.body, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$NotesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $NotesTable,
+          NoteRow,
+          $$NotesTableFilterComposer,
+          $$NotesTableOrderingComposer,
+          $$NotesTableAnnotationComposer,
+          $$NotesTableCreateCompanionBuilder,
+          $$NotesTableUpdateCompanionBuilder,
+          (NoteRow, BaseReferences<_$AppDatabase, $NotesTable, NoteRow>),
+          NoteRow,
+          PrefetchHooks Function()
+        > {
+  $$NotesTableTableManager(_$AppDatabase db, $NotesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$NotesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$NotesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$NotesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> sessionId = const Value.absent(),
+                Value<String> workId = const Value.absent(),
+                Value<int> fromPage = const Value.absent(),
+                Value<int> toPage = const Value.absent(),
+                Value<String> body = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => NotesCompanion(
+                id: id,
+                sessionId: sessionId,
+                workId: workId,
+                fromPage: fromPage,
+                toPage: toPage,
+                body: body,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String sessionId,
+                required String workId,
+                required int fromPage,
+                required int toPage,
+                required String body,
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => NotesCompanion.insert(
+                id: id,
+                sessionId: sessionId,
+                workId: workId,
+                fromPage: fromPage,
+                toPage: toPage,
+                body: body,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$NotesTable, NoteRow>(table),
+                  BaseReferences<_$AppDatabase, $NotesTable, NoteRow>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$NotesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $NotesTable,
+      NoteRow,
+      $$NotesTableFilterComposer,
+      $$NotesTableOrderingComposer,
+      $$NotesTableAnnotationComposer,
+      $$NotesTableCreateCompanionBuilder,
+      $$NotesTableUpdateCompanionBuilder,
+      (NoteRow, BaseReferences<_$AppDatabase, $NotesTable, NoteRow>),
+      NoteRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -1068,4 +2328,8 @@ class $AppDatabaseManager {
       $$SettingsTableTableManager(_db, _db.settings);
   $$WorksTableTableManager get works =>
       $$WorksTableTableManager(_db, _db.works);
+  $$SessionEventsTableTableManager get sessionEvents =>
+      $$SessionEventsTableTableManager(_db, _db.sessionEvents);
+  $$NotesTableTableManager get notes =>
+      $$NotesTableTableManager(_db, _db.notes);
 }

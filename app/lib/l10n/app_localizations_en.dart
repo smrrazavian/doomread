@@ -161,4 +161,130 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get changeBook => 'Change book';
+
+  @override
+  String get startReading => 'Start reading';
+
+  @override
+  String get backToReading => 'Back to reading';
+
+  @override
+  String aim(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: 'Aim: $minutesString minutes in one go.',
+      one: 'Aim: 1 minute in one go.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eveningsLeft(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'At your pace, about $countString evenings left.',
+      one: 'At your pace, about 1 evening left.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String aimToGo(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: '$minutesString minutes to go.',
+      one: '1 minute to go.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get aimReached => 'Aim reached. This is your longest stretch yet.';
+
+  @override
+  String get paused => 'Paused. Take your time, it doesn\'t count against you.';
+
+  @override
+  String get faceDown => 'Turn the phone face down.';
+
+  @override
+  String get pause => 'Pause';
+
+  @override
+  String get resume => 'Resume';
+
+  @override
+  String get stopForTonight => 'Stop for tonight';
+
+  @override
+  String get newBestStretch => 'New best stretch';
+
+  @override
+  String inOneGoTonight(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: '$minutesString minutes in one go tonight.',
+      one: '1 minute in one go tonight.',
+      zero: 'Under a minute in one go tonight.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get whichPage => 'Which page did you stop at?';
+
+  @override
+  String ofStartedAt(int total, int from) {
+    final intl.NumberFormat totalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String totalString = totalNumberFormat.format(total);
+    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String fromString = fromNumberFormat.format(from);
+
+    return 'of $totalString, started at $fromString';
+  }
+
+  @override
+  String get whatHappened => 'In a sentence, what happened?';
+
+  @override
+  String get saveAndLightsOut => 'Save and turn off the light';
+
+  @override
+  String get problemNoPage => 'Which page? Just the number.';
+
+  @override
+  String problemPageOutOfRange(int from, int total) {
+    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String fromString = fromNumberFormat.format(from);
+    final intl.NumberFormat totalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String totalString = totalNumberFormat.format(total);
+
+    return 'A page from $fromString to $totalString';
+  }
 }

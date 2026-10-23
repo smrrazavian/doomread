@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:drift/drift.dart';
@@ -15,7 +13,7 @@ class WorkRepository {
   Stream<List<Work>> watchAll() =>
       (_db.select(_db.works)..orderBy([(w) => OrderingTerm.desc(w.updatedAt)]))
           .watch()
-          .map((rows) => rows.map(_toWork).toList());
+          .map((rows) => rows.map(toWork).toList());
 
   /// The current Work on its Road, or null before any Work exists.
   Stream<Road?> watchCurrent() {
@@ -29,7 +27,7 @@ class WorkRepository {
     return query.watchSingleOrNull().map((row) {
       if (row == null) return null;
       final w = row.readTable(_db.works);
-      return Road(_toWork(w), position: w.position);
+      return Road(toWork(w), position: w.position);
     });
   }
 
@@ -40,7 +38,7 @@ class WorkRepository {
     required int totalPages,
     required List<int> checkpoints,
   }) => _db.transaction(() async {
-    final id = _newId();
+    final id = newId();
     await _db
         .into(_db.works)
         .insert(
@@ -82,7 +80,7 @@ class WorkRepository {
         SettingsCompanion.insert(key: _currentKey, value: id),
       );
 
-  static Work _toWork(WorkRow w) => Work(
+  static Work toWork(WorkRow w) => Work(
     id: w.id,
     title: w.title,
     author: w.author,
@@ -92,13 +90,4 @@ class WorkRepository {
         if (c.isNotEmpty) int.parse(c),
     ],
   );
-
-  /// A random 128-bit id, so Works can sync across devices later (ticket #16).
-  static String _newId() {
-    final r = Random.secure();
-    return List.generate(
-      16,
-      (_) => r.nextInt(256).toRadixString(16).padLeft(2, '0'),
-    ).join();
-  }
 }

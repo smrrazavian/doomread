@@ -331,6 +331,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Change book'**
   String get changeBook;
+
+  /// No description provided for @startReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Start reading'**
+  String get startReading;
+
+  /// No description provided for @backToReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to reading'**
+  String get backToReading;
+
+  /// No description provided for @aim.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes, plural, =1{Aim: 1 minute in one go.} other{Aim: {minutes} minutes in one go.}}'**
+  String aim(int minutes);
+
+  /// No description provided for @eveningsLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{At your pace, about 1 evening left.} other{At your pace, about {count} evenings left.}}'**
+  String eveningsLeft(int count);
+
+  /// No description provided for @aimToGo.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes, plural, =1{1 minute to go.} other{{minutes} minutes to go.}}'**
+  String aimToGo(int minutes);
+
+  /// No description provided for @aimReached.
+  ///
+  /// In en, this message translates to:
+  /// **'Aim reached. This is your longest stretch yet.'**
+  String get aimReached;
+
+  /// No description provided for @paused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused. Take your time, it doesn\'t count against you.'**
+  String get paused;
+
+  /// No description provided for @faceDown.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn the phone face down.'**
+  String get faceDown;
+
+  /// No description provided for @pause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get pause;
+
+  /// No description provided for @resume.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get resume;
+
+  /// No description provided for @stopForTonight.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop for tonight'**
+  String get stopForTonight;
+
+  /// No description provided for @newBestStretch.
+  ///
+  /// In en, this message translates to:
+  /// **'New best stretch'**
+  String get newBestStretch;
+
+  /// No description provided for @inOneGoTonight.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes, plural, =0{Under a minute in one go tonight.} =1{1 minute in one go tonight.} other{{minutes} minutes in one go tonight.}}'**
+  String inOneGoTonight(int minutes);
+
+  /// No description provided for @whichPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Which page did you stop at?'**
+  String get whichPage;
+
+  /// No description provided for @ofStartedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'of {total}, started at {from}'**
+  String ofStartedAt(int total, int from);
+
+  /// No description provided for @whatHappened.
+  ///
+  /// In en, this message translates to:
+  /// **'In a sentence, what happened?'**
+  String get whatHappened;
+
+  /// No description provided for @saveAndLightsOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Save and turn off the light'**
+  String get saveAndLightsOut;
+
+  /// No description provided for @problemNoPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Which page? Just the number.'**
+  String get problemNoPage;
+
+  /// No description provided for @problemPageOutOfRange.
+  ///
+  /// In en, this message translates to:
+  /// **'A page from {from} to {total}'**
+  String problemPageOutOfRange(int from, int total);
 }
 
 class _AppLocalizationsDelegate

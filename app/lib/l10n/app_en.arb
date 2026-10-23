@@ -73,5 +73,80 @@
   "accountErrorWrong": "Wrong username or password.",
   "accountErrorRejected": "The server didn't accept that. Try again.",
   "accountErrorUnreachable": "Can't reach the server. Everything else still works; try again later.",
-  "changeBook": "Change book"
+  "changeBook": "Change book",
+  "startReading": "Start reading",
+  "backToReading": "Back to reading",
+  "aim": "{minutes, plural, =1{Aim: 1 minute in one go.} other{Aim: {minutes} minutes in one go.}}",
+  "@aim": {
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "eveningsLeft": "{count, plural, =1{At your pace, about 1 evening left.} other{At your pace, about {count} evenings left.}}",
+  "@eveningsLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "aimToGo": "{minutes, plural, =1{1 minute to go.} other{{minutes} minutes to go.}}",
+  "@aimToGo": {
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "aimReached": "Aim reached. This is your longest stretch yet.",
+  "paused": "Paused. Take your time, it doesn't count against you.",
+  "faceDown": "Turn the phone face down.",
+  "pause": "Pause",
+  "resume": "Resume",
+  "stopForTonight": "Stop for tonight",
+  "newBestStretch": "New best stretch",
+  "inOneGoTonight": "{minutes, plural, =0{Under a minute in one go tonight.} =1{1 minute in one go tonight.} other{{minutes} minutes in one go tonight.}}",
+  "@inOneGoTonight": {
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "whichPage": "Which page did you stop at?",
+  "ofStartedAt": "of {total}, started at {from}",
+  "@ofStartedAt": {
+    "placeholders": {
+      "total": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "from": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "whatHappened": "In a sentence, what happened?",
+  "saveAndLightsOut": "Save and turn off the light",
+  "problemNoPage": "Which page? Just the number.",
+  "problemPageOutOfRange": "A page from {from} to {total}",
+  "@problemPageOutOfRange": {
+    "placeholders": {
+      "from": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "total": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  }
 }

@@ -1,8 +1,10 @@
+import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/road_view.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/tonight/view_models/tonight_view_model.dart';
+import 'package:doomread/utils/result.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -13,7 +15,8 @@ class TonightScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ChangeNotifierProvider(
-    create: (c) => TonightViewModel(c.read<WorkRepository>()),
+    create: (c) =>
+        TonightViewModel(c.read<WorkRepository>(), c.read<SessionRepository>()),
     child: const _Tonight(),
   );
 }
@@ -45,9 +48,20 @@ class _Tonight extends StatelessWidget {
           children: [
             Text(l10n.navTonight, style: text.headlineSmall),
             const SizedBox(height: 16),
-            if (road != null)
-              _WorkCard(road: road)
-            else if (vm.loaded) ...[
+            if (road != null) ...[
+              _WorkCard(road: road, evenings: vm.evenings),
+              const SizedBox(height: 16),
+              Text(l10n.aim(vm.aim.inMinutes), style: text.bodyMedium),
+              const Spacer(),
+              FilledButton(
+                onPressed: vm.start.running ? null : () => _start(context, vm),
+                child: Text(
+                  vm.openSession == null
+                      ? l10n.startReading
+                      : l10n.backToReading,
+                ),
+              ),
+            ] else if (vm.loaded) ...[
               Text(l10n.tonightEmpty, style: text.bodyMedium),
               const SizedBox(height: 16),
               Align(
@@ -65,10 +79,19 @@ class _Tonight extends StatelessWidget {
   }
 }
 
+Future<void> _start(BuildContext context, TonightViewModel vm) async {
+  await vm.start.execute();
+  if (!context.mounted) return;
+  if (vm.start.result case Ok(:final value)) {
+    await context.push('/reading/$value');
+  }
+}
+
 class _WorkCard extends StatelessWidget {
-  const _WorkCard({required this.road});
+  const _WorkCard({required this.road, required this.evenings});
 
   final Road road;
+  final int? evenings;
 
   @override
   Widget build(BuildContext context) {
@@ -101,6 +124,8 @@ class _WorkCard extends StatelessWidget {
               l10n.pagesLeft(work.totalPages - road.position),
               style: text.bodySmall,
             ),
+            if (evenings case final n?)
+              Text(l10n.eveningsLeft(n), style: text.bodySmall),
             if (next != null)
               Text(l10n.nextCheckpoint(next), style: text.bodySmall),
             Align(
