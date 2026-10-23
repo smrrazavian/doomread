@@ -1,6 +1,7 @@
 import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread/l10n/app_localizations.dart';
+import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -72,11 +73,11 @@ void main() {
     expect(find.text(l10n.onBreak), findsOne);
     expect(find.text('5:00'), findsOne);
     expect(alarm.set?.at, DateTime(2026, 10, 22, 21, 25));
-    expect(alarm.set?.title, l10n.breakOver);
+    expect(alarm.set?.title, voice(Moment.breakOver, Tone.spicy, 'en'));
     expect(alarm.set?.text, l10n.workWaiting('The Remains of the Day'));
 
     await wait(tester, const Duration(minutes: 5));
-    expect(find.text(l10n.breakOver), findsOne);
+    expect(find.text(voice(Moment.breakOver, Tone.spicy, 'en')), findsOne);
     await tap(tester, l10n.backToReading);
     expect(alarm.set, isNull, reason: 'back, so the alarm is unset');
 

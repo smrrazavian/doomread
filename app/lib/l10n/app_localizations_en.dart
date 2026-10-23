@@ -218,9 +218,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get aimReached => 'Aim reached. This is your longest stretch yet.';
-
-  @override
   String get paused => 'Paused. Take your time, it doesn\'t count against you.';
 
   @override
@@ -552,21 +549,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get breakHere => 'Your break is here.';
 
   @override
-  String breakAnything(int minutes) {
-    final intl.NumberFormat minutesNumberFormat =
-        intl.NumberFormat.decimalPattern(localeName);
-    final String minutesString = minutesNumberFormat.format(minutes);
-
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutesString minutes',
-      one: 'One minute',
-    );
-    return '$_temp0 of Reels, messages, anything.';
-  }
-
-  @override
   String backToChapterAt(int chapter, String time) {
     final intl.NumberFormat chapterNumberFormat =
         intl.NumberFormat.decimalPattern(localeName);
@@ -619,9 +601,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get imBack => 'I\'m back';
-
-  @override
-  String get breakOver => 'Break\'s over.';
 
   @override
   String chapterWaiting(int chapter) {
@@ -1037,11 +1016,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get keepGoing => 'Keep going instead';
 
   @override
-  String urgeTitle(String app) {
-    return 'Not yet. $app waits for your break.';
-  }
-
-  @override
   String get urgeBody => 'You planned that break yourself, remember?';
 
   @override
@@ -1054,9 +1028,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openItAnyway => 'Open it anyway';
-
-  @override
-  String get slipTitle => 'Fumbled. It happens.';
 
   @override
   String slipBody(int minutes) {
@@ -1098,9 +1069,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get watchAskNotNow => 'Not now';
-
-  @override
-  String get urgeTitleAnyApp => 'Not yet. It can wait for your break.';
 
   @override
   String get watchRestricted =>
@@ -1149,4 +1117,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get watchAllowOverlay => 'Allow display over other apps';
+
+  @override
+  String get tone => 'Tone';
+
+  @override
+  String get toneChill => 'Chill';
+
+  @override
+  String get toneSpicy => 'Spicy';
+
+  @override
+  String get toneMom => 'Mom mode';
+
+  @override
+  String get toneAsk => 'How should Doomread talk to you?';
+
+  @override
+  String get toneHint =>
+      'Whichever you pick, it roasts the urge, never you, and it\'s always kind after a slip.';
 }

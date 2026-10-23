@@ -13,6 +13,8 @@ void main() {
   var now = DateTime(2026, 10, 22, 21);
   final l10n = lookupAppLocalizations(const Locale('en'));
   const instagram = 'com.instagram.android';
+  final urgeTitle = voice(Moment.urge, Tone.spicy, 'en', {'app': 'Instagram'});
+  final slipTitle = voice(Moment.afterSlip, Tone.spicy, 'en');
 
   Future<FakeAppWatch> startReading(
     WidgetTester tester,
@@ -67,12 +69,12 @@ void main() {
     final w = await startReading(tester, db);
     await wait(tester, const Duration(minutes: 4));
     await open(tester, w, instagram);
-    expect(find.text(l10n.urgeTitle('Instagram')), findsOne);
+    expect(find.text(urgeTitle), findsOne);
     expect(w.fronts, 1);
 
     await wait(tester, const Duration(minutes: 1));
     await tap(tester, l10n.backToBook);
-    expect(find.text(l10n.urgeTitle('Instagram')), findsNothing);
+    expect(find.text(urgeTitle), findsNothing);
     expect(find.text('5:00'), findsOne, reason: 'Let pass keeps the Stretch');
     expect(await journal(db), [
       SessionEventKind.start,
@@ -84,7 +86,7 @@ void main() {
   testApp('an app that is not Watched raises nothing', (tester, db) async {
     final w = await startReading(tester, db);
     await open(tester, w, 'org.example.reader');
-    expect(find.text(l10n.urgeTitle('Instagram')), findsNothing);
+    expect(find.text(urgeTitle), findsNothing);
     expect(w.fronts, 0);
   });
 
@@ -97,13 +99,13 @@ void main() {
     await open(tester, w, instagram);
     await tap(tester, l10n.openAnyway('Instagram'));
     expect(w.opened, instagram);
-    expect(find.text(l10n.slipTitle), findsOne);
+    expect(find.text(slipTitle), findsOne);
     expect(find.text(l10n.slipBody(6)), findsOne);
 
     // The service then reports Instagram, which the user chose.
     await open(tester, w, instagram);
     expect(w.fronts, 1);
-    expect(find.text(l10n.slipTitle), findsOne);
+    expect(find.text(slipTitle), findsOne);
 
     await tap(tester, l10n.backIn);
     await wait(tester, const Duration(minutes: 2));
@@ -166,7 +168,7 @@ void main() {
     );
     expect(w.polling, isTrue);
     await open(tester, w, instagram);
-    expect(find.text(l10n.urgeTitle('Instagram')), findsOne);
+    expect(find.text(urgeTitle), findsOne);
     await tap(tester, l10n.backToBook);
     await tap(tester, l10n.stopForTonight);
     expect(w.polling, isFalse);
@@ -180,5 +182,18 @@ void main() {
     );
     expect(w.watching, isTrue);
     expect(w.polling, isFalse);
+  });
+
+  testApp('in Mom mode the Urge sounds like Mom, and after a Slip it is '
+      'kind', (tester, db) async {
+    await SettingsRepository(db).setTone(Tone.mom);
+    final w = await startReading(tester, db);
+    await open(tester, w, instagram);
+    expect(
+      find.text(voice(Moment.urge, Tone.mom, 'en', {'app': 'Instagram'})),
+      findsOne,
+    );
+    await tap(tester, l10n.openAnyway('Instagram'));
+    expect(find.text(voice(Moment.afterSlip, Tone.chill, 'en')), findsOne);
   });
 }

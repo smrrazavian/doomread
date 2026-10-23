@@ -2,6 +2,7 @@ import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/number_format.dart';
 import 'package:doomread/ui/core/theme.dart';
+import 'package:doomread/ui/core/voice_text.dart';
 import 'package:doomread/ui/core/work_text.dart';
 import 'package:doomread/ui/evening/view_models/evening_view_model.dart';
 import 'package:doomread_core/doomread_core.dart';
@@ -108,6 +109,8 @@ class _EveningState extends State<_Evening> {
                         : l10n.inOneGoTonight)(vm.longestTonight.inMinutes),
                     style: text.headlineSmall,
                   ),
+                  const SizedBox(height: 8),
+                  Text(say(context, Moment.evening), style: text.bodyMedium),
                   const SizedBox(height: 32),
                   Text(switch (unit) {
                     WorkUnit.page => l10n.whichPage,

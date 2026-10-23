@@ -1,6 +1,7 @@
 import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/number_format.dart';
+import 'package:doomread/ui/core/voice_text.dart';
 import 'package:doomread/ui/planned_break/break_text.dart';
 import 'package:doomread/ui/planned_break/view_models/planned_break_view_model.dart';
 import 'package:doomread/ui/reading/widgets/house_view.dart';
@@ -41,7 +42,7 @@ class UrgeView extends StatelessWidget {
       },
       child: _Moment(
         house: house,
-        title: app == null ? l10n.urgeTitleAnyApp : l10n.urgeTitle(app!),
+        title: say(context, Moment.urge, {'app': ?app}),
         body: [
           ChangeNotifierProvider(
             create: (c) =>
@@ -82,7 +83,7 @@ class AfterSlipView extends StatelessWidget {
     final last = session.stretches.lastOrNull?.length ?? Duration.zero;
     return _Moment(
       house: house,
-      title: l10n.slipTitle,
+      title: say(context, Moment.afterSlip),
       body: [l10n.slipBody(last.inMinutes)],
       go: l10n.backIn,
       onGo: onBackIn,

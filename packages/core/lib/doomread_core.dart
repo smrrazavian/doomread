@@ -13,6 +13,7 @@ export 'src/road.dart';
 export 'src/session.dart';
 export 'src/session_end.dart';
 export 'src/urge.dart';
+export 'src/voice.dart';
 export 'src/work.dart';
 export 'src/work_draft.dart';
 export 'src/work_session.dart';

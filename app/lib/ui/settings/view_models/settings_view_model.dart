@@ -14,6 +14,9 @@ class SettingsViewModel extends ChangeNotifier {
   /// The Watched apps the user picked.
   Set<String> watched = defaultWatched;
 
+  /// The voice the app speaks in.
+  Tone tone = Tone.byDefault;
+
   /// Each Work's Work app, by Work id.
   Map<String, LaunchableApp> workApps = const {};
 
@@ -28,6 +31,7 @@ class SettingsViewModel extends ChangeNotifier {
     locale = await _settings.locale() ?? locale;
     watched = await _settings.watchedApps();
     workApps = await _settings.workApps();
+    tone = await _settings.tone();
     loaded = true;
     notifyListeners();
   }
@@ -44,6 +48,12 @@ class SettingsViewModel extends ChangeNotifier {
     if (app != null) workApps[workId] = app;
     notifyListeners();
     await _settings.setWorkApps(workApps);
+  }
+
+  Future<void> setTone(Tone value) async {
+    tone = value;
+    notifyListeners();
+    await _settings.setTone(value);
   }
 
   Future<void> setLocale(Locale value) async {

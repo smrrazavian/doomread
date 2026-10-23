@@ -2,6 +2,7 @@ import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread/l10n/app_localizations.dart';
+import 'package:doomread_core/doomread_core.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -50,7 +51,7 @@ void main() {
     expect(find.text('0:00'), findsOne);
     await wait(tester, const Duration(minutes: 5, seconds: 12));
     expect(find.text('5:12'), findsOne);
-    expect(find.text(l10n.aimReached), findsOne);
+    expect(find.text(voice(Moment.newBest, Tone.spicy, 'en')), findsOne);
 
     await tap(tester, l10n.pause);
     expect(find.text(l10n.paused), findsOne);

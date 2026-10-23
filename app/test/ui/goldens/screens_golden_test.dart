@@ -99,6 +99,20 @@ void main() {
       );
     });
 
+    testApp('Tone, with Mom mode picked, in $lang', (tester, db) async {
+      await openIn(tester, db, lang);
+      await tester.tap(find.byIcon(Icons.tune));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(Icons.record_voice_over_outlined));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(RadioListTile<Tone>).last);
+      await tester.pumpAndSettle();
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('tone_$lang.png'),
+      );
+    });
+
     testApp('Tonight with a book, its Aim and pace in $lang', (
       tester,
       db,

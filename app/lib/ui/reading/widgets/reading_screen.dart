@@ -2,12 +2,14 @@ import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/number_format.dart';
 import 'package:doomread/ui/core/theme.dart';
+import 'package:doomread/ui/core/voice_text.dart';
 import 'package:doomread/ui/planned_break/widgets/next_break_card.dart';
 import 'package:doomread/ui/reading/view_models/reading_view_model.dart';
 import 'package:doomread/ui/reading/widgets/house_view.dart';
 import 'package:doomread/ui/reading/widgets/work_app_card.dart';
 import 'package:doomread/ui/urge/urge_watch.dart';
 import 'package:doomread/ui/urge/widgets/urge_view.dart';
+import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -71,7 +73,7 @@ class _Reading extends StatelessWidget {
     if (current == null) {
       aimLine = l10n.paused;
     } else if (current.length >= aim) {
-      aimLine = l10n.aimReached;
+      aimLine = say(context, Moment.newBest);
     } else {
       aimLine =
           '${l10n.aim(aim.inMinutes)} '

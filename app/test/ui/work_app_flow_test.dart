@@ -69,7 +69,12 @@ void main() {
     w.onForeground!(youtube, 'YouTube', shorts);
     await tester.pumpAndSettle();
     expect(w.fronts, 1);
-    expect(find.text(l10n.urgeTitle('YouTube Shorts')), findsOne);
+    expect(
+      find.text(
+        voice(Moment.urge, Tone.spicy, 'en', {'app': 'YouTube Shorts'}),
+      ),
+      findsOne,
+    );
   });
 
   testApp('a Work not on the phone keeps "face down"', (tester, db) async {

@@ -107,7 +107,6 @@
       }
     }
   },
-  "aimReached": "Aim reached. This is your longest stretch yet.",
   "paused": "Paused. Take your time, it doesn't count against you.",
   "faceDown": "Turn the phone face down.",
   "pause": "Pause",
@@ -348,15 +347,6 @@
     }
   },
   "breakHere": "Your break is here.",
-  "breakAnything": "{minutes, plural, =1{One minute} other{{minutes} minutes}} of Reels, messages, anything.",
-  "@breakAnything": {
-    "placeholders": {
-      "minutes": {
-        "type": "int",
-        "format": "decimalPattern"
-      }
-    }
-  },
   "backToChapterAt": "Back to chapter {chapter} at {time}.",
   "@backToChapterAt": {
     "description": "The return time, named before the Planned break starts.",
@@ -399,7 +389,6 @@
   "keepReading": "Keep reading instead",
   "onBreak": "On your break.",
   "imBack": "I'm back",
-  "breakOver": "Break's over.",
   "chapterWaiting": "Chapter {chapter} is waiting.",
   "@chapterWaiting": {
     "placeholders": {
@@ -764,15 +753,6 @@
     }
   },
   "keepGoing": "Keep going instead",
-  "urgeTitle": "Not yet. {app} waits for your break.",
-  "@urgeTitle": {
-    "description": "The Urge screen's headline, when a Watched app opens mid-Session. Says \"not yet\", never \"don't\". {app} is the app's name.",
-    "placeholders": {
-      "app": {
-        "type": "String"
-      }
-    }
-  },
   "urgeBody": "You planned that break yourself, remember?",
   "@urgeBody": {
     "description": "Under the Urge headline and the distance to the next Planned break."
@@ -793,10 +773,6 @@
   "openItAnyway": "Open it anyway",
   "@openItAnyway": {
     "description": "The same as openAnyway when the app's name isn't known, say after a restart."
-  },
-  "slipTitle": "Fumbled. It happens.",
-  "@slipTitle": {
-    "description": "After a slip: always kind, whatever the Tone. Never roast here."
   },
   "slipBody": "You were {minutes} min in. Pick it back up?",
   "@slipBody": {
@@ -848,10 +824,6 @@
   "@watchAskNotNow": {
     "description": "Declines the disclosure; nothing is turned on."
   },
-  "urgeTitleAnyApp": "Not yet. It can wait for your break.",
-  "@urgeTitleAnyApp": {
-    "description": "The Urge headline when the app's name isn't known, say after a restart."
-  },
   "watchRestricted": "If Android says it's a restricted setting: open Doomread's App info, tap the three-dot menu, then Allow restricted settings, and try again.",
   "@watchRestricted": {
     "description": "Under watchOff. Android 13+ restricts Accessibility for apps installed outside an app store (the apk flavour, and Cafe Bazaar)."
@@ -900,5 +872,20 @@
     "description": "Watched apps, while no way of watching is on: the usage access fallback, explained before its two buttons."
   },
   "watchAllowUsage": "Allow usage access",
-  "watchAllowOverlay": "Allow display over other apps"
+  "watchAllowOverlay": "Allow display over other apps",
+  "tone": "Tone",
+  "@tone": {
+    "description": "Settings and the Tone screen: the voice the app speaks in."
+  },
+  "toneChill": "Chill",
+  "toneSpicy": "Spicy",
+  "toneMom": "Mom mode",
+  "toneAsk": "How should Doomread talk to you?",
+  "@toneAsk": {
+    "description": "Tonight before the first Work: offers the Tone."
+  },
+  "toneHint": "Whichever you pick, it roasts the urge, never you, and it's always kind after a slip.",
+  "@toneHint": {
+    "description": "Top of the Tone screen."
+  }
 }

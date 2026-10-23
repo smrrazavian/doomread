@@ -62,4 +62,13 @@ void main() {
       'w1': (package: 'com.google.android.youtube', label: 'YouTube'),
     });
   });
+
+  test('Spicy until the user picks a Tone, then theirs', () async {
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    final settings = SettingsRepository(db);
+    expect(await settings.tone(), Tone.spicy);
+    await settings.setTone(Tone.mom);
+    expect(await settings.tone(), Tone.mom);
+  });
 }

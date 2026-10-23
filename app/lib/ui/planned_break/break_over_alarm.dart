@@ -6,6 +6,7 @@ import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/planned_break/break_text.dart';
 import 'package:doomread/ui/planned_break/view_models/planned_break_view_model.dart';
 import 'package:doomread/ui/settings/view_models/settings_view_model.dart';
+import 'package:doomread_core/doomread_core.dart';
 
 /// Keeps the "break's over" notification in step with the journal: set for
 /// the end of the Planned break the user is on, and unset once they're back
@@ -50,7 +51,12 @@ class BreakOverAlarm {
     final l10n = lookupAppLocalizations(_settings.locale);
     final work = onBreak.road.work;
     final text = waitingAfter(l10n, work, offer.checkpoint);
-    final set = (onBreak.id, at, text);
+    final title = voice(
+      Moment.breakOver,
+      _settings.tone,
+      _settings.locale.languageCode,
+    );
+    final set = (onBreak.id, at, title, text);
     if (set == _last) return;
     _last = set;
     // Once the time has passed there's nothing left to call them back for.
@@ -59,7 +65,7 @@ class BreakOverAlarm {
       _notification.schedule(
         sessionId: onBreak.id,
         at: at,
-        title: l10n.breakOver,
+        title: title,
         text: text,
       ),
     );

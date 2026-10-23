@@ -1,6 +1,7 @@
 import 'package:doomread/data/services/app_watch.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/settings/view_models/settings_view_model.dart';
+import 'package:doomread/ui/tone/widgets/tone_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +27,12 @@ class SettingsScreen extends StatelessWidget {
               leading: const Icon(Icons.person_outline),
               title: Text(l10n.account),
               onTap: () => context.push('/account'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.record_voice_over_outlined),
+              title: Text(l10n.tone),
+              subtitle: Text(toneName(l10n, vm.tone)),
+              onTap: () => context.push('/tone'),
             ),
             if (context.read<AppWatch>().available) const _WatchedAppsTile(),
             ListTile(title: Text(l10n.language)),

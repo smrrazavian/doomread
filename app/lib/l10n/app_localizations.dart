@@ -368,12 +368,6 @@ abstract class AppLocalizations {
   /// **'{minutes, plural, =1{1 minute to go.} other{{minutes} minutes to go.}}'**
   String aimToGo(int minutes);
 
-  /// No description provided for @aimReached.
-  ///
-  /// In en, this message translates to:
-  /// **'Aim reached. This is your longest stretch yet.'**
-  String get aimReached;
-
   /// No description provided for @paused.
   ///
   /// In en, this message translates to:
@@ -680,12 +674,6 @@ abstract class AppLocalizations {
   /// **'Your break is here.'**
   String get breakHere;
 
-  /// No description provided for @breakAnything.
-  ///
-  /// In en, this message translates to:
-  /// **'{minutes, plural, =1{One minute} other{{minutes} minutes}} of Reels, messages, anything.'**
-  String breakAnything(int minutes);
-
   /// The return time, named before the Planned break starts.
   ///
   /// In en, this message translates to:
@@ -727,12 +715,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'I\'m back'**
   String get imBack;
-
-  /// No description provided for @breakOver.
-  ///
-  /// In en, this message translates to:
-  /// **'Break\'s over.'**
-  String get breakOver;
 
   /// No description provided for @chapterWaiting.
   ///
@@ -1076,12 +1058,6 @@ abstract class AppLocalizations {
   /// **'Keep going instead'**
   String get keepGoing;
 
-  /// The Urge screen's headline, when a Watched app opens mid-Session. Says "not yet", never "don't". {app} is the app's name.
-  ///
-  /// In en, this message translates to:
-  /// **'Not yet. {app} waits for your break.'**
-  String urgeTitle(String app);
-
   /// Under the Urge headline and the distance to the next Planned break.
   ///
   /// In en, this message translates to:
@@ -1105,12 +1081,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open it anyway'**
   String get openItAnyway;
-
-  /// After a slip: always kind, whatever the Tone. Never roast here.
-  ///
-  /// In en, this message translates to:
-  /// **'Fumbled. It happens.'**
-  String get slipTitle;
 
   /// After a slip: how long the Stretch the Slip ended was.
   ///
@@ -1177,12 +1147,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not now'**
   String get watchAskNotNow;
-
-  /// The Urge headline when the app's name isn't known, say after a restart.
-  ///
-  /// In en, this message translates to:
-  /// **'Not yet. It can wait for your break.'**
-  String get urgeTitleAnyApp;
 
   /// Under watchOff. Android 13+ restricts Accessibility for apps installed outside an app store (the apk flavour, and Cafe Bazaar).
   ///
@@ -1267,6 +1231,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Allow display over other apps'**
   String get watchAllowOverlay;
+
+  /// Settings and the Tone screen: the voice the app speaks in.
+  ///
+  /// In en, this message translates to:
+  /// **'Tone'**
+  String get tone;
+
+  /// No description provided for @toneChill.
+  ///
+  /// In en, this message translates to:
+  /// **'Chill'**
+  String get toneChill;
+
+  /// No description provided for @toneSpicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Spicy'**
+  String get toneSpicy;
+
+  /// No description provided for @toneMom.
+  ///
+  /// In en, this message translates to:
+  /// **'Mom mode'**
+  String get toneMom;
+
+  /// Tonight before the first Work: offers the Tone.
+  ///
+  /// In en, this message translates to:
+  /// **'How should Doomread talk to you?'**
+  String get toneAsk;
+
+  /// Top of the Tone screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Whichever you pick, it roasts the urge, never you, and it\'s always kind after a slip.'**
+  String get toneHint;
 }
 
 class _AppLocalizationsDelegate

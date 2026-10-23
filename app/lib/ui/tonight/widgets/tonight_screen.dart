@@ -7,6 +7,7 @@ import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/road_view.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/work_text.dart';
+import 'package:doomread/ui/tone/widgets/tone_screen.dart';
 import 'package:doomread/ui/tonight/view_models/tonight_view_model.dart';
 import 'package:doomread/ui/watch/widgets/watch_disclosure.dart';
 import 'package:doomread/utils/result.dart';
@@ -97,6 +98,9 @@ class _Tonight extends StatelessWidget {
                         child: Text(l10n.tonightAddBook),
                       ),
                     ),
+                    // Onboarding: the first evening, before any Work.
+                    const SizedBox(height: 48),
+                    const TonePicker(),
                   ],
                 ],
               ),

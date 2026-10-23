@@ -193,9 +193,6 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get aimReached => 'به هدفت رسیدی. این طولانی‌ترین تمرکزت تا حالاست.';
-
-  @override
   String get paused => 'مکث کردی. عجله نکن، این به حسابت نمیاد.';
 
   @override
@@ -494,15 +491,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get breakHere => 'وقت استراحتت رسید.';
 
   @override
-  String breakAnything(int minutes) {
-    final intl.NumberFormat minutesNumberFormat =
-        intl.NumberFormat.decimalPattern(localeName);
-    final String minutesString = minutesNumberFormat.format(minutes);
-
-    return '$minutesString دقیقه ریلز، پیام، هر چی دلت خواست.';
-  }
-
-  @override
   String backToChapterAt(int chapter, String time) {
     final intl.NumberFormat chapterNumberFormat =
         intl.NumberFormat.decimalPattern(localeName);
@@ -548,9 +536,6 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get imBack => 'برگشتم';
-
-  @override
-  String get breakOver => 'استراحت تموم شد.';
 
   @override
   String chapterWaiting(int chapter) {
@@ -917,11 +902,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get keepGoing => 'نه، ادامه می‌دم';
 
   @override
-  String urgeTitle(String app) {
-    return 'هنوز نه! $app تا استراحتت صبر می‌کنه.';
-  }
-
-  @override
   String get urgeBody => 'خودت قرار این استراحت رو گذاشتی، یادته؟';
 
   @override
@@ -934,9 +914,6 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get openItAnyway => 'نه، بازش کن';
-
-  @override
-  String get slipTitle => 'اشکال نداره، برگرد.';
 
   @override
   String slipBody(int minutes) {
@@ -978,9 +955,6 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get watchAskNotNow => 'الان نه';
-
-  @override
-  String get urgeTitleAnyApp => 'هنوز نه! بذارش برای استراحتت.';
 
   @override
   String get watchRestricted =>
@@ -1029,4 +1003,23 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get watchAllowOverlay => 'اجازه‌ی نمایش روی برنامه‌های دیگه';
+
+  @override
+  String get tone => 'لحن';
+
+  @override
+  String get toneChill => 'ریلکس';
+
+  @override
+  String get toneSpicy => 'تند و تیز';
+
+  @override
+  String get toneMom => 'مامان‌مود';
+
+  @override
+  String get toneAsk => 'باز گوشی؟! چطوری باهات حرف بزنه؟';
+
+  @override
+  String get toneHint =>
+      'هر کدوم رو انتخاب کنی، وسوسه رو مسخره می‌کنه نه خودتو، و وقتی کم آوردی همیشه مهربونه.';
 }

@@ -11,6 +11,7 @@ import 'package:doomread/ui/evening/widgets/evening_screen.dart';
 import 'package:doomread/ui/planned_break/widgets/planned_break_screen.dart';
 import 'package:doomread/ui/reading/widgets/reading_screen.dart';
 import 'package:doomread/ui/settings/widgets/settings_screen.dart';
+import 'package:doomread/ui/tone/widgets/tone_screen.dart';
 import 'package:doomread/ui/tonight/widgets/tonight_screen.dart';
 import 'package:doomread/ui/watch/widgets/watched_apps_screen.dart';
 import 'package:doomread_core/doomread_core.dart';
@@ -58,6 +59,7 @@ List<RouteBase> _routes(GlobalKey<NavigatorState> root) => [
     ],
   ),
   GoRoute(path: '/settings', builder: (_, _) => const SettingsScreen()),
+  GoRoute(path: '/tone', builder: (_, _) => const ToneScreen()),
   GoRoute(path: '/watched', builder: (_, _) => const WatchedAppsScreen()),
   GoRoute(path: '/work/new', builder: (_, _) => const WorkFormScreen()),
   // ponytail: the Work travels as `extra`, so this route can't be

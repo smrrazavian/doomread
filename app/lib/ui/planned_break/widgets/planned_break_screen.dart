@@ -3,8 +3,10 @@ import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/date_format.dart';
 import 'package:doomread/ui/core/number_format.dart';
 import 'package:doomread/ui/core/theme.dart';
+import 'package:doomread/ui/core/voice_text.dart';
 import 'package:doomread/ui/planned_break/break_text.dart';
 import 'package:doomread/ui/planned_break/view_models/planned_break_view_model.dart';
+import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -66,11 +68,13 @@ class _PlannedBreak extends StatelessWidget {
     final String heading;
     final String sub;
     if (over) {
-      heading = l10n.breakOver;
+      heading = say(context, Moment.breakOver);
       sub = waitingAfter(l10n, work, checkpoint);
     } else {
       heading = on ? l10n.onBreak : l10n.breakHere;
-      sub = l10n.breakAnything(minutes);
+      sub = say(context, Moment.breakHere, {
+        'minutes': formatNumber(minutes, locale),
+      });
     }
 
     return Scaffold(
