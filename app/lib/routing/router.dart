@@ -1,7 +1,10 @@
 import 'package:doomread/l10n/app_localizations.dart';
+import 'package:doomread/ui/books/widgets/books_screen.dart';
+import 'package:doomread/ui/books/widgets/work_form_screen.dart';
 import 'package:doomread/ui/core/section_placeholder.dart';
 import 'package:doomread/ui/settings/widgets/settings_screen.dart';
 import 'package:doomread/ui/tonight/widgets/tonight_screen.dart';
+import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,10 +15,7 @@ GoRouter buildRouter() => GoRouter(
       builder: (context, state, shell) => _NavShell(shell: shell),
       branches: [
         _branch('/tonight', (_) => const TonightScreen()),
-        _branch(
-          '/books',
-          (c) => SectionPlaceholder(title: AppLocalizations.of(c).navBooks),
-        ),
+        _branch('/books', (_) => const BooksScreen()),
         _branch(
           '/building',
           (c) => SectionPlaceholder(title: AppLocalizations.of(c).navBuilding),
@@ -27,6 +27,13 @@ GoRouter buildRouter() => GoRouter(
       ],
     ),
     GoRoute(path: '/settings', builder: (_, _) => const SettingsScreen()),
+    GoRoute(path: '/work/new', builder: (_, _) => const WorkFormScreen()),
+    // ponytail: the Work travels as `extra`, so this route can't be
+    // deep-linked; load it by id once something needs to link here.
+    GoRoute(
+      path: '/work/edit',
+      builder: (_, state) => WorkFormScreen(editing: state.extra! as Work),
+    ),
   ],
 );
 

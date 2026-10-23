@@ -145,6 +145,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Language'**
   String get language;
+
+  /// No description provided for @tonightAddBook.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a book'**
+  String get tonightAddBook;
+
+  /// No description provided for @pageOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {page} of {total}'**
+  String pageOf(int page, int total);
+
+  /// No description provided for @pagesLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 page left} other{{count} pages left}}'**
+  String pagesLeft(int count);
+
+  /// No description provided for @nextCheckpoint.
+  ///
+  /// In en, this message translates to:
+  /// **'Next chapter ends on page {page}'**
+  String nextCheckpoint(int page);
+
+  /// No description provided for @booksEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No books yet'**
+  String get booksEmpty;
+
+  /// No description provided for @readingNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading now'**
+  String get readingNow;
+
+  /// No description provided for @editBook.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit book'**
+  String get editBook;
+
+  /// No description provided for @fieldTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get fieldTitle;
+
+  /// No description provided for @fieldAuthor.
+  ///
+  /// In en, this message translates to:
+  /// **'Author'**
+  String get fieldAuthor;
+
+  /// No description provided for @fieldPages.
+  ///
+  /// In en, this message translates to:
+  /// **'Total pages'**
+  String get fieldPages;
+
+  /// No description provided for @fieldCheckpoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Pages where chapters end (optional)'**
+  String get fieldCheckpoints;
+
+  /// No description provided for @fieldCheckpointsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 34, 66, 98'**
+  String get fieldCheckpointsHint;
+
+  /// No description provided for @problemNoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Give it a title'**
+  String get problemNoTitle;
+
+  /// No description provided for @problemNoPages.
+  ///
+  /// In en, this message translates to:
+  /// **'How many pages does it have?'**
+  String get problemNoPages;
+
+  /// No description provided for @problemCheckpointPastEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Chapter ends must be within the book\'s pages'**
+  String get problemCheckpointPastEnd;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
 }
 
 class _AppLocalizationsDelegate

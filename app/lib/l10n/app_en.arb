@@ -7,5 +7,49 @@
   "navFriends": "Friends",
   "tonightEmpty": "Add the book you are reading",
   "settings": "Settings",
-  "language": "Language"
+  "language": "Language",
+  "tonightAddBook": "Add a book",
+  "pageOf": "Page {page} of {total}",
+  "@pageOf": {
+    "placeholders": {
+      "page": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "total": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "pagesLeft": "{count, plural, =1{1 page left} other{{count} pages left}}",
+  "@pagesLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "nextCheckpoint": "Next chapter ends on page {page}",
+  "@nextCheckpoint": {
+    "placeholders": {
+      "page": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "booksEmpty": "No books yet",
+  "readingNow": "Reading now",
+  "editBook": "Edit book",
+  "fieldTitle": "Title",
+  "fieldAuthor": "Author",
+  "fieldPages": "Total pages",
+  "fieldCheckpoints": "Pages where chapters end (optional)",
+  "fieldCheckpointsHint": "e.g. 34, 66, 98",
+  "problemNoTitle": "Give it a title",
+  "problemNoPages": "How many pages does it have?",
+  "problemCheckpointPastEnd": "Chapter ends must be within the book's pages",
+  "save": "Save"
 }

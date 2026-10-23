@@ -1,14 +1,32 @@
+import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/l10n/app_localizations.dart';
+import 'package:doomread/ui/core/road_view.dart';
+import 'package:doomread/ui/core/theme.dart';
+import 'package:doomread/ui/tonight/view_models/tonight_view_model.dart';
+import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class TonightScreen extends StatelessWidget {
   const TonightScreen({super.key});
 
   @override
+  Widget build(BuildContext context) => ChangeNotifierProvider(
+    create: (c) => TonightViewModel(c.read<WorkRepository>()),
+    child: const _Tonight(),
+  );
+}
+
+class _Tonight extends StatelessWidget {
+  const _Tonight();
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final text = Theme.of(context).textTheme;
+    final vm = context.watch<TonightViewModel>();
+    final road = vm.road;
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -26,8 +44,65 @@ class TonightScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(l10n.navTonight, style: text.headlineSmall),
-            const SizedBox(height: 4),
-            Text(l10n.tonightEmpty, style: text.bodyMedium),
+            const SizedBox(height: 16),
+            if (road != null)
+              _WorkCard(road: road)
+            else if (vm.loaded) ...[
+              Text(l10n.tonightEmpty, style: text.bodyMedium),
+              const SizedBox(height: 16),
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: FilledButton(
+                  onPressed: () => context.push('/work/new'),
+                  child: Text(l10n.tonightAddBook),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _WorkCard extends StatelessWidget {
+  const _WorkCard({required this.road});
+
+  final Road road;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final text = Theme.of(context).textTheme;
+    final work = road.work;
+    final next = road.next;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Palette.panel,
+        border: Border.all(color: Palette.line),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(work.title, style: text.titleLarge),
+            if (work.author.isNotEmpty)
+              Text(work.author, style: text.bodySmall),
+            const SizedBox(height: 12),
+            RoadView(road: road),
+            const SizedBox(height: 12),
+            Text(
+              l10n.pageOf(road.position, work.totalPages),
+              style: text.bodyMedium,
+            ),
+            Text(
+              l10n.pagesLeft(work.totalPages - road.position),
+              style: text.bodySmall,
+            ),
+            if (next != null)
+              Text(l10n.nextCheckpoint(next), style: text.bodySmall),
           ],
         ),
       ),

@@ -7,5 +7,21 @@
   "navFriends": "دوستا",
   "tonightEmpty": "کتابی که داری می‌خونی رو اضافه کن",
   "settings": "تنظیمات",
-  "language": "زبان"
+  "language": "زبان",
+  "tonightAddBook": "یه کتاب اضافه کن",
+  "pageOf": "صفحه‌ی {page} از {total}",
+  "pagesLeft": "{count} صفحه مونده",
+  "nextCheckpoint": "فصل بعدی صفحه‌ی {page} تموم می‌شه",
+  "booksEmpty": "هنوز کتابی نداری",
+  "readingNow": "در حال خوندن",
+  "editBook": "ویرایش کتاب",
+  "fieldTitle": "عنوان",
+  "fieldAuthor": "نویسنده",
+  "fieldPages": "تعداد صفحه‌ها",
+  "fieldCheckpoints": "صفحه‌هایی که فصل‌ها تموم می‌شن (اختیاری)",
+  "fieldCheckpointsHint": "مثلاً ۳۴، ۶۶، ۹۸",
+  "problemNoTitle": "یه عنوان بنویس",
+  "problemNoPages": "چند صفحه‌ست؟",
+  "problemCheckpointPastEnd": "پایان فصل‌ها باید توی صفحه‌های کتاب باشه",
+  "save": "ذخیره"
 }

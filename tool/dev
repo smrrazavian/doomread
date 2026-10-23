@@ -47,10 +47,22 @@ env+=(-e "GRADLE_PROPS=$gradle_props")
 # (set by the udev rule in the README); 189 is the USB device major number.
 usb=(); [ -d /dev/bus/usb ] && usb=(-v /dev/bus/usb:/dev/bus/usb --device-cgroup-rule 'c 189:* rmw')
 
+# One long-lived container (named after the image) is reused across calls, so
+# Gradle's daemon, adb's server and Dart's caches stay warm. It is recreated
+# when the image changes; `docker ps -a --filter name=doomread-dev` lists them; `docker rm -f` resets one.
 # --network host lets adb reach the phone over wireless debugging.
-# The doomread-home volume keeps pub/Gradle caches and adb pairing keys between runs.
-exec docker run --rm "${tty[@]}" --network host "${env[@]}" "${usb[@]}" \
-  -v "$PWD":/work -w /work \
-  -v doomread-home:/home/dev \
-  -v "$PWD/tool/gradle-init.d":/home/dev/.gradle/init.d:ro \
-  "$image" sh -c 'mkdir -p ~/.gradle && printf "%s\n" "$GRADLE_PROPS" > ~/.gradle/gradle.properties; exec "$@"' sh "$@"
+# The doomread-home volume keeps pub/Gradle caches and adb pairing keys.
+# One container per checkout (worktrees get their own, mounting their own files).
+name=doomread-dev-$(printf %s "$PWD" | sha256sum | cut -c1-8)
+if [ "$(docker inspect -f '{{.Config.Image}}' "$name" 2>/dev/null)" != "$image" ]; then
+  docker rm -f "$name" >/dev/null 2>&1 || true
+  docker run -d --name "$name" --network host "${usb[@]}" \
+    -v "$PWD":/work -w /work \
+    -v doomread-home:/home/dev \
+    -v "$PWD/tool/gradle-init.d":/home/dev/.gradle/init.d:ro \
+    "$image" sleep infinity >/dev/null
+elif [ "$(docker inspect -f '{{.State.Running}}' "$name")" != true ]; then
+  docker start "$name" >/dev/null
+fi
+exec docker exec "${tty[@]}" "${env[@]}" -w /work "$name" \
+  sh -c 'mkdir -p ~/.gradle && printf "%s\n" "$GRADLE_PROPS" > ~/.gradle/gradle.properties; exec "$@"' sh "$@"

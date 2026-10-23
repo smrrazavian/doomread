@@ -12,7 +12,23 @@ class Settings extends Table {
   Set<Column<Object>> get primaryKey => {key};
 }
 
-@DriftDatabase(tables: [Settings])
+/// Works the user is getting through. Checkpoints are page numbers, stored as
+/// comma-separated text since they're only ever read and written whole.
+@DataClassName('WorkRow')
+class Works extends Table {
+  TextColumn get id => text()();
+  TextColumn get title => text()();
+  TextColumn get author => text()();
+  IntColumn get totalPages => integer()();
+  TextColumn get checkpoints => text()();
+  IntColumn get position => integer().withDefault(const Constant(0))();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+@DriftDatabase(tables: [Settings, Works])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
@@ -20,5 +36,12 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.open() : super(driftDatabase(name: 'doomread'));
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onUpgrade: (m, from, to) async {
+      if (from < 2) await m.createTable(works);
+    },
+  );
 }

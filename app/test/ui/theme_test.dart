@@ -1,20 +1,15 @@
-import 'package:doomread/app.dart';
 import 'package:doomread/data/repositories/settings_repository.dart';
-import 'package:doomread/data/services/app_database.dart';
-import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers.dart';
+
 void main() {
-  testWidgets(
+  testApp(
     'Persian text is never letter-spaced (it breaks the joined letters)',
-    (tester) async {
-      final db = AppDatabase(NativeDatabase.memory());
-      addTearDown(db.close);
-      final settings = SettingsRepository(db);
-      await settings.setLocale(const Locale('fa'));
-      await tester.pumpWidget(DoomreadApp(settings: settings));
-      await tester.pumpAndSettle();
+    (tester, db) async {
+      await SettingsRepository(db).setLocale(const Locale('fa'));
+      await pumpApp(tester, db);
 
       // The theme as rendered, after Flutter localises it for Persian.
       final t = Theme.of(tester.element(find.text('امشب').first)).textTheme;

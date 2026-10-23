@@ -20,6 +20,9 @@ abstract final class Palette {
 ThemeData buildTheme(Locale locale) {
   final persian = locale.languageCode == 'fa';
   final ui = persian ? 'VazirmatnUI' : 'BricolageGrotesque';
+  // Mixed text (a Persian word in English, or the reverse) falls back to the
+  // other script's face instead of empty boxes.
+  final fallback = [if (persian) 'BricolageGrotesque' else 'VazirmatnUI'];
   final heading = TextStyle(
     fontFamily: persian ? 'VazirmatnUI' : 'Literata',
     fontWeight: persian ? FontWeight.w700 : FontWeight.w500,
@@ -33,6 +36,7 @@ ThemeData buildTheme(Locale locale) {
     useMaterial3: true,
     brightness: Brightness.dark,
     fontFamily: ui,
+    fontFamilyFallback: fallback,
     colorScheme: const ColorScheme.dark(
       primary: Palette.lamp,
       onPrimary: Palette.night,
@@ -55,8 +59,9 @@ ThemeData buildTheme(Locale locale) {
           color: Palette.soft,
         ),
       );
+  final withFallback = textTheme.apply(fontFamilyFallback: fallback);
   return base.copyWith(
-    textTheme: persian ? _withoutLetterSpacing(textTheme) : textTheme,
+    textTheme: persian ? _withoutLetterSpacing(withFallback) : withFallback,
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: Palette.night,
       indicatorColor: Palette.indicator,
