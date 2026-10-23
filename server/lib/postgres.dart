@@ -16,6 +16,31 @@ Endpoint postgresEndpoint(Map<String, String> env) => Endpoint(
   password: env['PGPASSWORD'] ?? 'doomread',
 );
 
+/// Any constant; it keeps two servers from migrating at once.
+const _migrationLock = 0x646f6f6d; // "doom"
+
+/// The schema, one step per version, applied in order in one transaction
+/// at open. Never edit a step that has shipped; add a new one.
+const _migrations = <List<String>>[
+  // 1: the tables as they were before migrations, kept `if not exists` so
+  // databases made by that code upgrade cleanly.
+  [
+    '''
+    create table if not exists accounts (
+      id bigint generated always as identity primary key,
+      username text not null unique,
+      password_hash text not null,
+      created_at timestamptz not null default now()
+    )''',
+    '''
+    create table if not exists sign_ins (
+      token_hash text primary key,
+      account_id bigint not null references accounts on delete cascade,
+      created_at timestamptz not null default now()
+    )''',
+  ],
+];
+
 class PostgresAccountStore implements AccountStore {
   PostgresAccountStore._(this._db);
 
@@ -28,21 +53,31 @@ class PostgresAccountStore implements AccountStore {
     final db = Pool<void>.withEndpoints([
       endpoint,
     ], settings: const PoolSettings(sslMode: SslMode.disable));
-    // ponytail: schema by `create if not exists`, no migrations yet.
-    // Bring in versioned migrations with the first change to a table.
-    await db.execute('''
-      create table if not exists accounts (
-        id bigint generated always as identity primary key,
-        username text not null unique,
-        password_hash text not null,
-        created_at timestamptz not null default now()
-      )''');
-    await db.execute('''
-      create table if not exists sign_ins (
-        token_hash text primary key,
-        account_id bigint not null references accounts on delete cascade,
-        created_at timestamptz not null default now()
-      )''');
+    await db.runTx((tx) async {
+      // One server at a time: concurrent `create if not exists` can collide.
+      await tx.execute('select pg_advisory_xact_lock($_migrationLock)');
+      await tx.execute('''
+        create table if not exists schema_migrations (
+          version integer primary key,
+          applied_at timestamptz not null default now()
+        )''');
+      final applied = await tx.execute(
+        'select coalesce(max(version), 0) from schema_migrations',
+      );
+      for (
+        var v = (applied.single.single! as int) + 1;
+        v <= _migrations.length;
+        v++
+      ) {
+        for (final statement in _migrations[v - 1]) {
+          await tx.execute(statement);
+        }
+        await tx.execute(
+          Sql.named('insert into schema_migrations (version) values (@v)'),
+          parameters: {'v': v},
+        );
+      }
+    });
     return PostgresAccountStore._(db);
   }
 
