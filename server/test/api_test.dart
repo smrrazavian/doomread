@@ -86,6 +86,8 @@ void main() {
     for (final wrong in [
       const Credentials(username: 'sara', password: 'wrong horse'),
       const Credentials(username: 'nobody', password: 'correct horse'),
+      // Refused before hashing, so a huge password can't tie up the server.
+      Credentials(username: 'sara', password: 'x' * 100000),
     ]) {
       final r = await send('POST', '/sessions', body: wrong);
       expect(r.statusCode, 401, reason: wrong.username);

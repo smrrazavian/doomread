@@ -35,7 +35,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-doomread}
       POSTGRES_DB: doomread
     ports:
-      - "5432:5432"
+      # Loopback only: tests and tool/dev reach it on localhost, nobody else.
+      - "127.0.0.1:5432:5432"
     volumes:
       - postgres:/var/lib/postgresql
     healthcheck:

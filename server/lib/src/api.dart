@@ -51,6 +51,7 @@ Handler doomreadServer(
     ..post('/sessions', (Request request) async {
       final c = await readCredentials(request);
       if (c == null) return _error(400, 'bad_request');
+      if (c.problem != null) return _error(401, 'wrong_credentials');
       final stored = await store.passwordHash(c.username);
       final ok = await passwords.verify(c.password, stored ?? await decoy);
       if (stored == null || !ok) return _error(401, 'wrong_credentials');
