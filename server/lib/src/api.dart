@@ -9,10 +9,11 @@ import 'package:shelf_router/shelf_router.dart';
 /// The whole HTTP API, request logging included.
 ///
 /// The log shows method, path and status only; bodies (passwords) and
-/// headers (tokens) never reach it.
+/// headers (tokens) never reach it. [clock] is there for tests.
 Handler doomreadServer(
   AccountStore store, {
   Passwords passwords = const Passwords(),
+  DateTime Function() clock = DateTime.now,
 }) {
   // Checked when the username is unknown, so a miss takes as long as a hit
   // and response times don't reveal which usernames exist.
@@ -35,12 +36,17 @@ Handler doomreadServer(
 
   Future<Response> startSignIn(String username, int status) async {
     final token = newToken();
-    await store.createSignIn(username, await hashToken(token));
+    await store.createSignIn(username, await hashToken(token), clock());
     return _json(status, SignIn(token: token, username: username).toJson());
   }
 
-  // ponytail: sign-ins never expire; add expiry and a last-used time
-  // before tokens can outlive a lost phone.
+  /// The hash of the request's bearer token, if it carries one.
+  Future<String?> bearerHash(Request request) async {
+    final header = request.headers['authorization'] ?? '';
+    if (!header.startsWith('Bearer ')) return null;
+    return await hashToken(header.substring(7));
+  }
+
   // ponytail: no rate limiting on sign in; add it (per IP and per username)
   // before the server is open to the public internet.
   final router = Router()
@@ -66,12 +72,13 @@ Handler doomreadServer(
       return await startSignIn(c.username, 200);
     })
     ..delete('/sign-ins/current', (Request request) async {
-      final header = request.headers['authorization'] ?? '';
-      if (!header.startsWith('Bearer ')) return _error(401, 'not_signed_in');
-      final deleted = await store.deleteSignIn(
-        await hashToken(header.substring(7)),
-      );
-      return deleted ? Response(204) : _error(401, 'not_signed_in');
+      final hash = await bearerHash(request);
+      // An expired sign-in counts as signed out already.
+      if (hash == null || await store.useSignIn(hash, clock()) == null) {
+        return _error(401, 'not_signed_in');
+      }
+      await store.deleteSignIn(hash);
+      return Response(204);
     });
 
   return const Pipeline().addMiddleware(logRequests()).addHandler(router.call);

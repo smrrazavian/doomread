@@ -9,11 +9,17 @@ import 'package:test/test.dart';
 void main() {
   late InMemoryAccountStore store;
   late Handler handler;
+  late DateTime now;
 
   setUp(() {
     store = InMemoryAccountStore();
-    // Cheap hashing: the real cost would make every test take seconds.
-    handler = doomreadServer(store, passwords: const Passwords.cheapForTests());
+    now = DateTime.utc(2026, 10, 22, 21);
+    handler = doomreadServer(
+      store,
+      // Cheap hashing: the real cost would make every test take seconds.
+      passwords: const Passwords.cheapForTests(),
+      clock: () => now,
+    );
   });
 
   Future<Response> send(
@@ -110,6 +116,15 @@ void main() {
       token: session.token,
     );
     expect(again.statusCode, 401);
+  });
+
+  test('a sign-in left unused for the idle limit has expired', () async {
+    final session = SignIn.fromJson(
+      await json(await send('POST', '/accounts', body: sara)),
+    );
+    now = now.add(signInIdleLimit);
+    final out = await send('DELETE', '/sign-ins/current', token: session.token);
+    expect(out.statusCode, 401);
   });
 
   test('stores neither the password nor the token in the clear', () async {

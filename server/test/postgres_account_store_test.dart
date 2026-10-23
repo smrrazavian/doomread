@@ -66,6 +66,9 @@ void main() {
       await old.execute(
         "insert into accounts (username, password_hash) values ('sara', 'h')",
       );
+      await old.execute(
+        "insert into sign_ins (token_hash, account_id) values ('tok', 1)",
+      );
       await old.close();
 
       // Twice: opening an up-to-date database changes nothing.
@@ -73,6 +76,7 @@ void main() {
         final upgraded = await PostgresAccountStore.open(scratch);
         expect(await upgraded.passwordHash('sara'), 'h');
         expect(await upgraded.createAccount('sara', 'other'), isFalse);
+        expect(await upgraded.useSignIn('tok', DateTime.now()), 'sara');
         await upgraded.close();
       }
       final c = await Connection.open(
@@ -81,7 +85,7 @@ void main() {
       );
       final versions = await c.execute('select version from schema_migrations');
       await c.close();
-      expect(versions, hasLength(1));
+      expect(versions, hasLength(2));
     });
   });
 }

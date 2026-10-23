@@ -39,6 +39,13 @@ const _migrations = <List<String>>[
       created_at timestamptz not null default now()
     )''',
   ],
+  // 2: sign-ins expire when unused (signInIdleLimit). Existing ones count
+  // as used now, so nobody is signed out by the upgrade.
+  [
+    '''
+    alter table sign_ins
+      add column last_used_at timestamptz not null default now()''',
+  ],
 ];
 
 class PostgresAccountStore implements AccountStore {
@@ -46,7 +53,7 @@ class PostgresAccountStore implements AccountStore {
 
   final Pool<void> _db;
 
-  /// Connects and creates the tables if they are missing.
+  /// Connects and brings the schema up to date.
   static Future<PostgresAccountStore> open(Endpoint endpoint) async {
     // ponytail: no TLS to Postgres; it is only reachable on compose's
     // private network. Turn sslMode on if it ever runs on another host.
@@ -105,14 +112,39 @@ class PostgresAccountStore implements AccountStore {
   }
 
   @override
-  Future<void> createSignIn(String username, String tokenHash) async {
+  Future<void> createSignIn(
+    String username,
+    String tokenHash,
+    DateTime now,
+  ) async {
     await _db.execute(
       Sql.named(
-        'insert into sign_ins (token_hash, account_id) '
-        'select @t, id from accounts where username = @u',
+        'insert into sign_ins (token_hash, account_id, created_at, '
+        'last_used_at) '
+        'select @t, id, @now:timestamptz, @now:timestamptz '
+        'from accounts where username = @u',
       ),
-      parameters: {'t': tokenHash, 'u': username},
+      parameters: {'t': tokenHash, 'u': username, 'now': now.toUtc()},
     );
+  }
+
+  @override
+  Future<String?> useSignIn(String tokenHash, DateTime now) async {
+    final rows = await _db.execute(
+      Sql.named(
+        'update sign_ins s set last_used_at = @now:timestamptz '
+        'from accounts a '
+        'where s.token_hash = @t and a.id = s.account_id '
+        'and s.last_used_at > @cutoff:timestamptz '
+        'returning a.username',
+      ),
+      parameters: {
+        't': tokenHash,
+        'now': now.toUtc(),
+        'cutoff': now.subtract(signInIdleLimit).toUtc(),
+      },
+    );
+    return rows.isEmpty ? null : rows.single.single! as String;
   }
 
   @override

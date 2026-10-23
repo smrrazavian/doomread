@@ -30,8 +30,39 @@ void accountStoreContract(AccountStore Function() store) {
   test('deletes a session once', () async {
     final name = freshName();
     await store().createAccount(name, 'hash');
-    await store().createSignIn(name, 'token-of-$name');
+    await store().createSignIn(name, 'token-of-$name', DateTime.now());
     expect(await store().deleteSignIn('token-of-$name'), isTrue);
     expect(await store().deleteSignIn('token-of-$name'), isFalse);
+    expect(await store().useSignIn('token-of-$name', DateTime.now()), isNull);
+  });
+
+  test('a sign-in in use stays valid', () async {
+    final name = freshName();
+    final start = DateTime.now();
+    await store().createAccount(name, 'hash');
+    await store().createSignIn(name, 'token-of-$name', start);
+    // Each use restarts the idle time, so three almost-limits in a row pass.
+    final almost = signInIdleLimit - const Duration(minutes: 1);
+    for (var i = 1; i <= 3; i++) {
+      expect(
+        await store().useSignIn('token-of-$name', start.add(almost * i)),
+        name,
+      );
+    }
+  });
+
+  test('a sign-in unused for the idle limit no longer counts', () async {
+    final name = freshName();
+    final start = DateTime.now();
+    await store().createAccount(name, 'hash');
+    await store().createSignIn(name, 'token-of-$name', start);
+    expect(
+      await store().useSignIn('token-of-$name', start.add(signInIdleLimit)),
+      isNull,
+    );
+  });
+
+  test('an unknown token belongs to nobody', () async {
+    expect(await store().useSignIn('no-such-token', DateTime.now()), isNull);
   });
 }
