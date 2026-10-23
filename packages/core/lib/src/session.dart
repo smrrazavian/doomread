@@ -1,3 +1,5 @@
+import 'package:doomread_core/src/calendar.dart';
+
 /// What the user did during a Session, as stored in the journal.
 enum SessionEventKind { start, pause, resume, stop }
 
@@ -124,6 +126,32 @@ Duration longestStretch(Iterable<Session> sessions) => sessions
       Duration.zero,
       (best, s) => s.longestStretch > best ? s.longestStretch : best,
     );
+
+/// One evening the Longest stretch grew, and what it grew to.
+typedef StretchRise = ({DateTime evening, Duration longest});
+
+/// How the Longest stretch across [sessions] (all of one kind of Work) has
+/// risen over time: one entry per evening it grew, oldest first, the last
+/// being the Longest stretch now. Evenings follow [eveningOf].
+///
+/// Like [longestStretch], only stopped Sessions count, and a Session with no
+/// time in it is no rise.
+List<StretchRise> longestStretchTrend(Iterable<Session> sessions) {
+  final stopped = [
+    for (final s in sessions)
+      if (s.stopped && s.startedAt != null) s,
+  ]..sort((a, b) => a.startedAt!.compareTo(b.startedAt!));
+  final rises = <StretchRise>[];
+  var best = Duration.zero;
+  for (final s in stopped) {
+    if (s.longestStretch <= best) continue;
+    best = s.longestStretch;
+    final evening = eveningOf(s.startedAt!);
+    if (rises.lastOrNull?.evening == evening) rises.removeLast();
+    rises.add((evening: evening, longest: best));
+  }
+  return rises;
+}
 
 /// Tonight's Aim: the Longest stretch plus one minute.
 /// It's rounded up to a whole minute, so the number the user sees ("7

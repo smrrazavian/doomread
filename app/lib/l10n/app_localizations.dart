@@ -451,6 +451,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A page from {from} to {total}'**
   String problemPageOutOfRange(int from, int total);
+
+  /// No description provided for @readingWeekTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get readingWeekTitle;
+
+  /// The Reading week: nights this week with a Session. It never mentions missed nights.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{A fresh week} =1{1 reading night so far} other{{count} reading nights so far}}'**
+  String readingWeekCount(int count);
+
+  /// No description provided for @stretchTrendGrew.
+  ///
+  /// In en, this message translates to:
+  /// **'Your longest stretch grew from {from} to {to} minutes.'**
+  String stretchTrendGrew(int from, int to);
+
+  /// No description provided for @stretchTrendSoFar.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes, plural, =0{Your longest stretch so far is under a minute.} =1{Your longest stretch so far is 1 minute.} other{Your longest stretch so far is {minutes} minutes.}}'**
+  String stretchTrendSoFar(int minutes);
+
+  /// No description provided for @stretchTrendEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Read once and your longest stretch shows up here.'**
+  String get stretchTrendEmpty;
+
+  /// The first and last evening on the Longest stretch trend, read out by screen readers.
+  ///
+  /// In en, this message translates to:
+  /// **'From {from} to {to}.'**
+  String stretchTrendDates(String from, String to);
 }
 
 class _AppLocalizationsDelegate

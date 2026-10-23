@@ -7,6 +7,7 @@ abstract final class Palette {
   static const panel = Color(0xFF1F2945);
   static const raise = Color(0xFF2A3456);
   static const line = Color(0xFF2E3A5E);
+  static const unlit = Color(0xFF1A2238);
   static const indicator = Color(0xFF3A4469);
   static const tickPassed = Color(0xFFB48B3C);
   static const tickAhead = Color(0xFF4A5680);

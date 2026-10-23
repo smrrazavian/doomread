@@ -265,4 +265,60 @@ class AppLocalizationsFa extends AppLocalizations {
 
     return 'یه صفحه از $fromString تا $totalString';
   }
+
+  @override
+  String get readingWeekTitle => 'این هفته';
+
+  @override
+  String readingWeekCount(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'تا الان $countString شب خوندی',
+      zero: 'یه هفته‌ی تازه',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String stretchTrendGrew(int from, int to) {
+    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String fromString = fromNumberFormat.format(from);
+    final intl.NumberFormat toNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String toString = toNumberFormat.format(to);
+
+    return 'طولانی‌ترین تمرکزت از $fromString دقیقه رسیده به $toString دقیقه.';
+  }
+
+  @override
+  String stretchTrendSoFar(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: 'طولانی‌ترین تمرکزت تا الان $minutesString دقیقه‌ست.',
+      zero: 'طولانی‌ترین تمرکزت تا الان کمتر از یه دقیقه‌ست.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stretchTrendEmpty =>
+      'یه بار بخون، طولانی‌ترین تمرکزت اینجا نشون داده می‌شه.';
+
+  @override
+  String stretchTrendDates(String from, String to) {
+    return 'از $from تا $to.';
+  }
 }

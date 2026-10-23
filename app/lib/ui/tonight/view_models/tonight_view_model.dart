@@ -59,6 +59,17 @@ class TonightViewModel extends ChangeNotifier {
     );
   }
 
+  /// This week's nights, lit where any Session started, in a week that
+  /// starts on [firstDay] (see [firstDayOfWeek]).
+  ReadingWeek readingWeek(int firstDay) {
+    final now = _sessions.now();
+    return ReadingWeek(
+      now: now,
+      firstDay: firstDay,
+      sessionStarts: [for (final r in _history) ?r.at(now).startedAt],
+    );
+  }
+
   /// A Session with the current Work that was never stopped, say because the
   /// app was closed during it. Tonight offers to go back to it.
   String? get openSession {

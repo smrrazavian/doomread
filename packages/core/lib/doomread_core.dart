@@ -3,7 +3,9 @@
 /// Pure Dart, no Flutter. See CONTEXT.md for the vocabulary.
 library;
 
+export 'src/calendar.dart';
 export 'src/pace.dart';
+export 'src/reading_week.dart';
 export 'src/road.dart';
 export 'src/session.dart';
 export 'src/session_end.dart';

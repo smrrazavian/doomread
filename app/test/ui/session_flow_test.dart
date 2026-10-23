@@ -44,6 +44,7 @@ void main() {
     await openWithBook(tester, db);
     expect(find.text(l10n.aim(1)), findsOne);
     expect(find.text(l10n.eveningsLeft(7)), findsNothing);
+    expect(find.text(l10n.readingWeekCount(0)), findsOne);
 
     await tap(tester, l10n.startReading);
     expect(find.text('0:00'), findsOne);
@@ -80,6 +81,7 @@ void main() {
     expect(find.text(l10n.eveningsLeft(7)), findsOne);
     // 5:12 plus a minute, rounded up.
     expect(find.text(l10n.aim(7)), findsOne);
+    expect(find.text(l10n.readingWeekCount(1)), findsOne);
     final note = await db.select(db.notes).getSingle();
     expect((note.fromPage, note.toPage), (142, 156));
     expect(note.body, 'Stevens misses Miss Kenton, only to himself.');
