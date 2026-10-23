@@ -165,4 +165,25 @@ void main() {
 
     expect(await offline.username(), isNull);
   });
+
+  test('a release build sends no password over plain HTTP', () async {
+    for (final release in [true, false]) {
+      final auth = AuthRepository(
+        db,
+        MockClient((request) async {
+          requests.add(request);
+          return http.Response(jsonEncode(session), 200);
+        }),
+        server: Uri.parse('http://doomread.test'),
+        release: release,
+      );
+      await auth.signIn(sara);
+    }
+    // Only the debug build went through.
+    expect(requests, hasLength(1));
+    expect(
+      sendsSecurely(Uri.parse('https://doomread.test'), release: true),
+      isTrue,
+    );
+  });
 }

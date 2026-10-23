@@ -1,6 +1,6 @@
 # Doomread's server side (ADR-0007): `docker compose up --wait` starts it all.
 # ponytail: the credentials below are for development; set POSTGRES_PASSWORD
-# (and put the server behind TLS) before hosting it anywhere real.
+# (and put the server behind TLS, ADR-0010) before hosting it anywhere real.
 name: doomread
 
 services:

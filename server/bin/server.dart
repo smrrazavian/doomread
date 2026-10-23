@@ -14,10 +14,10 @@ Future<void> main(List<String> args) async {
     exit(await _healthy(port) ? 0 : 1);
   }
 
-  final store = await PostgresAccountStore.open(postgresEndpoint(env));
+  final store = await PostgresStore.open(postgresEndpoint(env));
   // Any address, so it can be reached from outside the container.
   final server = await shelf_io.serve(
-    doomreadServer(store),
+    doomreadServer(store, sync: store),
     InternetAddress.anyIPv4,
     port,
   );

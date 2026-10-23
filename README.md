@@ -62,4 +62,8 @@ Compose can't build on the host network, so if your proxy listens on the host's 
 
 The app talks to `http://localhost:8080` by default. A phone can't reach your laptop's localhost, so pass your laptop's address: `flutter run --flavor apk --dart-define=DOOMREAD_SERVER=http://192.168.1.20:8080`. The app works fully without an account.
 
+Signed in, the app syncs its Session journal, Works and Notes in the background (`POST /sync`): at start, a few seconds after each change, after signing in, on returning to the app, and every five minutes while it's open. Journal events are only ever added, so they merge; Works and Notes keep their last write. Try it with two devices (say a phone and an emulator) signed in to the same account.
+
+Sync traffic is encrypted in transit by TLS at a reverse proxy in front of the server (ADR-0010). Release builds only talk to an `https://` server; plain `http://` works in debug and profile builds only. For example, with Caddy on the host: `caddy reverse-proxy --from sync.example.ir --to localhost:8080`.
+
 Golden screenshots are rendered inside the container. To update them, run `tool/dev sh -c 'cd app && flutter test --update-goldens'`.
