@@ -1,4 +1,5 @@
 import 'package:doomread/data/repositories/settings_repository.dart';
+import 'package:doomread/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -12,7 +13,8 @@ void main() {
       await pumpApp(tester, db);
 
       // The theme as rendered, after Flutter localises it for Persian.
-      final t = Theme.of(tester.element(find.text('امشب').first)).textTheme;
+      final tonight = lookupAppLocalizations(const Locale('fa')).navTonight;
+      final t = Theme.of(tester.element(find.text(tonight).first)).textTheme;
       final styles = {
         'displayLarge': t.displayLarge,
         'displayMedium': t.displayMedium,

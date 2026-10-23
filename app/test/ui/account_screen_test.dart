@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:doomread/app.dart';
 import 'package:doomread/data/repositories/auth_repository.dart';
 import 'package:doomread/data/services/app_database.dart';
+import 'package:doomread/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,6 +14,8 @@ import 'package:http/testing.dart';
 import '../helpers.dart';
 
 void main() {
+  final en = lookupAppLocalizations(const Locale('en'));
+
   setUp(() => FlutterSecureStorage.setMockInitialValues({}));
 
   Future<void> openAccount(
@@ -24,9 +27,9 @@ void main() {
       DoomreadApp(db: db, auth: AuthRepository(db, server)),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip('Settings'));
+    await tester.tap(find.byTooltip(en.settings));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Account'));
+    await tester.tap(find.text(en.account));
     await tester.pumpAndSettle();
   }
 
@@ -49,13 +52,13 @@ void main() {
     await openAccount(tester, db, server);
 
     await typeCredentials(tester);
-    await tester.tap(find.text('Create account'));
+    await tester.tap(find.text(en.accountSignUp));
     await tester.pumpAndSettle();
-    expect(find.text('Signed in as sara'), findsOne);
+    expect(find.text(en.accountSignedInAs('sara')), findsOne);
 
-    await tester.tap(find.text('Sign out'));
+    await tester.tap(find.text(en.accountSignOut));
     await tester.pumpAndSettle();
-    expect(find.text('Sign in'), findsOne);
+    expect(find.text(en.accountSignIn), findsOne);
     expect(await AuthRepository(db, server).username(), isNull);
   });
 
@@ -67,11 +70,11 @@ void main() {
     );
 
     await typeCredentials(tester);
-    await tester.tap(find.text('Sign in'));
+    await tester.tap(find.text(en.accountSignIn));
     await tester.pumpAndSettle();
 
     expect(find.textContaining("Can't reach the server"), findsOne);
-    expect(find.text('Signed in as sara'), findsNothing);
+    expect(find.text(en.accountSignedInAs('sara')), findsNothing);
   });
 
   testApp('a wrong password is shown, not a crash', (tester, db) async {
@@ -82,10 +85,10 @@ void main() {
     );
 
     await typeCredentials(tester);
-    await tester.tap(find.text('Sign in'));
+    await tester.tap(find.text(en.accountSignIn));
     await tester.pumpAndSettle();
 
-    expect(find.text('Wrong username or password.'), findsOne);
+    expect(find.text(en.accountErrorWrong), findsOne);
   });
 
   testApp('too many tries asks for a few minutes', (tester, db) async {
@@ -96,9 +99,9 @@ void main() {
     );
 
     await typeCredentials(tester);
-    await tester.tap(find.text('Sign in'));
+    await tester.tap(find.text(en.accountSignIn));
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('Wait a few minutes'), findsOne);
+    expect(find.text(en.accountErrorTooMany), findsOne);
   });
 }

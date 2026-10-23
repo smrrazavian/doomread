@@ -1,11 +1,15 @@
 import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/data/services/app_database.dart';
+import 'package:doomread/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../helpers.dart';
 
 void main() {
+  final en = lookupAppLocalizations(const Locale('en'));
+  final fa = lookupAppLocalizations(const Locale('fa'));
+
   Future<void> openApp(
     WidgetTester tester,
     AppDatabase db, {
@@ -21,19 +25,19 @@ void main() {
   ) async {
     await openApp(tester, db);
 
-    await tester.tap(find.text('Add a book'));
+    await tester.tap(find.text(en.tonightAddBook));
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('title')), 'Dune');
     await tester.enterText(find.byKey(const Key('author')), 'Frank Herbert');
     await tester.enterText(find.byKey(const Key('pages')), '412');
     await tester.enterText(find.byKey(const Key('checkpoints')), '100, 200');
-    await tester.tap(find.text('Save'));
+    await tester.tap(find.text(en.save));
     await tester.pumpAndSettle();
 
     expect(find.text('Dune'), findsOne);
-    expect(find.text('Page 0 of 412'), findsOne);
+    expect(find.text(en.pageOf(0, 412)), findsOne);
 
-    await tester.tap(find.text('Books'));
+    await tester.tap(find.text(en.navBooks));
     await tester.pumpAndSettle();
     expect(find.text('Dune'), findsOne);
   });
@@ -43,13 +47,13 @@ void main() {
     db,
   ) async {
     await openApp(tester, db);
-    await tester.tap(find.text('Add a book'));
+    await tester.tap(find.text(en.tonightAddBook));
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('title')), 'Dune');
-    await tester.tap(find.text('Save'));
+    await tester.tap(find.text(en.save));
     await tester.pumpAndSettle();
 
-    expect(find.text('How many pages does it have?'), findsOne);
+    expect(find.text(en.problemNoPages), findsOne);
   });
 
   testApp('Persian digits and the Persian comma are understood', (
@@ -57,14 +61,16 @@ void main() {
     db,
   ) async {
     await openApp(tester, db, lang: 'fa');
-    await tester.tap(find.text('یه کتاب اضافه کن'));
+    await tester.tap(find.text(fa.tonightAddBook));
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('title')), 'بوف کور');
     await tester.enterText(find.byKey(const Key('pages')), '۱۲۰');
     await tester.enterText(find.byKey(const Key('checkpoints')), '۳۰، ۶۰');
-    await tester.tap(find.text('ذخیره'));
+    await tester.tap(find.text(fa.save));
     await tester.pumpAndSettle();
 
-    expect(find.text('صفحه‌ی ۰ از ۱۲۰'), findsOne);
+    // Typed in Persian digits, read back as 120 and shown as ۱۲۰.
+    expect(fa.pageOf(0, 120), contains('۱۲۰'));
+    expect(find.text(fa.pageOf(0, 120)), findsOne);
   });
 }
