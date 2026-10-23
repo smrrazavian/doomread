@@ -1,6 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Signing in and sync talk to the Doomread server. -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- The ongoing notification while a Session runs, asked for in context
+         (Android 13+), and its promotion to a Live Update (Android 16+). -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS"/>
     <application
         android:label="@string/app_name"
         android:appCategory="productivity"

@@ -451,6 +451,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A page from {from} to {total}'**
   String problemPageOutOfRange(int from, int total);
+
+  /// No description provided for @notificationAskTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the timer on your lock screen?'**
+  String get notificationAskTitle;
+
+  /// No description provided for @notificationAskBody.
+  ///
+  /// In en, this message translates to:
+  /// **'While you read, Doomread shows one quiet notification with the timer and your book. It goes away when you stop, and that\'s all it\'s for.'**
+  String get notificationAskBody;
+
+  /// No description provided for @notificationAskAllow.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow'**
+  String get notificationAskAllow;
+
+  /// No description provided for @notificationAskNotNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get notificationAskNotNow;
+
+  /// No description provided for @notificationPaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused at {time}'**
+  String notificationPaused(String time);
 }
 
 class _AppLocalizationsDelegate

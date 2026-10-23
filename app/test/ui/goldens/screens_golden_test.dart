@@ -14,13 +14,18 @@ void main() {
   var now = DateTime(2026, 10, 22, 21);
   setUp(() => now = DateTime(2026, 10, 22, 21));
 
-  Future<void> openIn(WidgetTester tester, AppDatabase db, String lang) async {
+  Future<void> openIn(
+    WidgetTester tester,
+    AppDatabase db,
+    String lang, {
+    FakeSessionNotification? notification,
+  }) async {
     tester.view
       ..physicalSize = const Size(720, 1560)
       ..devicePixelRatio = 2;
     addTearDown(tester.view.reset);
     await SettingsRepository(db).setLocale(Locale(lang));
-    await pumpApp(tester, db, clock: () => now);
+    await pumpApp(tester, db, clock: () => now, notification: notification);
   }
 
   /// The Remains of the Day at page 142, as the current Work.
@@ -115,6 +120,21 @@ void main() {
       await expectLater(
         find.byType(MaterialApp),
         matchesGoldenFile('reading_$lang.png'),
+      );
+    });
+
+    testApp('Asking for the Session notification in $lang', (tester, db) async {
+      await addEarlierEvenings(tester, db, await addRemains(db, lang));
+      await openIn(
+        tester,
+        db,
+        lang,
+        notification: FakeSessionNotification(askable: true),
+      );
+      await tap(tester, find.byType(FilledButton));
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('notification_ask_$lang.png'),
       );
     });
 

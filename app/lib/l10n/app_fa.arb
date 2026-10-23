@@ -61,5 +61,13 @@
   "whatHappened": "تو یه جمله، چی شد؟",
   "saveAndLightsOut": "ذخیره کن و چراغ رو خاموش کن",
   "problemNoPage": "کدوم صفحه؟ فقط عددش رو بنویس.",
-  "problemPageOutOfRange": "یه صفحه از {from} تا {total}"
+  "problemPageOutOfRange": "یه صفحه از {from} تا {total}",
+  "notificationAskTitle": "تایمر رو صفحه‌ی قفل هم باشه؟",
+  "notificationAskBody": "وقتی داری می‌خونی، یه نوتیفیکیشن بی‌صدا تایمر و کتابت رو نشون می‌ده. وقتی تموم کنی خودش می‌ره، و کار دیگه‌ای هم باهاش نداریم.",
+  "@notificationAskBody": {
+    "description": "TODO(owner): review this Persian copy (the notification explainer and the paused line below)."
+  },
+  "notificationAskAllow": "باشه",
+  "notificationAskNotNow": "الان نه",
+  "notificationPaused": "رو {time} مکث کردی"
 }

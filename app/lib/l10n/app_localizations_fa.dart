@@ -265,4 +265,22 @@ class AppLocalizationsFa extends AppLocalizations {
 
     return 'یه صفحه از $fromString تا $totalString';
   }
+
+  @override
+  String get notificationAskTitle => 'تایمر رو صفحه‌ی قفل هم باشه؟';
+
+  @override
+  String get notificationAskBody =>
+      'وقتی داری می‌خونی، یه نوتیفیکیشن بی‌صدا تایمر و کتابت رو نشون می‌ده. وقتی تموم کنی خودش می‌ره، و کار دیگه‌ای هم باهاش نداریم.';
+
+  @override
+  String get notificationAskAllow => 'باشه';
+
+  @override
+  String get notificationAskNotNow => 'الان نه';
+
+  @override
+  String notificationPaused(String time) {
+    return 'رو $time مکث کردی';
+  }
 }

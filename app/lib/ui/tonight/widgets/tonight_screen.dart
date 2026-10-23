@@ -1,5 +1,7 @@
 import 'package:doomread/data/repositories/session_repository.dart';
+import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
+import 'package:doomread/data/services/session_notification.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/road_view.dart';
 import 'package:doomread/ui/core/theme.dart';
@@ -15,8 +17,12 @@ class TonightScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ChangeNotifierProvider(
-    create: (c) =>
-        TonightViewModel(c.read<WorkRepository>(), c.read<SessionRepository>()),
+    create: (c) => TonightViewModel(
+      c.read<WorkRepository>(),
+      c.read<SessionRepository>(),
+      c.read<SettingsRepository>(),
+      c.read<SessionNotification>(),
+    ),
     child: const _Tonight(),
   );
 }
@@ -80,10 +86,49 @@ class _Tonight extends StatelessWidget {
 }
 
 Future<void> _start(BuildContext context, TonightViewModel vm) async {
+  // Asked here, the moment the timer is about to matter, and never in the
+  // way: the Session starts whatever the answer.
+  if (await vm.shouldExplainNotification()) {
+    if (!context.mounted) return;
+    final allow = await showDialog<bool>(
+      context: context,
+      builder: (_) => const _NotificationExplainer(),
+    );
+    await vm.answerNotification(allow: allow ?? false);
+    if (!context.mounted) return;
+  }
   await vm.start.execute();
   if (!context.mounted) return;
   if (vm.start.result case Ok(:final value)) {
     await context.push('/reading/$value');
+  }
+}
+
+/// Why the app wants to post a notification, before the system asks.
+class _NotificationExplainer extends StatelessWidget {
+  const _NotificationExplainer();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return AlertDialog(
+      backgroundColor: Palette.panel,
+      icon: const Icon(Icons.lock_clock_outlined, color: Palette.lamp),
+      title: Text(l10n.notificationAskTitle),
+      content: Text(l10n.notificationAskBody),
+      actions: [
+        TextButton(
+          key: const Key('notificationNotNow'),
+          onPressed: () => Navigator.pop(context, false),
+          child: Text(l10n.notificationAskNotNow),
+        ),
+        FilledButton(
+          key: const Key('notificationAllow'),
+          onPressed: () => Navigator.pop(context, true),
+          child: Text(l10n.notificationAskAllow),
+        ),
+      ],
+    );
   }
 }
 
