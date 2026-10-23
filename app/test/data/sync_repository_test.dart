@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:doomread/data/repositories/auth_repository.dart';
 import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/data/repositories/sync_repository.dart';
@@ -7,6 +9,7 @@ import 'package:doomread/domain/use_cases/sync_use_case.dart';
 import 'package:doomread/utils/result.dart';
 import 'package:doomread_core/accounts.dart';
 import 'package:doomread_core/doomread_core.dart';
+import 'package:doomread_core/sync.dart';
 import 'package:doomread_server/server.dart';
 import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:drift/native.dart';
@@ -303,6 +306,39 @@ void main() {
       await syncAll([b, a, b]);
       expect(await both(), [('Dune (renamed)', 150), ('Dune (renamed)', 150)]);
     });
+
+    test(
+      'an app from before positionAt moved it with its last write',
+      () async {
+        final old = SyncItem(
+          kind: SyncKind.work,
+          id: id,
+          updatedAt: evening.add(const Duration(minutes: 5)).toUtc(),
+          data: const {
+            'title': 'Dune',
+            'author': 'Frank Herbert',
+            'kind': 'paperBook',
+            'totalPages': 412,
+            'checkpoints': [40, 80],
+            'position': 200,
+          },
+        );
+        final response = await server(
+          shelf.Request(
+            'POST',
+            Device._url.resolve('sync'),
+            headers: {
+              'authorization': 'Bearer ${await a.auth.token()}',
+              'content-type': 'application/json',
+            },
+            body: jsonEncode(SyncRequest(since: 0, items: [old]).toJson()),
+          ),
+        );
+        expect(response.statusCode, 200);
+        await syncAll([b]);
+        expect((await b.works.watchRoad(id).first)!.position, 200);
+      },
+    );
 
     test('a later, lower Position still wins', () async {
       await read(a, id, to: 150, minute: 2, offline: true);
