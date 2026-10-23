@@ -3,6 +3,7 @@ import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/data/repositories/sync_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/data/services/app_database.dart';
+import 'package:doomread/domain/use_cases/sync_use_case.dart';
 import 'package:doomread/utils/result.dart';
 import 'package:doomread_core/accounts.dart';
 import 'package:doomread_core/doomread_core.dart';
@@ -37,8 +38,9 @@ class Device {
       );
     });
     auth = AuthRepository(db, client, server: _url);
-    syncer = SyncRepository(db, auth, client, server: _url);
+    syncer = SyncRepository(db, client, server: _url);
     works = WorkRepository(db, clock: () => now);
+    syncing = SyncUseCase(auth, syncer, works);
     sessions = SessionRepository(db, clock: () => now);
   }
 
@@ -51,9 +53,10 @@ class Device {
   late final AuthRepository auth;
   late final SyncRepository syncer;
   late final WorkRepository works;
+  late final SyncUseCase syncing;
   late final SessionRepository sessions;
 
-  Future<Result<void>> sync() => syncer.sync();
+  Future<Result<void>> sync() => syncing();
 
   Future<SessionRecord> last() async => (await sessions.watchAll().first).last;
 
@@ -365,19 +368,21 @@ void main() {
     // The shared storage holds a's token, which this server never issued.
     expect(await c.auth.username(), 'sara');
     final result = await c.sync();
-    expect((result as Error<void>).error, isA<SyncException>());
+    expect(
+      ((result as Error<void>).error as SyncException).failure,
+      SyncFailure.signInEnded,
+    );
     expect(await c.auth.username(), isNull);
   });
 
   test('a release build never syncs over plain HTTP', () async {
     final release = SyncRepository(
       a.db,
-      a.auth,
       MockClient((_) async => fail('nothing may be sent')),
       server: Uri.parse('http://doomread.test/'),
       release: true,
     );
-    final result = await release.sync();
+    final result = await release.sync(username: 'sara', token: 'a token');
     expect(
       ((result as Error<void>).error as SyncException).failure,
       SyncFailure.insecure,
@@ -437,13 +442,12 @@ void main() {
       );
       return http.Response(await response.readAsString(), response.statusCode);
     });
-    final syncer = SyncRepository(
-      old,
+    final syncing = SyncUseCase(
       AuthRepository(old, client, server: Device._url),
-      client,
-      server: Device._url,
+      SyncRepository(old, client, server: Device._url),
+      WorkRepository(old),
     );
-    expect(await syncer.sync(), isA<Ok<void>>());
+    expect(await syncing(), isA<Ok<void>>());
 
     expect(await b.sync(), isA<Ok<void>>());
     final there = await b.last();

@@ -9,7 +9,5 @@ void main() {
   final db = AppDatabase.open();
   final client = http.Client();
   final auth = AuthRepository(db, client);
-  runApp(
-    DoomreadApp(db: db, auth: auth, sync: SyncRepository(db, auth, client)),
-  );
+  runApp(DoomreadApp(db: db, auth: auth, sync: SyncRepository(db, client)));
 }

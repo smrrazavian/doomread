@@ -1,7 +1,9 @@
 import 'dart:convert';
 
-import 'package:doomread/data/repositories/auth_repository.dart';
-import 'package:doomread/data/repositories/work_repository.dart';
+import 'package:doomread/data/repositories/auth_repository.dart'
+    show defaultServer, sendsSecurely;
+import 'package:doomread/data/repositories/work_repository.dart'
+    show WorkRepository;
 import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread/utils/result.dart';
 import 'package:doomread_core/doomread_core.dart';
@@ -12,8 +14,12 @@ import 'package:http/http.dart' as http;
 
 /// Why a sync didn't happen or didn't finish.
 enum SyncFailure {
-  /// Nobody is signed in, or the server no longer knows the sign-in.
+  /// Nobody is signed in; nothing was sent.
   signedOut,
+
+  /// The server no longer knows the sign-in: it expired or was ended on
+  /// another device. Whoever syncs signs this device out.
+  signInEnded,
 
   /// A release build pointed at a plain HTTP server; nothing was sent.
   insecure,
@@ -42,14 +48,12 @@ class SyncException implements Exception {
 class SyncRepository {
   SyncRepository(
     this._db,
-    this._auth,
     this._client, {
     Uri? server,
     this._release = kReleaseMode,
   }) : _server = server ?? defaultServer;
 
   final AppDatabase _db;
-  final AuthRepository _auth;
   final http.Client _client;
   final Uri _server;
   final bool _release;
@@ -60,18 +64,22 @@ class SyncRepository {
   static const _cursorKey = 'sync.cursor';
   static const _accountKey = 'sync.account';
 
-  /// One sync round trip after another until both sides have everything.
+  /// Fires after any local change to what sync carries, sync's own
+  /// writes included.
+  Stream<void> get localChanges => _db.tableUpdates(
+    TableUpdateQuery.onAllTables([_db.works, _db.sessionEvents, _db.notes]),
+  );
+
+  /// One sync round trip after another until both sides have everything,
+  /// for [username]'s account with its sign-in [token].
   /// Safe to call at any time; a call while one runs waits for that one.
-  Future<Result<void>> sync() =>
-      _running ??= _sync().whenComplete(() => _running = null);
+  Future<Result<void>> sync({
+    required String username,
+    required String token,
+  }) => _running ??= _sync(username, token).whenComplete(() => _running = null);
   Future<Result<void>>? _running;
 
-  Future<Result<void>> _sync() async {
-    final token = await _auth.token();
-    final username = await _auth.username();
-    if (token == null || username == null) {
-      return const Result.error(SyncException(SyncFailure.signedOut));
-    }
+  Future<Result<void>> _sync(String username, String token) async {
     if (!sendsSecurely(_server, release: _release)) {
       return const Result.error(SyncException(SyncFailure.insecure));
     }
@@ -93,9 +101,7 @@ class SyncRepository {
             )
             .timeout(_timeout);
         if (response.statusCode == 401) {
-          // Expired or ended elsewhere: this device is signed out too.
-          await _auth.signOut();
-          return const Result.error(SyncException(SyncFailure.signedOut));
+          return const Result.error(SyncException(SyncFailure.signInEnded));
         }
         if (response.statusCode != 200) {
           return const Result.error(SyncException(SyncFailure.unreachable));
@@ -117,7 +123,6 @@ class SyncRepository {
       // Offline, a timeout, or an answer that isn't the protocol.
       return const Result.error(SyncException(SyncFailure.unreachable));
     }
-    await WorkRepository(_db).keepOneCurrent();
     return const Result.ok(null);
   }
 

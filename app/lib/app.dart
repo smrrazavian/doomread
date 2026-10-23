@@ -10,6 +10,7 @@ import 'package:doomread/data/services/auto_sync.dart';
 import 'package:doomread/data/services/break_over_notification.dart';
 import 'package:doomread/data/services/home_widget.dart';
 import 'package:doomread/data/services/session_notification.dart';
+import 'package:doomread/domain/use_cases/sync_use_case.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/routing/router.dart';
 import 'package:doomread/ui/core/theme.dart';
@@ -17,7 +18,6 @@ import 'package:doomread/ui/planned_break/break_over_alarm.dart';
 import 'package:doomread/ui/reading/live_notification.dart';
 import 'package:doomread/ui/settings/view_models/settings_view_model.dart';
 import 'package:doomread/ui/tonight/live_home_widget.dart';
-import 'package:drift/drift.dart' show TableUpdateQuery;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -44,8 +44,8 @@ class DoomreadApp extends StatefulWidget {
   /// screen leave it out.
   final AuthRepository? auth;
 
-  /// Syncs the signed-in account in the background. Tests that don't sync
-  /// leave it out.
+  /// Syncs the signed-in account in the background, along with [auth].
+  /// Tests that don't sync leave it out.
   final SyncRepository? sync;
 
   /// The ongoing notification while a Session runs. Tests pass a fake; the
@@ -99,20 +99,10 @@ class _DoomreadAppState extends State<DoomreadApp> {
     );
     _notification.onTapped = _openReading;
     unawaited(_openReadingIfTapped());
-    if (widget.sync case final sync?) {
-      final db = widget.db;
+    if ((widget.auth, widget.sync) case (final auth?, final sync?)) {
       _autoSync = AutoSync(
-        sync.sync,
-        nudges: [
-          db.tableUpdates(
-            TableUpdateQuery.onAllTables([
-              db.works,
-              db.sessionEvents,
-              db.notes,
-            ]),
-          ),
-          ?widget.auth?.changes,
-        ],
+        SyncUseCase(auth, sync, _works).call,
+        triggers: [sync.localChanges, auth.changes],
       );
     }
     _liveWidget = LiveHomeWidget(_works, _sessions, _settings, _homeWidget);
