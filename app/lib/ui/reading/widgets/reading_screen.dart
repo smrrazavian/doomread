@@ -2,6 +2,7 @@ import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/number_format.dart';
 import 'package:doomread/ui/core/theme.dart';
+import 'package:doomread/ui/planned_break/widgets/next_break_card.dart';
 import 'package:doomread/ui/reading/view_models/reading_view_model.dart';
 import 'package:doomread/ui/reading/widgets/house_view.dart';
 import 'package:flutter/material.dart';
@@ -82,6 +83,8 @@ class _Reading extends StatelessWidget {
               const SizedBox(height: 8),
               Text(aimLine, style: text.bodyMedium),
               const SizedBox(height: 24),
+              NextBreakCard(sessionId: record.id),
+              const SizedBox(height: 8),
               DecoratedBox(
                 decoration: BoxDecoration(
                   color: Palette.panel,

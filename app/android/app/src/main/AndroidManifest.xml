@@ -5,6 +5,10 @@
          (Android 13+), and its promotion to a Live Update (Android 16+). -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS"/>
+    <!-- The "break's over" notification at the end of a Planned break: exact
+         when the user allows it (off by default on Android 14+), otherwise
+         inexact. Its receiver, BreakOverReceiver, is in <application>. -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
     <application
         android:label="@string/app_name"
         android:appCategory="productivity"
@@ -32,6 +36,8 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <!-- Posts the "break's over" notification when its alarm goes off. -->
+        <receiver android:name=".BreakOverReceiver" android:exported="false"/>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

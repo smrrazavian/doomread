@@ -1,7 +1,18 @@
 import 'package:doomread_core/src/calendar.dart';
 
 /// What the user did during a Session, as stored in the journal.
-enum SessionEventKind { start, pause, resume, stop }
+///
+/// A Planned break starts with [breakStart] and ends with [breakEnd] (or a
+/// Resume, or Stop). A [nudge] moves the offered Planned break later.
+enum SessionEventKind {
+  start,
+  pause,
+  resume,
+  stop,
+  breakStart,
+  breakEnd,
+  nudge,
+}
 
 /// One timestamped entry in a Session's journal. Entries are only ever
 /// appended; everything else is derived from them by [Session.fromEvents].
@@ -13,9 +24,12 @@ class SessionEvent {
 }
 
 /// What ended a Stretch.
-// ponytail: Slips and the Planned break also end a Stretch; they arrive with
-// Urges (#6) and Planned breaks (#5).
-enum StretchEnd { pause, stop }
+// ponytail: Slips also end a Stretch; they arrive with Urges (#6).
+enum StretchEnd { pause, stop, plannedBreak }
+
+/// A Planned break the user took: when it started and, once they're back,
+/// when it ended.
+typedef BreakTaken = ({DateTime start, DateTime? end});
 
 /// Unbroken Session time with the timer running.
 class Stretch {
@@ -60,10 +74,19 @@ class Session {
     DateTime? runningSince;
     var stopped = false;
     final stretches = <Stretch>[];
+    final breaks = <BreakTaken>[];
+    final nudges = <DateTime>[];
+    bool onBreak() => breaks.isNotEmpty && breaks.last.end == null;
     void close(DateTime at, StretchEnd by) {
       if (runningSince == null) return;
       stretches.add(Stretch(runningSince!, at, by));
       runningSince = null;
+    }
+
+    void endBreak(DateTime at) {
+      if (!onBreak()) return;
+      breaks.last = (start: breaks.last.start, end: at);
+      runningSince = at;
     }
 
     for (final (_, e) in indexed) {
@@ -77,19 +100,37 @@ class Session {
           continue;
         case SessionEventKind.pause:
           close(e.at, StretchEnd.pause);
+        case SessionEventKind.resume when onBreak():
+        case SessionEventKind.breakEnd:
+          endBreak(e.at);
         case SessionEventKind.resume:
           runningSince ??= e.at;
+        case SessionEventKind.breakStart:
+          if (onBreak()) continue;
+          close(e.at, StretchEnd.plannedBreak);
+          breaks.add((start: e.at, end: null));
+        case SessionEventKind.nudge:
+          if (!onBreak()) nudges.add(e.at);
         case SessionEventKind.stop:
           close(e.at, StretchEnd.stop);
+          endBreak(e.at);
+          runningSince = null;
           stopped = true;
       }
     }
     if (runningSince != null) stretches.add(Stretch(runningSince!, now, null));
-    return Session._(startedAt, stretches, stopped: stopped);
+    return Session._(startedAt, stretches, breaks, nudges, stopped: stopped);
   }
 
-  Session._(this.startedAt, List<Stretch> stretches, {required this.stopped})
-    : stretches = List.unmodifiable(stretches);
+  Session._(
+    this.startedAt,
+    List<Stretch> stretches,
+    List<BreakTaken> breaks,
+    List<DateTime> nudges, {
+    required this.stopped,
+  }) : stretches = List.unmodifiable(stretches),
+       breaks = List.unmodifiable(breaks),
+       nudges = List.unmodifiable(nudges);
 
   /// When the Session started; null if the journal has no Start.
   final DateTime? startedAt;
@@ -97,11 +138,40 @@ class Session {
   /// In order, the last one possibly still running.
   final List<Stretch> stretches;
 
+  /// The Planned breaks taken, in order; the last one may still be on.
+  final List<BreakTaken> breaks;
+
+  /// When the user nudged the offered Planned break later, in order. Only
+  /// those while reading or paused count.
+  final List<DateTime> nudges;
+
   final bool stopped;
 
-  /// Started, not stopped, and no Stretch running.
+  /// Started, not stopped, no Stretch running, and not on a Planned break.
   bool get paused =>
-      startedAt != null && !stopped && (stretches.lastOrNull?.endedBy != null);
+      startedAt != null &&
+      !stopped &&
+      !onBreak &&
+      (stretches.lastOrNull?.endedBy != null);
+
+  /// On a Planned break right now.
+  bool get onBreak => breaks.isNotEmpty && breaks.last.end == null;
+
+  /// Reading time since the last Planned break ended, or since the Start.
+  Duration get readingSinceBreak =>
+      readingBetween(breaks.lastOrNull?.end ?? startedAt, null);
+
+  /// The time in Stretches that started from [from] (inclusive) until [to],
+  /// or until now when [to] is null. No Stretch spans a Planned break, so
+  /// between breaks this is all the reading done there.
+  Duration readingBetween(DateTime? from, DateTime? to) => stretches
+      .where(
+        (s) =>
+            from != null &&
+            !s.start.isBefore(from) &&
+            (to == null || s.start.isBefore(to)),
+      )
+      .fold(Duration.zero, (sum, s) => sum + s.length);
 
   /// The Stretch running now, if any.
   Stretch? get current {

@@ -41,4 +41,28 @@ void main() {
   test('a few pages left is still at least one evening', () {
     expect(eveningsLeft(pagesLeft: 1, sittings: [sat(20, 21, 50)]), 1);
   });
+
+  group('time per page', () {
+    ({Duration reading, int pages}) read(int minutes, int pages) =>
+        (reading: Duration(minutes: minutes), pages: pages);
+
+    test('is unknown before any pages were read', () {
+      expect(timePerPage(const []), isNull);
+      expect(timePerPage([read(10, 0)]), isNull);
+    });
+
+    test('is all the reading over all the pages', () {
+      expect(
+        timePerPage([read(10, 20), read(20, 40)]),
+        const Duration(seconds: 30),
+      );
+    });
+
+    test('leaves out Sessions with no reading or no pages', () {
+      expect(
+        timePerPage([read(10, 20), read(0, 14), read(30, 0)]),
+        const Duration(seconds: 30),
+      );
+    });
+  });
 }

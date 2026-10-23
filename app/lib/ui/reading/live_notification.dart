@@ -53,6 +53,8 @@ class LiveNotification {
     if (running != null) {
       final before = all.where((r) => r.id != open.id).map((r) => r.at(now));
       text = l10n.aim(aimFor(longestStretch(before)).inMinutes);
+    } else if (session.onBreak) {
+      text = l10n.onBreak;
     } else {
       final last = session.stretches.lastOrNull?.length ?? Duration.zero;
       text = l10n.notificationPaused(formatClock(last, locale));

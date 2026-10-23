@@ -104,5 +104,30 @@
   "bookFinished": "تمومش کردی، تا صفحه‌ی آخر.",
   "pageRange": "ص {from} تا {to}",
   "houseEmpty": "فعلاً فقط چراغ تو روشنه. هر شب که بخونی، یه چراغ دیگه هم روشن می‌شه.",
-  "houseYours": "بقیه‌ی چراغ‌های اینجا هم مال خودتن، از شب‌هایی که خوندی."
+  "houseYours": "بقیه‌ی چراغ‌های اینجا هم مال خودتن، از شب‌هایی که خوندی.",
+  "nextBreakAtCheckpoint": "استراحتت: آخر فصل {chapter}، حدوداً {minutes} دقیقه‌ی دیگه.",
+  "@nextBreakAtCheckpoint": {
+    "description": "TODO(owner): review this Persian copy (the Planned break block, down to backToReading)."
+  },
+  "nextBreakAtPage": "استراحتت: حدوداً {minutes} دقیقه‌ی دیگه، آخر همون صفحه‌ای که هستی.",
+  "breakDueAtCheckpoint": "آخر فصل {chapter} وقت استراحته.",
+  "breakDueAtPage": "وقت استراحته. این صفحه رو تموم کن.",
+  "takeBreak": "رسیدم",
+  "nudgeBreak": "بعداً",
+  "onBreakUntil": "تا {time} استراحتی.",
+  "showBreak": "تایمر رو نشون بده",
+  "chapterDone": "فصل {chapter} تموم شد",
+  "breakHere": "وقت استراحتت رسید.",
+  "breakAnything": "{minutes} دقیقه ریلز، پیام، هر چی دلت خواست.",
+  "backToChapterAt": "ساعت {time} برمی‌گردیم سراغ فصل {chapter}.",
+  "backToBookAt": "ساعت {time} برمی‌گردیم سراغ کتاب.",
+  "bestTonight": "{minutes, plural, =0{بهترین تمرکز امشبت هنوز زیر یه دقیقه‌ست.} other{بهترین تمرکز امشبت {minutes} دقیقه بوده.}}",
+  "startMyBreak": "{minutes} دقیقه‌م رو شروع کن",
+  "keepReading": "نه، ادامه می‌دم",
+  "onBreak": "داری استراحت می‌کنی.",
+  "imBack": "برگشتم",
+  "breakOver": "استراحت تموم شد.",
+  "chapterWaiting": "فصل {chapter} منتظرته.",
+  "workWaiting": "«{title}» منتظرته.",
+  "backToReading": "برگرد سراغ خوندن"
 }

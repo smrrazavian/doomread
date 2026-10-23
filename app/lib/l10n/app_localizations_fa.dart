@@ -163,7 +163,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get startReading => 'شروع خوندن';
 
   @override
-  String get backToReading => 'برگرد سر خوندن';
+  String get backToReading => 'برگرد سراغ خوندن';
 
   @override
   String aim(int minutes) {
@@ -433,4 +433,136 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get houseYours =>
       'بقیه‌ی چراغ‌های اینجا هم مال خودتن، از شب‌هایی که خوندی.';
+
+  @override
+  String nextBreakAtCheckpoint(int chapter, int minutes) {
+    final intl.NumberFormat chapterNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String chapterString = chapterNumberFormat.format(chapter);
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'استراحتت: آخر فصل $chapterString، حدوداً $minutesString دقیقه‌ی دیگه.';
+  }
+
+  @override
+  String nextBreakAtPage(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'استراحتت: حدوداً $minutesString دقیقه‌ی دیگه، آخر همون صفحه‌ای که هستی.';
+  }
+
+  @override
+  String breakDueAtCheckpoint(int chapter) {
+    final intl.NumberFormat chapterNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String chapterString = chapterNumberFormat.format(chapter);
+
+    return 'آخر فصل $chapterString وقت استراحته.';
+  }
+
+  @override
+  String get breakDueAtPage => 'وقت استراحته. این صفحه رو تموم کن.';
+
+  @override
+  String get takeBreak => 'رسیدم';
+
+  @override
+  String get nudgeBreak => 'بعداً';
+
+  @override
+  String onBreakUntil(String time) {
+    return 'تا $time استراحتی.';
+  }
+
+  @override
+  String get showBreak => 'تایمر رو نشون بده';
+
+  @override
+  String chapterDone(int chapter) {
+    final intl.NumberFormat chapterNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String chapterString = chapterNumberFormat.format(chapter);
+
+    return 'فصل $chapterString تموم شد';
+  }
+
+  @override
+  String get breakHere => 'وقت استراحتت رسید.';
+
+  @override
+  String breakAnything(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '$minutesString دقیقه ریلز، پیام، هر چی دلت خواست.';
+  }
+
+  @override
+  String backToChapterAt(int chapter, String time) {
+    final intl.NumberFormat chapterNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String chapterString = chapterNumberFormat.format(chapter);
+
+    return 'ساعت $time برمی‌گردیم سراغ فصل $chapterString.';
+  }
+
+  @override
+  String backToBookAt(String time) {
+    return 'ساعت $time برمی‌گردیم سراغ کتاب.';
+  }
+
+  @override
+  String bestTonight(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: 'بهترین تمرکز امشبت $minutesString دقیقه بوده.',
+      zero: 'بهترین تمرکز امشبت هنوز زیر یه دقیقه‌ست.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String startMyBreak(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '$minutesString دقیقه‌م رو شروع کن';
+  }
+
+  @override
+  String get keepReading => 'نه، ادامه می‌دم';
+
+  @override
+  String get onBreak => 'داری استراحت می‌کنی.';
+
+  @override
+  String get imBack => 'برگشتم';
+
+  @override
+  String get breakOver => 'استراحت تموم شد.';
+
+  @override
+  String chapterWaiting(int chapter) {
+    final intl.NumberFormat chapterNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String chapterString = chapterNumberFormat.format(chapter);
+
+    return 'فصل $chapterString منتظرته.';
+  }
+
+  @override
+  String workWaiting(String title) {
+    return '«$title» منتظرته.';
+  }
 }

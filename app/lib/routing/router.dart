@@ -8,6 +8,7 @@ import 'package:doomread/ui/building/widgets/building_screen.dart';
 import 'package:doomread/ui/building/widgets/finish_screen.dart';
 import 'package:doomread/ui/core/section_placeholder.dart';
 import 'package:doomread/ui/evening/widgets/evening_screen.dart';
+import 'package:doomread/ui/planned_break/widgets/planned_break_screen.dart';
 import 'package:doomread/ui/reading/widgets/reading_screen.dart';
 import 'package:doomread/ui/settings/widgets/settings_screen.dart';
 import 'package:doomread/ui/tonight/widgets/tonight_screen.dart';
@@ -67,6 +68,11 @@ List<RouteBase> _routes(GlobalKey<NavigatorState> root) => [
     path: '/reading/:id',
     builder: (_, state) =>
         ReadingScreen(sessionId: state.pathParameters['id']!),
+  ),
+  GoRoute(
+    path: '/break/:id',
+    builder: (_, state) =>
+        PlannedBreakScreen(sessionId: state.pathParameters['id']!),
   ),
   GoRoute(
     path: '/evening/:id',

@@ -23,3 +23,18 @@ int? eveningsLeft({
 /// How many different evenings Sessions started at [starts] fall on.
 int eveningsSpent(Iterable<DateTime> starts) =>
     starts.map(eveningOf).toSet().length;
+
+/// How long the user takes over a page of this Work: all the reading in
+/// [sittings] (its ended Sessions) over all the pages they moved the
+/// Position. A sitting missing either is left out, and with none left
+/// there's no pace, so no page is ever guessed.
+Duration? timePerPage(Iterable<({Duration reading, int pages})> sittings) {
+  var reading = Duration.zero;
+  var pages = 0;
+  for (final s in sittings) {
+    if (s.pages <= 0 || s.reading <= Duration.zero) continue;
+    reading += s.reading;
+    pages += s.pages;
+  }
+  return pages == 0 ? null : reading ~/ pages;
+}
