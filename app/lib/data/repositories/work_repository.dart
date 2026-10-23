@@ -4,9 +4,13 @@ import 'package:drift/drift.dart';
 
 /// The Works the user is getting through, and which one is current.
 class WorkRepository {
-  WorkRepository(this._db);
+  WorkRepository(this._db, {DateTime Function()? clock})
+    : _now = clock ?? DateTime.now;
 
   final AppDatabase _db;
+
+  /// Stamps `updatedAt`, which last-write-wins sync will compare (#16).
+  final DateTime Function() _now;
 
   static const _currentKey = 'currentWork';
 
@@ -48,13 +52,10 @@ class WorkRepository {
             author: author,
             totalPages: totalPages,
             checkpoints: checkpoints.join(','),
-            updatedAt: DateTime.now(),
+            updatedAt: _now(),
           ),
         );
-    final current = await (_db.select(
-      _db.settings,
-    )..where((s) => s.key.equals(_currentKey))).getSingleOrNull();
-    if (current == null) await setCurrent(id);
+    if (await _db.setting(_currentKey) == null) await setCurrent(id);
     return id;
   });
 
@@ -70,7 +71,7 @@ class WorkRepository {
       author: Value(author),
       totalPages: Value(totalPages),
       checkpoints: Value(checkpoints.join(',')),
-      updatedAt: Value(DateTime.now()),
+      updatedAt: Value(_now()),
     ),
   );
 

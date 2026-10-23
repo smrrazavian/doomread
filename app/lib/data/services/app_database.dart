@@ -68,6 +68,11 @@ class AppDatabase extends _$AppDatabase {
   /// The on-device database.
   AppDatabase.open() : super(driftDatabase(name: 'doomread'));
 
+  /// The value stored under [key] in Settings, or null.
+  Future<String?> setting(String key) async => (await (select(
+    settings,
+  )..where((s) => s.key.equals(key))).getSingleOrNull())?.value;
+
   @override
   int get schemaVersion => 3;
 

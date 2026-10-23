@@ -9,9 +9,12 @@ void main() {
   late AppDatabase db;
   late WorkRepository works;
 
+  var now = DateTime(2026, 10, 22, 21);
+
   setUp(() {
     db = AppDatabase(NativeDatabase.memory());
-    works = WorkRepository(db);
+    now = DateTime(2026, 10, 22, 21);
+    works = WorkRepository(db, clock: () => now);
   });
   tearDown(() => db.close());
 
@@ -54,6 +57,24 @@ void main() {
     expect(work.author, 'K. Ishiguro');
     expect(work.totalPages, 258);
     expect(work.checkpoints, [34, 66, 98]);
+  });
+
+  test('adding and editing stamp updatedAt with the injected clock', () async {
+    final id = await addRemains();
+    Future<DateTime> updatedAt() async => (await (db.select(
+      db.works,
+    )..where((w) => w.id.equals(id))).getSingle()).updatedAt;
+    expect(await updatedAt(), DateTime(2026, 10, 22, 21));
+
+    now = DateTime(2026, 10, 23, 8);
+    await works.edit(
+      id,
+      title: 'The Remains of the Day',
+      author: 'Kazuo Ishiguro',
+      totalPages: 245,
+      checkpoints: const [],
+    );
+    expect(await updatedAt(), DateTime(2026, 10, 23, 8));
   });
 
   test('picking another Work makes it current', () async {

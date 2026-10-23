@@ -12,8 +12,8 @@ class TonightViewModel extends ChangeNotifier {
     start = Command0(_start);
     _subs = [
       works.watchCurrent().listen((r) {
-        road = r;
-        loaded = true;
+        _road = r;
+        _loaded = true;
         notifyListeners();
       }),
       _sessions.watchAll().listen((all) {
@@ -28,8 +28,11 @@ class TonightViewModel extends ChangeNotifier {
   List<SessionRecord> _history = const [];
 
   /// The current Work on its Road; null when there's no Work yet.
-  Road? road;
-  bool loaded = false;
+  Road? get road => _road;
+  Road? _road;
+
+  bool get loaded => _loaded;
+  bool _loaded = false;
 
   /// Starts a Session with the current Work; its result is the Session's id.
   late final Command0<String> start;

@@ -16,8 +16,8 @@ class DoomreadApp extends StatefulWidget {
 
   final AppDatabase db;
 
-  /// Stamps Session events and runs the Reading timer. Tests pass a fixed
-  /// one; the app uses the device's.
+  /// Stamps Session events and edits to Works, and runs the Reading timer.
+  /// Tests pass a fixed one; the app uses the device's.
   final DateTime Function()? clock;
 
   /// The account on the sync server. Tests that never open the Account
@@ -29,7 +29,10 @@ class DoomreadApp extends StatefulWidget {
 }
 
 class _DoomreadAppState extends State<DoomreadApp> {
-  late final WorkRepository _works = WorkRepository(widget.db);
+  late final WorkRepository _works = WorkRepository(
+    widget.db,
+    clock: widget.clock,
+  );
   late final SessionRepository _sessions = SessionRepository(
     widget.db,
     clock: widget.clock,
