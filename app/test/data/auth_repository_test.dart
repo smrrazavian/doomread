@@ -61,6 +61,7 @@ void main() {
     final cases = {
       409: AuthFailure.usernameTaken,
       401: AuthFailure.wrongCredentials,
+      429: AuthFailure.tooManyAttempts,
       400: AuthFailure.rejected,
       500: AuthFailure.unreachable,
     };

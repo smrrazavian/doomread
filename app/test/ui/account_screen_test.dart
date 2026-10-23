@@ -84,4 +84,18 @@ void main() {
 
     expect(find.text('Wrong username or password.'), findsOne);
   });
+
+  testApp('too many tries asks for a few minutes', (tester, db) async {
+    await openAccount(
+      tester,
+      db,
+      MockClient((_) async => http.Response('{}', 429)),
+    );
+
+    await typeCredentials(tester);
+    await tester.tap(find.text('Sign in'));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('Wait a few minutes'), findsOne);
+  });
 }

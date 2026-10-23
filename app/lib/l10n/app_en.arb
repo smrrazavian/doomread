@@ -71,7 +71,11 @@
   "accountErrorPassword": "Use at least 8 characters.",
   "accountErrorTaken": "That username is taken.",
   "accountErrorWrong": "Wrong username or password.",
-  "accountErrorRejected": "The server didn't accept that. Try again.",
+  "accountErrorTooMany": "Too many tries. Wait a few minutes, then try again.",
+  "@accountErrorTooMany": {
+    "description": "The server answered 429: too many sign-in or sign-up attempts in a short time."
+  },
+  "accountErrorRejected":"The server didn't accept that. Try again.",
   "accountErrorUnreachable": "Can't reach the server. Everything else still works; try again later.",
   "changeBook": "Change book"
 }

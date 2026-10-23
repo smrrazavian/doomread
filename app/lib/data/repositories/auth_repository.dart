@@ -27,6 +27,9 @@ enum AuthFailure {
   usernameTaken,
   wrongCredentials,
 
+  /// Too many tries in a short time; the server wants a few minutes' rest.
+  tooManyAttempts,
+
   /// The server refused the request for another reason.
   rejected,
 
@@ -120,6 +123,7 @@ class AuthRepository {
         200 || 201 => null,
         409 => AuthFailure.usernameTaken,
         401 => AuthFailure.wrongCredentials,
+        429 => AuthFailure.tooManyAttempts,
         >= 400 && < 500 => AuthFailure.rejected,
         _ => AuthFailure.unreachable,
       };

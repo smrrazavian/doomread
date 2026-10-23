@@ -128,6 +128,7 @@ class _AccountScreenState extends State<AccountScreen> {
         AuthFailure.password => l10n.accountErrorPassword,
         AuthFailure.usernameTaken => l10n.accountErrorTaken,
         AuthFailure.wrongCredentials => l10n.accountErrorWrong,
+        AuthFailure.tooManyAttempts => l10n.accountErrorTooMany,
         AuthFailure.rejected => l10n.accountErrorRejected,
         AuthFailure.unreachable => l10n.accountErrorUnreachable,
       };
