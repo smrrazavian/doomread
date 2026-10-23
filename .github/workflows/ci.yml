@@ -43,10 +43,16 @@ jobs:
       - run: sudo chown -R 1000:1000 "$GITHUB_WORKSPACE"
 
       - name: Analyze
-        run: tool/dev sh -c 'flutter pub get && dart analyze packages/core && cd app && flutter analyze'
+        run: tool/dev sh -c 'flutter pub get && dart analyze packages/core server && cd app && flutter analyze'
+
+      - name: Start Postgres for the server tests
+        run: docker compose up -d --wait postgres
 
       - name: Test
-        run: tool/dev sh -c 'cd app && flutter test'
+        run: tool/dev sh -c 'cd packages/core && dart test && cd ../../server && dart test && cd ../app && flutter test'
+
+      - name: Build the server image
+        run: docker compose build server
 
       - name: Build all flavours
         run: tool/dev sh -c 'cd app && for f in apk play bazaar; do flutter build apk --debug --flavor $f || exit 1; done'

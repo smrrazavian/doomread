@@ -25,10 +25,9 @@ class PostgresAccountStore implements AccountStore {
   static Future<PostgresAccountStore> open(Endpoint endpoint) async {
     // ponytail: no TLS to Postgres; it is only reachable on compose's
     // private network. Turn sslMode on if it ever runs on another host.
-    final db = Pool<void>.withEndpoints(
-      [endpoint],
-      settings: const PoolSettings(sslMode: SslMode.disable),
-    );
+    final db = Pool<void>.withEndpoints([
+      endpoint,
+    ], settings: const PoolSettings(sslMode: SslMode.disable));
     // ponytail: schema by `create if not exists`, no migrations yet.
     // Bring in versioned migrations with the first change to a table.
     await db.execute('''

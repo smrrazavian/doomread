@@ -7,5 +7,19 @@
   "navFriends": "دوستا",
   "tonightEmpty": "کتابی که داری می‌خونی رو اضافه کن",
   "settings": "تنظیمات",
-  "language": "زبان"
+  "language": "زبان",
+  "account": "حساب کاربری",
+  "accountSignedOutHint": "با حساب کاربری، کتاب‌خوندنت روی همهٔ دستگاه‌هات باهاته. بدون حساب هم برنامه کامل کار می‌کنه.",
+  "accountUsername": "نام کاربری",
+  "accountPassword": "رمز",
+  "accountSignIn": "ورود",
+  "accountSignUp": "ثبت‌نام",
+  "accountSignOut": "خروج",
+  "accountSignedInAs": "با {username} وارد شدی",
+  "accountErrorUsername": "نام کاربری باید ۳ تا ۳۲ حرف کوچیک انگلیسی، عدد، _ یا . باشه.",
+  "accountErrorPassword": "رمز حداقل ۸ تا کاراکتر باشه.",
+  "accountErrorTaken": "این نام کاربری قبلاً گرفته شده.",
+  "accountErrorWrong": "نام کاربری یا رمز اشتباهه.",
+  "accountErrorRejected": "سرور قبولش نکرد. دوباره امتحان کن.",
+  "accountErrorUnreachable": "به سرور وصل نمی‌شه. بقیهٔ برنامه کار می‌کنه؛ بعداً دوباره امتحان کن."
 }

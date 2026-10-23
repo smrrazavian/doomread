@@ -7,5 +7,24 @@
   "navFriends": "Friends",
   "tonightEmpty": "Add the book you are reading",
   "settings": "Settings",
-  "language": "Language"
+  "language": "Language",
+  "account": "Account",
+  "accountSignedOutHint": "An account keeps your reading on all your devices. The app works fully without one.",
+  "accountUsername": "Username",
+  "accountPassword": "Password",
+  "accountSignIn": "Sign in",
+  "accountSignUp": "Create account",
+  "accountSignOut": "Sign out",
+  "accountSignedInAs": "Signed in as {username}",
+  "@accountSignedInAs": {
+    "placeholders": {
+      "username": {"type": "String"}
+    }
+  },
+  "accountErrorUsername": "Use 3 to 32 lowercase letters, digits, _ or .",
+  "accountErrorPassword": "Use at least 8 characters.",
+  "accountErrorTaken": "That username is taken.",
+  "accountErrorWrong": "Wrong username or password.",
+  "accountErrorRejected": "The server didn't accept that. Try again.",
+  "accountErrorUnreachable": "Can't reach the server. Everything else still works; try again later."
 }

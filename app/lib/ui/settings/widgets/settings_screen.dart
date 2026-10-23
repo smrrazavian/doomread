@@ -1,6 +1,7 @@
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/settings/view_models/settings_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -20,6 +21,11 @@ class SettingsScreen extends StatelessWidget {
         onChanged: (code) => vm.setLocale(Locale(code!)),
         child: ListView(
           children: [
+            ListTile(
+              leading: const Icon(Icons.person_outline),
+              title: Text(l10n.account),
+              onTap: () => context.push('/account'),
+            ),
             ListTile(title: Text(l10n.language)),
             for (final MapEntry(:key, :value) in _languages.entries)
               RadioListTile<String>(value: key, title: Text(value)),

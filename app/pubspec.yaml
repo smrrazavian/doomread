@@ -8,6 +8,8 @@ environment:
   sdk: ^3.13.0
 
 dependencies:
+  doomread_core:
+    path: ../packages/core
   drift: ^2.35.2
   drift_flutter: ^0.3.1
   flutter:
@@ -15,6 +17,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   go_router: ^18.1.1
+  http: ^1.6.0
   intl: ^0.20.3
   provider: ^6.1.5+1
 

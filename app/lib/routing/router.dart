@@ -1,9 +1,12 @@
 import 'package:doomread/l10n/app_localizations.dart';
+import 'package:doomread/ui/account/view_models/account_view_model.dart';
+import 'package:doomread/ui/account/widgets/account_screen.dart';
 import 'package:doomread/ui/core/section_placeholder.dart';
 import 'package:doomread/ui/settings/widgets/settings_screen.dart';
 import 'package:doomread/ui/tonight/widgets/tonight_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 GoRouter buildRouter() => GoRouter(
   initialLocation: '/tonight',
@@ -27,6 +30,13 @@ GoRouter buildRouter() => GoRouter(
       ],
     ),
     GoRoute(path: '/settings', builder: (_, _) => const SettingsScreen()),
+    GoRoute(
+      path: '/account',
+      builder: (_, _) => ChangeNotifierProvider(
+        create: (c) => AccountViewModel(c.read()),
+        child: const AccountScreen(),
+      ),
+    ),
   ],
 );
 
