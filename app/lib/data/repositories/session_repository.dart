@@ -33,9 +33,10 @@ class SessionRecord {
       (road: road, session: at(now), pages: pages);
 }
 
-/// Every Session in [records], measured at [now], for the domain rules.
-Iterable<WorkSession> measured(Iterable<SessionRecord> records, DateTime now) =>
-    records.map((r) => r.measured(now));
+/// Every Session in [records], measured at [now] once, for the domain rules.
+List<WorkSession> measured(Iterable<SessionRecord> records, DateTime now) => [
+  for (final r in records) r.measured(now),
+];
 
 /// Sessions: the append-only journal of what happened, and how each ended.
 class SessionRepository {
