@@ -4,6 +4,8 @@ import 'package:doomread/ui/account/widgets/account_screen.dart';
 import 'package:doomread/ui/books/widgets/books_screen.dart';
 import 'package:doomread/ui/books/widgets/work_form_screen.dart';
 import 'package:doomread/ui/core/section_placeholder.dart';
+import 'package:doomread/ui/evening/widgets/evening_screen.dart';
+import 'package:doomread/ui/reading/widgets/reading_screen.dart';
 import 'package:doomread/ui/settings/widgets/settings_screen.dart';
 import 'package:doomread/ui/tonight/widgets/tonight_screen.dart';
 import 'package:doomread_core/doomread_core.dart';
@@ -36,6 +38,16 @@ GoRouter buildRouter() => GoRouter(
     GoRoute(
       path: '/work/edit',
       builder: (_, state) => WorkFormScreen(editing: state.extra! as Work),
+    ),
+    GoRoute(
+      path: '/reading/:id',
+      builder: (_, state) =>
+          ReadingScreen(sessionId: state.pathParameters['id']!),
+    ),
+    GoRoute(
+      path: '/evening/:id',
+      builder: (_, state) =>
+          EveningScreen(sessionId: state.pathParameters['id']!),
     ),
     GoRoute(
       path: '/account',

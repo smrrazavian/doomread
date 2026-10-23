@@ -1,4 +1,5 @@
 import 'package:doomread/data/repositories/auth_repository.dart';
+import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/data/services/app_database.dart';
@@ -11,9 +12,13 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class DoomreadApp extends StatefulWidget {
-  const DoomreadApp({required this.db, this.auth, super.key});
+  const DoomreadApp({required this.db, this.auth, this.clock, super.key});
 
   final AppDatabase db;
+
+  /// Stamps Session events and edits to Works, and runs the Reading timer.
+  /// Tests pass a fixed one; the app uses the device's.
+  final DateTime Function()? clock;
 
   /// The account on the sync server. Tests that never open the Account
   /// screen leave it out.
@@ -24,7 +29,14 @@ class DoomreadApp extends StatefulWidget {
 }
 
 class _DoomreadAppState extends State<DoomreadApp> {
-  late final WorkRepository _works = WorkRepository(widget.db);
+  late final WorkRepository _works = WorkRepository(
+    widget.db,
+    clock: widget.clock,
+  );
+  late final SessionRepository _sessions = SessionRepository(
+    widget.db,
+    clock: widget.clock,
+  );
   late final SettingsViewModel _settings = SettingsViewModel(
     SettingsRepository(widget.db),
   )..load();
@@ -41,6 +53,7 @@ class _DoomreadAppState extends State<DoomreadApp> {
   Widget build(BuildContext context) => MultiProvider(
     providers: [
       Provider.value(value: _works),
+      Provider.value(value: _sessions),
       ChangeNotifierProvider.value(value: _settings),
       if (widget.auth case final auth?) Provider.value(value: auth),
     ],

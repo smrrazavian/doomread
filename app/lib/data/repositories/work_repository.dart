@@ -1,21 +1,23 @@
-import 'dart:math';
-
 import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:drift/drift.dart';
 
 /// The Works the user is getting through, and which one is current.
 class WorkRepository {
-  WorkRepository(this._db);
+  WorkRepository(this._db, {DateTime Function()? clock})
+    : _now = clock ?? DateTime.now;
 
   final AppDatabase _db;
+
+  /// Stamps `updatedAt`, which last-write-wins sync will compare (#16).
+  final DateTime Function() _now;
 
   static const _currentKey = 'currentWork';
 
   Stream<List<Work>> watchAll() =>
       (_db.select(_db.works)..orderBy([(w) => OrderingTerm.desc(w.updatedAt)]))
           .watch()
-          .map((rows) => rows.map(_toWork).toList());
+          .map((rows) => rows.map(toWork).toList());
 
   /// The current Work on its Road, or null before any Work exists.
   Stream<Road?> watchCurrent() {
@@ -29,7 +31,7 @@ class WorkRepository {
     return query.watchSingleOrNull().map((row) {
       if (row == null) return null;
       final w = row.readTable(_db.works);
-      return Road(_toWork(w), position: w.position);
+      return Road(toWork(w), position: w.position);
     });
   }
 
@@ -40,7 +42,7 @@ class WorkRepository {
     required int totalPages,
     required List<int> checkpoints,
   }) => _db.transaction(() async {
-    final id = _newId();
+    final id = newId();
     await _db
         .into(_db.works)
         .insert(
@@ -50,13 +52,10 @@ class WorkRepository {
             author: author,
             totalPages: totalPages,
             checkpoints: checkpoints.join(','),
-            updatedAt: DateTime.now(),
+            updatedAt: _now(),
           ),
         );
-    final current = await (_db.select(
-      _db.settings,
-    )..where((s) => s.key.equals(_currentKey))).getSingleOrNull();
-    if (current == null) await setCurrent(id);
+    if (await _db.setting(_currentKey) == null) await setCurrent(id);
     return id;
   });
 
@@ -72,7 +71,7 @@ class WorkRepository {
       author: Value(author),
       totalPages: Value(totalPages),
       checkpoints: Value(checkpoints.join(',')),
-      updatedAt: Value(DateTime.now()),
+      updatedAt: Value(_now()),
     ),
   );
 
@@ -82,7 +81,7 @@ class WorkRepository {
         SettingsCompanion.insert(key: _currentKey, value: id),
       );
 
-  static Work _toWork(WorkRow w) => Work(
+  static Work toWork(WorkRow w) => Work(
     id: w.id,
     title: w.title,
     author: w.author,
@@ -92,13 +91,4 @@ class WorkRepository {
         if (c.isNotEmpty) int.parse(c),
     ],
   );
-
-  /// A random 128-bit id, so Works can sync across devices later (ticket #16).
-  static String _newId() {
-    final r = Random.secure();
-    return List.generate(
-      16,
-      (_) => r.nextInt(256).toRadixString(16).padLeft(2, '0'),
-    ).join();
-  }
 }

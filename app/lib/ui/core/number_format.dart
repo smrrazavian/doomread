@@ -28,3 +28,18 @@ List<int>? parseNumbers(String text) {
 String formatNumbers(List<int> numbers, Locale locale) => numbers
     .map((n) => formatNumber(n, locale))
     .join(locale.languageCode == 'fa' ? '، ' : ', ');
+
+/// A timer reading in the digits of [locale]: 5:12, or 1:05:12 past an hour
+/// (۵:۱۲ in Persian).
+String formatClock(Duration d, Locale locale) {
+  final two = NumberFormat('00', locale.languageCode);
+  final h = d.inHours;
+  final m = d.inMinutes % 60;
+  final s = two.format(d.inSeconds % 60);
+  return h > 0
+      ? '${formatNumber(h, locale)}:${two.format(m)}:$s'
+      : '${formatNumber(m, locale)}:$s';
+}
+
+/// Whole minutes in [d], rounded up: 1:48 left to the Aim is "2 minutes".
+int minutesUp(Duration d) => (d.inSeconds + 59) ~/ 60;

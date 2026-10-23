@@ -154,4 +154,111 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get changeBook => 'عوض کردن کتاب';
+
+  @override
+  String get startReading => 'شروع خوندن';
+
+  @override
+  String get backToReading => 'برگرد سر خوندن';
+
+  @override
+  String aim(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'هدف: $minutesString دقیقه یه‌سره.';
+  }
+
+  @override
+  String eveningsLeft(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return 'با سرعت خودت، حدوداً $countString شب دیگه.';
+  }
+
+  @override
+  String aimToGo(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '$minutesString دقیقه‌ی دیگه.';
+  }
+
+  @override
+  String get aimReached => 'به هدفت رسیدی. این طولانی‌ترین تمرکزت تا حالاست.';
+
+  @override
+  String get paused => 'مکث کردی. عجله نکن، این به حسابت نمیاد.';
+
+  @override
+  String get faceDown => 'گوشی رو برگردون رو به پایین.';
+
+  @override
+  String get pause => 'مکث';
+
+  @override
+  String get resume => 'ادامه';
+
+  @override
+  String get stopForTonight => 'برای امشب بسه';
+
+  @override
+  String get newBestStretch => 'بهترین تمرکزت تا حالا';
+
+  @override
+  String inOneGoTonight(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: 'امشب $minutesString دقیقه یه‌سره خوندی.',
+      zero: 'امشب کمتر از یه دقیقه یه‌سره خوندی.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get whichPage => 'تا کدوم صفحه خوندی؟';
+
+  @override
+  String ofStartedAt(int total, int from) {
+    final intl.NumberFormat totalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String totalString = totalNumberFormat.format(total);
+    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String fromString = fromNumberFormat.format(from);
+
+    return 'از $totalString، از صفحه‌ی $fromString شروع کردی';
+  }
+
+  @override
+  String get whatHappened => 'تو یه جمله، چی شد؟';
+
+  @override
+  String get saveAndLightsOut => 'ذخیره کن و چراغ رو خاموش کن';
+
+  @override
+  String get problemNoPage => 'کدوم صفحه؟ فقط عددش رو بنویس.';
+
+  @override
+  String problemPageOutOfRange(int from, int total) {
+    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String fromString = fromNumberFormat.format(from);
+    final intl.NumberFormat totalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String totalString = totalNumberFormat.format(total);
+
+    return 'یه صفحه از $fromString تا $totalString';
+  }
 }

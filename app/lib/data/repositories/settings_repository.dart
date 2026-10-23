@@ -11,10 +11,8 @@ class SettingsRepository {
 
   /// The language the user picked, or null if they never picked one.
   Future<Locale?> locale() async {
-    final row = await (_db.select(
-      _db.settings,
-    )..where((s) => s.key.equals(_localeKey))).getSingleOrNull();
-    return row == null ? null : Locale(row.value);
+    final code = await _db.setting(_localeKey);
+    return code == null ? null : Locale(code);
   }
 
   Future<void> setLocale(Locale locale) => _db

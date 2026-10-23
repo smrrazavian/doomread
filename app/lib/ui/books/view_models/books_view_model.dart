@@ -8,11 +8,11 @@ class BooksViewModel extends ChangeNotifier {
   BooksViewModel(this._works) {
     _subs = [
       _works.watchAll().listen((w) {
-        works = w;
+        _all = w;
         notifyListeners();
       }),
       _works.watchCurrent().listen((r) {
-        currentId = r?.work.id;
+        _currentId = r?.work.id;
         notifyListeners();
       }),
     ];
@@ -21,8 +21,11 @@ class BooksViewModel extends ChangeNotifier {
   final WorkRepository _works;
   late final List<StreamSubscription<Object?>> _subs;
 
-  List<Work> works = const [];
-  String? currentId;
+  List<Work> get works => _all;
+  List<Work> _all = const [];
+
+  String? get currentId => _currentId;
+  String? _currentId;
 
   Future<void> makeCurrent(String id) => _works.setCurrent(id);
 

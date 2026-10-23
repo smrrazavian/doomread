@@ -17,12 +17,13 @@ class WorkFormViewModel extends ChangeNotifier {
   late final Command1<String, WorkDraft> save;
 
   /// What's wrong with the last draft the user tried to save.
-  Set<WorkProblem> problems = const {};
+  Set<WorkProblem> get problems => _problems;
+  Set<WorkProblem> _problems = const {};
 
   Future<Result<String>> _save(WorkDraft draft) async {
-    problems = draft.problems;
+    _problems = draft.problems;
     notifyListeners();
-    if (problems.isNotEmpty) return Result.error(InvalidWork(problems));
+    if (_problems.isNotEmpty) return Result.error(InvalidWork(_problems));
     final title = draft.title.trim();
     final author = draft.author.trim();
     final editing = this.editing;

@@ -22,8 +22,13 @@ void testApp(
   });
 }
 
-/// Starts the app on [db] and waits for it to settle.
-Future<void> pumpApp(WidgetTester tester, AppDatabase db) async {
-  await tester.pumpWidget(DoomreadApp(db: db));
+/// Starts the app on [db] and waits for it to settle. Widget tests run on
+/// fake time, so Session tests pass a [clock] they move by hand.
+Future<void> pumpApp(
+  WidgetTester tester,
+  AppDatabase db, {
+  DateTime Function()? clock,
+}) async {
+  await tester.pumpWidget(DoomreadApp(db: db, clock: clock));
   await tester.pumpAndSettle();
 }

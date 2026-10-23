@@ -1,0 +1,132 @@
+import 'package:doomread/data/repositories/session_repository.dart';
+import 'package:doomread/l10n/app_localizations.dart';
+import 'package:doomread/ui/core/number_format.dart';
+import 'package:doomread/ui/core/theme.dart';
+import 'package:doomread/ui/reading/view_models/reading_view_model.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
+/// The Reading screen: a quiet timer, the Aim, Pause and Stop.
+class ReadingScreen extends StatelessWidget {
+  const ReadingScreen({required this.sessionId, super.key});
+
+  final String sessionId;
+
+  @override
+  Widget build(BuildContext context) => ChangeNotifierProvider(
+    create: (c) => ReadingViewModel(c.read<SessionRepository>(), sessionId),
+    child: const _Reading(),
+  );
+}
+
+class _Reading extends StatelessWidget {
+  const _Reading();
+
+  Future<void> _stop(BuildContext context, ReadingViewModel vm) async {
+    await vm.stop.execute();
+    if (context.mounted && vm.stop.completed) {
+      context.pushReplacement('/evening/${vm.id}');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final text = Theme.of(context).textTheme;
+    final locale = Localizations.localeOf(context);
+    final vm = context.watch<ReadingViewModel>();
+    final record = vm.record;
+    final session = vm.session;
+    if (record == null || session == null) return const Scaffold();
+
+    final current = session.current;
+    final aim = vm.aim;
+    final String aimLine;
+    if (current == null) {
+      aimLine = l10n.paused;
+    } else if (current.length >= aim) {
+      aimLine = l10n.aimReached;
+    } else {
+      aimLine =
+          '${l10n.aim(aim.inMinutes)} '
+          '${l10n.aimToGo(minutesUp(aim - current.length))}';
+    }
+
+    return Scaffold(
+      // Back to Tonight leaves the Session running; Tonight offers it again.
+      appBar: AppBar(),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(24, 8, 24, 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(record.road.work.title, style: text.bodySmall),
+              const SizedBox(height: 8),
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Text(
+                  formatClock(vm.shown, locale),
+                  // Clocks don't mirror in Persian.
+                  textDirection: TextDirection.ltr,
+                  style: text.headlineSmall!.copyWith(
+                    fontSize: locale.languageCode == 'fa' ? 68 : 72,
+                    height: 1.1,
+                    color: current == null ? Palette.mute : Palette.paper,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(aimLine, style: text.bodyMedium),
+              const SizedBox(height: 24),
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Palette.panel,
+                  border: Border.all(color: Palette.line),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.phone_android, color: Palette.mute),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(l10n.faceDown, style: text.bodySmall),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const Spacer(),
+              Row(
+                children: [
+                  Expanded(
+                    child: current == null
+                        ? OutlinedButton(
+                            onPressed: vm.resume.execute,
+                            child: Text(l10n.resume),
+                          )
+                        : OutlinedButton(
+                            onPressed: vm.pause.execute,
+                            child: Text(l10n.pause),
+                          ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => _stop(context, vm),
+                      child: Text(l10n.stopForTonight),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
