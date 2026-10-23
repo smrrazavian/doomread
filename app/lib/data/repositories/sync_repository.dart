@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:doomread/data/repositories/auth_repository.dart';
-import 'package:doomread/data/repositories/work_repository.dart';
+import 'package:doomread/data/repositories/auth_repository.dart'
+    show defaultServer, sendsSecurely;
 import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread/utils/result.dart';
 import 'package:doomread_core/doomread_core.dart';
@@ -12,8 +12,12 @@ import 'package:http/http.dart' as http;
 
 /// Why a sync didn't happen or didn't finish.
 enum SyncFailure {
-  /// Nobody is signed in, or the server no longer knows the sign-in.
+  /// Nobody is signed in; nothing was sent.
   signedOut,
+
+  /// The server no longer knows the sign-in: it expired or was ended on
+  /// another device. Whoever syncs signs this device out.
+  signInEnded,
 
   /// A release build pointed at a plain HTTP server; nothing was sent.
   insecure,
@@ -37,18 +41,17 @@ class SyncException implements Exception {
 /// Each round sends what this device changed since the server last saw it,
 /// and takes in everything the server took in after this device's cursor.
 /// Journal events are only ever added, so they merge without conflicts.
-/// Works and Notes keep their last write ([deviceTakes]).
+/// Notes keep their last write ([deviceTakes]); so do Works, except that a
+/// Work's Position keeps its own last write ([_takeWork]).
 class SyncRepository {
   SyncRepository(
     this._db,
-    this._auth,
     this._client, {
     Uri? server,
     this._release = kReleaseMode,
   }) : _server = server ?? defaultServer;
 
   final AppDatabase _db;
-  final AuthRepository _auth;
   final http.Client _client;
   final Uri _server;
   final bool _release;
@@ -59,18 +62,22 @@ class SyncRepository {
   static const _cursorKey = 'sync.cursor';
   static const _accountKey = 'sync.account';
 
-  /// One sync round trip after another until both sides have everything.
+  /// Fires after any local change to what sync carries, sync's own
+  /// writes included.
+  Stream<void> get localChanges => _db.tableUpdates(
+    TableUpdateQuery.onAllTables([_db.works, _db.sessionEvents, _db.notes]),
+  );
+
+  /// One sync round trip after another until both sides have everything,
+  /// for [username]'s account with its sign-in [token].
   /// Safe to call at any time; a call while one runs waits for that one.
-  Future<Result<void>> sync() =>
-      _running ??= _sync().whenComplete(() => _running = null);
+  Future<Result<void>> sync({
+    required String username,
+    required String token,
+  }) => _running ??= _sync(username, token).whenComplete(() => _running = null);
   Future<Result<void>>? _running;
 
-  Future<Result<void>> _sync() async {
-    final token = await _auth.token();
-    final username = await _auth.username();
-    if (token == null || username == null) {
-      return const Result.error(SyncException(SyncFailure.signedOut));
-    }
+  Future<Result<void>> _sync(String username, String token) async {
     if (!sendsSecurely(_server, release: _release)) {
       return const Result.error(SyncException(SyncFailure.insecure));
     }
@@ -92,9 +99,7 @@ class SyncRepository {
             )
             .timeout(_timeout);
         if (response.statusCode == 401) {
-          // Expired or ended elsewhere: this device is signed out too.
-          await _auth.signOut();
-          return const Result.error(SyncException(SyncFailure.signedOut));
+          return const Result.error(SyncException(SyncFailure.signInEnded));
         }
         if (response.statusCode != 200) {
           return const Result.error(SyncException(SyncFailure.unreachable));
@@ -102,18 +107,20 @@ class SyncRepository {
         final answer = SyncResponse.fromJson(
           jsonDecode(response.body) as Map<String, Object?>,
         );
-        await _db.transaction(() async {
+        final merged = await _db.transaction(() async {
           await _markSent(outgoing);
-          await _take(answer.items);
+          final merged = await _take(answer.items);
           await _setCursor(answer.cursor);
+          return merged;
         });
-        if (!answer.more && outgoing.length < SyncRequest.maxItems) break;
+        if (!answer.more && outgoing.length < SyncRequest.maxItems && !merged) {
+          break;
+        }
       }
     } on Object {
       // Offline, a timeout, or an answer that isn't the protocol.
       return const Result.error(SyncException(SyncFailure.unreachable));
     }
-    await WorkRepository(_db).keepOneCurrent();
     return const Result.ok(null);
   }
 
@@ -201,8 +208,10 @@ class SyncRepository {
     }
   }
 
-  /// Takes in the server's rows, in the server's order.
-  Future<void> _take(List<SyncItem> items) async {
+  /// Takes in the server's rows, in the server's order. Returns whether a
+  /// merge left a Work the server must be sent back.
+  Future<bool> _take(List<SyncItem> items) async {
+    var merged = false;
     for (final item in items) {
       switch (item.kind) {
         case SyncKind.event:
@@ -219,13 +228,7 @@ class SyncRepository {
                 ),
               );
         case SyncKind.work:
-          final local = await (_db.select(
-            _db.works,
-          )..where((w) => w.id.equals(item.id))).getSingleOrNull();
-          if (local != null && !deviceTakes(item.updatedAt, local.updatedAt)) {
-            continue;
-          }
-          await _db.into(_db.works).insertOnConflictUpdate(_workRow(item));
+          if (await _takeWork(item)) merged = true;
         case SyncKind.note:
           final note = _noteRow(item);
           // A Session has one Note; if two devices each ended it, the later
@@ -249,6 +252,55 @@ class SyncRepository {
           await _db.into(_db.notes).insertOnConflictUpdate(note);
       }
     }
+    return merged;
+  }
+
+  /// Takes in the server's copy of a Work. The row keeps its last write,
+  /// but the Position keeps its own (`positionAt`): a rename made elsewhere
+  /// after this device moved the Position must not move it back. Neither
+  /// is the highest page wins, so a Position can still be corrected down.
+  ///
+  /// When each side has the later half, the merge is a new write, sent
+  /// back so the server and every other device get it. It is stamped a
+  /// second after both halves: rows keep whole seconds, and on a tie the
+  /// server keeps what it has. Returns whether there was such a merge.
+  Future<bool> _takeWork(SyncItem item) async {
+    final incoming = _workRow(item);
+    final local = await (_db.select(
+      _db.works,
+    )..where((w) => w.id.equals(item.id))).getSingleOrNull();
+    if (local == null) {
+      await _db.into(_db.works).insert(incoming);
+      return false;
+    }
+    final rowFromServer = deviceTakes(item.updatedAt, local.updatedAt);
+    final localPositionAt = local.positionAt ?? local.updatedAt;
+    final (
+      position,
+      positionAt,
+    ) = deviceTakes(incoming.positionAt.value!, localPositionAt)
+        ? (incoming.position.value, incoming.positionAt.value!)
+        : (local.position, localPositionAt);
+    if (rowFromServer && position == incoming.position.value) {
+      await _db.into(_db.works).insertOnConflictUpdate(incoming);
+      return false;
+    }
+    if (!rowFromServer && position == local.position) return false;
+    final later = item.updatedAt.isAfter(local.updatedAt)
+        ? item.updatedAt
+        : local.updatedAt;
+    final row = rowFromServer ? incoming : local.toCompanion(false);
+    await _db
+        .into(_db.works)
+        .insertOnConflictUpdate(
+          row.copyWith(
+            position: Value(position),
+            positionAt: Value(positionAt),
+            updatedAt: Value(later.add(const Duration(seconds: 1))),
+            syncedAt: const Value(null),
+          ),
+        );
+    return true;
   }
 
   // How each row travels. The server never reads `data`, so a Work can
@@ -263,8 +315,12 @@ class SyncRepository {
       'author': w.author,
       'kind': w.kind.name,
       'totalPages': w.totalPages,
-      'checkpoints': WorkRepository.toWork(w).checkpoints,
+      'checkpoints': [
+        for (final c in w.checkpoints.split(','))
+          if (c.isNotEmpty) int.parse(c),
+      ],
       'position': w.position,
+      'positionAt': (w.positionAt ?? w.updatedAt).microsecondsSinceEpoch,
     },
   );
 
@@ -279,6 +335,11 @@ class SyncRepository {
     totalPages: i.data['totalPages']! as int,
     checkpoints: (i.data['checkpoints']! as List<Object?>).join(','),
     position: Value(i.data['position']! as int),
+    // Devices from before positionAt moved the Position with every write.
+    positionAt: Value(switch (i.data['positionAt']) {
+      final int us => DateTime.fromMicrosecondsSinceEpoch(us, isUtc: true),
+      _ => i.updatedAt,
+    }),
     updatedAt: i.updatedAt,
     syncedAt: Value(i.updatedAt),
   );

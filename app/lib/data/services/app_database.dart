@@ -31,6 +31,12 @@ class Works extends Table {
   IntColumn get position => integer().withDefault(const Constant(0))();
   DateTimeColumn get updatedAt => dateTime()();
 
+  /// When [position] last changed. Sync keeps the later Position apart from
+  /// the rest of the row, so a rename elsewhere can't move it back.
+  /// Nullable only because SQLite can't add a NOT NULL column to old rows;
+  /// the migration fills it in, and null reads as [updatedAt].
+  DateTimeColumn get positionAt => dateTime().nullable()();
+
   /// The [updatedAt] last sent to or taken from the sync server. Null or
   /// different when there's a change to send.
   DateTimeColumn get syncedAt => dateTime().nullable()();
@@ -89,7 +95,7 @@ class AppDatabase extends _$AppDatabase {
   )..where((s) => s.key.equals(key))).getSingleOrNull())?.value;
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -106,6 +112,10 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(notes, notes.syncedAt);
       }
       if (from >= 2 && from < 5) await m.addColumn(works, works.kind);
+      if (from >= 2 && from < 6) {
+        await m.addColumn(works, works.positionAt);
+        await customStatement('UPDATE works SET position_at = updated_at');
+      }
     },
   );
 }

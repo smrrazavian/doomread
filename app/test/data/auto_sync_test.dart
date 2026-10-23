@@ -6,40 +6,41 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   // testWidgets for its fake clock: timers move only when pumped.
-  testWidgets('syncs at start, after nudges settle, on a timer and on resume', (
-    tester,
-  ) async {
-    var runs = 0;
-    final nudges = StreamController<void>.broadcast();
-    final auto = AutoSync(
-      () async => runs++,
-      nudges: [nudges.stream],
-      every: const Duration(minutes: 10),
-    );
-    await tester.pump();
-    expect(runs, 1);
+  testWidgets(
+    'syncs at start, after triggers settle, on a timer and on resume',
+    (tester) async {
+      var runs = 0;
+      final triggers = StreamController<void>.broadcast();
+      final auto = AutoSync(
+        () async => runs++,
+        triggers: [triggers.stream],
+        every: const Duration(minutes: 10),
+      );
+      await tester.pump();
+      expect(runs, 1);
 
-    // A burst of local changes syncs once, a moment after the last one.
-    nudges
-      ..add(null)
-      ..add(null);
-    await tester.pump(const Duration(seconds: 2));
-    expect(runs, 1);
-    await tester.pump(const Duration(seconds: 1));
-    expect(runs, 2);
+      // A burst of local changes syncs once, a moment after the last one.
+      triggers
+        ..add(null)
+        ..add(null);
+      await tester.pump(const Duration(seconds: 2));
+      expect(runs, 1);
+      await tester.pump(const Duration(seconds: 1));
+      expect(runs, 2);
 
-    await tester.pump(const Duration(minutes: 10));
-    expect(runs, 3);
+      await tester.pump(const Duration(minutes: 10));
+      expect(runs, 3);
 
-    auto.didChangeAppLifecycleState(AppLifecycleState.resumed);
-    await tester.pump();
-    expect(runs, 4);
+      auto.didChangeAppLifecycleState(AppLifecycleState.resumed);
+      await tester.pump();
+      expect(runs, 4);
 
-    auto.dispose();
-    await nudges.close();
-  });
+      auto.dispose();
+      await triggers.close();
+    },
+  );
 
-  testWidgets('runs one at a time, and once more for a nudge meanwhile', (
+  testWidgets('runs one at a time, and once more for a trigger meanwhile', (
     tester,
   ) async {
     var runs = 0;
@@ -48,7 +49,7 @@ void main() {
       runs++;
       await gate.future;
       throw Exception('offline');
-    }, nudges: const []);
+    }, triggers: const []);
     await tester.pump();
     expect(runs, 1);
 

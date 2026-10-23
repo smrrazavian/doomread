@@ -51,6 +51,7 @@ class WorkRepository {
     WorkKind kind = WorkKind.paperBook,
   }) => _db.transaction(() async {
     final id = newId();
+    final at = _now();
     await _db
         .into(_db.works)
         .insert(
@@ -61,7 +62,8 @@ class WorkRepository {
             kind: Value(kind),
             totalPages: totalPages,
             checkpoints: checkpoints.join(','),
-            updatedAt: _now(),
+            updatedAt: at,
+            positionAt: Value(at),
           ),
         );
     if (await _db.setting(_currentKey) == null) await setCurrent(id);

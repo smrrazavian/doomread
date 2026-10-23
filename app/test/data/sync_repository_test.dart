@@ -1,11 +1,15 @@
+import 'dart:convert';
+
 import 'package:doomread/data/repositories/auth_repository.dart';
 import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/data/repositories/sync_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/data/services/app_database.dart';
+import 'package:doomread/domain/use_cases/sync_use_case.dart';
 import 'package:doomread/utils/result.dart';
 import 'package:doomread_core/accounts.dart';
 import 'package:doomread_core/doomread_core.dart';
+import 'package:doomread_core/sync.dart';
 import 'package:doomread_server/server.dart';
 import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:drift/native.dart';
@@ -37,8 +41,9 @@ class Device {
       );
     });
     auth = AuthRepository(db, client, server: _url);
-    syncer = SyncRepository(db, auth, client, server: _url);
+    syncer = SyncRepository(db, client, server: _url);
     works = WorkRepository(db, clock: () => now);
+    syncing = SyncUseCase(auth, syncer, works);
     sessions = SessionRepository(db, clock: () => now);
   }
 
@@ -51,9 +56,10 @@ class Device {
   late final AuthRepository auth;
   late final SyncRepository syncer;
   late final WorkRepository works;
+  late final SyncUseCase syncing;
   late final SessionRepository sessions;
 
-  Future<Result<void>> sync() => syncer.sync();
+  Future<Result<void>> sync() => syncing();
 
   Future<SessionRecord> last() async => (await sessions.watchAll().first).last;
 
@@ -91,6 +97,29 @@ void main() {
     await a.db.close();
     await b.db.close();
   });
+
+  Future<void> syncAll(List<Device> order) async {
+    for (final d in order) {
+      d.offline = false;
+      expect(await d.sync(), isA<Ok<void>>());
+    }
+  }
+
+  /// A Session on [d] that ends at page [to], [minute]s into the evening.
+  Future<void> read(
+    Device d,
+    String id, {
+    required int to,
+    required int minute,
+    bool offline = false,
+  }) async {
+    d
+      ..offline = offline
+      ..now = evening.add(Duration(minutes: minute));
+    await d.sessions.start(id);
+    await d.sessions.add(await d.last(), SessionEventKind.stop);
+    await d.sessions.end(await d.last(), page: to);
+  }
 
   Future<String> addDune(Device d) => d.works.add(
     title: 'Dune',
@@ -200,13 +229,6 @@ void main() {
       for (final d in [a, b]) (await d.works.watchAll().first).single.title,
     ];
 
-    Future<void> syncAll(List<Device> order) async {
-      for (final d in order) {
-        d.offline = false;
-        expect(await d.sync(), isA<Ok<void>>());
-      }
-    }
-
     test('when the earlier edit syncs first', () async {
       await rename(a, 'Dune (earlier)', 1);
       await rename(b, 'Dune (later)', 2);
@@ -238,6 +260,92 @@ void main() {
       await rename(a, 'Dune (after)', 2);
       await syncAll([a, b]);
       expect(await titles(), ['Dune (after)', 'Dune (after)']);
+    });
+  });
+
+  group('the Position keeps its own last write', () {
+    late String id;
+    setUp(() async {
+      id = await addDune(a);
+      await read(a, id, to: 100, minute: 1);
+      await syncAll([a, b]);
+    });
+
+    Future<void> rename(Device d, int minute) {
+      d
+        ..offline = true
+        ..now = evening.add(Duration(minutes: minute));
+      return d.works.edit(
+        id,
+        title: 'Dune (renamed)',
+        author: 'Frank Herbert',
+        totalPages: 412,
+        checkpoints: const [40, 80],
+      );
+    }
+
+    Future<List<(String, int)>> both() async => [
+      for (final d in [a, b])
+        (
+          (await d.works.watchAll().first).single.title,
+          (await d.works.watchRoad(id).first)!.position,
+        ),
+    ];
+
+    // A ends a Session at p.150; B, still at p.100, renames the Work later.
+    test('through a later rename, when the reader syncs first', () async {
+      await read(a, id, to: 150, minute: 2, offline: true);
+      await rename(b, 3);
+      await syncAll([a, b, a, b]);
+      expect(await both(), [('Dune (renamed)', 150), ('Dune (renamed)', 150)]);
+    });
+
+    test('through a later rename, when the renamer syncs first', () async {
+      await read(a, id, to: 150, minute: 2, offline: true);
+      await rename(b, 3);
+      await syncAll([b, a, b]);
+      expect(await both(), [('Dune (renamed)', 150), ('Dune (renamed)', 150)]);
+    });
+
+    test(
+      'an app from before positionAt moved it with its last write',
+      () async {
+        final old = SyncItem(
+          kind: SyncKind.work,
+          id: id,
+          updatedAt: evening.add(const Duration(minutes: 5)).toUtc(),
+          data: const {
+            'title': 'Dune',
+            'author': 'Frank Herbert',
+            'kind': 'paperBook',
+            'totalPages': 412,
+            'checkpoints': [40, 80],
+            'position': 200,
+          },
+        );
+        final response = await server(
+          shelf.Request(
+            'POST',
+            Device._url.resolve('sync'),
+            headers: {
+              'authorization': 'Bearer ${await a.auth.token()}',
+              'content-type': 'application/json',
+            },
+            body: jsonEncode(SyncRequest(since: 0, items: [old]).toJson()),
+          ),
+        );
+        expect(response.statusCode, 200);
+        await syncAll([b]);
+        expect((await b.works.watchRoad(id).first)!.position, 200);
+      },
+    );
+
+    test('a later, lower Position still wins', () async {
+      await read(a, id, to: 150, minute: 2, offline: true);
+      // B never saw p.150, and moves the Position back to 120 later on.
+      await read(b, id, to: 120, minute: 3, offline: true);
+      await syncAll([a, b, a]);
+      expect(await both(), [('Dune', 120), ('Dune', 120)]);
     });
   });
 
@@ -296,19 +404,21 @@ void main() {
     // The shared storage holds a's token, which this server never issued.
     expect(await c.auth.username(), 'sara');
     final result = await c.sync();
-    expect((result as Error<void>).error, isA<SyncException>());
+    expect(
+      ((result as Error<void>).error as SyncException).failure,
+      SyncFailure.signInEnded,
+    );
     expect(await c.auth.username(), isNull);
   });
 
   test('a release build never syncs over plain HTTP', () async {
     final release = SyncRepository(
       a.db,
-      a.auth,
       MockClient((_) async => fail('nothing may be sent')),
       server: Uri.parse('http://doomread.test/'),
       release: true,
     );
-    final result = await release.sync();
+    final result = await release.sync(username: 'sara', token: 'a token');
     expect(
       ((result as Error<void>).error as SyncException).failure,
       SyncFailure.insecure,
@@ -368,13 +478,12 @@ void main() {
       );
       return http.Response(await response.readAsString(), response.statusCode);
     });
-    final syncer = SyncRepository(
-      old,
+    final syncing = SyncUseCase(
       AuthRepository(old, client, server: Device._url),
-      client,
-      server: Device._url,
+      SyncRepository(old, client, server: Device._url),
+      WorkRepository(old),
     );
-    expect(await syncer.sync(), isA<Ok<void>>());
+    expect(await syncing(), isA<Ok<void>>());
 
     expect(await b.sync(), isA<Ok<void>>());
     final there = await b.last();
