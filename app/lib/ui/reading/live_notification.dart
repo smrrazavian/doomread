@@ -51,11 +51,11 @@ class LiveNotification {
     final running = session.current;
     final String text;
     if (running != null) {
-      final before = alike(
-        all.where((r) => r.id != open.id),
-        open.road.work.kind,
-      ).map((r) => r.at(now));
-      text = l10n.aim(aimFor(longestStretch(before)).inMinutes);
+      final aim = aimAfter(
+        measured(all.where((r) => r.id != open.id), now),
+        watched: open.road.work.kind.watched,
+      );
+      text = l10n.aim(aim.inMinutes);
     } else if (session.onBreak) {
       text = l10n.onBreak;
     } else {

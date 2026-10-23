@@ -135,16 +135,16 @@ class FakeHomeWidget implements HomeWidget {
   /// The Work whose Start on the widget "started" the app.
   String? opened;
 
-  /// Every state sent, oldest first.
-  final List<HomeWidgetState> sent = [];
+  /// Everything sent, oldest first.
+  final List<HomeWidgetContent> sent = [];
 
-  HomeWidgetState? get shown => sent.lastOrNull;
+  HomeWidgetContent? get shown => sent.lastOrNull;
 
   @override
   void Function(String workId)? onStart;
 
   @override
-  Future<void> update(HomeWidgetState state) async => sent.add(state);
+  Future<void> update(HomeWidgetContent content) async => sent.add(content);
 
   @override
   Future<String?> openedFrom() async {

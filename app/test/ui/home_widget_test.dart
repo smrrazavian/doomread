@@ -146,6 +146,50 @@ void main() {
     expect(sessions, hasLength(1));
   });
 
+  /// A Session open on the first Work, with a second Work made current
+  /// since; returns the second Work's id.
+  Future<String> openOnAnotherWork(AppDatabase db) async {
+    final first = await addBook(db);
+    await SessionRepository(db, clock: () => now).start(first);
+    final works = WorkRepository(db);
+    final second = await works.add(
+      title: 'Piranesi',
+      author: 'Susanna Clarke',
+      totalPages: 272,
+      checkpoints: const [],
+    );
+    await works.setCurrent(second);
+    return second;
+  }
+
+  Future<Set<String>> sessionIds(AppDatabase db) async =>
+      (await db.select(db.sessionEvents).get()).map((e) => e.sessionId).toSet();
+
+  testApp('Start on the widget opens the Session running on another Work', (
+    tester,
+    db,
+  ) async {
+    final second = await openOnAnotherWork(db);
+    final widget = FakeHomeWidget();
+    await pumpApp(tester, db, clock: () => now, homeWidget: widget);
+
+    widget.onStart!(second);
+    await tester.pumpAndSettle();
+    expect(await sessionIds(db), hasLength(1), reason: 'no second Session');
+    expect(find.text('The Remains of the Day'), findsOne);
+  });
+
+  testApp('Start on the widget, starting the app, opens the open Session', (
+    tester,
+    db,
+  ) async {
+    final second = await openOnAnotherWork(db);
+    final widget = FakeHomeWidget(opened: second);
+    await pumpApp(tester, db, clock: () => now, homeWidget: widget);
+    expect(await sessionIds(db), hasLength(1), reason: 'no second Session');
+    expect(find.text('The Remains of the Day'), findsOne);
+  });
+
   testApp('a Session started elsewhere shows on the widget', (
     tester,
     db,

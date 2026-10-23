@@ -16,11 +16,12 @@ import io.flutter.plugin.common.MethodChannel
  * The "break's over" notification at the end of a Planned break, set as an
  * alarm so it comes even after the app was killed (ADR 0009's pattern).
  *
- * It's exact when the user allows exact alarms. Otherwise (the default on
- * Android 14+) it's inexact: setAndAllowWhileIdle lets the system deliver it
- * a little late, but still while the phone dozes. We don't use setWindow:
- * its docs warn that from Android 12 short windows may be stretched to 10
- * minutes, longer than most breaks.
+ * It's exact when the user allows exact alarms. Otherwise (the default for
+ * new installs on Android 14+) it's inexact: setAndAllowWhileIdle never
+ * fires early, may fire while the phone dozes, and from Android 12 is only
+ * promised within an hour. We don't use setWindow, though its window
+ * (typically clipped to 10 minutes) is tighter: it waits out Doze, and the
+ * user may have put the phone down. See ADR 0013.
  */
 object BreakAlarm {
     private const val CHANNEL = "break_over"

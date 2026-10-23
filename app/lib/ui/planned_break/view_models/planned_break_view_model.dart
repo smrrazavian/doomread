@@ -6,45 +6,16 @@ import 'package:doomread/utils/result.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/foundation.dart';
 
-/// The Planned break of [record] at [now], from the journal alone: the
-/// Sessions in [all] before it, read or watched alike, give the Longest
-/// stretch, and those in the same Work give the pace (time per page,
-/// episode or second). Null when the Finish comes first.
-PlannedBreak? plannedBreakOf(
+/// The Planned break of [record] at [now], from the journal alone, with
+/// every other Session in [all] before it (see [plannedBreakOf]).
+PlannedBreak? plannedBreakOfRecord(
   SessionRecord record,
   List<SessionRecord> all,
   DateTime now,
-) {
-  final before = [
-    for (final r in all)
-      if (r.id != record.id) r,
-  ];
-  final work = record.road.work;
-  return plannedBreak(
-    record.at(now),
-    longestStretch: longestStretch(
-      alike(before, work.kind).map((r) => r.at(now)),
-    ),
-    startPage: record.pages?.from ?? record.road.position,
-    totalPages: work.totalPages,
-    checkpoints: work.checkpoints,
-    perPage: timePerPage([
-      for (final r in before)
-        if (r.pages case final p? when r.road.work.id == work.id)
-          (
-            reading: r
-                .at(now)
-                .stretches
-                .fold(Duration.zero, (sum, s) => sum + s.length),
-            pages: p.to - p.from,
-          ),
-    ]),
-  );
-}
-
-/// The chapter a Checkpoint ends, counting from 1.
-int chapterEndingAt(Work work, int checkpoint) =>
-    work.checkpoints.indexOf(checkpoint) + 1;
+) => plannedBreakOf(
+  record.measured(now),
+  before: measured(all.where((r) => r.id != record.id), now),
+);
 
 /// One Session's Planned breaks: the one on offer, taking it, nudging it
 /// later, and coming back.
@@ -86,7 +57,7 @@ class PlannedBreakViewModel extends ChangeNotifier {
   /// comes first, or before the journal has loaded.
   PlannedBreak? get offer {
     final r = record;
-    return r == null ? null : plannedBreakOf(r, _all, now);
+    return r == null ? null : plannedBreakOfRecord(r, _all, now);
   }
 
   /// Whether the offer can be taken: its reading has been done.

@@ -42,11 +42,10 @@ class ReadingViewModel extends ChangeNotifier {
 
   /// The Aim for tonight, from the Sessions before this one on Works read,
   /// or watched, like this one.
-  Duration get aim {
-    final kind = record?.road.work.kind ?? WorkKind.paperBook;
-    final now = _sessions.now();
-    return aimFor(longestStretch(alike(_before, kind).map((r) => r.at(now))));
-  }
+  Duration get aim => aimAfter(
+    measured(_before, _sessions.now()),
+    watched: record?.road.work.kind.watched ?? false,
+  );
 
   /// The House's lit Windows: this Session's, then the user's earlier ones.
   List<HouseWindow> get house {

@@ -51,8 +51,11 @@ class EveningViewModel extends ChangeNotifier {
     final record = this.record;
     if (record == null) return false;
     final now = _sessions.now();
-    final before = alike(_before, record.road.work.kind);
-    return isNewBest(record.at(now), before.map((r) => r.at(now)));
+    final before = alike(
+      measured(_before, now),
+      watched: record.road.work.kind.watched,
+    );
+    return isNewBest(record.at(now), before);
   }
 
   Future<Result<void>> _save(({int? page, String note}) input) async {

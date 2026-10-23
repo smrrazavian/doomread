@@ -37,7 +37,9 @@ class BreakOverAlarm {
     if (all == null) return;
     final now = _sessions.now();
     final onBreak = all.reversed.where((r) => r.at(now).onBreak).firstOrNull;
-    final offer = onBreak == null ? null : plannedBreakOf(onBreak, all, now);
+    final offer = onBreak == null
+        ? null
+        : plannedBreakOfRecord(onBreak, all, now);
     if (onBreak == null || offer == null) {
       if (_last != false) unawaited(_notification.cancel());
       _last = false;

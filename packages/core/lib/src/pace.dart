@@ -1,14 +1,17 @@
 import 'package:doomread_core/src/calendar.dart';
 
+/// One ended Session on a Work, as the pace sees it: when it started, the
+/// reading in it, and how many pages it moved the Position.
+typedef PaceSitting = ({DateTime startedAt, Duration reading, int pages});
+
 /// About how many evenings until the Finish, at the user's own pace for this
 /// Work: the pages they got through per evening so far.
 ///
-/// [sittings] are this Work's ended Sessions: when each started and how many
-/// pages it moved the Position. Returns null until there's a pace to go by,
-/// so no number is ever made up.
+/// [sittings] are this Work's ended Sessions. Returns null until there's a
+/// pace to go by, so no number is ever made up.
 int? eveningsLeft({
   required int pagesLeft,
-  required Iterable<({DateTime startedAt, int pages})> sittings,
+  required Iterable<PaceSitting> sittings,
 }) {
   if (pagesLeft <= 0) return null;
   var pages = 0;
@@ -28,7 +31,7 @@ int eveningsSpent(Iterable<DateTime> starts) =>
 /// [sittings] (its ended Sessions) over all the pages they moved the
 /// Position. A sitting missing either is left out, and with none left
 /// there's no pace, so no page is ever guessed.
-Duration? timePerPage(Iterable<({Duration reading, int pages})> sittings) {
+Duration? timePerPage(Iterable<PaceSitting> sittings) {
   var reading = Duration.zero;
   var pages = 0;
   for (final s in sittings) {

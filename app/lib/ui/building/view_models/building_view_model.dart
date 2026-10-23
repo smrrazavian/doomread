@@ -15,11 +15,11 @@ class BuildingViewModel extends ChangeNotifier {
         notifyListeners();
       }),
       sessions.watchAll().listen((all) {
-        final now = sessions.now();
-        List<StretchRise> trend(WorkKind kind) =>
-            longestStretchTrend([for (final r in alike(all, kind)) r.at(now)]);
-        _rises = trend(WorkKind.paperBook);
-        _watchingRises = trend(WorkKind.series);
+        final measuredAll = measured(all, sessions.now());
+        List<StretchRise> trend({required bool watched}) =>
+            longestStretchTrend(alike(measuredAll, watched: watched));
+        _rises = trend(watched: false);
+        _watchingRises = trend(watched: true);
         notifyListeners();
       }),
     ];

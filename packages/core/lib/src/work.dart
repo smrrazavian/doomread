@@ -55,3 +55,7 @@ class Work {
   /// ends or timestamps.
   final List<int> checkpoints;
 }
+
+/// The chapter [checkpoint] ends in [work], counting from 1.
+int chapterEndingAt(Work work, int checkpoint) =>
+    work.checkpoints.indexOf(checkpoint) + 1;

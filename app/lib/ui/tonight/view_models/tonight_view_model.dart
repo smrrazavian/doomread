@@ -48,18 +48,17 @@ class TonightViewModel extends ChangeNotifier {
 
   /// Tonight's Aim: the Longest stretch plus one minute, for reading or for
   /// watching, whichever the current Work is.
-  Duration get aim {
-    final kind = road?.work.kind ?? WorkKind.paperBook;
-    final now = _sessions.now();
-    return aimFor(longestStretch(alike(_history, kind).map((r) => r.at(now))));
-  }
+  Duration get aim => aimAfter(
+    measured(_history, _sessions.now()),
+    watched: road?.work.kind.watched ?? false,
+  );
 
   /// About how many evenings until the Finish; null until there's a pace.
   int? get evenings {
     final road = this.road;
     return road == null
         ? null
-        : eveningsLeftOn(road, _history, _sessions.now());
+        : eveningsLeftOn(road, measured(_history, _sessions.now()));
   }
 
   /// This week's nights, lit where any Session started, in a week that
