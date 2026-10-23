@@ -1,0 +1,20 @@
+{
+  "name": "Doomread",
+  "initializeCommand": "tool/fetch-sdk.sh",
+  "build": { "dockerfile": "../tool/Dockerfile", "context": "../tool" },
+  "runArgs": ["--network=host"],
+  "workspaceMount": "source=${localWorkspaceFolder},target=/work,type=bind",
+  "workspaceFolder": "/work",
+  "mounts": [
+    "source=doomread-home,target=/home/dev,type=volume",
+    "source=${localWorkspaceFolder}/tool/gradle-init.d,target=/home/dev/.gradle/init.d,type=bind,readonly"
+  ],
+  "containerEnv": {
+    "HTTPS_PROXY": "${localEnv:HTTPS_PROXY}",
+    "HTTP_PROXY": "${localEnv:HTTP_PROXY}",
+    "NO_PROXY": "${localEnv:NO_PROXY}",
+    "MAVEN_MIRROR": "${localEnv:MAVEN_MIRROR}"
+  },
+  "remoteUser": "dev",
+  "customizations": { "vscode": { "extensions": ["Dart-Code.flutter", "Dart-Code.dart-code"] } }
+}

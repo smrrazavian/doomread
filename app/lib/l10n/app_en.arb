@@ -1,0 +1,11 @@
+{
+  "@@locale": "en",
+  "appTitle": "Doomread",
+  "navTonight": "Tonight",
+  "navBooks": "Books",
+  "navBuilding": "Building",
+  "navFriends": "Friends",
+  "tonightEmpty": "Add the book you are reading",
+  "settings": "Settings",
+  "language": "Language"
+}

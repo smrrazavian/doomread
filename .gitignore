@@ -2,3 +2,9 @@
 .superpowers/
 # Locally installed agent skills (third-party, installed per machine)
 .claude/skills/
+# Downloaded SDK archives (tool/fetch-sdk.sh)
+tool/cache/
+# Dart/Flutter build output (any package)
+.dart_tool/
+build/
+**/test/**/failures/

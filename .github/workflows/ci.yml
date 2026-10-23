@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache SDK archives
+        uses: actions/cache@v4
+        with:
+          path: tool/cache
+          key: sdk-${{ hashFiles('tool/fetch-sdk.sh') }}
+
+      - run: tool/fetch-sdk.sh
+
+      - name: Image tag
+        # Same tag tool/dev computes, so tool/dev reuses the image built here.
+        run: echo "DOOMREAD_IMAGE=doomread-dev:$(sha256sum tool/Dockerfile | cut -c1-12)" >> "$GITHUB_ENV"
+
+      - uses: docker/setup-buildx-action@v3
+
+      # The same image as local development, so goldens render identically.
+      - name: Build dev image
+        uses: docker/build-push-action@v6
+        with:
+          context: tool
+          file: tool/Dockerfile
+          tags: ${{ env.DOOMREAD_IMAGE }}
+          load: true
+          build-args: UID=1001 # the runner user, so the container can write the checkout
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Analyze
+        run: tool/dev sh -c 'flutter pub get && dart analyze packages/core && cd app && flutter analyze'
+
+      - name: Test
+        run: tool/dev sh -c 'cd app && flutter test'
+
+      - name: Build all flavours
+        run: tool/dev sh -c 'cd app && for f in apk play bazaar; do flutter build apk --debug --flavor $f || exit 1; done'
+
+      - name: Golden diffs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-failures
+          path: app/test/**/failures/

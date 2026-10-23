@@ -1,0 +1,11 @@
+name: doomread_core
+description: Doomread's domain rules in pure Dart, shared by the app and the server.
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.13.0
+dev_dependencies:
+  test: ^1.31.1
+  very_good_analysis: ^11.0.0
+

@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# Run any command inside the Doomread dev container, e.g.
+#   tool/dev flutter test
+#   tool/dev adb pair 192.168.1.20:37099 123456
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+# The tag follows the Dockerfile, so editing it rebuilds the image.
+image=${DOOMREAD_IMAGE:-doomread-dev:$(sha256sum tool/Dockerfile | cut -c1-12)}
+docker image inspect "$image" >/dev/null 2>&1 || { tool/fetch-sdk.sh && docker build -t "$image" -f tool/Dockerfile tool; } || exit 1
+
+tty=(); [ -t 0 ] && tty=(-it)
+
+# Pass the host's proxy through (pub.dev and Google Maven are blocked from Iran without one).
+# Gradle runs on the JVM, which ignores *_PROXY, so the proxy is also handed to Java and Gradle.
+env=()
+for v in HTTP_PROXY HTTPS_PROXY NO_PROXY http_proxy https_proxy no_proxy MAVEN_MIRROR; do
+  [ -n "${!v:-}" ] && env+=(-e "$v=${!v}")
+done
+gradle_props=""
+proxy=${HTTPS_PROXY:-${https_proxy:-}}
+if [[ $proxy =~ ^https?://([^@/]*@)?([^:/]+):([0-9]+) ]]; then
+  h=${BASH_REMATCH[2]} p=${BASH_REMATCH[3]}
+  # A local mirror (MAVEN_MIRROR) is reached directly, not through the proxy.
+  direct="localhost"
+  [[ ${MAVEN_MIRROR:-} =~ ^https?://([^/:]+) ]] && direct="${BASH_REMATCH[1]}|localhost"
+  env+=(-e "JAVA_TOOL_OPTIONS=-Dhttp.proxyHost=$h -Dhttp.proxyPort=$p -Dhttps.proxyHost=$h -Dhttps.proxyPort=$p")
+  gradle_props="systemProp.http.proxyHost=$h
+systemProp.http.proxyPort=$p
+systemProp.https.proxyHost=$h
+systemProp.https.proxyPort=$p
+systemProp.http.nonProxyHosts=$direct"
+fi
+# Always rewritten, so turning the proxy off also removes it from Gradle.
+env+=(-e "GRADLE_PROPS=$gradle_props")
+
+# USB phones: a bind mount keeps the host's per-user ACL on the device node
+# (set by the udev rule in the README); 189 is the USB device major number.
+usb=(); [ -d /dev/bus/usb ] && usb=(-v /dev/bus/usb:/dev/bus/usb --device-cgroup-rule 'c 189:* rmw')
+
+# --network host lets adb reach the phone over wireless debugging.
+# The doomread-home volume keeps pub/Gradle caches and adb pairing keys between runs.
+exec docker run --rm "${tty[@]}" --network host "${env[@]}" "${usb[@]}" \
+  -v "$PWD":/work -w /work \
+  -v doomread-home:/home/dev \
+  -v "$PWD/tool/gradle-init.d":/home/dev/.gradle/init.d:ro \
+  "$image" sh -c 'mkdir -p ~/.gradle && printf "%s\n" "$GRADLE_PROPS" > ~/.gradle/gradle.properties; exec "$@"' sh "$@"

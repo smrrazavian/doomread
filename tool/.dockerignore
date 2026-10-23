@@ -1,0 +1,10 @@
+# Only the archives the Dockerfile copies are build context.
+*
+!cache/flutter.tar.xz
+!cache/cmdline-tools.zip
+!cache/platform-tools.zip
+!cache/platform-35.zip
+!cache/platform-36.zip
+!cache/build-tools-36.zip
+!cache/cmake-3.22.1.zip
+!cache/ndk-r28c.zip

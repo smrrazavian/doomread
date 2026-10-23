@@ -1,0 +1,24 @@
+// Puts a Maven mirror in front of every repository when MAVEN_MIRROR is set,
+// e.g. https://maven.myket.ir for builds from inside Iran, where Google's
+// repositories answer 404. CI and other machines don't set it, so nothing changes there.
+def mirror = System.getenv('MAVEN_MIRROR')
+if (mirror) {
+    def preferMirror = { RepositoryHandler repos ->
+        def m = repos.maven { url = mirror; name = 'mirror' }
+        repos.remove(m)
+        repos.addFirst(m)
+    }
+    beforeSettings { settings ->
+        preferMirror(settings.pluginManagement.repositories)
+        preferMirror(settings.dependencyResolutionManagement.repositories)
+    }
+    settingsEvaluated { settings ->
+        // Builds that only allow settings-level repositories reject project-level ones.
+        settings.gradle.ext.mirrorProjects =
+            settings.dependencyResolutionManagement.repositoriesMode.get() == RepositoriesMode.PREFER_PROJECT
+    }
+    allprojects {
+        preferMirror(buildscript.repositories)
+        if (gradle.ext.mirrorProjects) preferMirror(repositories)
+    }
+}

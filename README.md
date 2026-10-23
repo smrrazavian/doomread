@@ -12,3 +12,38 @@ Android first, then Linux, then iOS. Built offline-first, with no Google service
 - Decisions: [`docs/adr/`](docs/adr/)
 
 Licensed under [GPL-3.0](LICENSE).
+
+## Development
+
+Everything runs in a Docker dev container, so the laptop needs only Docker. `tool/dev <command>` runs a command inside it. The first run builds the image from pinned, checksummed official downloads (Flutter 3.47.7 and the Android SDK). If you're behind an HTTP proxy, set `HTTPS_PROXY`; `tool/dev` passes it on to pub and Gradle. Inside Iran, Google's Maven repositories answer 404, so also set `MAVEN_MIRROR=https://maven.myket.ir`. Gradle then tries that mirror first, and nothing in the project's build files changes.
+
+```sh
+tool/dev flutter pub get
+tool/dev sh -c 'cd app && flutter test'              # unit, widget and golden tests
+tool/dev sh -c 'cd app && flutter run --flavor apk'  # on your phone, with hot reload
+```
+
+Flavours: `apk` (direct download), `play` (Google Play) and `bazaar` (Cafe Bazaar). See ADR-0004.
+
+### Connect your phone (Android 11+, wireless debugging)
+
+1. On the phone: **Settings → System → Developer options → Wireless debugging → on**, and keep the phone on the same Wi-Fi as the laptop.
+2. Tap **Pair device with pairing code**, then run `tool/dev adb pair <ip>:<pairing-port> <code>`.
+3. Run `tool/dev adb connect <ip>:<port>`, using the port shown on the Wireless debugging screen (not the pairing port).
+4. Each `tool/dev` run starts a fresh adb server, so chain the commands: `tool/dev sh -c 'adb connect <ip>:<port> && flutter run --flavor apk'`. Pairing keys are remembered between runs.
+
+### Or connect over USB
+
+`tool/dev` hands the USB bus to the container. To let your user (not only root) reach the phone, add a udev rule once on the host. `05c6` is the vendor ID of the Nothing Phone 4a's Qualcomm chip; check yours with `lsusb`.
+
+```sh
+echo 'SUBSYSTEM=="usb", ATTR{idVendor}=="05c6", MODE="0660", TAG+="uaccess"' \
+  | sudo tee /etc/udev/rules.d/51-android.rules
+sudo udevadm control --reload-rules && sudo udevadm trigger
+```
+
+Replug the phone, accept "Allow USB debugging", and `tool/dev adb devices` lists it.
+
+VS Code users can also "Reopen in Container" with `.devcontainer/`.
+
+Golden screenshots are rendered inside the container. To update them, run `tool/dev sh -c 'cd app && flutter test --update-goldens'`.
