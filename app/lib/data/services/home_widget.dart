@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 
 /// Everything the home screen widget shows, already in the app's language:
 /// the native side only stores it and draws it.
-typedef HomeWidgetState = ({
+typedef HomeWidgetContent = ({
   String title,
   String? road,
   String? evenings,
@@ -43,19 +43,19 @@ class HomeWidget {
     return null;
   }
 
-  Future<void> update(HomeWidgetState state) async {
+  Future<void> update(HomeWidgetContent content) async {
     if (!_android) return;
     await _channel.invokeMethod<void>('update', {
-      'title': state.title,
-      'road': state.road,
-      'evenings': state.evenings,
-      'lit': state.lit,
-      'dark': state.dark,
-      'litUntil': state.litUntil?.millisecondsSinceEpoch,
-      'button': state.button,
-      'sessionId': state.sessionId,
-      'workId': state.workId,
-      'rtl': state.rtl,
+      'title': content.title,
+      'road': content.road,
+      'evenings': content.evenings,
+      'lit': content.lit,
+      'dark': content.dark,
+      'litUntil': content.litUntil?.millisecondsSinceEpoch,
+      'button': content.button,
+      'sessionId': content.sessionId,
+      'workId': content.workId,
+      'rtl': content.rtl,
     });
   }
 

@@ -37,22 +37,22 @@ class LiveHomeWidget {
   (Road?,)? _road;
   List<SessionRecord>? _all;
 
-  /// What was last sent, so an unchanged state sends nothing.
-  HomeWidgetState? _last;
+  /// What was last sent, so nothing is sent when it is unchanged.
+  HomeWidgetContent? _last;
 
   void _sync() {
     final (road,) = _road ?? (null,);
     final all = _all;
     if (_road == null || all == null) return;
-    final state = homeWidgetState(
+    final content = homeWidgetContent(
       road: road,
       history: all,
       now: _sessions.now(),
       locale: _settings.locale,
     );
-    if (state == _last) return;
-    _last = state;
-    unawaited(_widget.update(state));
+    if (content == _last) return;
+    _last = content;
+    unawaited(_widget.update(content));
   }
 
   /// The Session the widget's Start opens: one still open if the widget was
@@ -77,7 +77,7 @@ class LiveHomeWidget {
 
 /// What the widget shows for [road], the current Work, given every Session
 /// so far, in [locale].
-HomeWidgetState homeWidgetState({
+HomeWidgetContent homeWidgetContent({
   required Road? road,
   required List<SessionRecord> history,
   required DateTime now,
