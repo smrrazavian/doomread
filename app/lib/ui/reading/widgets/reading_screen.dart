@@ -52,10 +52,7 @@ class _Reading extends StatelessWidget {
         house: vm.house,
         app: urges.app?.label,
         onBack: vm.letPass.execute,
-        onOpen: () async {
-          await vm.slip.execute();
-          await urges.openApp();
-        },
+        onOpen: () => urges.slip(record),
       );
     }
     if (session.slipped) {

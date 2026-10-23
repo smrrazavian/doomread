@@ -14,7 +14,6 @@ class ReadingViewModel extends ChangeNotifier {
     resume = Command0(() => _add(SessionEventKind.resume));
     stop = Command0(() => _add(SessionEventKind.stop));
     letPass = Command0(() => _add(SessionEventKind.letPass));
-    slip = Command0(() => _add(SessionEventKind.slip));
     _sub = _sessions.watchAll().listen((all) {
       _record = all.where((r) => r.id == id).firstOrNull;
       _before = all.where((r) => r.id != id).toList();
@@ -41,9 +40,9 @@ class ReadingViewModel extends ChangeNotifier {
   late final Command0<void> resume;
   late final Command0<void> stop;
 
-  /// The way out of an Urge: back to the Work, or on into the Watched app.
+  /// Back to the Work from an Urge. Open anyway is UrgeWatch's, since it
+  /// opens the Watched app too.
   late final Command0<void> letPass;
-  late final Command0<void> slip;
 
   Session? get session => record?.at(_sessions.now());
 

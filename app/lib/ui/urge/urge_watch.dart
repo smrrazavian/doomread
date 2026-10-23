@@ -40,6 +40,10 @@ class UrgeWatch {
   /// What was last told to the service.
   bool? _watching;
 
+  /// The Session that just slipped, until the journal shows it: the app it
+  /// opens reports before then, and mustn't bring the Urge back.
+  String? _slipping;
+
   /// The most recent open Session, whatever its Work.
   SessionRecord? _open(List<SessionRecord> all, DateTime now) => all.reversed
       .where((r) => r.at(now).startedAt != null && !r.at(now).stopped)
@@ -48,7 +52,12 @@ class UrgeWatch {
   void _sync() {
     final all = _all;
     if (all == null) return;
-    final watching = _open(all, _sessions.now()) != null;
+    final now = _sessions.now();
+    if (all.where((r) => r.id == _slipping).firstOrNull case final r?
+        when !r.at(now).urgeOpen) {
+      _slipping = null;
+    }
+    final watching = _open(all, now) != null;
     if (watching != _watching) {
       _watching = watching;
       unawaited(_watch.setWatching(on: watching));
@@ -76,7 +85,7 @@ class UrgeWatch {
   ) async {
     final now = _sessions.now();
     final open = _open(all, now);
-    if (open == null) return;
+    if (open == null || open.id == _slipping) return;
     final session = open.at(now);
     final rules = _settings.watchRules;
     if (raisesUrge(session, package, rules)) {
@@ -89,8 +98,11 @@ class UrgeWatch {
     await _watch.bringToFront();
   }
 
-  /// After a Slip, opens the app that raised the Urge, if it's known.
-  Future<void> openApp() async {
+  /// Open anyway: records the Slip, then opens the app that raised the
+  /// Urge, if it's known.
+  Future<void> slip(SessionRecord record) async {
+    _slipping = record.id;
+    await _sessions.add(record, SessionEventKind.slip);
     if (_app case final a?) await _watch.open(a.package);
   }
 

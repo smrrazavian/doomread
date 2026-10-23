@@ -199,6 +199,11 @@ class FakeAppWatch implements AppWatch {
   @override
   Future<void> bringToFront() async => fronts++;
 
+  /// Launching an app reports it straight away, as the service would,
+  /// before the journal has caught up.
   @override
-  Future<void> open(String package) async => opened = package;
+  Future<void> open(String package) async {
+    opened = package;
+    onForeground?.call(package, package);
+  }
 }
