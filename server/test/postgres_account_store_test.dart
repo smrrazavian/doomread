@@ -14,10 +14,10 @@ import 'account_store_contract.dart';
 
 void main() {
   final endpoint = postgresEndpoint(Platform.environment);
-  late PostgresAccountStore store;
+  late PostgresStore store;
 
   setUpAll(() async {
-    store = await PostgresAccountStore.open(endpoint);
+    store = await PostgresStore.open(endpoint);
   });
   tearDownAll(() => store.close());
 
@@ -73,7 +73,7 @@ void main() {
 
       // Twice: opening an up-to-date database changes nothing.
       for (var i = 0; i < 2; i++) {
-        final upgraded = await PostgresAccountStore.open(scratch);
+        final upgraded = await PostgresStore.open(scratch);
         expect(await upgraded.passwordHash('sara'), 'h');
         expect(await upgraded.createAccount('sara', 'other'), isFalse);
         expect(await upgraded.useSignIn('tok', DateTime.now()), 'sara');
@@ -85,7 +85,7 @@ void main() {
       );
       final versions = await c.execute('select version from schema_migrations');
       await c.close();
-      expect(versions, hasLength(2));
+      expect(versions, hasLength(3));
     });
   });
 }

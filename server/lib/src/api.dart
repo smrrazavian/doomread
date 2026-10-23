@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:doomread_core/accounts.dart';
+import 'package:doomread_core/sync.dart';
 import 'package:doomread_server/src/account_store.dart';
 import 'package:doomread_server/src/passwords.dart';
 import 'package:doomread_server/src/rate_limit.dart';
+import 'package:doomread_server/src/sync_store.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 
@@ -14,6 +16,7 @@ import 'package:shelf_router/shelf_router.dart';
 /// headers (tokens) never reach it. [clock] is there for tests.
 Handler doomreadServer(
   AccountStore store, {
+  required SyncStore sync,
   Passwords passwords = const Passwords(),
   DateTime Function() clock = DateTime.now,
 }) {
@@ -23,14 +26,9 @@ Handler doomreadServer(
 
   Future<Credentials?> readCredentials(Request request) async {
     // Credentials are tiny; stop reading a larger body instead of buffering it.
-    final bytes = <int>[];
-    await for (final chunk in request.read()) {
-      bytes.addAll(chunk);
-      if (bytes.length > _maxBody) return null;
-    }
+    final body = await _readJson(request, _maxBody);
     try {
-      final body = jsonDecode(utf8.decode(bytes));
-      return Credentials.fromJson(body as Map<String, Object?>);
+      return Credentials.fromJson(body! as Map<String, Object?>);
     } on Object {
       return null;
     }
@@ -47,6 +45,12 @@ Handler doomreadServer(
     final header = request.headers['authorization'] ?? '';
     if (!header.startsWith('Bearer ')) return null;
     return await hashToken(header.substring(7));
+  }
+
+  /// Who the request's sign-in belongs to, keeping that sign-in alive.
+  Future<String?> signedIn(Request request) async {
+    final hash = await bearerHash(request);
+    return hash == null ? null : await store.useSignIn(hash, clock());
   }
 
   // Sign in and sign up share both limits. The IP one is looser: Iranian
@@ -102,12 +106,48 @@ Handler doomreadServer(
       }
       await store.deleteSignIn(hash);
       return Response(204);
+    })
+    ..post('/sync', (Request request) async {
+      final username = await signedIn(request);
+      if (username == null) return _error(401, 'not_signed_in');
+      final SyncRequest body;
+      try {
+        body = SyncRequest.fromJson(
+          (await _readJson(request, _maxSyncBody))! as Map<String, Object?>,
+        );
+      } on Object {
+        return _error(400, 'bad_request');
+      }
+      if (body.since < 0 || body.items.length > SyncRequest.maxItems) {
+        return _error(400, 'bad_request');
+      }
+      final answer = await sync.sync(username, body.since, body.items);
+      return _json(200, answer.toJson());
     });
 
   return const Pipeline().addMiddleware(logRequests()).addHandler(router.call);
 }
 
 const _maxBody = 4096;
+
+/// A full sync request: [SyncRequest.maxItems] rows with room for long
+/// Notes.
+const int _maxSyncBody = 2 * 1024 * 1024;
+
+/// The body as JSON, or null when it is not JSON or is larger than [max]
+/// bytes. A larger body stops being read instead of being buffered.
+Future<Object?> _readJson(Request request, int max) async {
+  final bytes = <int>[];
+  await for (final chunk in request.read()) {
+    bytes.addAll(chunk);
+    if (bytes.length > max) return null;
+  }
+  try {
+    return jsonDecode(utf8.decode(bytes));
+  } on FormatException {
+    return null;
+  }
+}
 
 /// Sign-in and sign-up attempts allowed per [attemptsWindow], from one IP
 /// address and for one username.

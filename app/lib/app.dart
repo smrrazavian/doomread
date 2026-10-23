@@ -3,14 +3,17 @@ import 'dart:async';
 import 'package:doomread/data/repositories/auth_repository.dart';
 import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/data/repositories/settings_repository.dart';
+import 'package:doomread/data/repositories/sync_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/data/services/app_database.dart';
+import 'package:doomread/data/services/auto_sync.dart';
 import 'package:doomread/data/services/session_notification.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/routing/router.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/reading/live_notification.dart';
 import 'package:doomread/ui/settings/view_models/settings_view_model.dart';
+import 'package:drift/drift.dart' show TableUpdateQuery;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +22,7 @@ class DoomreadApp extends StatefulWidget {
   const DoomreadApp({
     required this.db,
     this.auth,
+    this.sync,
     this.clock,
     this.notification,
     super.key,
@@ -33,6 +37,10 @@ class DoomreadApp extends StatefulWidget {
   /// The account on the sync server. Tests that never open the Account
   /// screen leave it out.
   final AuthRepository? auth;
+
+  /// Syncs the signed-in account in the background. Tests that don't sync
+  /// leave it out.
+  final SyncRepository? sync;
 
   /// The ongoing notification while a Session runs. Tests pass a fake; the
   /// app uses the Android one, which does nothing on other platforms.
@@ -60,6 +68,7 @@ class _DoomreadAppState extends State<DoomreadApp> {
   late final SessionNotification _notification =
       widget.notification ?? SessionNotification();
   late final LiveNotification _live;
+  AutoSync? _autoSync;
   final GoRouter _router = buildRouter();
 
   @override
@@ -68,6 +77,22 @@ class _DoomreadAppState extends State<DoomreadApp> {
     _live = LiveNotification(_sessions, _notification, _settings);
     _notification.onTapped = _openReading;
     unawaited(_openReadingIfTapped());
+    if (widget.sync case final sync?) {
+      final db = widget.db;
+      _autoSync = AutoSync(
+        sync.sync,
+        nudges: [
+          db.tableUpdates(
+            TableUpdateQuery.onAllTables([
+              db.works,
+              db.sessionEvents,
+              db.notes,
+            ]),
+          ),
+          ?widget.auth?.changes,
+        ],
+      );
+    }
   }
 
   /// When a tap on the notification started the app, opens that Session's
@@ -89,6 +114,7 @@ class _DoomreadAppState extends State<DoomreadApp> {
   @override
   void dispose() {
     _notification.onTapped = null;
+    _autoSync?.dispose();
     _live.dispose();
     _settings.dispose();
     _router.dispose();

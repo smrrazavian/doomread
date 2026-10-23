@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:doomread_core/accounts.dart';
+import 'package:doomread_core/sync.dart';
 import 'package:doomread_server/server.dart';
 import 'package:shelf/shelf.dart';
 import 'package:test/test.dart';
@@ -17,6 +18,7 @@ void main() {
     now = DateTime.utc(2026, 10, 22, 21);
     handler = doomreadServer(
       store,
+      sync: InMemorySyncStore(),
       // Cheap hashing: the real cost would make every test take seconds.
       passwords: const Passwords.cheapForTests(),
       clock: () => now,
@@ -27,13 +29,14 @@ void main() {
     String method,
     String path, {
     Credentials? body,
+    String? raw,
     String? token,
     String ip = '10.0.0.1',
   }) async => await handler(
     Request(
       method,
       Uri.parse('http://localhost$path'),
-      body: body == null ? null : jsonEncode(body.toJson()),
+      body: raw ?? (body == null ? null : jsonEncode(body.toJson())),
       headers: {'authorization': ?(token == null ? null : 'Bearer $token')},
       // What shelf_io puts there for a real connection.
       context: {'shelf.io.connection_info': _Peer(ip)},
@@ -196,6 +199,96 @@ void main() {
       now = now.add(const Duration(seconds: 90));
       final r = await send('POST', '/sign-ins', body: wrong);
       expect(r.statusCode, 401);
+    });
+  });
+
+  group('sync', () {
+    late String token;
+    setUp(() async {
+      token = SignIn.fromJson(
+        await json(await send('POST', '/accounts', body: sara)),
+      ).token;
+    });
+
+    final event = SyncItem(
+      kind: SyncKind.event,
+      id: 'e1',
+      updatedAt: DateTime.utc(2026, 10, 22, 21),
+      data: const {'kind': 'start'},
+    );
+    String request(int since, List<SyncItem> items) =>
+        jsonEncode(SyncRequest(since: since, items: items).toJson());
+
+    test("pushes a device's rows and pulls them on another", () async {
+      final pushed = await send(
+        'POST',
+        '/sync',
+        raw: request(0, [event]),
+        token: token,
+      );
+      expect(pushed.statusCode, 200);
+      final cursor = SyncResponse.fromJson(await json(pushed)).cursor;
+
+      final other = SignIn.fromJson(
+        await json(await send('POST', '/sign-ins', body: sara)),
+      ).token;
+      final r = SyncResponse.fromJson(
+        await json(
+          await send('POST', '/sync', raw: request(0, []), token: other),
+        ),
+      );
+      expect(r.items.single.id, 'e1');
+      expect(r.items.single.data, {'kind': 'start'});
+      expect(r.cursor, cursor);
+    });
+
+    test('needs a live sign-in', () async {
+      for (final t in [null, 'not-a-token']) {
+        final r = await send('POST', '/sync', raw: request(0, []), token: t);
+        expect(r.statusCode, 401, reason: t);
+      }
+      now = now.add(signInIdleLimit);
+      final r = await send('POST', '/sync', raw: request(0, []), token: token);
+      expect(r.statusCode, 401);
+    });
+
+    test('keeps the sign-in alive', () async {
+      final almost = signInIdleLimit - const Duration(days: 1);
+      for (var i = 0; i < 3; i++) {
+        now = now.add(almost);
+        final r = await send(
+          'POST',
+          '/sync',
+          raw: request(0, []),
+          token: token,
+        );
+        expect(r.statusCode, 200);
+      }
+    });
+
+    test('refuses broken, oversized or overlong requests', () async {
+      for (final raw in [
+        'not json',
+        '{"since": -1, "items": []}',
+        jsonEncode({
+          'since': 0,
+          'items': [
+            {...event.toJson(), 'kind': 'friend'},
+          ],
+        }),
+        request(0, List.filled(SyncRequest.maxItems + 1, event)),
+        request(0, [
+          SyncItem(
+            kind: SyncKind.note,
+            id: 'n',
+            updatedAt: event.updatedAt,
+            data: {'body': 'x' * (3 * 1024 * 1024)},
+          ),
+        ]),
+      ]) {
+        final r = await send('POST', '/sync', raw: raw, token: token);
+        expect(r.statusCode, 400, reason: '${raw.length} chars');
+      }
     });
   });
 }

@@ -24,9 +24,13 @@ dependencies:
 
 dev_dependencies:
   build_runner: ^2.16.1
+  # The real server, in memory, for tests of sync between two devices.
+  doomread_server:
+    path: ../server
   drift_dev: ^2.35.1
   flutter_test:
     sdk: flutter
+  shelf: ^1.4.3
   very_good_analysis: ^11.0.0
 
 flutter:
