@@ -57,17 +57,9 @@ class TonightViewModel extends ChangeNotifier {
   /// About how many evenings until the Finish; null until there's a pace.
   int? get evenings {
     final road = this.road;
-    if (road == null) return null;
-    final now = _sessions.now();
-    return eveningsLeft(
-      pagesLeft: road.work.totalPages - road.position,
-      sittings: [
-        for (final r in _history)
-          if (r.road.work.id == road.work.id)
-            if ((r.pages, r.at(now).startedAt) case (final p?, final at?))
-              (startedAt: at, pages: p.to - p.from),
-      ],
-    );
+    return road == null
+        ? null
+        : eveningsLeftOn(road, _history, _sessions.now());
   }
 
   /// This week's nights, lit where any Session started, in a week that

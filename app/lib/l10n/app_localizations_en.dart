@@ -485,6 +485,180 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get houseEmpty =>
+      'Only your light is on for now. Each evening you read lights another.';
+
+  @override
+  String get houseYours =>
+      'Every other light here is yours too, from an evening you read.';
+
+  @override
+  String nextBreakAtCheckpoint(int chapter, int minutes) {
+    final intl.NumberFormat chapterNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String chapterString = chapterNumberFormat.format(chapter);
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'Your break: the end of chapter $chapterString, in about $minutesString min.';
+  }
+
+  @override
+  String nextBreakAtPage(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'Your break: in about $minutesString min, at the end of the page you\'re on.';
+  }
+
+  @override
+  String breakDueAtCheckpoint(int chapter) {
+    final intl.NumberFormat chapterNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String chapterString = chapterNumberFormat.format(chapter);
+
+    return 'Break time at the end of chapter $chapterString.';
+  }
+
+  @override
+  String get breakDueAtPage => 'Break time. Finish the page you\'re on.';
+
+  @override
+  String get takeBreak => 'I\'m there';
+
+  @override
+  String get nudgeBreak => 'Later';
+
+  @override
+  String onBreakUntil(String time) {
+    return 'On your break until $time.';
+  }
+
+  @override
+  String get showBreak => 'Show the timer';
+
+  @override
+  String chapterDone(int chapter) {
+    final intl.NumberFormat chapterNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String chapterString = chapterNumberFormat.format(chapter);
+
+    return 'Chapter $chapterString done';
+  }
+
+  @override
+  String get breakHere => 'Your break is here.';
+
+  @override
+  String breakAnything(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: '$minutesString minutes',
+      one: 'One minute',
+    );
+    return '$_temp0 of Reels, messages, anything.';
+  }
+
+  @override
+  String backToChapterAt(int chapter, String time) {
+    final intl.NumberFormat chapterNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String chapterString = chapterNumberFormat.format(chapter);
+
+    return 'Back to chapter $chapterString at $time.';
+  }
+
+  @override
+  String backToBookAt(String time) {
+    return 'Back to the book at $time.';
+  }
+
+  @override
+  String bestTonight(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: 'Your best stretch tonight is $minutesString minutes.',
+      one: 'Your best stretch tonight is 1 minute.',
+      zero: 'Your best stretch tonight is under a minute.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String startMyBreak(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: 'Start my $minutesString minutes',
+      one: 'Start my minute',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get keepReading => 'Keep reading instead';
+
+  @override
+  String get onBreak => 'On your break.';
+
+  @override
+  String get imBack => 'I\'m back';
+
+  @override
+  String get breakOver => 'Break\'s over.';
+
+  @override
+  String chapterWaiting(int chapter) {
+    final intl.NumberFormat chapterNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String chapterString = chapterNumberFormat.format(chapter);
+
+    return 'Chapter $chapterString is waiting.';
+  }
+
+  @override
+  String workWaiting(String title) {
+    return '$title is waiting.';
+  }
+
+  @override
+  String widgetEvenings(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'about $countString evenings left',
+      one: 'about 1 evening left',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get widgetLit => 'Your window is lit tonight';
+
+  @override
+  String get widgetDark => 'Your window is still dark tonight';
+
+  @override
   String get kindPaperBook => 'Book';
 
   @override
@@ -779,4 +953,86 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String nextBreakAtEpisode(int episode, int minutes) {
+    final intl.NumberFormat episodeNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String episodeString = episodeNumberFormat.format(episode);
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'Your break: the end of episode $episodeString, in about $minutesString min.';
+  }
+
+  @override
+  String breakDueAtEpisode(int episode) {
+    final intl.NumberFormat episodeNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String episodeString = episodeNumberFormat.format(episode);
+
+    return 'Break time at the end of episode $episodeString.';
+  }
+
+  @override
+  String nextBreakAtTimestamp(String timestamp, int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'Your break: at $timestamp, in about $minutesString min.';
+  }
+
+  @override
+  String breakDueAtTimestamp(String timestamp) {
+    return 'Break time at $timestamp.';
+  }
+
+  @override
+  String nextBreakWatching(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'Your break: in about $minutesString min, when this segment ends.';
+  }
+
+  @override
+  String get breakDueWatching => 'Break time. Pause when this segment ends.';
+
+  @override
+  String episodeDone(int episode) {
+    final intl.NumberFormat episodeNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String episodeString = episodeNumberFormat.format(episode);
+
+    return 'Episode $episodeString done';
+  }
+
+  @override
+  String episodeWaiting(int episode) {
+    final intl.NumberFormat episodeNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String episodeString = episodeNumberFormat.format(episode);
+
+    return 'Episode $episodeString is waiting.';
+  }
+
+  @override
+  String backToEpisodeAt(int episode, String time) {
+    final intl.NumberFormat episodeNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String episodeString = episodeNumberFormat.format(episode);
+
+    return 'Back to episode $episodeString at $time.';
+  }
+
+  @override
+  String backToWorkAt(String time) {
+    return 'Back to it at $time.';
+  }
+
+  @override
+  String get keepGoing => 'Keep going instead';
 }

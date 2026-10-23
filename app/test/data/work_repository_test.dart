@@ -153,6 +153,17 @@ void main() {
             "INSERT INTO works VALUES ('w1', 'Dune', 'Frank Herbert', 412, "
             "'100,200', 142, 0)",
           )
+          ..execute(
+            'CREATE TABLE session_events (id TEXT NOT NULL PRIMARY KEY, '
+            'session_id TEXT NOT NULL, work_id TEXT NOT NULL, '
+            'kind TEXT NOT NULL, at INTEGER NOT NULL)',
+          )
+          ..execute(
+            'CREATE TABLE notes (id TEXT NOT NULL PRIMARY KEY, '
+            'session_id TEXT NOT NULL UNIQUE, work_id TEXT NOT NULL, '
+            'from_page INTEGER NOT NULL, to_page INTEGER NOT NULL, '
+            'body TEXT NOT NULL, updated_at INTEGER NOT NULL)',
+          )
           ..execute('PRAGMA user_version = 3'),
       ),
     );
@@ -161,6 +172,31 @@ void main() {
     expect(road!.work.kind, WorkKind.paperBook);
     expect(road.work.totalPages, 412);
     expect(road.work.checkpoints, [100, 200]);
+    expect(road.position, 142);
+  });
+
+  test('Works synced under schema 4 open as paper books too', () async {
+    final old = AppDatabase(
+      NativeDatabase.memory(
+        setup: (raw) => raw
+          ..execute(
+            'CREATE TABLE works (id TEXT NOT NULL, title TEXT NOT NULL, '
+            'author TEXT NOT NULL, total_pages INTEGER NOT NULL, '
+            'checkpoints TEXT NOT NULL, '
+            'position INTEGER NOT NULL DEFAULT 0, '
+            'updated_at INTEGER NOT NULL, synced_at INTEGER NULL, '
+            'PRIMARY KEY (id))',
+          )
+          ..execute(
+            "INSERT INTO works VALUES ('w1', 'Dune', 'Frank Herbert', 412, "
+            "'100,200', 142, 0, 0)",
+          )
+          ..execute('PRAGMA user_version = 4'),
+      ),
+    );
+    addTearDown(old.close);
+    final road = await WorkRepository(old).watchRoad('w1').first;
+    expect(road!.work.kind, WorkKind.paperBook);
     expect(road.position, 142);
   });
 }

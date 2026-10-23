@@ -13,17 +13,15 @@ String formatAmount(BuildContext context, Work work, int n) {
       : formatNumber(n, locale);
 }
 
-/// "Page 142 of 245", "Episode 6 of 10" or "1:12:20 of 2:41:00".
-String positionOf(BuildContext context, Road road) {
-  final l10n = AppLocalizations.of(context);
+/// "Page 142 of 245", "Episode 6 of 10" or "1:12:20 of 2:41:00". It needs
+/// no context, so the home screen widget says it too.
+String positionOf(AppLocalizations l10n, Locale locale, Road road) {
   final (at, total) = (road.position, road.work.totalPages);
+  String clock(int s) => formatClock(Duration(seconds: s), locale);
   return switch (road.work.kind.unit) {
     WorkUnit.page => l10n.pageOf(at, total),
     WorkUnit.episode => l10n.episodeOf(at, total),
-    WorkUnit.second => l10n.timeOf(
-      formatAmount(context, road.work, at),
-      formatAmount(context, road.work, total),
-    ),
+    WorkUnit.second => l10n.timeOf(clock(at), clock(total)),
   };
 }
 

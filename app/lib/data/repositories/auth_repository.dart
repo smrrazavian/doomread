@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread/utils/result.dart';
 import 'package:doomread_core/accounts.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
@@ -17,6 +19,12 @@ final Uri defaultServer = Uri.parse(
     defaultValue: 'http://localhost:8080',
   ),
 );
+
+/// Whether the app may send credentials, tokens and synced data to
+/// [server]. Release builds only talk HTTPS, so all of it is encrypted in
+/// transit (ADR-0010); debug builds also allow a plain HTTP dev server.
+bool sendsSecurely(Uri server, {bool release = kReleaseMode}) =>
+    server.scheme == 'https' || !release;
 
 /// Why signing up or in didn't work.
 enum AuthFailure {
@@ -55,8 +63,12 @@ class AuthException implements Exception {
 /// The session lives in the platform's secure storage (ADR-0008), which
 /// tests fake with `FlutterSecureStorage.setMockInitialValues`.
 class AuthRepository {
-  AuthRepository(this._db, this._client, {Uri? server})
-    : _server = server ?? defaultServer;
+  AuthRepository(this._db, this._client, {Uri? server, bool? release})
+    : _server = server ?? defaultServer,
+      _secureTransport = sendsSecurely(
+        server ?? defaultServer,
+        release: release ?? kReleaseMode,
+      );
 
   final AppDatabase _db;
   final http.Client _client;
@@ -66,12 +78,21 @@ class AuthRepository {
   /// their own, so give up and say "can't reach the server" instead.
   static const _timeout = Duration(seconds: 12);
   final Uri _server;
+  final bool _secureTransport;
+
+  final _changes = StreamController<void>.broadcast();
 
   static const _tokenKey = 'session.token';
   static const _usernameKey = 'session.username';
 
   /// Who is signed in, or null when signed out.
   Future<String?> username() => _read(_usernameKey);
+
+  /// The bearer token for the server, or null when signed out.
+  Future<String?> token() => _read(_tokenKey);
+
+  /// Fires after each sign in, sign up and sign out on this device.
+  Stream<void> get changes => _changes.stream;
 
   /// Creates an account and signs this device in to it. Returns the username.
   Future<Result<String>> signUp(Credentials credentials) =>
@@ -87,7 +108,8 @@ class AuthRepository {
     final token = await _read(_tokenKey);
     await _secure.delete(key: _tokenKey);
     await _secure.delete(key: _usernameKey);
-    if (token == null) return;
+    _changes.add(null);
+    if (token == null || !_secureTransport) return;
     try {
       await _client
           .delete(
@@ -111,6 +133,10 @@ class AuthRepository {
       case CredentialsProblem.password:
         return const Result.error(AuthException(AuthFailure.password));
       case null:
+    }
+    // A release build pointed at plain HTTP never sends the password.
+    if (!_secureTransport) {
+      return const Result.error(AuthException(AuthFailure.unreachable));
     }
     final SignIn session;
     try {
@@ -140,6 +166,7 @@ class AuthRepository {
     await _moved;
     await _secure.write(key: _tokenKey, value: session.token);
     await _secure.write(key: _usernameKey, value: session.username);
+    _changes.add(null);
     return Result.ok(session.username);
   }
 

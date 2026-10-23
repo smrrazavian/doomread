@@ -128,6 +128,9 @@ void main() {
       );
       await tester.tap(find.byType(FilledButton)); // no length yet
       await tester.pumpAndSettle();
+      // No caret: its blink would depend on how long the steps took.
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pumpAndSettle();
       await expectLater(
         find.byType(MaterialApp),
         matchesGoldenFile('add_podcast_$lang.png'),
@@ -219,6 +222,9 @@ void main() {
         fa ? '۱:۰۲:۲۰' : '1:02:20',
       );
       await tap(tester, find.byType(FilledButton));
+      // No caret: its blink would depend on how long the steps took.
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pumpAndSettle();
       await expectLater(
         find.byType(MaterialApp),
         matchesGoldenFile('evening_podcast_$lang.png'),

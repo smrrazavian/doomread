@@ -1,6 +1,9 @@
-/// The Postgres adapter for [AccountStore].
+/// The Postgres adapter for [AccountStore] and [SyncStore].
 library;
 
+import 'dart:convert';
+
+import 'package:doomread_core/sync.dart';
 import 'package:doomread_server/server.dart';
 import 'package:postgres/postgres.dart';
 
@@ -46,15 +49,31 @@ const _migrations = <List<String>>[
     alter table sign_ins
       add column last_used_at timestamptz not null default now()''',
   ],
+  // 3: each account's synced journal events, Works and Notes. The data is
+  // the app's JSON, kept as sent; updated_at is in epoch microseconds.
+  [
+    'create sequence synced_rows_seq',
+    '''
+    create table synced_rows (
+      account_id bigint not null references accounts on delete cascade,
+      kind text not null,
+      id text not null,
+      updated_at bigint not null,
+      data text not null,
+      seq bigint not null,
+      primary key (account_id, kind, id)
+    )''',
+    'create index synced_rows_by_seq on synced_rows (account_id, seq)',
+  ],
 ];
 
-class PostgresAccountStore implements AccountStore {
-  PostgresAccountStore._(this._db);
+class PostgresStore implements AccountStore, SyncStore {
+  PostgresStore._(this._db);
 
   final Pool<void> _db;
 
   /// Connects and brings the schema up to date.
-  static Future<PostgresAccountStore> open(Endpoint endpoint) async {
+  static Future<PostgresStore> open(Endpoint endpoint) async {
     // ponytail: no TLS to Postgres; it is only reachable on compose's
     // private network. Turn sslMode on if it ever runs on another host.
     final db = Pool<void>.withEndpoints([
@@ -85,7 +104,7 @@ class PostgresAccountStore implements AccountStore {
         );
       }
     });
-    return PostgresAccountStore._(db);
+    return PostgresStore._(db);
   }
 
   Future<void> close() => _db.close();
@@ -155,4 +174,67 @@ class PostgresAccountStore implements AccountStore {
     );
     return result.affectedRows == 1;
   }
+
+  @override
+  Future<SyncResponse> sync(
+    String username,
+    int since,
+    List<SyncItem> items, {
+    int limit = SyncResponse.maxItems,
+  }) => _db.runTx((tx) async {
+    // Locking the account row runs its syncs one at a time. Otherwise a
+    // pull could see a later number commit before an earlier one, move its
+    // cursor past both, and never see the earlier row.
+    final account = await tx.execute(
+      Sql.named(
+        'select id from accounts where username = @u for no key update',
+      ),
+      parameters: {'u': username},
+    );
+    final id = account.single.single! as int;
+    for (final item in items) {
+      await tx.execute(
+        Sql.named(
+          'insert into synced_rows (account_id, kind, id, updated_at, data, '
+          "seq) values (@a, @k, @i, @t, @d, nextval('synced_rows_seq')) "
+          'on conflict (account_id, kind, id) do update set '
+          'updated_at = excluded.updated_at, data = excluded.data, '
+          'seq = excluded.seq '
+          // serverTakes: only a later write replaces the stored row.
+          'where excluded.updated_at > synced_rows.updated_at',
+        ),
+        parameters: {
+          'a': id,
+          'k': item.kind.name,
+          'i': item.id,
+          't': item.updatedAt.microsecondsSinceEpoch,
+          'd': jsonEncode(item.data),
+        },
+      );
+    }
+    final rows = await tx.execute(
+      Sql.named(
+        'select kind, id, updated_at, data, seq from synced_rows '
+        'where account_id = @a and seq > @since order by seq limit @n',
+      ),
+      parameters: {'a': id, 'since': since, 'n': limit + 1},
+    );
+    final page = rows.take(limit).toList();
+    return SyncResponse(
+      cursor: page.isEmpty ? since : page.last[4]! as int,
+      more: rows.length > limit,
+      items: [
+        for (final r in page)
+          SyncItem(
+            kind: SyncKind.values.byName(r[0]! as String),
+            id: r[1]! as String,
+            updatedAt: DateTime.fromMicrosecondsSinceEpoch(
+              r[2]! as int,
+              isUtc: true,
+            ),
+            data: jsonDecode(r[3]! as String) as Map<String, Object?>,
+          ),
+      ],
+    );
+  });
 }

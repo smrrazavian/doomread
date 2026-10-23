@@ -608,6 +608,162 @@ abstract class AppLocalizations {
   /// **'p. {from}–{to}'**
   String pageRange(int from, int to);
 
+  /// Under the House on the Reading screen when only the user's own Window is lit.
+  ///
+  /// In en, this message translates to:
+  /// **'Only your light is on for now. Each evening you read lights another.'**
+  String get houseEmpty;
+
+  /// Under the House when it has other lit Windows; before Friends exist, they are all the user's own earlier Sessions.
+  ///
+  /// In en, this message translates to:
+  /// **'Every other light here is yours too, from an evening you read.'**
+  String get houseYours;
+
+  /// On Reading: how far away the next Planned break is, in minutes of reading, when it is at a chapter end.
+  ///
+  /// In en, this message translates to:
+  /// **'Your break: the end of chapter {chapter}, in about {minutes} min.'**
+  String nextBreakAtCheckpoint(int chapter, int minutes);
+
+  /// No description provided for @nextBreakAtPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your break: in about {minutes} min, at the end of the page you\'re on.'**
+  String nextBreakAtPage(int minutes);
+
+  /// No description provided for @breakDueAtCheckpoint.
+  ///
+  /// In en, this message translates to:
+  /// **'Break time at the end of chapter {chapter}.'**
+  String breakDueAtCheckpoint(int chapter);
+
+  /// No description provided for @breakDueAtPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Break time. Finish the page you\'re on.'**
+  String get breakDueAtPage;
+
+  /// No description provided for @takeBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m there'**
+  String get takeBreak;
+
+  /// No description provided for @nudgeBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get nudgeBreak;
+
+  /// No description provided for @onBreakUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'On your break until {time}.'**
+  String onBreakUntil(String time);
+
+  /// No description provided for @showBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the timer'**
+  String get showBreak;
+
+  /// No description provided for @chapterDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Chapter {chapter} done'**
+  String chapterDone(int chapter);
+
+  /// No description provided for @breakHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Your break is here.'**
+  String get breakHere;
+
+  /// No description provided for @breakAnything.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes, plural, =1{One minute} other{{minutes} minutes}} of Reels, messages, anything.'**
+  String breakAnything(int minutes);
+
+  /// The return time, named before the Planned break starts.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to chapter {chapter} at {time}.'**
+  String backToChapterAt(int chapter, String time);
+
+  /// No description provided for @backToBookAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to the book at {time}.'**
+  String backToBookAt(String time);
+
+  /// No description provided for @bestTonight.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes, plural, =0{Your best stretch tonight is under a minute.} =1{Your best stretch tonight is 1 minute.} other{Your best stretch tonight is {minutes} minutes.}}'**
+  String bestTonight(int minutes);
+
+  /// No description provided for @startMyBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes, plural, =1{Start my minute} other{Start my {minutes} minutes}}'**
+  String startMyBreak(int minutes);
+
+  /// No description provided for @keepReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep reading instead'**
+  String get keepReading;
+
+  /// No description provided for @onBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'On your break.'**
+  String get onBreak;
+
+  /// No description provided for @imBack.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m back'**
+  String get imBack;
+
+  /// No description provided for @breakOver.
+  ///
+  /// In en, this message translates to:
+  /// **'Break\'s over.'**
+  String get breakOver;
+
+  /// No description provided for @chapterWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'Chapter {chapter} is waiting.'**
+  String chapterWaiting(int chapter);
+
+  /// No description provided for @workWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'{title} is waiting.'**
+  String workWaiting(String title);
+
+  /// On the home screen widget, under the page: how many evenings until the Finish at the user's pace.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{about 1 evening left} other{about {count} evenings left}}'**
+  String widgetEvenings(int count);
+
+  /// On the home screen widget, once the user has read tonight.
+  ///
+  /// In en, this message translates to:
+  /// **'Your window is lit tonight'**
+  String get widgetLit;
+
+  /// On the home screen widget, before the user has read tonight.
+  ///
+  /// In en, this message translates to:
+  /// **'Your window is still dark tonight'**
+  String get widgetDark;
+
   /// No description provided for @kindPaperBook.
   ///
   /// In en, this message translates to:
@@ -853,6 +1009,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{minutes, plural, =0{Under a minute in one go tonight.} =1{1 minute in one go tonight.} other{{minutes} minutes in one go tonight.}}'**
   String inOneGoTonightWatched(int minutes);
+
+  /// No description provided for @nextBreakAtEpisode.
+  ///
+  /// In en, this message translates to:
+  /// **'Your break: the end of episode {episode}, in about {minutes} min.'**
+  String nextBreakAtEpisode(int episode, int minutes);
+
+  /// No description provided for @breakDueAtEpisode.
+  ///
+  /// In en, this message translates to:
+  /// **'Break time at the end of episode {episode}.'**
+  String breakDueAtEpisode(int episode);
+
+  /// No description provided for @nextBreakAtTimestamp.
+  ///
+  /// In en, this message translates to:
+  /// **'Your break: at {timestamp}, in about {minutes} min.'**
+  String nextBreakAtTimestamp(String timestamp, int minutes);
+
+  /// No description provided for @breakDueAtTimestamp.
+  ///
+  /// In en, this message translates to:
+  /// **'Break time at {timestamp}.'**
+  String breakDueAtTimestamp(String timestamp);
+
+  /// No description provided for @nextBreakWatching.
+  ///
+  /// In en, this message translates to:
+  /// **'Your break: in about {minutes} min, when this segment ends.'**
+  String nextBreakWatching(int minutes);
+
+  /// No description provided for @breakDueWatching.
+  ///
+  /// In en, this message translates to:
+  /// **'Break time. Pause when this segment ends.'**
+  String get breakDueWatching;
+
+  /// No description provided for @episodeDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Episode {episode} done'**
+  String episodeDone(int episode);
+
+  /// No description provided for @episodeWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'Episode {episode} is waiting.'**
+  String episodeWaiting(int episode);
+
+  /// No description provided for @backToEpisodeAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to episode {episode} at {time}.'**
+  String backToEpisodeAt(int episode, String time);
+
+  /// No description provided for @backToWorkAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to it at {time}.'**
+  String backToWorkAt(String time);
+
+  /// No description provided for @keepGoing.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep going instead'**
+  String get keepGoing;
 }
 
 class _AppLocalizationsDelegate

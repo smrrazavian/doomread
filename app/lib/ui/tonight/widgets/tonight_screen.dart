@@ -190,7 +190,10 @@ class _WorkCard extends StatelessWidget {
             const SizedBox(height: 12),
             RoadView(road: road),
             const SizedBox(height: 12),
-            Text(positionOf(context, road), style: text.bodyMedium),
+            Text(
+              positionOf(l10n, Localizations.localeOf(context), road),
+              style: text.bodyMedium,
+            ),
             Text(amountLeft(context, road), style: text.bodySmall),
             if (evenings case final n?)
               Text(l10n.eveningsLeft(n), style: text.bodySmall),

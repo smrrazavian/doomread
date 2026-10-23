@@ -163,7 +163,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get startReading => 'شروع خوندن';
 
   @override
-  String get backToReading => 'برگرد سر خوندن';
+  String get backToReading => 'برگرد سراغ خوندن';
 
   @override
   String aim(int minutes) {
@@ -427,6 +427,161 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
+  String get houseEmpty =>
+      'فعلاً فقط چراغ تو روشنه. هر شب که بخونی، یه چراغ دیگه هم روشن می‌شه.';
+
+  @override
+  String get houseYours =>
+      'بقیه‌ی چراغ‌های اینجا هم مال خودتن، از شب‌هایی که خوندی.';
+
+  @override
+  String nextBreakAtCheckpoint(int chapter, int minutes) {
+    final intl.NumberFormat chapterNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String chapterString = chapterNumberFormat.format(chapter);
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'استراحتت: آخر فصل $chapterString، حدوداً $minutesString دقیقه‌ی دیگه.';
+  }
+
+  @override
+  String nextBreakAtPage(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'استراحتت: حدوداً $minutesString دقیقه‌ی دیگه، آخر همون صفحه‌ای که هستی.';
+  }
+
+  @override
+  String breakDueAtCheckpoint(int chapter) {
+    final intl.NumberFormat chapterNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String chapterString = chapterNumberFormat.format(chapter);
+
+    return 'آخر فصل $chapterString وقت استراحته.';
+  }
+
+  @override
+  String get breakDueAtPage => 'وقت استراحته. این صفحه رو تموم کن.';
+
+  @override
+  String get takeBreak => 'رسیدم';
+
+  @override
+  String get nudgeBreak => 'بعداً';
+
+  @override
+  String onBreakUntil(String time) {
+    return 'تا $time استراحتی.';
+  }
+
+  @override
+  String get showBreak => 'تایمر رو نشون بده';
+
+  @override
+  String chapterDone(int chapter) {
+    final intl.NumberFormat chapterNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String chapterString = chapterNumberFormat.format(chapter);
+
+    return 'فصل $chapterString تموم شد';
+  }
+
+  @override
+  String get breakHere => 'وقت استراحتت رسید.';
+
+  @override
+  String breakAnything(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '$minutesString دقیقه ریلز، پیام، هر چی دلت خواست.';
+  }
+
+  @override
+  String backToChapterAt(int chapter, String time) {
+    final intl.NumberFormat chapterNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String chapterString = chapterNumberFormat.format(chapter);
+
+    return 'ساعت $time برمی‌گردیم سراغ فصل $chapterString.';
+  }
+
+  @override
+  String backToBookAt(String time) {
+    return 'ساعت $time برمی‌گردیم سراغ کتاب.';
+  }
+
+  @override
+  String bestTonight(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: 'بهترین تمرکز امشبت $minutesString دقیقه بوده.',
+      zero: 'بهترین تمرکز امشبت هنوز زیر یه دقیقه‌ست.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String startMyBreak(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '$minutesString دقیقه‌م رو شروع کن';
+  }
+
+  @override
+  String get keepReading => 'نه، ادامه می‌دم';
+
+  @override
+  String get onBreak => 'داری استراحت می‌کنی.';
+
+  @override
+  String get imBack => 'برگشتم';
+
+  @override
+  String get breakOver => 'استراحت تموم شد.';
+
+  @override
+  String chapterWaiting(int chapter) {
+    final intl.NumberFormat chapterNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String chapterString = chapterNumberFormat.format(chapter);
+
+    return 'فصل $chapterString منتظرته.';
+  }
+
+  @override
+  String workWaiting(String title) {
+    return '«$title» منتظرته.';
+  }
+
+  @override
+  String widgetEvenings(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return 'حدوداً $countString شب دیگه مونده';
+  }
+
+  @override
+  String get widgetLit => 'امشب پنجره‌ت روشنه';
+
+  @override
+  String get widgetDark => 'امشب پنجره‌ت هنوز خاموشه';
+
+  @override
   String get kindPaperBook => 'کتاب';
 
   @override
@@ -527,10 +682,10 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String backToWork(String kind) {
     String _temp0 = intl.Intl.selectLogic(kind, {
-      'series': 'برگرد سر دیدن',
-      'film': 'برگرد سر دیدن',
-      'podcast': 'برگرد سر گوش دادن',
-      'other': 'برگرد سر خوندن',
+      'series': 'برگرد سراغ دیدن',
+      'film': 'برگرد سراغ دیدن',
+      'podcast': 'برگرد سراغ گوش دادن',
+      'other': 'برگرد سراغ خوندن',
     });
     return '$_temp0';
   }
@@ -678,4 +833,86 @@ class AppLocalizationsFa extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String nextBreakAtEpisode(int episode, int minutes) {
+    final intl.NumberFormat episodeNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String episodeString = episodeNumberFormat.format(episode);
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'استراحتت: آخر قسمت $episodeString، حدوداً $minutesString دقیقه‌ی دیگه.';
+  }
+
+  @override
+  String breakDueAtEpisode(int episode) {
+    final intl.NumberFormat episodeNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String episodeString = episodeNumberFormat.format(episode);
+
+    return 'آخر قسمت $episodeString وقت استراحته.';
+  }
+
+  @override
+  String nextBreakAtTimestamp(String timestamp, int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'استراحتت: سر $timestamp، حدوداً $minutesString دقیقه‌ی دیگه.';
+  }
+
+  @override
+  String breakDueAtTimestamp(String timestamp) {
+    return 'سر $timestamp وقت استراحته.';
+  }
+
+  @override
+  String nextBreakWatching(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'استراحتت: حدوداً $minutesString دقیقه‌ی دیگه، هر وقت این تیکه تموم شد.';
+  }
+
+  @override
+  String get breakDueWatching => 'وقت استراحته. این تیکه که تموم شد، نگهش دار.';
+
+  @override
+  String episodeDone(int episode) {
+    final intl.NumberFormat episodeNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String episodeString = episodeNumberFormat.format(episode);
+
+    return 'قسمت $episodeString تموم شد';
+  }
+
+  @override
+  String episodeWaiting(int episode) {
+    final intl.NumberFormat episodeNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String episodeString = episodeNumberFormat.format(episode);
+
+    return 'قسمت $episodeString منتظرته.';
+  }
+
+  @override
+  String backToEpisodeAt(int episode, String time) {
+    final intl.NumberFormat episodeNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String episodeString = episodeNumberFormat.format(episode);
+
+    return 'ساعت $time برمی‌گردیم سراغ قسمت $episodeString.';
+  }
+
+  @override
+  String backToWorkAt(String time) {
+    return 'ساعت $time برمی‌گردیم سراغش.';
+  }
+
+  @override
+  String get keepGoing => 'نه، ادامه می‌دم';
 }

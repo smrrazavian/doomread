@@ -9,7 +9,7 @@ class WorkRepository {
 
   final AppDatabase _db;
 
-  /// Stamps `updatedAt`, which last-write-wins sync will compare (#16).
+  /// Stamps `updatedAt`, which last-write-wins sync compares.
   final DateTime Function() _now;
 
   static const _currentKey = 'currentWork';
@@ -91,6 +91,18 @@ class WorkRepository {
       .insertOnConflictUpdate(
         SettingsCompanion.insert(key: _currentKey, value: id),
       );
+
+  /// Makes the most recently changed Work current when none is, as when
+  /// sync brings the first Works to a new device.
+  Future<void> keepOneCurrent() => _db.transaction(() async {
+    if (await _db.setting(_currentKey) != null) return;
+    final latest =
+        await (_db.select(_db.works)
+              ..orderBy([(w) => OrderingTerm.desc(w.updatedAt)])
+              ..limit(1))
+            .getSingleOrNull();
+    if (latest != null) await setCurrent(latest.id);
+  });
 
   static Work toWork(WorkRow w) => Work(
     id: w.id,

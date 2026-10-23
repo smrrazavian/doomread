@@ -31,6 +31,10 @@ class Works extends Table {
   IntColumn get position => integer().withDefault(const Constant(0))();
   DateTimeColumn get updatedAt => dateTime()();
 
+  /// The [updatedAt] last sent to or taken from the sync server. Null or
+  /// different when there's a change to send.
+  DateTimeColumn get syncedAt => dateTime().nullable()();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
@@ -44,6 +48,9 @@ class SessionEvents extends Table {
   TextColumn get workId => text()();
   TextColumn get kind => textEnum<SessionEventKind>()();
   DateTimeColumn get at => dateTime()();
+
+  /// Whether the sync server has it.
+  BoolColumn get synced => boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column<Object>> get primaryKey => {id};
@@ -62,6 +69,9 @@ class Notes extends Table {
   TextColumn get body => text()();
   DateTimeColumn get updatedAt => dateTime()();
 
+  /// As for Works: the [updatedAt] the sync server last saw.
+  DateTimeColumn get syncedAt => dateTime().nullable()();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
@@ -79,7 +89,7 @@ class AppDatabase extends _$AppDatabase {
   )..where((s) => s.key.equals(key))).getSingleOrNull())?.value;
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -89,12 +99,18 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(sessionEvents);
         await m.createTable(notes);
       }
-      if (from >= 2 && from < 4) await m.addColumn(works, works.kind);
+      // Rows from before sync start out unsent, so the first sync sends them.
+      if (from >= 2 && from < 4) await m.addColumn(works, works.syncedAt);
+      if (from >= 3 && from < 4) {
+        await m.addColumn(sessionEvents, sessionEvents.synced);
+        await m.addColumn(notes, notes.syncedAt);
+      }
+      if (from >= 2 && from < 5) await m.addColumn(works, works.kind);
     },
   );
 }
 
-/// A random 128-bit id, so rows can sync across devices later (ticket #16).
+/// A random 128-bit id, so rows from every device can sync without clashing.
 String newId() {
   final r = Random.secure();
   return List.generate(

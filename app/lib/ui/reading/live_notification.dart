@@ -56,6 +56,8 @@ class LiveNotification {
         open.road.work.kind,
       ).map((r) => r.at(now));
       text = l10n.aim(aimFor(longestStretch(before)).inMinutes);
+    } else if (session.onBreak) {
+      text = l10n.onBreak;
     } else {
       final last = session.stretches.lastOrNull?.length ?? Duration.zero;
       text = l10n.notificationPaused(formatClock(last, locale));

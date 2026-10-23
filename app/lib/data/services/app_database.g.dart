@@ -295,6 +295,17 @@ class $WorksTable extends Works with TableInfo<$WorksTable, WorkRow> {
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _syncedAtMeta = const VerificationMeta(
+    'syncedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> syncedAt = GeneratedColumn<DateTime>(
+    'synced_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -305,6 +316,7 @@ class $WorksTable extends Works with TableInfo<$WorksTable, WorkRow> {
     checkpoints,
     position,
     updatedAt,
+    syncedAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -372,6 +384,12 @@ class $WorksTable extends Works with TableInfo<$WorksTable, WorkRow> {
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
     }
+    if (data.containsKey('synced_at')) {
+      context.handle(
+        _syncedAtMeta,
+        syncedAt.isAcceptableOrUnknown(data['synced_at']!, _syncedAtMeta),
+      );
+    }
     return context;
   }
 
@@ -415,6 +433,10 @@ class $WorksTable extends Works with TableInfo<$WorksTable, WorkRow> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
       )!,
+      syncedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}synced_at'],
+      ),
     );
   }
 
@@ -436,6 +458,10 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
   final String checkpoints;
   final int position;
   final DateTime updatedAt;
+
+  /// The [updatedAt] last sent to or taken from the sync server. Null or
+  /// different when there's a change to send.
+  final DateTime? syncedAt;
   const WorkRow({
     required this.id,
     required this.title,
@@ -445,6 +471,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
     required this.checkpoints,
     required this.position,
     required this.updatedAt,
+    this.syncedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -459,6 +486,9 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
     map['checkpoints'] = Variable<String>(checkpoints);
     map['position'] = Variable<int>(position);
     map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || syncedAt != null) {
+      map['synced_at'] = Variable<DateTime>(syncedAt);
+    }
     return map;
   }
 
@@ -472,6 +502,9 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
       checkpoints: Value(checkpoints),
       position: Value(position),
       updatedAt: Value(updatedAt),
+      syncedAt: syncedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(syncedAt),
     );
   }
 
@@ -491,6 +524,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
       checkpoints: serializer.fromJson<String>(json['checkpoints']),
       position: serializer.fromJson<int>(json['position']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      syncedAt: serializer.fromJson<DateTime?>(json['syncedAt']),
     );
   }
   @override
@@ -507,6 +541,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
       'checkpoints': serializer.toJson<String>(checkpoints),
       'position': serializer.toJson<int>(position),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'syncedAt': serializer.toJson<DateTime?>(syncedAt),
     };
   }
 
@@ -519,6 +554,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
     String? checkpoints,
     int? position,
     DateTime? updatedAt,
+    Value<DateTime?> syncedAt = const Value.absent(),
   }) => WorkRow(
     id: id ?? this.id,
     title: title ?? this.title,
@@ -528,6 +564,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
     checkpoints: checkpoints ?? this.checkpoints,
     position: position ?? this.position,
     updatedAt: updatedAt ?? this.updatedAt,
+    syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
   );
   WorkRow copyWithCompanion(WorksCompanion data) {
     return WorkRow(
@@ -543,6 +580,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
           : this.checkpoints,
       position: data.position.present ? data.position.value : this.position,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      syncedAt: data.syncedAt.present ? data.syncedAt.value : this.syncedAt,
     );
   }
 
@@ -556,7 +594,8 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
           ..write('totalPages: $totalPages, ')
           ..write('checkpoints: $checkpoints, ')
           ..write('position: $position, ')
-          ..write('updatedAt: $updatedAt')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('syncedAt: $syncedAt')
           ..write(')'))
         .toString();
   }
@@ -571,6 +610,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
     checkpoints,
     position,
     updatedAt,
+    syncedAt,
   );
   @override
   bool operator ==(Object other) =>
@@ -583,7 +623,8 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
           other.totalPages == this.totalPages &&
           other.checkpoints == this.checkpoints &&
           other.position == this.position &&
-          other.updatedAt == this.updatedAt);
+          other.updatedAt == this.updatedAt &&
+          other.syncedAt == this.syncedAt);
 }
 
 class WorksCompanion extends UpdateCompanion<WorkRow> {
@@ -595,6 +636,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
   final Value<String> checkpoints;
   final Value<int> position;
   final Value<DateTime> updatedAt;
+  final Value<DateTime?> syncedAt;
   final Value<int> rowid;
   const WorksCompanion({
     this.id = const Value.absent(),
@@ -605,6 +647,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
     this.checkpoints = const Value.absent(),
     this.position = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.syncedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   WorksCompanion.insert({
@@ -616,6 +659,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
     required String checkpoints,
     this.position = const Value.absent(),
     required DateTime updatedAt,
+    this.syncedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        title = Value(title),
@@ -632,6 +676,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
     Expression<String>? checkpoints,
     Expression<int>? position,
     Expression<DateTime>? updatedAt,
+    Expression<DateTime>? syncedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -643,6 +688,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
       if (checkpoints != null) 'checkpoints': checkpoints,
       if (position != null) 'position': position,
       if (updatedAt != null) 'updated_at': updatedAt,
+      if (syncedAt != null) 'synced_at': syncedAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -656,6 +702,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
     Value<String>? checkpoints,
     Value<int>? position,
     Value<DateTime>? updatedAt,
+    Value<DateTime?>? syncedAt,
     Value<int>? rowid,
   }) {
     return WorksCompanion(
@@ -667,6 +714,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
       checkpoints: checkpoints ?? this.checkpoints,
       position: position ?? this.position,
       updatedAt: updatedAt ?? this.updatedAt,
+      syncedAt: syncedAt ?? this.syncedAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -700,6 +748,9 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
+    if (syncedAt.present) {
+      map['synced_at'] = Variable<DateTime>(syncedAt.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -717,6 +768,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
           ..write('checkpoints: $checkpoints, ')
           ..write('position: $position, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('syncedAt: $syncedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -776,8 +828,28 @@ class $SessionEventsTable extends SessionEvents
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _syncedMeta = const VerificationMeta('synced');
   @override
-  List<GeneratedColumn> get $columns => [id, sessionId, workId, kind, at];
+  late final GeneratedColumn<bool> synced = GeneratedColumn<bool>(
+    'synced',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("synced" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    sessionId,
+    workId,
+    kind,
+    at,
+    synced,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -816,6 +888,12 @@ class $SessionEventsTable extends SessionEvents
     } else if (isInserting) {
       context.missing(_atMeta);
     }
+    if (data.containsKey('synced')) {
+      context.handle(
+        _syncedMeta,
+        synced.isAcceptableOrUnknown(data['synced']!, _syncedMeta),
+      );
+    }
     return context;
   }
 
@@ -847,6 +925,10 @@ class $SessionEventsTable extends SessionEvents
         DriftSqlType.dateTime,
         data['${effectivePrefix}at'],
       )!,
+      synced: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}synced'],
+      )!,
     );
   }
 
@@ -865,12 +947,16 @@ class SessionEventRow extends DataClass implements Insertable<SessionEventRow> {
   final String workId;
   final SessionEventKind kind;
   final DateTime at;
+
+  /// Whether the sync server has it.
+  final bool synced;
   const SessionEventRow({
     required this.id,
     required this.sessionId,
     required this.workId,
     required this.kind,
     required this.at,
+    required this.synced,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -884,6 +970,7 @@ class SessionEventRow extends DataClass implements Insertable<SessionEventRow> {
       );
     }
     map['at'] = Variable<DateTime>(at);
+    map['synced'] = Variable<bool>(synced);
     return map;
   }
 
@@ -894,6 +981,7 @@ class SessionEventRow extends DataClass implements Insertable<SessionEventRow> {
       workId: Value(workId),
       kind: Value(kind),
       at: Value(at),
+      synced: Value(synced),
     );
   }
 
@@ -910,6 +998,7 @@ class SessionEventRow extends DataClass implements Insertable<SessionEventRow> {
         serializer.fromJson<String>(json['kind']),
       ),
       at: serializer.fromJson<DateTime>(json['at']),
+      synced: serializer.fromJson<bool>(json['synced']),
     );
   }
   @override
@@ -923,6 +1012,7 @@ class SessionEventRow extends DataClass implements Insertable<SessionEventRow> {
         $SessionEventsTable.$converterkind.toJson(kind),
       ),
       'at': serializer.toJson<DateTime>(at),
+      'synced': serializer.toJson<bool>(synced),
     };
   }
 
@@ -932,12 +1022,14 @@ class SessionEventRow extends DataClass implements Insertable<SessionEventRow> {
     String? workId,
     SessionEventKind? kind,
     DateTime? at,
+    bool? synced,
   }) => SessionEventRow(
     id: id ?? this.id,
     sessionId: sessionId ?? this.sessionId,
     workId: workId ?? this.workId,
     kind: kind ?? this.kind,
     at: at ?? this.at,
+    synced: synced ?? this.synced,
   );
   SessionEventRow copyWithCompanion(SessionEventsCompanion data) {
     return SessionEventRow(
@@ -946,6 +1038,7 @@ class SessionEventRow extends DataClass implements Insertable<SessionEventRow> {
       workId: data.workId.present ? data.workId.value : this.workId,
       kind: data.kind.present ? data.kind.value : this.kind,
       at: data.at.present ? data.at.value : this.at,
+      synced: data.synced.present ? data.synced.value : this.synced,
     );
   }
 
@@ -956,13 +1049,14 @@ class SessionEventRow extends DataClass implements Insertable<SessionEventRow> {
           ..write('sessionId: $sessionId, ')
           ..write('workId: $workId, ')
           ..write('kind: $kind, ')
-          ..write('at: $at')
+          ..write('at: $at, ')
+          ..write('synced: $synced')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, sessionId, workId, kind, at);
+  int get hashCode => Object.hash(id, sessionId, workId, kind, at, synced);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -971,7 +1065,8 @@ class SessionEventRow extends DataClass implements Insertable<SessionEventRow> {
           other.sessionId == this.sessionId &&
           other.workId == this.workId &&
           other.kind == this.kind &&
-          other.at == this.at);
+          other.at == this.at &&
+          other.synced == this.synced);
 }
 
 class SessionEventsCompanion extends UpdateCompanion<SessionEventRow> {
@@ -980,6 +1075,7 @@ class SessionEventsCompanion extends UpdateCompanion<SessionEventRow> {
   final Value<String> workId;
   final Value<SessionEventKind> kind;
   final Value<DateTime> at;
+  final Value<bool> synced;
   final Value<int> rowid;
   const SessionEventsCompanion({
     this.id = const Value.absent(),
@@ -987,6 +1083,7 @@ class SessionEventsCompanion extends UpdateCompanion<SessionEventRow> {
     this.workId = const Value.absent(),
     this.kind = const Value.absent(),
     this.at = const Value.absent(),
+    this.synced = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   SessionEventsCompanion.insert({
@@ -995,6 +1092,7 @@ class SessionEventsCompanion extends UpdateCompanion<SessionEventRow> {
     required String workId,
     required SessionEventKind kind,
     required DateTime at,
+    this.synced = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        sessionId = Value(sessionId),
@@ -1007,6 +1105,7 @@ class SessionEventsCompanion extends UpdateCompanion<SessionEventRow> {
     Expression<String>? workId,
     Expression<String>? kind,
     Expression<DateTime>? at,
+    Expression<bool>? synced,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1015,6 +1114,7 @@ class SessionEventsCompanion extends UpdateCompanion<SessionEventRow> {
       if (workId != null) 'work_id': workId,
       if (kind != null) 'kind': kind,
       if (at != null) 'at': at,
+      if (synced != null) 'synced': synced,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1025,6 +1125,7 @@ class SessionEventsCompanion extends UpdateCompanion<SessionEventRow> {
     Value<String>? workId,
     Value<SessionEventKind>? kind,
     Value<DateTime>? at,
+    Value<bool>? synced,
     Value<int>? rowid,
   }) {
     return SessionEventsCompanion(
@@ -1033,6 +1134,7 @@ class SessionEventsCompanion extends UpdateCompanion<SessionEventRow> {
       workId: workId ?? this.workId,
       kind: kind ?? this.kind,
       at: at ?? this.at,
+      synced: synced ?? this.synced,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1057,6 +1159,9 @@ class SessionEventsCompanion extends UpdateCompanion<SessionEventRow> {
     if (at.present) {
       map['at'] = Variable<DateTime>(at.value);
     }
+    if (synced.present) {
+      map['synced'] = Variable<bool>(synced.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1071,6 +1176,7 @@ class SessionEventsCompanion extends UpdateCompanion<SessionEventRow> {
           ..write('workId: $workId, ')
           ..write('kind: $kind, ')
           ..write('at: $at, ')
+          ..write('synced: $synced, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1152,6 +1258,17 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, NoteRow> {
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _syncedAtMeta = const VerificationMeta(
+    'syncedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> syncedAt = GeneratedColumn<DateTime>(
+    'synced_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1161,6 +1278,7 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, NoteRow> {
     toPage,
     body,
     updatedAt,
+    syncedAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1227,6 +1345,12 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, NoteRow> {
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
     }
+    if (data.containsKey('synced_at')) {
+      context.handle(
+        _syncedAtMeta,
+        syncedAt.isAcceptableOrUnknown(data['synced_at']!, _syncedAtMeta),
+      );
+    }
     return context;
   }
 
@@ -1264,6 +1388,10 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, NoteRow> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
       )!,
+      syncedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}synced_at'],
+      ),
     );
   }
 
@@ -1281,6 +1409,9 @@ class NoteRow extends DataClass implements Insertable<NoteRow> {
   final int toPage;
   final String body;
   final DateTime updatedAt;
+
+  /// As for Works: the [updatedAt] the sync server last saw.
+  final DateTime? syncedAt;
   const NoteRow({
     required this.id,
     required this.sessionId,
@@ -1289,6 +1420,7 @@ class NoteRow extends DataClass implements Insertable<NoteRow> {
     required this.toPage,
     required this.body,
     required this.updatedAt,
+    this.syncedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1300,6 +1432,9 @@ class NoteRow extends DataClass implements Insertable<NoteRow> {
     map['to_page'] = Variable<int>(toPage);
     map['body'] = Variable<String>(body);
     map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || syncedAt != null) {
+      map['synced_at'] = Variable<DateTime>(syncedAt);
+    }
     return map;
   }
 
@@ -1312,6 +1447,9 @@ class NoteRow extends DataClass implements Insertable<NoteRow> {
       toPage: Value(toPage),
       body: Value(body),
       updatedAt: Value(updatedAt),
+      syncedAt: syncedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(syncedAt),
     );
   }
 
@@ -1328,6 +1466,7 @@ class NoteRow extends DataClass implements Insertable<NoteRow> {
       toPage: serializer.fromJson<int>(json['toPage']),
       body: serializer.fromJson<String>(json['body']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      syncedAt: serializer.fromJson<DateTime?>(json['syncedAt']),
     );
   }
   @override
@@ -1341,6 +1480,7 @@ class NoteRow extends DataClass implements Insertable<NoteRow> {
       'toPage': serializer.toJson<int>(toPage),
       'body': serializer.toJson<String>(body),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'syncedAt': serializer.toJson<DateTime?>(syncedAt),
     };
   }
 
@@ -1352,6 +1492,7 @@ class NoteRow extends DataClass implements Insertable<NoteRow> {
     int? toPage,
     String? body,
     DateTime? updatedAt,
+    Value<DateTime?> syncedAt = const Value.absent(),
   }) => NoteRow(
     id: id ?? this.id,
     sessionId: sessionId ?? this.sessionId,
@@ -1360,6 +1501,7 @@ class NoteRow extends DataClass implements Insertable<NoteRow> {
     toPage: toPage ?? this.toPage,
     body: body ?? this.body,
     updatedAt: updatedAt ?? this.updatedAt,
+    syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
   );
   NoteRow copyWithCompanion(NotesCompanion data) {
     return NoteRow(
@@ -1370,6 +1512,7 @@ class NoteRow extends DataClass implements Insertable<NoteRow> {
       toPage: data.toPage.present ? data.toPage.value : this.toPage,
       body: data.body.present ? data.body.value : this.body,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      syncedAt: data.syncedAt.present ? data.syncedAt.value : this.syncedAt,
     );
   }
 
@@ -1382,14 +1525,23 @@ class NoteRow extends DataClass implements Insertable<NoteRow> {
           ..write('fromPage: $fromPage, ')
           ..write('toPage: $toPage, ')
           ..write('body: $body, ')
-          ..write('updatedAt: $updatedAt')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('syncedAt: $syncedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, sessionId, workId, fromPage, toPage, body, updatedAt);
+  int get hashCode => Object.hash(
+    id,
+    sessionId,
+    workId,
+    fromPage,
+    toPage,
+    body,
+    updatedAt,
+    syncedAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1400,7 +1552,8 @@ class NoteRow extends DataClass implements Insertable<NoteRow> {
           other.fromPage == this.fromPage &&
           other.toPage == this.toPage &&
           other.body == this.body &&
-          other.updatedAt == this.updatedAt);
+          other.updatedAt == this.updatedAt &&
+          other.syncedAt == this.syncedAt);
 }
 
 class NotesCompanion extends UpdateCompanion<NoteRow> {
@@ -1411,6 +1564,7 @@ class NotesCompanion extends UpdateCompanion<NoteRow> {
   final Value<int> toPage;
   final Value<String> body;
   final Value<DateTime> updatedAt;
+  final Value<DateTime?> syncedAt;
   final Value<int> rowid;
   const NotesCompanion({
     this.id = const Value.absent(),
@@ -1420,6 +1574,7 @@ class NotesCompanion extends UpdateCompanion<NoteRow> {
     this.toPage = const Value.absent(),
     this.body = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.syncedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   NotesCompanion.insert({
@@ -1430,6 +1585,7 @@ class NotesCompanion extends UpdateCompanion<NoteRow> {
     required int toPage,
     required String body,
     required DateTime updatedAt,
+    this.syncedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        sessionId = Value(sessionId),
@@ -1446,6 +1602,7 @@ class NotesCompanion extends UpdateCompanion<NoteRow> {
     Expression<int>? toPage,
     Expression<String>? body,
     Expression<DateTime>? updatedAt,
+    Expression<DateTime>? syncedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1456,6 +1613,7 @@ class NotesCompanion extends UpdateCompanion<NoteRow> {
       if (toPage != null) 'to_page': toPage,
       if (body != null) 'body': body,
       if (updatedAt != null) 'updated_at': updatedAt,
+      if (syncedAt != null) 'synced_at': syncedAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1468,6 +1626,7 @@ class NotesCompanion extends UpdateCompanion<NoteRow> {
     Value<int>? toPage,
     Value<String>? body,
     Value<DateTime>? updatedAt,
+    Value<DateTime?>? syncedAt,
     Value<int>? rowid,
   }) {
     return NotesCompanion(
@@ -1478,6 +1637,7 @@ class NotesCompanion extends UpdateCompanion<NoteRow> {
       toPage: toPage ?? this.toPage,
       body: body ?? this.body,
       updatedAt: updatedAt ?? this.updatedAt,
+      syncedAt: syncedAt ?? this.syncedAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1506,6 +1666,9 @@ class NotesCompanion extends UpdateCompanion<NoteRow> {
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
+    if (syncedAt.present) {
+      map['synced_at'] = Variable<DateTime>(syncedAt.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1522,6 +1685,7 @@ class NotesCompanion extends UpdateCompanion<NoteRow> {
           ..write('toPage: $toPage, ')
           ..write('body: $body, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('syncedAt: $syncedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1690,6 +1854,7 @@ typedef $$WorksTableCreateCompanionBuilder = WorksCompanion Function({
   required String checkpoints,
   Value<int> position,
   required DateTime updatedAt,
+  Value<DateTime?> syncedAt,
   Value<int> rowid,
 });
 typedef $$WorksTableUpdateCompanionBuilder = WorksCompanion Function({
@@ -1701,6 +1866,7 @@ typedef $$WorksTableUpdateCompanionBuilder = WorksCompanion Function({
   Value<String> checkpoints,
   Value<int> position,
   Value<DateTime> updatedAt,
+  Value<DateTime?> syncedAt,
   Value<int> rowid,
 });
 
@@ -1750,6 +1916,11 @@ class $$WorksTableFilterComposer extends Composer<_$AppDatabase, $WorksTable> {
 
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get syncedAt => $composableBuilder(
+    column: $table.syncedAt,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -1802,6 +1973,11 @@ class $$WorksTableOrderingComposer
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<DateTime> get syncedAt => $composableBuilder(
+    column: $table.syncedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$WorksTableAnnotationComposer
@@ -1840,6 +2016,9 @@ class $$WorksTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get syncedAt =>
+      $composableBuilder(column: $table.syncedAt, builder: (column) => column);
 }
 
 class $$WorksTableTableManager
@@ -1878,6 +2057,7 @@ class $$WorksTableTableManager
                 Value<String> checkpoints = const Value.absent(),
                 Value<int> position = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> syncedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WorksCompanion(
                 id: id,
@@ -1888,6 +2068,7 @@ class $$WorksTableTableManager
                 checkpoints: checkpoints,
                 position: position,
                 updatedAt: updatedAt,
+                syncedAt: syncedAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -1900,6 +2081,7 @@ class $$WorksTableTableManager
                 required String checkpoints,
                 Value<int> position = const Value.absent(),
                 required DateTime updatedAt,
+                Value<DateTime?> syncedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WorksCompanion.insert(
                 id: id,
@@ -1910,6 +2092,7 @@ class $$WorksTableTableManager
                 checkpoints: checkpoints,
                 position: position,
                 updatedAt: updatedAt,
+                syncedAt: syncedAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -1950,6 +2133,7 @@ typedef $$SessionEventsTableCreateCompanionBuilder =
       required String workId,
       required SessionEventKind kind,
       required DateTime at,
+      Value<bool> synced,
       Value<int> rowid,
     });
 typedef $$SessionEventsTableUpdateCompanionBuilder =
@@ -1959,6 +2143,7 @@ typedef $$SessionEventsTableUpdateCompanionBuilder =
       Value<String> workId,
       Value<SessionEventKind> kind,
       Value<DateTime> at,
+      Value<bool> synced,
       Value<int> rowid,
     });
 
@@ -1996,6 +2181,11 @@ class $$SessionEventsTableFilterComposer
     column: $table.at,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<bool> get synced => $composableBuilder(
+    column: $table.synced,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$SessionEventsTableOrderingComposer
@@ -2031,6 +2221,11 @@ class $$SessionEventsTableOrderingComposer
     column: $table.at,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get synced => $composableBuilder(
+    column: $table.synced,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$SessionEventsTableAnnotationComposer
@@ -2056,6 +2251,9 @@ class $$SessionEventsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get at =>
       $composableBuilder(column: $table.at, builder: (column) => column);
+
+  GeneratedColumn<bool> get synced =>
+      $composableBuilder(column: $table.synced, builder: (column) => column);
 }
 
 class $$SessionEventsTableTableManager
@@ -2094,6 +2292,7 @@ class $$SessionEventsTableTableManager
                 Value<String> workId = const Value.absent(),
                 Value<SessionEventKind> kind = const Value.absent(),
                 Value<DateTime> at = const Value.absent(),
+                Value<bool> synced = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SessionEventsCompanion(
                 id: id,
@@ -2101,6 +2300,7 @@ class $$SessionEventsTableTableManager
                 workId: workId,
                 kind: kind,
                 at: at,
+                synced: synced,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -2110,6 +2310,7 @@ class $$SessionEventsTableTableManager
                 required String workId,
                 required SessionEventKind kind,
                 required DateTime at,
+                Value<bool> synced = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SessionEventsCompanion.insert(
                 id: id,
@@ -2117,6 +2318,7 @@ class $$SessionEventsTableTableManager
                 workId: workId,
                 kind: kind,
                 at: at,
+                synced: synced,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -2161,6 +2363,7 @@ typedef $$NotesTableCreateCompanionBuilder = NotesCompanion Function({
   required int toPage,
   required String body,
   required DateTime updatedAt,
+  Value<DateTime?> syncedAt,
   Value<int> rowid,
 });
 typedef $$NotesTableUpdateCompanionBuilder = NotesCompanion Function({
@@ -2171,6 +2374,7 @@ typedef $$NotesTableUpdateCompanionBuilder = NotesCompanion Function({
   Value<int> toPage,
   Value<String> body,
   Value<DateTime> updatedAt,
+  Value<DateTime?> syncedAt,
   Value<int> rowid,
 });
 
@@ -2214,6 +2418,11 @@ class $$NotesTableFilterComposer extends Composer<_$AppDatabase, $NotesTable> {
 
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get syncedAt => $composableBuilder(
+    column: $table.syncedAt,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -2261,6 +2470,11 @@ class $$NotesTableOrderingComposer
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<DateTime> get syncedAt => $composableBuilder(
+    column: $table.syncedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$NotesTableAnnotationComposer
@@ -2292,6 +2506,9 @@ class $$NotesTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get syncedAt =>
+      $composableBuilder(column: $table.syncedAt, builder: (column) => column);
 }
 
 class $$NotesTableTableManager
@@ -2329,6 +2546,7 @@ class $$NotesTableTableManager
                 Value<int> toPage = const Value.absent(),
                 Value<String> body = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> syncedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => NotesCompanion(
                 id: id,
@@ -2338,6 +2556,7 @@ class $$NotesTableTableManager
                 toPage: toPage,
                 body: body,
                 updatedAt: updatedAt,
+                syncedAt: syncedAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -2349,6 +2568,7 @@ class $$NotesTableTableManager
                 required int toPage,
                 required String body,
                 required DateTime updatedAt,
+                Value<DateTime?> syncedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => NotesCompanion.insert(
                 id: id,
@@ -2358,6 +2578,7 @@ class $$NotesTableTableManager
                 toPage: toPage,
                 body: body,
                 updatedAt: updatedAt,
+                syncedAt: syncedAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

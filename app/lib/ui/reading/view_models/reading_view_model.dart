@@ -48,6 +48,15 @@ class ReadingViewModel extends ChangeNotifier {
     return aimFor(longestStretch(alike(_before, kind).map((r) => r.at(now))));
   }
 
+  /// The House's lit Windows: this Session's, then the user's earlier ones.
+  List<HouseWindow> get house {
+    final now = _sessions.now();
+    return houseWindows(
+      now: now,
+      before: [for (final r in _before) ?r.at(now).startedAt],
+    );
+  }
+
   /// The clock: the Stretch running now, or while paused, the last one.
   Duration get shown => session?.stretches.lastOrNull?.length ?? Duration.zero;
 
