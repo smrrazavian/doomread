@@ -1,0 +1,9 @@
+include: package:very_good_analysis/analysis_options.yaml
+
+
+linter:
+  rules:
+    # An app, not a published library.
+    public_member_api_docs: false
+    # Keep the familiar ClassName(...) constructors used throughout Flutter's docs.
+    unnecessary_type_name_in_constructor: false

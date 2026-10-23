@@ -7,6 +7,7 @@ environment:
 workspace:
   - app
   - packages/core
+  - server
 
 hooks:
   user_defines:
