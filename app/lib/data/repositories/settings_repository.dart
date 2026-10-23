@@ -17,7 +17,6 @@ class SettingsRepository {
   static const _watchAskedKey = 'watchAsked';
   static const _workAppsKey = 'workApps';
   static const _toneKey = 'tone';
-  static const _toneAskedKey = 'toneAsked';
 
   /// The language the user picked, or null if they never picked one.
   Future<Locale?> locale() async {
@@ -73,15 +72,6 @@ class SettingsRepository {
       .into(_db.settings)
       .insertOnConflictUpdate(
         SettingsCompanion.insert(key: _toneKey, value: tone.name),
-      );
-
-  /// Whether the Tone was offered at a Start, so it's offered there once.
-  Future<bool> toneAsked() async => await _db.setting(_toneAskedKey) != null;
-
-  Future<void> setToneAsked() => _db
-      .into(_db.settings)
-      .insertOnConflictUpdate(
-        SettingsCompanion.insert(key: _toneAskedKey, value: '1'),
       );
 
   /// Each Work's Work app, by Work id. Kept on this device: package names

@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import android.os.SystemClock
 import android.provider.Settings
 import android.view.accessibility.AccessibilityEvent
@@ -176,20 +178,31 @@ class WatchService : AccessibilityService() {
     /** What was reported last, so each change is reported once. */
     private var last: Pair<String, Set<String>>? = null
     private var checkedAt = 0L
+    private val handler = Handler(Looper.getMainLooper())
+    private var recheck: Runnable? = null
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
         val pkg = event.packageName?.toString() ?: return
         val ids = Watch.views(this, pkg)
-        if (event.eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
-            // Content changes only matter inside the Work app, and come many
-            // times a second while a video plays.
-            val now = SystemClock.uptimeMillis()
-            if (ids == null || now - checkedAt < CHECK_EVERY_MS) return
-            checkedAt = now
-        }
+        if (event.eventType != AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) return check(pkg, ids)
+        // Content changes only matter inside the Work app, and come many
+        // times a second while a video plays: check at most every 500 ms,
+        // and once more after a burst, so the last change isn't dropped.
+        if (ids == null) return
+        val wait = checkedAt + CHECK_EVERY_MS - SystemClock.uptimeMillis()
+        if (wait <= 0) return check(pkg, ids)
+        if (recheck != null) return
+        recheck = Runnable {
+            recheck = null
+            check(pkg, ids)
+        }.also { handler.postDelayed(it, wait) }
+    }
+
+    private fun check(pkg: String, ids: List<String>?) {
+        checkedAt = SystemClock.uptimeMillis()
         val root = if (ids == null) null else rootInActiveWindow
-        // A content change from a window that isn't the one in front.
-        if (event.eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED && root?.packageName != pkg) return
+        // A Work app that isn't the window in front any more.
+        if (ids != null && root?.packageName != pkg) return
         val seen = ids.orEmpty().filter { root?.findAccessibilityNodeInfosByViewId(it)?.isNotEmpty() == true }.toSet()
         val report = pkg to seen
         if (report == last) return

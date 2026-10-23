@@ -50,6 +50,11 @@ class UrgeWatch {
   /// opens reports before then, and mustn't bring the Urge back.
   String? _slipping;
 
+  /// The Session whose Urge was just added, until the journal shows it: a
+  /// second report meanwhile (Shorts' views loading) brings it back up
+  /// rather than adding another.
+  String? _urging;
+
   /// The most recent open Session, whatever its Work.
   SessionRecord? _open(List<SessionRecord> all, DateTime now) => all.reversed
       .where((r) => r.at(now).startedAt != null && !r.at(now).stopped)
@@ -62,6 +67,10 @@ class UrgeWatch {
     if (all.where((r) => r.id == _slipping).firstOrNull case final r?
         when !r.at(now).urgeOpen) {
       _slipping = null;
+    }
+    if (all.where((r) => r.id == _urging).firstOrNull case final r?
+        when r.at(now).urgeOpen || r.at(now).stopped) {
+      _urging = null;
     }
     final open = _open(all, now);
     final rules = open == null ? null : _settings.watchRules(open.road.work.id);
@@ -110,9 +119,12 @@ class UrgeWatch {
     if (open == null || open.id == _slipping) return;
     final session = open.at(now);
     final rules = _settings.watchRules(open.road.work.id);
-    if (raisesUrge(session, package, rules, views)) {
+    final pending = open.id == _urging;
+    if (!pending && raisesUrge(session, package, rules, views)) {
+      _urging = open.id;
       await _sessions.add(open, SessionEventKind.urge);
-    } else if (!bringsUrgeBack(session, package, rules, views)) {
+    } else if (!(pending && rules.isWatched(package, views)) &&
+        !bringsUrgeBack(session, package, rules, views)) {
       return;
     }
     // Shorts is named for itself, not for YouTube.

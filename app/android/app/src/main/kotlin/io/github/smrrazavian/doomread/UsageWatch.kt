@@ -35,7 +35,16 @@ object UsageWatch {
     /** Starts or stops polling; Dart turns it on only while a Session is open. */
     fun set(context: Context, on: Boolean) {
         val intent = Intent(context, UsageWatchService::class.java)
-        if (on) context.startForegroundService(intent) else context.stopService(intent)
+        if (!on) {
+            context.stopService(intent)
+            return
+        }
+        // Android 12+ refuses it from the background, say when Dart starts
+        // with no Activity; the next Start or resume asks again.
+        try {
+            context.startForegroundService(intent)
+        } catch (_: IllegalStateException) {
+        }
     }
 }
 

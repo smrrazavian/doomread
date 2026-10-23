@@ -101,4 +101,16 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text(l10n.faceDown), findsOne);
   });
+
+  testApp('two reports while Shorts loads raise one Urge', (tester, db) async {
+    final w = await startOnYouTube(tester, db);
+    w
+      ..onForeground!(youtube, 'YouTube', shorts)
+      ..onForeground!(youtube, 'YouTube', watchedScreens.single.anyOf);
+    await tester.pumpAndSettle();
+    final urges = (await db.select(db.sessionEvents).get()).where(
+      (e) => e.kind == SessionEventKind.urge,
+    );
+    expect(urges, hasLength(1));
+  });
 }
