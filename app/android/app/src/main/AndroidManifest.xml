@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <!-- Signing in and sync talk to the Doomread server. -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- The ongoing notification while a Session runs, asked for in context
@@ -9,6 +10,15 @@
          when the user allows it (off by default on Android 14+), otherwise
          inexact. Its receiver, BreakOverReceiver, is in <application>. -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <!-- The fallback when Accessibility is off (ADR 0016): usage access,
+         granted by the user in Settings, polled by a foreground service, and
+         display over other apps, so the "not yet" screen can come up. -->
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
     <application
         android:label="@string/app_name"
         android:appCategory="productivity"
@@ -64,6 +74,16 @@
             <meta-data
                 android:name="android.accessibilityservice"
                 android:resource="@xml/watch_service"/>
+        </service>
+        <!-- Polls usage access while a Session is open and Accessibility is
+             off (ADR 0016). -->
+        <service
+            android:name=".UsageWatchService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Notices which app comes to the front during a reading Session, through usage access, when the user has no Accessibility service on, to show a reminder screen."/>
         </service>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

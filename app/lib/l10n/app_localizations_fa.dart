@@ -1006,4 +1006,27 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get workAppAsk => 'روی گوشیه؟';
+
+  @override
+  String get watchViaAccessibility => 'با دسترس‌پذیری';
+
+  @override
+  String get watchViaUsage => 'با دسترسی به داده‌های استفاده';
+
+  @override
+  String get watchViaNone => 'خاموش';
+
+  @override
+  String get watchOnUsage =>
+      'روشنه، با دسترسی به داده‌های استفاده. ممکنه یکی دو ثانیه طول بکشه، و شورتز رو از بقیه‌ی یوتیوب تشخیص نمی‌ده.';
+
+  @override
+  String get watchFallback =>
+      'نمی‌تونی دسترس‌پذیری رو روشن کنی، مثلاً چون «محافظت پیشرفته» روشنه؟ با دسترسی به داده‌های استفاده هم کار می‌کنه، فقط یکی دو ثانیه کندتر. دو تا اجازه لازم داره: دسترسی به داده‌های استفاده، و نمایش روی برنامه‌های دیگه، که صفحه‌ی «هنوز نه» بتونه بیاد.';
+
+  @override
+  String get watchAllowUsage => 'اجازه‌ی دسترسی به داده‌های استفاده';
+
+  @override
+  String get watchAllowOverlay => 'اجازه‌ی نمایش روی برنامه‌های دیگه';
 }

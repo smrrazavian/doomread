@@ -98,11 +98,11 @@ class TonightViewModel extends ChangeNotifier {
   }
 
   /// Whether to offer the "not yet" screen before this Start: once, and
-  /// only where it can be turned on and isn't yet.
+  /// only where it can be turned on and no way to watch is on yet.
   Future<bool> shouldOfferWatch() async =>
       _watch.available &&
       !await _settings.watchAsked() &&
-      !await _watch.enabled();
+      await _watch.method() == null;
 
   /// Remembers the offer was answered, and on yes opens the system's
   /// Accessibility settings. Either way the Session starts.

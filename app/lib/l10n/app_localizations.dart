@@ -1225,6 +1225,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'On the phone?'**
   String get workAppAsk;
+
+  /// Settings, under Watched apps: the way of watching apps that is on (ADR 0016).
+  ///
+  /// In en, this message translates to:
+  /// **'Through Accessibility'**
+  String get watchViaAccessibility;
+
+  /// No description provided for @watchViaUsage.
+  ///
+  /// In en, this message translates to:
+  /// **'Through usage access'**
+  String get watchViaUsage;
+
+  /// No description provided for @watchViaNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get watchViaNone;
+
+  /// Watched apps, in place of watchOff, when the usage access fallback is on.
+  ///
+  /// In en, this message translates to:
+  /// **'On, through usage access. It can take a second or two, and it can\'t tell Shorts from the rest of YouTube.'**
+  String get watchOnUsage;
+
+  /// Watched apps, while no way of watching is on: the usage access fallback, explained before its two buttons.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t turn on Accessibility, say with Advanced Protection on? Usage access works too, a second or two slower. It needs two permissions: usage access, and display over other apps, so the \"not yet\" screen can come up.'**
+  String get watchFallback;
+
+  /// No description provided for @watchAllowUsage.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow usage access'**
+  String get watchAllowUsage;
+
+  /// No description provided for @watchAllowOverlay.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow display over other apps'**
+  String get watchAllowOverlay;
 }
 
 class _AppLocalizationsDelegate

@@ -159,10 +159,19 @@ class FakeHomeWidget implements HomeWidget {
 
 /// Stands in for the Android app watcher and records what the app did.
 class FakeAppWatch implements AppWatch {
-  FakeAppWatch({this.isEnabled = true, this.installed = const []});
+  FakeAppWatch({
+    this.isEnabled = true,
+    this.usageAccess = false,
+    this.overlay = false,
+    this.installed = const [],
+  });
 
-  /// Whether the user has turned the service on.
+  /// Whether the user has turned the Accessibility service on.
   bool isEnabled;
+
+  /// Whether the user has granted usage access, and display over other apps.
+  bool usageAccess;
+  bool overlay;
 
   final List<LaunchableApp> installed;
 
@@ -172,14 +181,20 @@ class FakeAppWatch implements AppWatch {
   /// The views the service was last asked to look for, by package.
   Map<String, Set<String>> views = const {};
 
+  /// Whether usage access was last asked to be polled.
+  bool polling = false;
+
   /// How many times the app came to the front for an Urge.
   int fronts = 0;
 
   /// The app launched last, after a Slip.
   String? opened;
 
-  /// How many times the system settings were opened.
+  /// How many times the Accessibility, Usage access and overlay settings
+  /// were opened.
   int settingsOpened = 0;
+  int usageOpened = 0;
+  int overlayOpened = 0;
 
   @override
   bool get available => true;
@@ -188,10 +203,20 @@ class FakeAppWatch implements AppWatch {
   void Function(String package, String label, Set<String> views)? onForeground;
 
   @override
-  Future<bool> enabled() async => isEnabled;
+  Future<WatchGrants> grants() async =>
+      (accessibility: isEnabled, usageAccess: usageAccess, overlay: overlay);
+
+  @override
+  Future<WatchMethod?> method() async => pickWatchMethod(await grants());
 
   @override
   Future<void> openSettings() async => settingsOpened++;
+
+  @override
+  Future<void> openUsageAccess() async => usageOpened++;
+
+  @override
+  Future<void> openOverlay() async => overlayOpened++;
 
   @override
   Future<List<LaunchableApp>> apps() async => installed;
@@ -200,9 +225,11 @@ class FakeAppWatch implements AppWatch {
   Future<void> setWatching({
     required bool on,
     Map<String, Set<String>> views = const {},
+    bool poll = false,
   }) async {
     watching = on;
     this.views = views;
+    polling = poll;
   }
 
   @override

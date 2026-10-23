@@ -5,6 +5,7 @@ import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.SystemClock
 import android.provider.Settings
 import android.view.accessibility.AccessibilityEvent
@@ -54,9 +55,27 @@ object Watch {
         this.channel = channel
         channel.setMethodCallHandler { call, result ->
             when (call.method) {
-                "enabled" -> result.success(enabled(context))
+                // Dart picks the way to watch from these (pickWatchMethod).
+                "grants" -> result.success(
+                    mapOf(
+                        "accessibility" to enabled(context),
+                        "usageAccess" to UsageWatch.granted(context),
+                        "overlay" to Settings.canDrawOverlays(context),
+                    ),
+                )
                 "openSettings" -> {
                     start(context, Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+                    result.success(null)
+                }
+                "openUsageAccess" -> {
+                    start(context, Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
+                    result.success(null)
+                }
+                "openOverlay" -> {
+                    start(
+                        context,
+                        Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${context.packageName}")),
+                    )
                     result.success(null)
                 }
                 "apps" -> result.success(apps(context))
@@ -69,11 +88,13 @@ object Watch {
                         .putStringSet(VIEWS, ids.toSet())
                         .apply()
                     views = parse(ids)
+                    UsageWatch.set(context, on = call.argument<Boolean>("poll") == true)
                     result.success(null)
                 }
                 "bringToFront" -> {
                     // Allowed from the background: the system has this app's
-                    // AccessibilityService bound.
+                    // AccessibilityService bound, or, with usage access, the
+                    // user let it display over other apps (ADR 0016).
                     start(
                         context,
                         Intent(context, MainActivity::class.java)

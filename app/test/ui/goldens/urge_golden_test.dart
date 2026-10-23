@@ -120,6 +120,28 @@ void main() {
         matchesGoldenFile('watched_apps_$lang.png'),
       );
     });
+
+    testApp('Watched apps, through usage access, in $lang', (tester, db) async {
+      await open(
+        tester,
+        db,
+        lang,
+        FakeAppWatch(
+          isEnabled: false,
+          usageAccess: true,
+          overlay: true,
+          installed: _apps.take(4).toList(),
+        ),
+      );
+      await tester.tap(find.byTooltip(l10n.settings));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.watchedApps));
+      await tester.pumpAndSettle();
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('watched_apps_usage_$lang.png'),
+      );
+    });
   }
 }
 

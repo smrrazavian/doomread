@@ -19,6 +19,20 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  /// The user leaves for the system settings and comes back.
+  Future<void> comeBack(WidgetTester tester) async {
+    [
+      AppLifecycleState.resumed,
+      AppLifecycleState.inactive,
+      AppLifecycleState.hidden,
+      AppLifecycleState.paused,
+      AppLifecycleState.hidden,
+      AppLifecycleState.inactive,
+      AppLifecycleState.resumed,
+    ].forEach(tester.binding.handleAppLifecycleStateChanged);
+    await tester.pumpAndSettle();
+  }
+
   Future<void> addBook(AppDatabase db) async {
     await WorkRepository(db).add(
       title: 'The Remains of the Day',
@@ -83,5 +97,37 @@ void main() {
     await tap(tester, find.text(l10n.watchTurnOn));
     await tap(tester, find.byKey(const Key('watchAgree')));
     expect(w.settingsOpened, 1);
+  });
+
+  testApp('with Accessibility off, Watched apps offers usage access, and '
+      'Settings shows which way is on', (tester, db) async {
+    final w = FakeAppWatch(isEnabled: false);
+    await pumpApp(tester, db, watch: w);
+    await tap(tester, find.byTooltip(l10n.settings));
+    expect(find.text(l10n.watchViaNone), findsOne);
+    await tap(tester, find.text(l10n.watchedApps));
+    expect(find.text(l10n.watchFallback), findsOne);
+
+    await tap(tester, find.text(l10n.watchAllowUsage));
+    expect(w.usageOpened, 1);
+    w.usageAccess = true;
+    await comeBack(tester);
+    expect(find.text(l10n.watchAllowUsage), findsNothing);
+
+    await tap(tester, find.text(l10n.watchAllowOverlay));
+    expect(w.overlayOpened, 1);
+    w.overlay = true;
+    await comeBack(tester);
+    expect(find.text(l10n.watchOnUsage), findsOne);
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.text(l10n.watchViaUsage), findsOne);
+  });
+
+  testApp('Settings says when Accessibility is the way', (tester, db) async {
+    await pumpApp(tester, db, watch: FakeAppWatch());
+    await tap(tester, find.byTooltip(l10n.settings));
+    expect(find.text(l10n.watchViaAccessibility), findsOne);
   });
 }

@@ -156,4 +156,29 @@ void main() {
     await tap(tester, l10n.doneForTonight);
     expect(find.text(l10n.saveAndLightsOut), findsOne);
   });
+
+  testApp('with usage access only, the service polls and the Urge still '
+      'comes', (tester, db) async {
+    final w = await startReading(
+      tester,
+      db,
+      watch: FakeAppWatch(isEnabled: false, usageAccess: true, overlay: true),
+    );
+    expect(w.polling, isTrue);
+    await open(tester, w, instagram);
+    expect(find.text(l10n.urgeTitle('Instagram')), findsOne);
+    await tap(tester, l10n.backToBook);
+    await tap(tester, l10n.stopForTonight);
+    expect(w.polling, isFalse);
+  });
+
+  testApp('with Accessibility on, nothing polls', (tester, db) async {
+    final w = await startReading(
+      tester,
+      db,
+      watch: FakeAppWatch(usageAccess: true, overlay: true),
+    );
+    expect(w.watching, isTrue);
+    expect(w.polling, isFalse);
+  });
 }

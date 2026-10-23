@@ -27,17 +27,69 @@ class SettingsScreen extends StatelessWidget {
               title: Text(l10n.account),
               onTap: () => context.push('/account'),
             ),
-            if (context.read<AppWatch>().available)
-              ListTile(
-                leading: const Icon(Icons.visibility_outlined),
-                title: Text(l10n.watchedApps),
-                onTap: () => context.push('/watched'),
-              ),
+            if (context.read<AppWatch>().available) const _WatchedAppsTile(),
             ListTile(title: Text(l10n.language)),
             for (final MapEntry(:key, :value) in _languages.entries)
               RadioListTile<String>(value: key, title: Text(value)),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Watched apps, with which way of watching is on, looked at again when the
+/// user comes back from it or from the system settings.
+class _WatchedAppsTile extends StatefulWidget {
+  const _WatchedAppsTile();
+
+  @override
+  State<_WatchedAppsTile> createState() => _WatchedAppsTileState();
+}
+
+class _WatchedAppsTileState extends State<_WatchedAppsTile> {
+  late final AppLifecycleListener _lifecycle;
+  late Future<WatchMethod?> _method;
+
+  @override
+  void initState() {
+    super.initState();
+    _lifecycle = AppLifecycleListener(onResume: _refresh);
+    _method = context.read<AppWatch>().method();
+  }
+
+  void _refresh() {
+    final method = context.read<AppWatch>().method();
+    setState(() {
+      _method = method;
+    });
+  }
+
+  @override
+  void dispose() {
+    _lifecycle.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return FutureBuilder(
+      future: _method,
+      builder: (context, snap) => ListTile(
+        leading: const Icon(Icons.visibility_outlined),
+        title: Text(l10n.watchedApps),
+        subtitle: snap.connectionState == ConnectionState.done
+            ? Text(switch (snap.data) {
+                WatchMethod.accessibility => l10n.watchViaAccessibility,
+                WatchMethod.usageAccess => l10n.watchViaUsage,
+                null => l10n.watchViaNone,
+              })
+            : null,
+        onTap: () async {
+          await context.push('/watched');
+          if (mounted) _refresh();
+        },
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/data/services/app_watch.dart';
 import 'package:doomread/ui/settings/view_models/settings_view_model.dart';
 import 'package:doomread_core/doomread_core.dart';
+import 'package:flutter/widgets.dart';
 
 /// Hears which app comes to the front during a Session and raises the Urge
 /// when core says it's a Watched app. The Urge itself is a journal event,
@@ -17,12 +18,16 @@ class UrgeWatch {
     });
     _settings.addListener(_sync);
     _watch.onForeground = _foreground;
+    // The user grants Accessibility or usage access in the system settings,
+    // so the way to watch can change while the app is away.
+    _lifecycle = AppLifecycleListener(onResume: _sync);
   }
 
   final SessionRepository _sessions;
   final AppWatch _watch;
   final SettingsViewModel _settings;
   late final StreamSubscription<List<SessionRecord>> _sub;
+  late final AppLifecycleListener _lifecycle;
   List<SessionRecord>? _all;
 
   /// Called with the Session to show when an Urge comes up.
@@ -37,9 +42,9 @@ class UrgeWatch {
   /// started Doomread to hear it.
   (String, String, Set<String>)? _pending;
 
-  /// What was last told to the service: whether to watch, and the Work app
-  /// whose views to look for.
-  (bool, String?)? _told;
+  /// What was last told to the service: whether to watch, the Work app
+  /// whose views to look for, and whether to poll usage access.
+  (bool, String?, bool)? _told;
 
   /// The Session that just slipped, until the journal shows it: the app it
   /// opens reports before then, and mustn't bring the Urge back.
@@ -60,15 +65,28 @@ class UrgeWatch {
     }
     final open = _open(all, now);
     final rules = open == null ? null : _settings.watchRules(open.road.work.id);
-    final told = (open != null, rules?.workApp);
-    if (told != _told) {
-      _told = told;
-      unawaited(_watch.setWatching(on: told.$1, views: rules?.views ?? {}));
-    }
+    unawaited(_tell(open != null, rules));
     if (_pending case (final package, final label, final views)?) {
       _pending = null;
       _foreground(package, label, views);
     }
+  }
+
+  /// Counts calls to [_tell], so a slow one can't overwrite a later one.
+  int _telling = 0;
+
+  Future<void> _tell(bool on, WatchRules? rules) async {
+    final call = ++_telling;
+    final poll = on && await _watch.method() == WatchMethod.usageAccess;
+    if (call != _telling) return;
+    final told = (on, rules?.workApp, poll);
+    if (told == _told) return;
+    _told = told;
+    await _watch.setWatching(
+      on: on,
+      views: rules?.views ?? const {},
+      poll: poll,
+    );
   }
 
   void _foreground(String package, String label, Set<String> views) {
@@ -115,6 +133,7 @@ class UrgeWatch {
   }
 
   void dispose() {
+    _lifecycle.dispose();
     _watch.onForeground = null;
     _settings.removeListener(_sync);
     unawaited(_sub.cancel());

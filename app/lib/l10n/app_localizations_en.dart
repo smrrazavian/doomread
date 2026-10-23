@@ -1126,4 +1126,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get workAppAsk => 'On the phone?';
+
+  @override
+  String get watchViaAccessibility => 'Through Accessibility';
+
+  @override
+  String get watchViaUsage => 'Through usage access';
+
+  @override
+  String get watchViaNone => 'Off';
+
+  @override
+  String get watchOnUsage =>
+      'On, through usage access. It can take a second or two, and it can\'t tell Shorts from the rest of YouTube.';
+
+  @override
+  String get watchFallback =>
+      'Can\'t turn on Accessibility, say with Advanced Protection on? Usage access works too, a second or two slower. It needs two permissions: usage access, and display over other apps, so the \"not yet\" screen can come up.';
+
+  @override
+  String get watchAllowUsage => 'Allow usage access';
+
+  @override
+  String get watchAllowOverlay => 'Allow display over other apps';
 }
