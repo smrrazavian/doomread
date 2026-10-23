@@ -291,4 +291,62 @@ class AppLocalizationsEn extends AppLocalizations {
 
     return 'A page from $fromString to $totalString';
   }
+
+  @override
+  String get readingWeekTitle => 'This week';
+
+  @override
+  String readingWeekCount(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString reading nights so far',
+      one: '1 reading night so far',
+      zero: 'A fresh week',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String stretchTrendGrew(int from, int to) {
+    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String fromString = fromNumberFormat.format(from);
+    final intl.NumberFormat toNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String toString = toNumberFormat.format(to);
+
+    return 'Your longest stretch grew from $fromString to $toString minutes.';
+  }
+
+  @override
+  String stretchTrendSoFar(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: 'Your longest stretch so far is $minutesString minutes.',
+      one: 'Your longest stretch so far is 1 minute.',
+      zero: 'Your longest stretch so far is under a minute.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stretchTrendEmpty =>
+      'Read once and your longest stretch shows up here.';
+
+  @override
+  String stretchTrendDates(String from, String to) {
+    return 'From $from to $to.';
+  }
 }

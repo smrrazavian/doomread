@@ -40,40 +40,59 @@ class _Tonight extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 24),
-        child: Column(
-          // stretch so text hugs the start edge in both directions
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(l10n.navTonight, style: text.headlineSmall),
-            const SizedBox(height: 16),
-            if (road != null) ...[
-              _WorkCard(road: road, evenings: vm.evenings),
-              const SizedBox(height: 16),
-              Text(l10n.aim(vm.aim.inMinutes), style: text.bodyMedium),
-              const Spacer(),
-              FilledButton(
-                onPressed: vm.start.running ? null : () => _start(context, vm),
-                child: Text(
-                  vm.openSession == null
-                      ? l10n.startReading
-                      : l10n.backToReading,
-                ),
+      // Scrolls only when the screen is too short to fit it all; otherwise
+      // the Spacer keeps the week and the button down by the thumb.
+      body: CustomScrollView(
+        slivers: [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 24),
+              child: Column(
+                // stretch so text hugs the start edge in both directions
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(l10n.navTonight, style: text.headlineSmall),
+                  const SizedBox(height: 16),
+                  if (road != null) ...[
+                    _WorkCard(road: road, evenings: vm.evenings),
+                    const SizedBox(height: 16),
+                    Text(l10n.aim(vm.aim.inMinutes), style: text.bodyMedium),
+                    const Spacer(),
+                    _ReadingWeekStrip(
+                      week: vm.readingWeek(
+                        firstDayOfWeek(
+                          Localizations.localeOf(context).languageCode,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    FilledButton(
+                      onPressed: vm.start.running
+                          ? null
+                          : () => _start(context, vm),
+                      child: Text(
+                        vm.openSession == null
+                            ? l10n.startReading
+                            : l10n.backToReading,
+                      ),
+                    ),
+                  ] else if (vm.loaded) ...[
+                    Text(l10n.tonightEmpty, style: text.bodyMedium),
+                    const SizedBox(height: 16),
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: FilledButton(
+                        onPressed: () => context.push('/work/new'),
+                        child: Text(l10n.tonightAddBook),
+                      ),
+                    ),
+                  ],
+                ],
               ),
-            ] else if (vm.loaded) ...[
-              Text(l10n.tonightEmpty, style: text.bodyMedium),
-              const SizedBox(height: 16),
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: FilledButton(
-                  onPressed: () => context.push('/work/new'),
-                  child: Text(l10n.tonightAddBook),
-                ),
-              ),
-            ],
-          ],
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -140,4 +159,81 @@ class _WorkCard extends StatelessWidget {
       ),
     );
   }
+}
+
+/// One cell per night this week: lit where there was a Session, dark
+/// otherwise, and tonight outlined until it's lit. A missed night looks just
+/// like one still to come; nothing here ever "breaks".
+class _ReadingWeekStrip extends StatelessWidget {
+  const _ReadingWeekStrip({required this.week});
+
+  final ReadingWeek week;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final text = Theme.of(context).textTheme;
+    final letters = MaterialLocalizations.of(context).narrowWeekdays;
+    final count = l10n.readingWeekCount(week.count);
+    final mute = text.bodySmall?.copyWith(color: Palette.mute);
+    return Semantics(
+      container: true,
+      label: '${l10n.readingWeekTitle}. $count',
+      excludeSemantics: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(l10n.readingWeekTitle, style: mute),
+              Text(count, style: text.bodySmall),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              for (final (i, night) in week.nights.indexed) ...[
+                if (i > 0) const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    children: [
+                      _NightCell(
+                        key: ValueKey(night),
+                        lit: week.isLit(night),
+                        tonight: night == week.tonight,
+                      ),
+                      const SizedBox(height: 4),
+                      // narrowWeekdays starts on Sunday, which is weekday 7.
+                      Text(letters[night.weekday % 7], style: mute),
+                    ],
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NightCell extends StatelessWidget {
+  const _NightCell({required this.lit, required this.tonight, super.key});
+
+  final bool lit;
+  final bool tonight;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    height: 24,
+    decoration: BoxDecoration(
+      color: lit ? Palette.lamp : (tonight ? null : Palette.unlit),
+      border: Border.all(
+        color: lit ? Palette.lamp : (tonight ? Palette.me : Palette.line),
+        width: tonight && !lit ? 2 : 1,
+      ),
+      borderRadius: BorderRadius.circular(3),
+    ),
+  );
 }

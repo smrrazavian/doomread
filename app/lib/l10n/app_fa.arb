@@ -61,5 +61,23 @@
   "whatHappened": "تو یه جمله، چی شد؟",
   "saveAndLightsOut": "ذخیره کن و چراغ رو خاموش کن",
   "problemNoPage": "کدوم صفحه؟ فقط عددش رو بنویس.",
-  "problemPageOutOfRange": "یه صفحه از {from} تا {total}"
+  "problemPageOutOfRange": "یه صفحه از {from} تا {total}",
+  "readingWeekTitle": "این هفته",
+  "readingWeekCount": "{count, plural, =0{یه هفته‌ی تازه} other{تا الان {count} شب خوندی}}",
+  "@readingWeekCount": {
+    "description": "TODO(owner): review this Persian copy."
+  },
+  "stretchTrendGrew": "طولانی‌ترین تمرکزت از {from} دقیقه رسیده به {to} دقیقه.",
+  "@stretchTrendGrew": {
+    "description": "TODO(owner): review this Persian copy."
+  },
+  "stretchTrendSoFar": "{minutes, plural, =0{طولانی‌ترین تمرکزت تا الان کمتر از یه دقیقه‌ست.} other{طولانی‌ترین تمرکزت تا الان {minutes} دقیقه‌ست.}}",
+  "@stretchTrendSoFar": {
+    "description": "TODO(owner): review this Persian copy."
+  },
+  "stretchTrendEmpty": "یه بار بخون، طولانی‌ترین تمرکزت اینجا نشون داده می‌شه.",
+  "@stretchTrendEmpty": {
+    "description": "TODO(owner): review this Persian copy."
+  },
+  "stretchTrendDates": "از {from} تا {to}."
 }
