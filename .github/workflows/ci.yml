@@ -5,37 +5,42 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+  packages: write # publish the dev image to GHCR when the Dockerfile changes
+
 jobs:
   check:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
-      - name: Cache SDK archives
-        uses: actions/cache@v4
-        with:
-          path: tool/cache
-          key: sdk-${{ hashFiles('tool/fetch-sdk.sh') }}
-
-      - run: tool/fetch-sdk.sh
-
+      # The image is tagged by the Dockerfile's hash, exactly as tool/dev tags it,
+      # so CI and local development run the very same image.
       - name: Image tag
-        # Same tag tool/dev computes, so tool/dev reuses the image built here.
-        run: echo "DOOMREAD_IMAGE=doomread-dev:$(sha256sum tool/Dockerfile | cut -c1-12)" >> "$GITHUB_ENV"
+        run: |
+          tag=$(sha256sum tool/Dockerfile | cut -c1-12)
+          echo "REMOTE_IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/doomread-dev:$tag" >> "$GITHUB_ENV"
+          echo "DOOMREAD_IMAGE=doomread-dev:$tag" >> "$GITHUB_ENV"
 
-      - uses: docker/setup-buildx-action@v3
-
-      # The same image as local development, so goldens render identically.
-      - name: Build dev image
-        uses: docker/build-push-action@v6
+      - uses: docker/login-action@v3
         with:
-          context: tool
-          file: tool/Dockerfile
-          tags: ${{ env.DOOMREAD_IMAGE }}
-          load: true
-          build-args: UID=1001 # the runner user, so the container can write the checkout
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull the dev image, or build and publish it
+        run: |
+          if docker pull "$REMOTE_IMAGE"; then
+            docker tag "$REMOTE_IMAGE" "$DOOMREAD_IMAGE"
+          else
+            tool/fetch-sdk.sh
+            docker build -t "$DOOMREAD_IMAGE" -t "$REMOTE_IMAGE" -f tool/Dockerfile tool
+            if [ "${{ github.event_name }}" = push ]; then docker push "$REMOTE_IMAGE"; fi
+          fi
+
+      # The image runs as uid 1000; hand it the checkout.
+      - run: sudo chown -R 1000:1000 "$GITHUB_WORKSPACE"
 
       - name: Analyze
         run: tool/dev sh -c 'flutter pub get && dart analyze packages/core && cd app && flutter analyze'
