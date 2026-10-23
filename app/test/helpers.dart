@@ -1,6 +1,7 @@
 import 'package:doomread/app.dart';
 import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread/data/services/break_over_notification.dart';
+import 'package:doomread/data/services/home_widget.dart';
 import 'package:doomread/data/services/session_notification.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/widgets.dart';
@@ -37,6 +38,7 @@ Future<void> pumpApp(
   SessionNotification? notification,
   bool reduceMotion = true,
   BreakOverNotification? breakOver,
+  HomeWidget? homeWidget,
 }) async {
   if (reduceMotion) {
     tester.platformDispatcher.accessibilityFeaturesTestValue =
@@ -49,6 +51,7 @@ Future<void> pumpApp(
       clock: clock,
       notification: notification,
       breakOver: breakOver,
+      homeWidget: homeWidget,
     ),
   );
   await tester.pumpAndSettle();
@@ -123,4 +126,30 @@ class FakeBreakOverNotification implements BreakOverNotification {
 
   @override
   Future<void> cancel() async => set = null;
+}
+
+/// Stands in for the Android home screen widget and records what it was sent.
+class FakeHomeWidget implements HomeWidget {
+  FakeHomeWidget({this.opened});
+
+  /// The Work whose Start on the widget "started" the app.
+  String? opened;
+
+  /// Every state sent, oldest first.
+  final List<HomeWidgetState> sent = [];
+
+  HomeWidgetState? get shown => sent.lastOrNull;
+
+  @override
+  void Function(String workId)? onStart;
+
+  @override
+  Future<void> update(HomeWidgetState state) async => sent.add(state);
+
+  @override
+  Future<String?> openedFrom() async {
+    final id = opened;
+    opened = null;
+    return id;
+  }
 }

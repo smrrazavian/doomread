@@ -565,4 +565,19 @@ class AppLocalizationsFa extends AppLocalizations {
   String workWaiting(String title) {
     return '«$title» منتظرته.';
   }
+
+  @override
+  String widgetEvenings(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return 'حدوداً $countString شب دیگه مونده';
+  }
+
+  @override
+  String get widgetLit => 'امشب پنجره‌ت روشنه';
+
+  @override
+  String get widgetDark => 'امشب پنجره‌ت هنوز خاموشه';
 }

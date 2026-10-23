@@ -38,6 +38,19 @@
         </activity>
         <!-- Posts the "break's over" notification when its alarm goes off. -->
         <receiver android:name=".BreakOverReceiver" android:exported="false"/>
+        <!-- The home screen widget (ADR 0011): drawn by Glance from what the
+             app last pushed. -->
+        <receiver
+            android:name=".HomeWidget$Receiver"
+            android:exported="true"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/home_widget"/>
+        </receiver>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

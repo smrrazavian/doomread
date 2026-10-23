@@ -44,7 +44,7 @@
   "accountErrorUnreachable": "به سرور وصل نمی‌شه. بقیهٔ برنامه کار می‌کنه؛ بعداً دوباره امتحان کن.",
   "changeBook": "عوض کردن کتاب",
   "startReading": "شروع خوندن",
-  "backToReading": "برگرد سر خوندن",
+  "backToReading": "برگرد سراغ خوندن",
   "aim": "هدف: {minutes} دقیقه یه‌سره.",
   "eveningsLeft": "با سرعت خودت، حدوداً {count} شب دیگه.",
   "aimToGo": "{minutes} دقیقه‌ی دیگه.",
@@ -129,5 +129,7 @@
   "breakOver": "استراحت تموم شد.",
   "chapterWaiting": "فصل {chapter} منتظرته.",
   "workWaiting": "«{title}» منتظرته.",
-  "backToReading": "برگرد سراغ خوندن"
+  "widgetEvenings": "حدوداً {count} شب دیگه مونده",
+  "widgetLit": "امشب پنجره‌ت روشنه",
+  "widgetDark": "امشب پنجره‌ت هنوز خاموشه"
 }

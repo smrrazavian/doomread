@@ -8,6 +8,7 @@ import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread/data/services/auto_sync.dart';
 import 'package:doomread/data/services/break_over_notification.dart';
+import 'package:doomread/data/services/home_widget.dart';
 import 'package:doomread/data/services/session_notification.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/routing/router.dart';
@@ -15,6 +16,7 @@ import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/planned_break/break_over_alarm.dart';
 import 'package:doomread/ui/reading/live_notification.dart';
 import 'package:doomread/ui/settings/view_models/settings_view_model.dart';
+import 'package:doomread/ui/tonight/live_home_widget.dart';
 import 'package:drift/drift.dart' show TableUpdateQuery;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -28,6 +30,7 @@ class DoomreadApp extends StatefulWidget {
     this.clock,
     this.notification,
     this.breakOver,
+    this.homeWidget,
     super.key,
   });
 
@@ -52,6 +55,9 @@ class DoomreadApp extends StatefulWidget {
   /// The "break's over" notification. Tests pass a fake; the app uses the
   /// Android one, which does nothing on other platforms.
   final BreakOverNotification? breakOver;
+  /// The home screen widget. Tests pass a fake; the app uses the Android
+  /// one, which does nothing on other platforms.
+  final HomeWidget? homeWidget;
 
   @override
   State<DoomreadApp> createState() => _DoomreadAppState();
@@ -77,6 +83,8 @@ class _DoomreadAppState extends State<DoomreadApp> {
   late final LiveNotification _live;
   late final BreakOverAlarm _breakOver;
   AutoSync? _autoSync;
+  late final HomeWidget _homeWidget = widget.homeWidget ?? HomeWidget();
+  late final LiveHomeWidget _liveWidget;
   final GoRouter _router = buildRouter();
 
   @override
@@ -106,6 +114,23 @@ class _DoomreadAppState extends State<DoomreadApp> {
         ],
       );
     }
+    _liveWidget = LiveHomeWidget(_works, _sessions, _settings, _homeWidget);
+    _homeWidget.onStart = _startFromWidget;
+    unawaited(_startIfWidgetTapped());
+  }
+
+  /// When Start on the home screen widget started the app, starts that
+  /// Session and opens its Reading screen once the first frame is up.
+  Future<void> _startIfWidgetTapped() async {
+    final work = await _homeWidget.openedFrom();
+    if (work == null || !mounted) return;
+    await WidgetsBinding.instance.endOfFrame;
+    if (mounted) await _startFromWidget(work);
+  }
+
+  Future<void> _startFromWidget(String workId) async {
+    final id = await _liveWidget.start(workId);
+    if (mounted) _openReading(id);
   }
 
   /// When a tap on the notification started the app, opens that Session's
@@ -130,6 +155,8 @@ class _DoomreadAppState extends State<DoomreadApp> {
     _autoSync?.dispose();
     _live.dispose();
     _breakOver.dispose();
+    _homeWidget.onStart = null;
+    _liveWidget.dispose();
     _settings.dispose();
     _router.dispose();
     super.dispose();

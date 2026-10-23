@@ -745,6 +745,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{title} is waiting.'**
   String workWaiting(String title);
+
+  /// On the home screen widget, under the page: how many evenings until the Finish at the user's pace.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{about 1 evening left} other{about {count} evenings left}}'**
+  String widgetEvenings(int count);
+
+  /// On the home screen widget, once the user has read tonight.
+  ///
+  /// In en, this message translates to:
+  /// **'Your window is lit tonight'**
+  String get widgetLit;
+
+  /// On the home screen widget, before the user has read tonight.
+  ///
+  /// In en, this message translates to:
+  /// **'Your window is still dark tonight'**
+  String get widgetDark;
 }
 
 class _AppLocalizationsDelegate
