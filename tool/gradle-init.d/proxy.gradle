@@ -1,0 +1,17 @@
+// Hands HTTPS_PROXY to Gradle, which ignores *_PROXY. It runs on every build, so a
+// long-lived daemon follows the proxy being turned on, off or changed, and one
+// checkout's proxy never reaches another's build (each has its own daemon).
+def proxy = System.getenv('HTTPS_PROXY') ?: System.getenv('https_proxy')
+def m = proxy =~ /^https?:\/\/(?:[^@\/]*@)?([^:\/]+):(\d+)/
+// A local mirror (MAVEN_MIRROR) is reached directly, not through the proxy.
+def mirrorHost = (System.getenv('MAVEN_MIRROR') =~ /^https?:\/\/([^\/:]+)/).with { it ? it[0][1] : null }
+['http', 'https'].each { scheme ->
+    if (m) {
+        System.setProperty("${scheme}.proxyHost", m[0][1])
+        System.setProperty("${scheme}.proxyPort", m[0][2])
+    } else {
+        System.clearProperty("${scheme}.proxyHost")
+        System.clearProperty("${scheme}.proxyPort")
+    }
+}
+System.setProperty('http.nonProxyHosts', mirrorHost ? "${mirrorHost}|localhost" : 'localhost')

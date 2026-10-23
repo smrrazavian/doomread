@@ -21,48 +21,43 @@ fi
 tty=(); [ -t 0 ] && tty=(-it)
 
 # Pass the host's proxy through (pub.dev and Google Maven are blocked from Iran without one).
-# Gradle runs on the JVM, which ignores *_PROXY, so the proxy is also handed to Java and Gradle.
+# Gradle runs on the JVM, which ignores *_PROXY; see gradle-init.d/proxy.gradle.
 env=()
 for v in HTTP_PROXY HTTPS_PROXY NO_PROXY http_proxy https_proxy no_proxy MAVEN_MIRROR; do
   [ -n "${!v:-}" ] && env+=(-e "$v=${!v}")
 done
-gradle_props=""
 proxy=${HTTPS_PROXY:-${https_proxy:-}}
 if [[ $proxy =~ ^https?://([^@/]*@)?([^:/]+):([0-9]+) ]]; then
   h=${BASH_REMATCH[2]} p=${BASH_REMATCH[3]}
-  # A local mirror (MAVEN_MIRROR) is reached directly, not through the proxy.
-  direct="localhost"
-  [[ ${MAVEN_MIRROR:-} =~ ^https?://([^/:]+) ]] && direct="${BASH_REMATCH[1]}|localhost"
+  # For the Gradle client JVM (it downloads the wrapper); builds get theirs from gradle-init.d/proxy.gradle.
   env+=(-e "JAVA_TOOL_OPTIONS=-Dhttp.proxyHost=$h -Dhttp.proxyPort=$p -Dhttps.proxyHost=$h -Dhttps.proxyPort=$p")
-  gradle_props="systemProp.http.proxyHost=$h
-systemProp.http.proxyPort=$p
-systemProp.https.proxyHost=$h
-systemProp.https.proxyPort=$p
-systemProp.http.nonProxyHosts=$direct"
 fi
-# Always rewritten, so turning the proxy off also removes it from Gradle.
-env+=(-e "GRADLE_PROPS=$gradle_props")
 
 # USB phones: a bind mount keeps the host's per-user ACL on the device node
 # (set by the udev rule in the README); 189 is the USB device major number.
 usb=(); [ -d /dev/bus/usb ] && usb=(-v /dev/bus/usb:/dev/bus/usb --device-cgroup-rule 'c 189:* rmw')
 
-# One long-lived container (named after the image) is reused across calls, so
+# One long-lived container (named after the checkout) is reused across calls, so
 # Gradle's daemon, adb's server and Dart's caches stay warm. It is recreated
-# when the image changes; `docker ps -a --filter name=doomread-dev` lists them; `docker rm -f` resets one.
+# when the image or this script changes; `docker ps -a --filter name=doomread-dev` lists them; `docker rm -f` resets one.
 # --network host lets adb reach the phone over wireless debugging.
-# The doomread-home volume keeps pub/Gradle caches and adb pairing keys.
-# One container per checkout (worktrees get their own, mounting their own files).
+# The doomread-home volume keeps pub/Gradle caches and adb pairing keys, shared by every checkout
+# (Gradle and pub lock their caches for concurrent use).
+# One container per checkout (worktrees get their own, mounting their own files). Each keeps its
+# Gradle and Kotlin daemons to itself: their registries would otherwise sit in the shared volume,
+# and over the shared host network one checkout's build would run in another's daemon, on its /work.
 name=doomread-dev-$(printf %s "$PWD" | sha256sum | cut -c1-8)
-if [ "$(docker inspect -f '{{.Config.Image}}' "$name" 2>/dev/null)" != "$image" ]; then
+config="$image $(sha256sum tool/dev | cut -c1-12)"
+if [ "$(docker inspect -f '{{index .Config.Labels "doomread.config"}}' "$name" 2>/dev/null)" != "$config" ]; then
   docker rm -f "$name" >/dev/null 2>&1 || true
-  docker run -d --name "$name" --network host "${usb[@]}" \
+  docker run -d --name "$name" --label "doomread.config=$config" --network host "${usb[@]}" \
     -v "$PWD":/work -w /work \
     -v doomread-home:/home/dev \
+    --tmpfs /home/dev/.gradle/daemon:mode=1777,size=1g \
+    --tmpfs /home/dev/.kotlin:mode=1777,size=256m \
     -v "$PWD/tool/gradle-init.d":/home/dev/.gradle/init.d:ro \
     "$image" sleep infinity >/dev/null
 elif [ "$(docker inspect -f '{{.State.Running}}' "$name")" != true ]; then
   docker start "$name" >/dev/null
 fi
-exec docker exec "${tty[@]}" "${env[@]}" -w /work "$name" \
-  sh -c 'mkdir -p ~/.gradle && printf "%s\n" "$GRADLE_PROPS" > ~/.gradle/gradle.properties; exec "$@"' sh "$@"
+exec docker exec "${tty[@]}" "${env[@]}" -w /work "$name" "$@"
