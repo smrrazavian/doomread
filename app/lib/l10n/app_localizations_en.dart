@@ -349,4 +349,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String stretchTrendDates(String from, String to) {
     return 'From $from to $to.';
   }
+
+  @override
+  String get notificationAskTitle => 'Keep the timer on your lock screen?';
+
+  @override
+  String get notificationAskBody =>
+      'While you read, Doomread shows one quiet notification with the timer and your book. It goes away when you stop, and that\'s all it\'s for.';
+
+  @override
+  String get notificationAskAllow => 'Allow';
+
+  @override
+  String get notificationAskNotNow => 'Not now';
+
+  @override
+  String notificationPaused(String time) {
+    return 'Paused at $time';
+  }
 }

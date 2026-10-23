@@ -1,14 +1,21 @@
 import 'dart:async';
 
 import 'package:doomread/data/repositories/session_repository.dart';
+import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
+import 'package:doomread/data/services/session_notification.dart';
 import 'package:doomread/utils/command.dart';
 import 'package:doomread/utils/result.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/foundation.dart';
 
 class TonightViewModel extends ChangeNotifier {
-  TonightViewModel(WorkRepository works, this._sessions) {
+  TonightViewModel(
+    WorkRepository works,
+    this._sessions,
+    this._settings,
+    this._notification,
+  ) {
     start = Command0(_start);
     _subs = [
       works.watchCurrent().listen((r) {
@@ -24,6 +31,8 @@ class TonightViewModel extends ChangeNotifier {
   }
 
   final SessionRepository _sessions;
+  final SettingsRepository _settings;
+  final SessionNotification _notification;
   late final List<StreamSubscription<Object?>> _subs;
   List<SessionRecord> _history = const [];
 
@@ -78,6 +87,18 @@ class TonightViewModel extends ChangeNotifier {
       if (r.road.work.id == road?.work.id && !r.at(now).stopped) return r.id;
     }
     return null;
+  }
+
+  /// Whether to explain the Session notification before this Start: only
+  /// the first time, and only where the system would still ask.
+  Future<bool> shouldExplainNotification() async =>
+      !await _settings.notificationsAsked() && await _notification.canAsk();
+
+  /// Remembers that the user answered the explanation, and on yes shows the
+  /// system prompt. Either way they aren't asked again.
+  Future<void> answerNotification({required bool allow}) async {
+    await _settings.setNotificationsAsked();
+    if (allow) await _notification.ask();
   }
 
   Future<Result<String>> _start() async =>

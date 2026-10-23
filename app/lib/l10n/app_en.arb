@@ -198,5 +198,18 @@
         "type": "String"
       }
     }
+  },
+  "notificationAskTitle": "Keep the timer on your lock screen?",
+  "notificationAskBody": "While you read, Doomread shows one quiet notification with the timer and your book. It goes away when you stop, and that's all it's for.",
+  "notificationAskAllow": "Allow",
+  "notificationAskNotNow": "Not now",
+  "notificationPaused": "Paused at {time}",
+  "@notificationPaused": {
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "5:12"
+      }
+    }
   }
 }

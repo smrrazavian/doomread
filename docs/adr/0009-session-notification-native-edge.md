@@ -1,0 +1,7 @@
+# The Session notification is a small Kotlin edge, with no plugin and no foreground service
+
+While a Session runs, a plain `Notification.Builder` in `MainActivity`'s method channel (`SessionNotification.kt`) shows one ongoing notification: the Work as its title and a system chronometer whose base is the running Stretch's start. The system does the counting, so the app needs no foreground service, no timer and no wake lock. What the notification shows is worked out in Dart from the journal alone (`LiveNotification`), so after the app is killed and opened again it comes back exactly as the journal left it. On Android 16+ it sets `FLAG_PROMOTED_ONGOING` to ask for a Live Update, and keeps to the promotion rules (a title, the standard template, no custom views, not colorized). When the user or the system doesn't allow promotion, it simply stays an ordinary ongoing notification.
+
+We chose this over `flutter_local_notifications` because we need four calls, the plugin needs core library desugaring in the Gradle build, and Live Update promotion is new enough that we'd be waiting on the plugin to expose it. The framework API adds no dependency at all, so no Google Play services (ADR-0002), and it works the same in the `apk`, `play` and `bazaar` builds. The cost is one Kotlin file and a hand-written channel, which ADR-0001 already allows for live notifications.
+
+`POST_NOTIFICATIONS` is asked for on Android 13+ the first time the user taps Start, after a one-line explanation in the app, and only once, whatever the answer. The Session starts either way.
