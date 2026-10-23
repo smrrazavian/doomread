@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:doomread_core/doomread_core.dart';
 import 'package:test/test.dart';
 
@@ -133,6 +135,70 @@ void main() {
       const defaults = WatchRules(watched: defaultWatched);
       expect(defaults.isWatched('com.instagram.android'), isTrue);
       expect(defaults.isWatched('com.zhiliaoapp.musically'), isTrue);
+    });
+  });
+
+  group('the Work app', () {
+    const youtube = 'com.google.android.youtube';
+    const reader = 'org.example.reader';
+
+    /// The view ids on a YouTube screen, as captured from a phone (only the
+    /// ids; titles and names were left out).
+    Set<String> layout(String name) =>
+        File('test/layouts/youtube-21.42.243/$name.txt')
+            .readAsLinesSync()
+            .where((l) => l.isNotEmpty)
+            .toSet();
+
+    test('switching to the Work app raises no Urge, even when it is '
+        'Watched', () {
+      const rules = WatchRules(watched: {reader}, workApp: reader);
+      expect(raisesUrge(reduce([start(0)], now: 30), reader, rules), isFalse);
+    });
+
+    test('with YouTube as the Work app, only Shorts is Watched, picked or '
+        'not', () {
+      for (final watched in [
+        <String>{},
+        {youtube},
+      ]) {
+        final rules = WatchRules(watched: watched, workApp: youtube);
+        expect(rules.isWatched(youtube, layout('shorts')), isTrue);
+        expect(rules.isWatched(youtube, layout('watch')), isFalse);
+        expect(rules.isWatched(youtube, layout('browse')), isFalse);
+        expect(rules.isWatched(youtube), isFalse);
+      }
+    });
+
+    test('a Shorts Urge is named for Shorts', () {
+      const rules = WatchRules(watched: {}, workApp: youtube);
+      expect(rules.screen(youtube, layout('shorts'))?.name, 'YouTube Shorts');
+      expect(rules.screen(youtube, layout('watch')), isNull);
+    });
+
+    test('Shorts raises an Urge while reading, and comes back up', () {
+      const rules = WatchRules(watched: {}, workApp: youtube);
+      final shorts = layout('shorts');
+      expect(
+        raisesUrge(reduce([start(0)], now: 30), youtube, rules, shorts),
+        isTrue,
+      );
+      final open = reduce([start(0), urge(5)], now: 30);
+      expect(bringsUrgeBack(open, youtube, rules, shorts), isTrue);
+      expect(bringsUrgeBack(open, youtube, rules, layout('watch')), isFalse);
+    });
+
+    test('without a Work app, a picked YouTube is Watched whole', () {
+      const rules = WatchRules(watched: {youtube});
+      expect(rules.isWatched(youtube, layout('watch')), isTrue);
+    });
+
+    test('the service is asked to look for views only in the Work app', () {
+      expect(const WatchRules(watched: {youtube}).views, isEmpty);
+      expect(const WatchRules(watched: {}, workApp: reader).views, isEmpty);
+      final views = const WatchRules(watched: {}, workApp: youtube).views;
+      expect(views.keys, [youtube]);
+      expect(views[youtube], isNotEmpty);
     });
   });
 }

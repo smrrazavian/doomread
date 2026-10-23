@@ -1,4 +1,5 @@
 import 'package:doomread/data/repositories/settings_repository.dart';
+import 'package:doomread/data/services/app_watch.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/widgets.dart';
 
@@ -13,8 +14,12 @@ class SettingsViewModel extends ChangeNotifier {
   /// The Watched apps the user picked.
   Set<String> watched = defaultWatched;
 
-  /// [watched] as the rules core classifies apps by.
-  WatchRules get watchRules => WatchRules(watched: watched);
+  /// Each Work's Work app, by Work id.
+  Map<String, LaunchableApp> workApps = const {};
+
+  /// The rules core classifies apps by during a Session with [workId].
+  WatchRules watchRules(String workId) =>
+      WatchRules(watched: watched, workApp: workApps[workId]?.package);
 
   /// Whether [load] has finished.
   bool loaded = false;
@@ -22,6 +27,7 @@ class SettingsViewModel extends ChangeNotifier {
   Future<void> load() async {
     locale = await _settings.locale() ?? locale;
     watched = await _settings.watchedApps();
+    workApps = await _settings.workApps();
     loaded = true;
     notifyListeners();
   }
@@ -30,6 +36,14 @@ class SettingsViewModel extends ChangeNotifier {
     watched = on ? {...watched, package} : ({...watched}..remove(package));
     notifyListeners();
     await _settings.setWatchedApps(watched);
+  }
+
+  /// Sets the app that holds [workId], or none when it isn't on the phone.
+  Future<void> setWorkApp(String workId, LaunchableApp? app) async {
+    workApps = {...workApps}..remove(workId);
+    if (app != null) workApps[workId] = app;
+    notifyListeners();
+    await _settings.setWorkApps(workApps);
   }
 
   Future<void> setLocale(Locale value) async {

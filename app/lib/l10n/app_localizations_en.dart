@@ -1091,7 +1091,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get watchAskBody =>
-      'To bring up the \"not yet\" screen, Doomread uses Android\'s Accessibility service to see which app you open during a Session. It only notices which app is in front. It never reads what\'s on your screen or what you type. Nothing it sees leaves your phone or is shared with anyone.\n\nYou can turn it off any time in Settings. Doomread never stops you turning it off or uninstalling anything.';
+      'To bring up the \"not yet\" screen, Doomread uses Android\'s Accessibility service to see which app you open during a Session. It notices which app is in front and, when tonight\'s Work is on YouTube, whether Shorts is open, by the kind of screen showing. It never reads the text on your screen or what you type. Nothing it sees leaves your phone or is shared with anyone.\n\nYou can turn it off any time in Settings. Doomread never stops you turning it off or uninstalling anything.';
 
   @override
   String get watchAskAgree => 'Agree and turn on';
@@ -1105,4 +1105,25 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get watchRestricted =>
       'If Android says it\'s a restricted setting: open Doomread\'s App info, tap the three-dot menu, then Allow restricted settings, and try again.';
+
+  @override
+  String get workAppNone => 'Not on the phone';
+
+  @override
+  String get workAppPick => 'Where is it tonight?';
+
+  @override
+  String get workAppHint =>
+      'Switching to its app never brings up the \"not yet\" screen. With YouTube, only Shorts does.';
+
+  @override
+  String workAppReading(String app) {
+    return 'It\'s in $app, so switching to it is fine.';
+  }
+
+  @override
+  String get openWorkApp => 'Open';
+
+  @override
+  String get workAppAsk => 'On the phone?';
 }

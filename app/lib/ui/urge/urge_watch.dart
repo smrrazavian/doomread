@@ -35,10 +35,11 @@ class UrgeWatch {
 
   /// An app reported before the journal loaded, say when the service
   /// started Doomread to hear it.
-  LaunchableApp? _pending;
+  (String, String, Set<String>)? _pending;
 
-  /// What was last told to the service.
-  bool? _watching;
+  /// What was last told to the service: whether to watch, and the Work app
+  /// whose views to look for.
+  (bool, String?)? _told;
 
   /// The Session that just slipped, until the journal shows it: the app it
   /// opens reports before then, and mustn't bring the Urge back.
@@ -57,43 +58,50 @@ class UrgeWatch {
         when !r.at(now).urgeOpen) {
       _slipping = null;
     }
-    final watching = _open(all, now) != null;
-    if (watching != _watching) {
-      _watching = watching;
-      unawaited(_watch.setWatching(on: watching));
+    final open = _open(all, now);
+    final rules = open == null ? null : _settings.watchRules(open.road.work.id);
+    final told = (open != null, rules?.workApp);
+    if (told != _told) {
+      _told = told;
+      unawaited(_watch.setWatching(on: told.$1, views: rules?.views ?? {}));
     }
-    if (_pending case final p?) {
+    if (_pending case (final package, final label, final views)?) {
       _pending = null;
-      _foreground(p.package, p.label);
+      _foreground(package, label, views);
     }
   }
 
-  void _foreground(String package, String label) {
+  void _foreground(String package, String label, Set<String> views) {
     final all = _all;
     // Not before the user's own Watched apps have loaded, either.
     if (all == null || !_settings.loaded) {
-      _pending = (package: package, label: label);
+      _pending = (package, label, views);
       return;
     }
-    unawaited(_raise(all, package, label));
+    unawaited(_raise(all, package, label, views));
   }
 
   Future<void> _raise(
     List<SessionRecord> all,
     String package,
     String label,
+    Set<String> views,
   ) async {
     final now = _sessions.now();
     final open = _open(all, now);
     if (open == null || open.id == _slipping) return;
     final session = open.at(now);
-    final rules = _settings.watchRules;
-    if (raisesUrge(session, package, rules)) {
+    final rules = _settings.watchRules(open.road.work.id);
+    if (raisesUrge(session, package, rules, views)) {
       await _sessions.add(open, SessionEventKind.urge);
-    } else if (!bringsUrgeBack(session, package, rules)) {
+    } else if (!bringsUrgeBack(session, package, rules, views)) {
       return;
     }
-    _app = (package: package, label: label);
+    // Shorts is named for itself, not for YouTube.
+    _app = (
+      package: package,
+      label: rules.screen(package, views)?.name ?? label,
+    );
     onUrge?.call(open.id);
     await _watch.bringToFront();
   }

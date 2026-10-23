@@ -169,6 +169,9 @@ class FakeAppWatch implements AppWatch {
   /// What the app last said about watching.
   bool watching = false;
 
+  /// The views the service was last asked to look for, by package.
+  Map<String, Set<String>> views = const {};
+
   /// How many times the app came to the front for an Urge.
   int fronts = 0;
 
@@ -182,7 +185,7 @@ class FakeAppWatch implements AppWatch {
   bool get available => true;
 
   @override
-  void Function(String package, String label)? onForeground;
+  void Function(String package, String label, Set<String> views)? onForeground;
 
   @override
   Future<bool> enabled() async => isEnabled;
@@ -194,7 +197,13 @@ class FakeAppWatch implements AppWatch {
   Future<List<LaunchableApp>> apps() async => installed;
 
   @override
-  Future<void> setWatching({required bool on}) async => watching = on;
+  Future<void> setWatching({
+    required bool on,
+    Map<String, Set<String>> views = const {},
+  }) async {
+    watching = on;
+    this.views = views;
+  }
 
   @override
   Future<void> bringToFront() async => fronts++;
@@ -204,6 +213,6 @@ class FakeAppWatch implements AppWatch {
   @override
   Future<void> open(String package) async {
     opened = package;
-    onForeground?.call(package, package);
+    onForeground?.call(package, package, const {});
   }
 }

@@ -9,5 +9,5 @@
     <string name="widget_description">What you’re on, tonight’s window and Start</string>
     <!-- WatchService in the system's Accessibility settings (ADR 0014). -->
     <string name="watch_label">Doomread: “not yet” screen</string>
-    <string name="watch_description">During a reading Session, Doomread sees which app you open, and only that. If it’s one of your Watched apps, it shows the “not yet” screen, with a way back to your book and a way on to the app. It never reads what’s on your screen or what you type, and nothing leaves your phone.</string>
+    <string name="watch_description">During a reading Session, Doomread sees which app you open and, when your Work is on YouTube, whether Shorts is open, by the kind of screen. If it’s one of your Watched apps, it shows the “not yet” screen, with a way back to your book and a way on to the app. It never reads the text on your screen or what you type, and nothing leaves your phone.</string>
 </resources>

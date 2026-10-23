@@ -1163,7 +1163,7 @@ abstract class AppLocalizations {
   /// Prominent disclosure body (Google Play policy): what is accessed, how it's used, that it isn't collected or shared, and how to turn it off.
   ///
   /// In en, this message translates to:
-  /// **'To bring up the \"not yet\" screen, Doomread uses Android\'s Accessibility service to see which app you open during a Session. It only notices which app is in front. It never reads what\'s on your screen or what you type. Nothing it sees leaves your phone or is shared with anyone.\n\nYou can turn it off any time in Settings. Doomread never stops you turning it off or uninstalling anything.'**
+  /// **'To bring up the \"not yet\" screen, Doomread uses Android\'s Accessibility service to see which app you open during a Session. It notices which app is in front and, when tonight\'s Work is on YouTube, whether Shorts is open, by the kind of screen showing. It never reads the text on your screen or what you type. Nothing it sees leaves your phone or is shared with anyone.\n\nYou can turn it off any time in Settings. Doomread never stops you turning it off or uninstalling anything.'**
   String get watchAskBody;
 
   /// The affirmative tap on the disclosure; opens Android's Accessibility settings.
@@ -1189,6 +1189,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'If Android says it\'s a restricted setting: open Doomread\'s App info, tap the three-dot menu, then Allow restricted settings, and try again.'**
   String get watchRestricted;
+
+  /// Tonight: the Work isn't in an app on this phone (a paper book, a TV).
+  ///
+  /// In en, this message translates to:
+  /// **'Not on the phone'**
+  String get workAppNone;
+
+  /// Title of the sheet that picks the Work app.
+  ///
+  /// In en, this message translates to:
+  /// **'Where is it tonight?'**
+  String get workAppPick;
+
+  /// Under workAppPick.
+  ///
+  /// In en, this message translates to:
+  /// **'Switching to its app never brings up the \"not yet\" screen. With YouTube, only Shorts does.'**
+  String get workAppHint;
+
+  /// Reading, in place of faceDown, when the Work is in an app on the phone.
+  ///
+  /// In en, this message translates to:
+  /// **'It\'s in {app}, so switching to it is fine.'**
+  String workAppReading(String app);
+
+  /// Button by workAppReading that opens the Work app.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get openWorkApp;
+
+  /// Reading, by faceDown: picks the app that holds the Work, its Work app.
+  ///
+  /// In en, this message translates to:
+  /// **'On the phone?'**
+  String get workAppAsk;
 }
 
 class _AppLocalizationsDelegate

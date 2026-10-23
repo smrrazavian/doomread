@@ -5,6 +5,7 @@ import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.SystemClock
 import android.provider.Settings
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityManager
@@ -42,7 +43,11 @@ object Engine {
 object Watch {
     private const val PREFS = "watch"
     private const val WATCHING = "watching"
+    private const val VIEWS = "views"
     private var channel: MethodChannel? = null
+
+    /** The view ids to look for, by package; read from disk once. */
+    private var views: Map<String, List<String>>? = null
 
     fun listen(context: Context, messenger: BinaryMessenger) {
         val channel = MethodChannel(messenger, "doomread/watch")
@@ -58,8 +63,12 @@ object Watch {
                 "setWatching" -> {
                     // Kept on disk: after a restart, the service has to know
                     // whether to start Dart before Dart has said anything.
+                    val ids = call.argument<List<String>>("views").orEmpty()
                     context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
-                        .putBoolean(WATCHING, call.arguments as Boolean).apply()
+                        .putBoolean(WATCHING, call.argument<Boolean>("on")!!)
+                        .putStringSet(VIEWS, ids.toSet())
+                        .apply()
+                    views = parse(ids)
                     result.success(null)
                 }
                 "bringToFront" -> {
@@ -107,29 +116,68 @@ object Watch {
         pkg
     }
 
-    /** Tells Dart [pkg] came to the front, while a Session is open. */
-    fun foreground(context: Context, pkg: String) {
+    // "package|view id", as Dart sends them.
+    private fun parse(ids: Collection<String>) =
+        ids.map { it.substringBefore('|') to it.substringAfter('|') }
+            .groupBy({ it.first }, { it.second })
+
+    /** The view ids Dart asked to look for in [pkg]'s screens, if any. */
+    fun views(context: Context, pkg: String): List<String>? {
+        val all = views ?: parse(
+            context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getStringSet(VIEWS, null).orEmpty(),
+        ).also { views = it }
+        return all[pkg]
+    }
+
+    /**
+     * Tells Dart [pkg] came to the front, while a Session is open, and which
+     * of the view ids it asked for are on its screen.
+     */
+    fun foreground(context: Context, pkg: String, seen: Set<String>) {
         if (!context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(WATCHING, false)) return
         // Starts Dart if it isn't running; the message waits in Flutter's
         // channel buffer until Dart listens.
         Engine.get(context)
-        channel?.invokeMethod("foreground", mapOf("package" to pkg, "label" to label(context, pkg)))
+        channel?.invokeMethod(
+            "foreground",
+            mapOf("package" to pkg, "label" to label(context, pkg), "views" to seen.toList()),
+        )
     }
 }
 
 /**
- * Hears which app's window comes to the front. It reads no window content
- * (canRetrieveWindowContent is false), never acts on other apps, and so can
- * never stop the user disabling or uninstalling anything.
+ * Hears which app's window comes to the front. In the Work app only, it
+ * also looks up the view ids Dart asked for (Shorts in YouTube, ADR 0015):
+ * whether each is on screen, never any text. It never acts on other apps,
+ * and so can never stop the user disabling or uninstalling anything.
  */
 class WatchService : AccessibilityService() {
-    private var last: String? = null
+    /** What was reported last, so each change is reported once. */
+    private var last: Pair<String, Set<String>>? = null
+    private var checkedAt = 0L
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
         val pkg = event.packageName?.toString() ?: return
-        if (pkg == last) return
-        last = pkg
-        Watch.foreground(this, pkg)
+        val ids = Watch.views(this, pkg)
+        if (event.eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+            // Content changes only matter inside the Work app, and come many
+            // times a second while a video plays.
+            val now = SystemClock.uptimeMillis()
+            if (ids == null || now - checkedAt < CHECK_EVERY_MS) return
+            checkedAt = now
+        }
+        val root = if (ids == null) null else rootInActiveWindow
+        // A content change from a window that isn't the one in front.
+        if (event.eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED && root?.packageName != pkg) return
+        val seen = ids.orEmpty().filter { root?.findAccessibilityNodeInfosByViewId(it)?.isNotEmpty() == true }.toSet()
+        val report = pkg to seen
+        if (report == last) return
+        last = report
+        Watch.foreground(this, pkg, seen)
+    }
+
+    private companion object {
+        const val CHECK_EVERY_MS = 500L
     }
 
     override fun onInterrupt() {}

@@ -49,4 +49,17 @@ void main() {
       expect(await settings.watchedApps(), isEmpty);
     },
   );
+
+  test("remembers each Work's Work app", () async {
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    final settings = SettingsRepository(db);
+    expect(await settings.workApps(), isEmpty);
+    await settings.setWorkApps({
+      'w1': (package: 'com.google.android.youtube', label: 'YouTube'),
+    });
+    expect(await settings.workApps(), {
+      'w1': (package: 'com.google.android.youtube', label: 'YouTube'),
+    });
+  });
 }

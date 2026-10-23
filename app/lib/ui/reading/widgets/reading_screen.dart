@@ -5,6 +5,7 @@ import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/planned_break/widgets/next_break_card.dart';
 import 'package:doomread/ui/reading/view_models/reading_view_model.dart';
 import 'package:doomread/ui/reading/widgets/house_view.dart';
+import 'package:doomread/ui/reading/widgets/work_app_card.dart';
 import 'package:doomread/ui/urge/urge_watch.dart';
 import 'package:doomread/ui/urge/widgets/urge_view.dart';
 import 'package:flutter/material.dart';
@@ -107,25 +108,7 @@ class _Reading extends StatelessWidget {
               const SizedBox(height: 24),
               NextBreakCard(sessionId: record.id),
               const SizedBox(height: 8),
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Palette.panel,
-                  border: Border.all(color: Palette.line),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.phone_android, color: Palette.mute),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(l10n.faceDown, style: text.bodySmall),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              WorkAppCard(workId: record.road.work.id),
               Expanded(
                 child: Align(
                   alignment: Alignment.bottomCenter,

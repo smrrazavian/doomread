@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:doomread/data/services/app_database.dart';
+import 'package:doomread/data/services/app_watch.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/widgets.dart';
 
@@ -12,6 +15,7 @@ class SettingsRepository {
   static const _notificationsAskedKey = 'notificationsAsked';
   static const _watchedKey = 'watchedApps';
   static const _watchAskedKey = 'watchAsked';
+  static const _workAppsKey = 'workApps';
 
   /// The language the user picked, or null if they never picked one.
   Future<Locale?> locale() async {
@@ -57,5 +61,30 @@ class SettingsRepository {
       .into(_db.settings)
       .insertOnConflictUpdate(
         SettingsCompanion.insert(key: _watchAskedKey, value: '1'),
+      );
+
+  /// Each Work's Work app, by Work id. Kept on this device: package names
+  /// belong to it, like the current Work (ADR 0012).
+  Future<Map<String, LaunchableApp>> workApps() async {
+    final v = await _db.setting(_workAppsKey);
+    if (v == null) return const {};
+    return {
+      for (final MapEntry(:key, :value)
+          in (jsonDecode(v) as Map<String, Object?>).entries)
+        if (value case {'package': final String p, 'label': final String l})
+          key: (package: p, label: l),
+    };
+  }
+
+  Future<void> setWorkApps(Map<String, LaunchableApp> apps) => _db
+      .into(_db.settings)
+      .insertOnConflictUpdate(
+        SettingsCompanion.insert(
+          key: _workAppsKey,
+          value: jsonEncode({
+            for (final MapEntry(:key, :value) in apps.entries)
+              key: {'package': value.package, 'label': value.label},
+          }),
+        ),
       );
 }

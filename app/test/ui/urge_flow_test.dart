@@ -49,7 +49,7 @@ void main() {
   ];
 
   Future<void> open(WidgetTester tester, FakeAppWatch w, String app) async {
-    w.onForeground!(app, 'Instagram');
+    w.onForeground!(app, 'Instagram', const {});
     await tester.pumpAndSettle();
   }
 

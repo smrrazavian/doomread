@@ -19,13 +19,15 @@ class AppWatch {
   bool get available => Platform.isAndroid;
 
   /// Called with the app that just came to the front, while [setWatching]
-  /// is on.
-  void Function(String package, String label)? onForeground;
+  /// is on, and which of the views asked for are on its screen.
+  void Function(String package, String label, Set<String> views)? onForeground;
 
   Future<Object?> _fromNative(MethodCall call) async {
     if (call.method == 'foreground') {
       final args = call.arguments! as Map<Object?, Object?>;
-      onForeground?.call(args['package']! as String, args['label']! as String);
+      onForeground?.call(args['package']! as String, args['label']! as String, {
+        ...(args['views'] as List<Object?>? ?? const []).cast<String>(),
+      });
     }
     return null;
   }
@@ -51,9 +53,20 @@ class AppWatch {
   }
 
   /// Whether a Session is open, so the service should report apps, and
-  /// start Doomread to hear them if it isn't running.
-  Future<void> setWatching({required bool on}) async {
-    if (available) await _channel.invokeMethod<void>('setWatching', on);
+  /// start Doomread to hear them if it isn't running. [views] are the view
+  /// ids to look for, by package; only those apps' screens are looked at.
+  Future<void> setWatching({
+    required bool on,
+    Map<String, Set<String>> views = const {},
+  }) async {
+    if (!available) return;
+    await _channel.invokeMethod<void>('setWatching', {
+      'on': on,
+      'views': [
+        for (final MapEntry(:key, :value) in views.entries)
+          for (final id in value) '$key|$id',
+      ],
+    });
   }
 
   /// Brings Doomread in front of the Watched app.

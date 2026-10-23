@@ -836,7 +836,7 @@
   "@watchAskTitle": {
     "description": "Prominent disclosure title (Google Play policy), shown before the Accessibility settings."
   },
-  "watchAskBody": "To bring up the \"not yet\" screen, Doomread uses Android's Accessibility service to see which app you open during a Session. It only notices which app is in front. It never reads what's on your screen or what you type. Nothing it sees leaves your phone or is shared with anyone.\n\nYou can turn it off any time in Settings. Doomread never stops you turning it off or uninstalling anything.",
+  "watchAskBody": "To bring up the \"not yet\" screen, Doomread uses Android's Accessibility service to see which app you open during a Session. It notices which app is in front and, when tonight's Work is on YouTube, whether Shorts is open, by the kind of screen showing. It never reads the text on your screen or what you type. Nothing it sees leaves your phone or is shared with anyone.\n\nYou can turn it off any time in Settings. Doomread never stops you turning it off or uninstalling anything.",
   "@watchAskBody": {
     "description": "Prominent disclosure body (Google Play policy): what is accessed, how it's used, that it isn't collected or shared, and how to turn it off."
   },
@@ -855,5 +855,34 @@
   "watchRestricted": "If Android says it's a restricted setting: open Doomread's App info, tap the three-dot menu, then Allow restricted settings, and try again.",
   "@watchRestricted": {
     "description": "Under watchOff. Android 13+ restricts Accessibility for apps installed outside an app store (the apk flavour, and Cafe Bazaar)."
+  },
+  "workAppNone": "Not on the phone",
+  "@workAppNone": {
+    "description": "Tonight: the Work isn't in an app on this phone (a paper book, a TV)."
+  },
+  "workAppPick": "Where is it tonight?",
+  "@workAppPick": {
+    "description": "Title of the sheet that picks the Work app."
+  },
+  "workAppHint": "Switching to its app never brings up the \"not yet\" screen. With YouTube, only Shorts does.",
+  "@workAppHint": {
+    "description": "Under workAppPick."
+  },
+  "workAppReading": "It's in {app}, so switching to it is fine.",
+  "@workAppReading": {
+    "description": "Reading, in place of faceDown, when the Work is in an app on the phone.",
+    "placeholders": {
+      "app": {
+        "type": "String"
+      }
+    }
+  },
+  "openWorkApp": "Open",
+  "@openWorkApp": {
+    "description": "Button by workAppReading that opens the Work app."
+  },
+  "workAppAsk": "On the phone?",
+  "@workAppAsk": {
+    "description": "Reading, by faceDown: picks the app that holds the Work, its Work app."
   }
 }

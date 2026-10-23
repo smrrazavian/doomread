@@ -1,5 +1,6 @@
 import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/data/services/app_database.dart';
+import 'package:doomread/data/services/app_watch.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -38,7 +39,7 @@ void main() {
     await tester.pumpAndSettle();
     now = now.add(const Duration(minutes: 6));
     await tester.pump(const Duration(seconds: 1));
-    watch.onForeground!('com.instagram.android', 'Instagram');
+    watch.onForeground!('com.instagram.android', 'Instagram', const {});
     await tester.pumpAndSettle();
     return watch;
   }
@@ -75,20 +76,40 @@ void main() {
       );
     });
 
+    testApp('Picking the Work app, in $lang', (tester, db) async {
+      await addDarkWatchedLastNight(db, lang, (t) => now = t);
+      await open(tester, db, lang, FakeAppWatch(installed: _apps));
+      await tester.tap(find.byType(FilledButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.workAppAsk));
+      await tester.pumpAndSettle();
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('work_app_sheet_$lang.png'),
+      );
+    });
+
+    testApp('Reading with a Work app, in $lang', (tester, db) async {
+      await addDarkWatchedLastNight(db, lang, (t) => now = t);
+      await open(tester, db, lang, FakeAppWatch(installed: _apps));
+      await tester.tap(find.byType(FilledButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.workAppAsk));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Netflix'));
+      await tester.pumpAndSettle();
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('reading_work_app_$lang.png'),
+      );
+    });
+
     testApp('Watched apps, off, in $lang', (tester, db) async {
       await open(
         tester,
         db,
         lang,
-        FakeAppWatch(
-          isEnabled: false,
-          installed: [
-            (package: 'com.instagram.android', label: 'Instagram'),
-            (package: 'com.zhiliaoapp.musically', label: 'TikTok'),
-            (package: 'org.telegram.messenger', label: 'Telegram'),
-            (package: 'com.google.android.youtube', label: 'YouTube'),
-          ],
-        ),
+        FakeAppWatch(isEnabled: false, installed: _apps.take(4).toList()),
       );
       await tester.tap(find.byTooltip(l10n.settings));
       await tester.pumpAndSettle();
@@ -101,3 +122,11 @@ void main() {
     });
   }
 }
+
+const List<LaunchableApp> _apps = [
+  (package: 'com.instagram.android', label: 'Instagram'),
+  (package: 'com.zhiliaoapp.musically', label: 'TikTok'),
+  (package: 'org.telegram.messenger', label: 'Telegram'),
+  (package: 'com.google.android.youtube', label: 'YouTube'),
+  (package: 'com.netflix.mediaclient', label: 'Netflix'),
+];
