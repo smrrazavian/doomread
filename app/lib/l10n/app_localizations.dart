@@ -607,6 +607,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'p. {from}–{to}'**
   String pageRange(int from, int to);
+
+  /// Under the House on the Reading screen when only the user's own Window is lit.
+  ///
+  /// In en, this message translates to:
+  /// **'Only your light is on for now. Each evening you read lights another.'**
+  String get houseEmpty;
+
+  /// Under the House when it has other lit Windows; before Friends exist, they are all the user's own earlier Sessions.
+  ///
+  /// In en, this message translates to:
+  /// **'Every other light here is yours too, from an evening you read.'**
+  String get houseYours;
 }
 
 class _AppLocalizationsDelegate

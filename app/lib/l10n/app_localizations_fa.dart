@@ -425,4 +425,12 @@ class AppLocalizationsFa extends AppLocalizations {
 
     return 'ص $fromString تا $toString';
   }
+
+  @override
+  String get houseEmpty =>
+      'فعلاً فقط چراغ تو روشنه. هر شب که بخونی، یه چراغ دیگه هم روشن می‌شه.';
+
+  @override
+  String get houseYours =>
+      'بقیه‌ی چراغ‌های اینجا هم مال خودتن، از شب‌هایی که خوندی.';
 }
