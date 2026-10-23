@@ -32,7 +32,8 @@ class AccountViewModel extends ChangeNotifier {
   late final Command0<void> signOut;
 
   /// Who is signed in on this device, or null when signed out.
-  String? username;
+  String? get username => _username;
+  String? _username;
 
   /// Why the last sign in or sign up failed, if it did.
   AuthFailure? get failure => switch (signIn.result ?? signUp.result) {
@@ -42,21 +43,21 @@ class AccountViewModel extends ChangeNotifier {
   };
 
   VoidCallback _onSession(Command<String> command) => () {
-    if (command.result case Ok(:final value) when username != value) {
-      username = value;
+    if (command.result case Ok(:final value) when _username != value) {
+      _username = value;
       notifyListeners();
     }
   };
 
   Future<Result<void>> _load() async {
-    username = await _auth.username();
+    _username = await _auth.username();
     notifyListeners();
     return const Result.ok(null);
   }
 
   Future<Result<void>> _signOut() async {
     await _auth.signOut();
-    username = null;
+    _username = null;
     signIn.clearResult();
     signUp.clearResult();
     notifyListeners();
