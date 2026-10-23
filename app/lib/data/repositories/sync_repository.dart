@@ -37,7 +37,8 @@ class SyncException implements Exception {
 /// Each round sends what this device changed since the server last saw it,
 /// and takes in everything the server took in after this device's cursor.
 /// Journal events are only ever added, so they merge without conflicts.
-/// Works and Notes keep their last write ([deviceTakes]).
+/// Notes keep their last write ([deviceTakes]); so do Works, except that a
+/// Work's Position keeps its own last write ([_takeWork]).
 class SyncRepository {
   SyncRepository(
     this._db,
@@ -102,12 +103,15 @@ class SyncRepository {
         final answer = SyncResponse.fromJson(
           jsonDecode(response.body) as Map<String, Object?>,
         );
-        await _db.transaction(() async {
+        final merged = await _db.transaction(() async {
           await _markSent(outgoing);
-          await _take(answer.items);
+          final merged = await _take(answer.items);
           await _setCursor(answer.cursor);
+          return merged;
         });
-        if (!answer.more && outgoing.length < SyncRequest.maxItems) break;
+        if (!answer.more && outgoing.length < SyncRequest.maxItems && !merged) {
+          break;
+        }
       }
     } on Object {
       // Offline, a timeout, or an answer that isn't the protocol.
@@ -201,8 +205,10 @@ class SyncRepository {
     }
   }
 
-  /// Takes in the server's rows, in the server's order.
-  Future<void> _take(List<SyncItem> items) async {
+  /// Takes in the server's rows, in the server's order. Returns whether a
+  /// merge left a Work the server must be sent back.
+  Future<bool> _take(List<SyncItem> items) async {
+    var merged = false;
     for (final item in items) {
       switch (item.kind) {
         case SyncKind.event:
@@ -219,13 +225,7 @@ class SyncRepository {
                 ),
               );
         case SyncKind.work:
-          final local = await (_db.select(
-            _db.works,
-          )..where((w) => w.id.equals(item.id))).getSingleOrNull();
-          if (local != null && !deviceTakes(item.updatedAt, local.updatedAt)) {
-            continue;
-          }
-          await _db.into(_db.works).insertOnConflictUpdate(_workRow(item));
+          if (await _takeWork(item)) merged = true;
         case SyncKind.note:
           final note = _noteRow(item);
           // A Session has one Note; if two devices each ended it, the later
@@ -249,6 +249,55 @@ class SyncRepository {
           await _db.into(_db.notes).insertOnConflictUpdate(note);
       }
     }
+    return merged;
+  }
+
+  /// Takes in the server's copy of a Work. The row keeps its last write,
+  /// but the Position keeps its own (`positionAt`): a rename made elsewhere
+  /// after this device moved the Position must not move it back. Neither
+  /// is the highest page wins, so a Position can still be corrected down.
+  ///
+  /// When each side has the later half, the merge is a new write, sent
+  /// back so the server and every other device get it. It is stamped a
+  /// second after both halves: rows keep whole seconds, and on a tie the
+  /// server keeps what it has. Returns whether there was such a merge.
+  Future<bool> _takeWork(SyncItem item) async {
+    final incoming = _workRow(item);
+    final local = await (_db.select(
+      _db.works,
+    )..where((w) => w.id.equals(item.id))).getSingleOrNull();
+    if (local == null) {
+      await _db.into(_db.works).insert(incoming);
+      return false;
+    }
+    final rowFromServer = deviceTakes(item.updatedAt, local.updatedAt);
+    final localPositionAt = local.positionAt ?? local.updatedAt;
+    final (
+      position,
+      positionAt,
+    ) = deviceTakes(incoming.positionAt.value!, localPositionAt)
+        ? (incoming.position.value, incoming.positionAt.value!)
+        : (local.position, localPositionAt);
+    if (rowFromServer && position == incoming.position.value) {
+      await _db.into(_db.works).insertOnConflictUpdate(incoming);
+      return false;
+    }
+    if (!rowFromServer && position == local.position) return false;
+    final later = item.updatedAt.isAfter(local.updatedAt)
+        ? item.updatedAt
+        : local.updatedAt;
+    final row = rowFromServer ? incoming : local.toCompanion(false);
+    await _db
+        .into(_db.works)
+        .insertOnConflictUpdate(
+          row.copyWith(
+            position: Value(position),
+            positionAt: Value(positionAt),
+            updatedAt: Value(later.add(const Duration(seconds: 1))),
+            syncedAt: const Value(null),
+          ),
+        );
+    return true;
   }
 
   // How each row travels. The server never reads `data`, so a Work can
@@ -265,6 +314,7 @@ class SyncRepository {
       'totalPages': w.totalPages,
       'checkpoints': WorkRepository.toWork(w).checkpoints,
       'position': w.position,
+      'positionAt': (w.positionAt ?? w.updatedAt).microsecondsSinceEpoch,
     },
   );
 
@@ -279,6 +329,11 @@ class SyncRepository {
     totalPages: i.data['totalPages']! as int,
     checkpoints: (i.data['checkpoints']! as List<Object?>).join(','),
     position: Value(i.data['position']! as int),
+    // Devices from before positionAt moved the Position with every write.
+    positionAt: Value(switch (i.data['positionAt']) {
+      final int us => DateTime.fromMicrosecondsSinceEpoch(us, isUtc: true),
+      _ => i.updatedAt,
+    }),
     updatedAt: i.updatedAt,
     syncedAt: Value(i.updatedAt),
   );

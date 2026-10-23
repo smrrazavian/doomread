@@ -295,6 +295,17 @@ class $WorksTable extends Works with TableInfo<$WorksTable, WorkRow> {
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _positionAtMeta = const VerificationMeta(
+    'positionAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> positionAt = GeneratedColumn<DateTime>(
+    'position_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _syncedAtMeta = const VerificationMeta(
     'syncedAt',
   );
@@ -316,6 +327,7 @@ class $WorksTable extends Works with TableInfo<$WorksTable, WorkRow> {
     checkpoints,
     position,
     updatedAt,
+    positionAt,
     syncedAt,
   ];
   @override
@@ -384,6 +396,12 @@ class $WorksTable extends Works with TableInfo<$WorksTable, WorkRow> {
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
     }
+    if (data.containsKey('position_at')) {
+      context.handle(
+        _positionAtMeta,
+        positionAt.isAcceptableOrUnknown(data['position_at']!, _positionAtMeta),
+      );
+    }
     if (data.containsKey('synced_at')) {
       context.handle(
         _syncedAtMeta,
@@ -433,6 +451,10 @@ class $WorksTable extends Works with TableInfo<$WorksTable, WorkRow> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
       )!,
+      positionAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}position_at'],
+      ),
       syncedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}synced_at'],
@@ -459,6 +481,12 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
   final int position;
   final DateTime updatedAt;
 
+  /// When [position] last changed. Sync keeps the later Position apart from
+  /// the rest of the row, so a rename elsewhere can't move it back.
+  /// Nullable only because SQLite can't add a NOT NULL column to old rows;
+  /// the migration fills it in, and null reads as [updatedAt].
+  final DateTime? positionAt;
+
   /// The [updatedAt] last sent to or taken from the sync server. Null or
   /// different when there's a change to send.
   final DateTime? syncedAt;
@@ -471,6 +499,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
     required this.checkpoints,
     required this.position,
     required this.updatedAt,
+    this.positionAt,
     this.syncedAt,
   });
   @override
@@ -486,6 +515,9 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
     map['checkpoints'] = Variable<String>(checkpoints);
     map['position'] = Variable<int>(position);
     map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || positionAt != null) {
+      map['position_at'] = Variable<DateTime>(positionAt);
+    }
     if (!nullToAbsent || syncedAt != null) {
       map['synced_at'] = Variable<DateTime>(syncedAt);
     }
@@ -502,6 +534,9 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
       checkpoints: Value(checkpoints),
       position: Value(position),
       updatedAt: Value(updatedAt),
+      positionAt: positionAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(positionAt),
       syncedAt: syncedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(syncedAt),
@@ -524,6 +559,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
       checkpoints: serializer.fromJson<String>(json['checkpoints']),
       position: serializer.fromJson<int>(json['position']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      positionAt: serializer.fromJson<DateTime?>(json['positionAt']),
       syncedAt: serializer.fromJson<DateTime?>(json['syncedAt']),
     );
   }
@@ -541,6 +577,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
       'checkpoints': serializer.toJson<String>(checkpoints),
       'position': serializer.toJson<int>(position),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'positionAt': serializer.toJson<DateTime?>(positionAt),
       'syncedAt': serializer.toJson<DateTime?>(syncedAt),
     };
   }
@@ -554,6 +591,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
     String? checkpoints,
     int? position,
     DateTime? updatedAt,
+    Value<DateTime?> positionAt = const Value.absent(),
     Value<DateTime?> syncedAt = const Value.absent(),
   }) => WorkRow(
     id: id ?? this.id,
@@ -564,6 +602,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
     checkpoints: checkpoints ?? this.checkpoints,
     position: position ?? this.position,
     updatedAt: updatedAt ?? this.updatedAt,
+    positionAt: positionAt.present ? positionAt.value : this.positionAt,
     syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
   );
   WorkRow copyWithCompanion(WorksCompanion data) {
@@ -580,6 +619,9 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
           : this.checkpoints,
       position: data.position.present ? data.position.value : this.position,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      positionAt: data.positionAt.present
+          ? data.positionAt.value
+          : this.positionAt,
       syncedAt: data.syncedAt.present ? data.syncedAt.value : this.syncedAt,
     );
   }
@@ -595,6 +637,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
           ..write('checkpoints: $checkpoints, ')
           ..write('position: $position, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('positionAt: $positionAt, ')
           ..write('syncedAt: $syncedAt')
           ..write(')'))
         .toString();
@@ -610,6 +653,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
     checkpoints,
     position,
     updatedAt,
+    positionAt,
     syncedAt,
   );
   @override
@@ -624,6 +668,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
           other.checkpoints == this.checkpoints &&
           other.position == this.position &&
           other.updatedAt == this.updatedAt &&
+          other.positionAt == this.positionAt &&
           other.syncedAt == this.syncedAt);
 }
 
@@ -636,6 +681,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
   final Value<String> checkpoints;
   final Value<int> position;
   final Value<DateTime> updatedAt;
+  final Value<DateTime?> positionAt;
   final Value<DateTime?> syncedAt;
   final Value<int> rowid;
   const WorksCompanion({
@@ -647,6 +693,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
     this.checkpoints = const Value.absent(),
     this.position = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.positionAt = const Value.absent(),
     this.syncedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -659,6 +706,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
     required String checkpoints,
     this.position = const Value.absent(),
     required DateTime updatedAt,
+    this.positionAt = const Value.absent(),
     this.syncedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -676,6 +724,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
     Expression<String>? checkpoints,
     Expression<int>? position,
     Expression<DateTime>? updatedAt,
+    Expression<DateTime>? positionAt,
     Expression<DateTime>? syncedAt,
     Expression<int>? rowid,
   }) {
@@ -688,6 +737,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
       if (checkpoints != null) 'checkpoints': checkpoints,
       if (position != null) 'position': position,
       if (updatedAt != null) 'updated_at': updatedAt,
+      if (positionAt != null) 'position_at': positionAt,
       if (syncedAt != null) 'synced_at': syncedAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -702,6 +752,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
     Value<String>? checkpoints,
     Value<int>? position,
     Value<DateTime>? updatedAt,
+    Value<DateTime?>? positionAt,
     Value<DateTime?>? syncedAt,
     Value<int>? rowid,
   }) {
@@ -714,6 +765,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
       checkpoints: checkpoints ?? this.checkpoints,
       position: position ?? this.position,
       updatedAt: updatedAt ?? this.updatedAt,
+      positionAt: positionAt ?? this.positionAt,
       syncedAt: syncedAt ?? this.syncedAt,
       rowid: rowid ?? this.rowid,
     );
@@ -748,6 +800,9 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
+    if (positionAt.present) {
+      map['position_at'] = Variable<DateTime>(positionAt.value);
+    }
     if (syncedAt.present) {
       map['synced_at'] = Variable<DateTime>(syncedAt.value);
     }
@@ -768,6 +823,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
           ..write('checkpoints: $checkpoints, ')
           ..write('position: $position, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('positionAt: $positionAt, ')
           ..write('syncedAt: $syncedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -1854,6 +1910,7 @@ typedef $$WorksTableCreateCompanionBuilder = WorksCompanion Function({
   required String checkpoints,
   Value<int> position,
   required DateTime updatedAt,
+  Value<DateTime?> positionAt,
   Value<DateTime?> syncedAt,
   Value<int> rowid,
 });
@@ -1866,6 +1923,7 @@ typedef $$WorksTableUpdateCompanionBuilder = WorksCompanion Function({
   Value<String> checkpoints,
   Value<int> position,
   Value<DateTime> updatedAt,
+  Value<DateTime?> positionAt,
   Value<DateTime?> syncedAt,
   Value<int> rowid,
 });
@@ -1916,6 +1974,11 @@ class $$WorksTableFilterComposer extends Composer<_$AppDatabase, $WorksTable> {
 
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get positionAt => $composableBuilder(
+    column: $table.positionAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1974,6 +2037,11 @@ class $$WorksTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<DateTime> get positionAt => $composableBuilder(
+    column: $table.positionAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get syncedAt => $composableBuilder(
     column: $table.syncedAt,
     builder: (column) => ColumnOrderings(column),
@@ -2017,6 +2085,11 @@ class $$WorksTableAnnotationComposer
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 
+  GeneratedColumn<DateTime> get positionAt => $composableBuilder(
+    column: $table.positionAt,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get syncedAt =>
       $composableBuilder(column: $table.syncedAt, builder: (column) => column);
 }
@@ -2057,6 +2130,7 @@ class $$WorksTableTableManager
                 Value<String> checkpoints = const Value.absent(),
                 Value<int> position = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> positionAt = const Value.absent(),
                 Value<DateTime?> syncedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WorksCompanion(
@@ -2068,6 +2142,7 @@ class $$WorksTableTableManager
                 checkpoints: checkpoints,
                 position: position,
                 updatedAt: updatedAt,
+                positionAt: positionAt,
                 syncedAt: syncedAt,
                 rowid: rowid,
               ),
@@ -2081,6 +2156,7 @@ class $$WorksTableTableManager
                 required String checkpoints,
                 Value<int> position = const Value.absent(),
                 required DateTime updatedAt,
+                Value<DateTime?> positionAt = const Value.absent(),
                 Value<DateTime?> syncedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WorksCompanion.insert(
@@ -2092,6 +2168,7 @@ class $$WorksTableTableManager
                 checkpoints: checkpoints,
                 position: position,
                 updatedAt: updatedAt,
+                positionAt: positionAt,
                 syncedAt: syncedAt,
                 rowid: rowid,
               ),

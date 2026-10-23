@@ -174,7 +174,11 @@ class SessionRepository {
           ),
         );
     await (_db.update(_db.works)..where((w) => w.id.equals(workId))).write(
-      WorksCompanion(position: Value(page), updatedAt: Value(at)),
+      WorksCompanion(
+        position: Value(page),
+        positionAt: Value(at),
+        updatedAt: Value(at),
+      ),
     );
   });
 }

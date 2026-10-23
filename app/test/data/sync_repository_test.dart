@@ -92,6 +92,29 @@ void main() {
     await b.db.close();
   });
 
+  Future<void> syncAll(List<Device> order) async {
+    for (final d in order) {
+      d.offline = false;
+      expect(await d.sync(), isA<Ok<void>>());
+    }
+  }
+
+  /// A Session on [d] that ends at page [to], [minute]s into the evening.
+  Future<void> read(
+    Device d,
+    String id, {
+    required int to,
+    required int minute,
+    bool offline = false,
+  }) async {
+    d
+      ..offline = offline
+      ..now = evening.add(Duration(minutes: minute));
+    await d.sessions.start(id);
+    await d.sessions.add(await d.last(), SessionEventKind.stop);
+    await d.sessions.end(await d.last(), page: to);
+  }
+
   Future<String> addDune(Device d) => d.works.add(
     title: 'Dune',
     author: 'Frank Herbert',
@@ -200,13 +223,6 @@ void main() {
       for (final d in [a, b]) (await d.works.watchAll().first).single.title,
     ];
 
-    Future<void> syncAll(List<Device> order) async {
-      for (final d in order) {
-        d.offline = false;
-        expect(await d.sync(), isA<Ok<void>>());
-      }
-    }
-
     test('when the earlier edit syncs first', () async {
       await rename(a, 'Dune (earlier)', 1);
       await rename(b, 'Dune (later)', 2);
@@ -238,6 +254,59 @@ void main() {
       await rename(a, 'Dune (after)', 2);
       await syncAll([a, b]);
       expect(await titles(), ['Dune (after)', 'Dune (after)']);
+    });
+  });
+
+  group('the Position keeps its own last write', () {
+    late String id;
+    setUp(() async {
+      id = await addDune(a);
+      await read(a, id, to: 100, minute: 1);
+      await syncAll([a, b]);
+    });
+
+    Future<void> rename(Device d, int minute) {
+      d
+        ..offline = true
+        ..now = evening.add(Duration(minutes: minute));
+      return d.works.edit(
+        id,
+        title: 'Dune (renamed)',
+        author: 'Frank Herbert',
+        totalPages: 412,
+        checkpoints: const [40, 80],
+      );
+    }
+
+    Future<List<(String, int)>> both() async => [
+      for (final d in [a, b])
+        (
+          (await d.works.watchAll().first).single.title,
+          (await d.works.watchRoad(id).first)!.position,
+        ),
+    ];
+
+    // A ends a Session at p.150; B, still at p.100, renames the Work later.
+    test('through a later rename, when the reader syncs first', () async {
+      await read(a, id, to: 150, minute: 2, offline: true);
+      await rename(b, 3);
+      await syncAll([a, b, a, b]);
+      expect(await both(), [('Dune (renamed)', 150), ('Dune (renamed)', 150)]);
+    });
+
+    test('through a later rename, when the renamer syncs first', () async {
+      await read(a, id, to: 150, minute: 2, offline: true);
+      await rename(b, 3);
+      await syncAll([b, a, b]);
+      expect(await both(), [('Dune (renamed)', 150), ('Dune (renamed)', 150)]);
+    });
+
+    test('a later, lower Position still wins', () async {
+      await read(a, id, to: 150, minute: 2, offline: true);
+      // B never saw p.150, and moves the Position back to 120 later on.
+      await read(b, id, to: 120, minute: 3, offline: true);
+      await syncAll([a, b, a]);
+      expect(await both(), [('Dune', 120), ('Dune', 120)]);
     });
   });
 
