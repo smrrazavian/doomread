@@ -40,9 +40,13 @@ class ReadingViewModel extends ChangeNotifier {
 
   Session? get session => record?.at(_sessions.now());
 
-  /// The Aim for tonight, from the Sessions before this one.
-  Duration get aim =>
-      aimFor(longestStretch(_before.map((r) => r.at(_sessions.now()))));
+  /// The Aim for tonight, from the Sessions before this one on Works read,
+  /// or watched, like this one.
+  Duration get aim {
+    final kind = record?.road.work.kind ?? WorkKind.paperBook;
+    final now = _sessions.now();
+    return aimFor(longestStretch(alike(_before, kind).map((r) => r.at(now))));
+  }
 
   /// The clock: the Stretch running now, or while paused, the last one.
   Duration get shown => session?.stretches.lastOrNull?.length ?? Duration.zero;

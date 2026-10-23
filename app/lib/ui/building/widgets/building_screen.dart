@@ -4,6 +4,7 @@ import 'package:doomread/ui/building/view_models/building_view_model.dart';
 import 'package:doomread/ui/building/widgets/building_view.dart';
 import 'package:doomread/ui/building/widgets/longest_stretch_trend.dart';
 import 'package:doomread/ui/core/theme.dart';
+import 'package:doomread/ui/core/work_text.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -41,7 +42,19 @@ class _Building extends StatelessWidget {
               style: text.bodyMedium?.copyWith(color: Palette.mute),
             ),
             const SizedBox(height: 24),
+            // Reading and watching each have their own Longest stretch; the
+            // labels only appear once there's watching to tell apart.
+            if (vm.watchingRises.isNotEmpty) ...[
+              Text(l10n.trendReading, style: text.titleSmall),
+              const SizedBox(height: 8),
+            ],
             LongestStretchTrend(rises: vm.rises),
+            if (vm.watchingRises.isNotEmpty) ...[
+              const SizedBox(height: 24),
+              Text(l10n.trendWatching, style: text.titleSmall),
+              const SizedBox(height: 8),
+              LongestStretchTrend(rises: vm.watchingRises),
+            ],
             const SizedBox(height: 24),
             BuildingView(floors: floors.length, highlighted: 0),
             const SizedBox(height: 16),
@@ -65,7 +78,6 @@ class _FloorRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
     final text = Theme.of(context).textTheme;
     return InkWell(
       key: newest ? const Key('newestFloor') : null,
@@ -98,7 +110,7 @@ class _FloorRow extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    l10n.floorDetails(finish.pages, finish.evenings),
+                    floorDetails(context, finish),
                     style: text.bodySmall?.copyWith(color: Palette.mute),
                   ),
                 ],

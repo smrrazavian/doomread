@@ -17,11 +17,33 @@ int? parseNumber(String text) {
 }
 
 /// A list of numbers separated by Latin or Persian commas (،) or spaces.
-List<int>? parseNumbers(String text) {
+List<int>? parseNumbers(String text) => _parseList(text, parseNumber);
+
+List<int>? _parseList(String text, int? Function(String) parse) {
   final parts = text.split(RegExp(r'[,،\s]+')).where((p) => p.isNotEmpty);
-  final numbers = parts.map(parseNumber).toList();
+  final numbers = parts.map(parse).toList();
   return numbers.contains(null) ? null : numbers.cast<int>();
 }
+
+/// Reads a timestamp the way a player shows it, as whole seconds: 1:12:20 or
+/// 42:30, in any of [parseNumber]'s digits. A bare number is minutes.
+int? parseClock(String text) {
+  final parts = text.trim().split(':').map(parseNumber).toList();
+  if (parts.contains(null) || parts.length > 3) return null;
+  final [...higher, last] = parts.cast<int>();
+  if (higher.isEmpty) return last * 60;
+  // Every part after the first counts up to 59, as on a clock.
+  if (last > 59 || higher.skip(1).any((p) => p > 59)) return null;
+  return higher.fold<int>(0, (sum, p) => sum * 60 + p) * 60 + last;
+}
+
+/// A list of timestamps, separated like [parseNumbers].
+List<int>? parseClocks(String text) => _parseList(text, parseClock);
+
+/// [seconds] as timestamps for prefilling a field, like [formatNumbers].
+String formatClocks(List<int> seconds, Locale locale) => seconds
+    .map((s) => formatClock(Duration(seconds: s), locale))
+    .join(locale.languageCode == 'fa' ? '، ' : ', ');
 
 /// [numbers] in the digits and list separator of [locale], for prefilling a
 /// field the user may edit: "۳۴، ۶۶" in Persian, "34, 66" in English.

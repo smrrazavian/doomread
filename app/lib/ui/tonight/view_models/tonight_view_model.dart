@@ -46,11 +46,13 @@ class TonightViewModel extends ChangeNotifier {
   /// Starts a Session with the current Work; its result is the Session's id.
   late final Command0<String> start;
 
-  /// Tonight's Aim: the Longest stretch plus one minute.
-  // ponytail: every Work is a book until #12 adds watching, so all Sessions
-  // are one kind; filter by kind here once there are two.
-  Duration get aim =>
-      aimFor(longestStretch(_history.map((r) => r.at(_sessions.now()))));
+  /// Tonight's Aim: the Longest stretch plus one minute, for reading or for
+  /// watching, whichever the current Work is.
+  Duration get aim {
+    final kind = road?.work.kind ?? WorkKind.paperBook;
+    final now = _sessions.now();
+    return aimFor(longestStretch(alike(_history, kind).map((r) => r.at(now))));
+  }
 
   /// About how many evenings until the Finish; null until there's a pace.
   int? get evenings {

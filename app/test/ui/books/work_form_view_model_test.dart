@@ -47,6 +47,21 @@ void main() {
     expect(await works.watchAll().first, isEmpty);
   });
 
+  test('a series is saved as a series, in episodes', () async {
+    await vm.save.execute(
+      WorkDraft(
+        title: 'Dark',
+        author: '',
+        totalPages: 10,
+        checkpoints: const [],
+        kind: WorkKind.series,
+      ),
+    );
+    final dark = (await works.watchAll().first).single;
+    expect(dark.kind, WorkKind.series);
+    expect(dark.totalPages, 10);
+  });
+
   test('a missing title is refused', () async {
     await vm.save.execute(
       WorkDraft(title: '  ', author: '', totalPages: 10, checkpoints: const []),

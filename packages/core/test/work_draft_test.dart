@@ -6,7 +6,14 @@ void main() {
     String title = 'Dune',
     int pages = 412,
     List<int> cp = const [],
-  }) => WorkDraft(title: title, author: '', totalPages: pages, checkpoints: cp);
+    WorkKind kind = WorkKind.paperBook,
+  }) => WorkDraft(
+    title: title,
+    author: '',
+    totalPages: pages,
+    checkpoints: cp,
+    kind: kind,
+  );
 
   test('a titled Work with pages and in-range Checkpoints has no problems', () {
     expect(draft(cp: [1, 200, 412]).problems, isEmpty);
@@ -19,5 +26,17 @@ void main() {
   test('a Checkpoint before page 1 or after the last page is a problem', () {
     expect(draft(cp: [0]).problems, {WorkProblem.checkpointPastEnd});
     expect(draft(cp: [413]).problems, {WorkProblem.checkpointPastEnd});
+  });
+
+  test('a series needs episodes, and its Checkpoints are never asked', () {
+    expect(draft(kind: WorkKind.series, pages: 0).problems, {
+      WorkProblem.noPages,
+    });
+    expect(draft(kind: WorkKind.series, pages: 10, cp: [-1]).problems, isEmpty);
+  });
+
+  test('a film timestamp past its length is a problem', () {
+    final film = draft(kind: WorkKind.film, pages: 9660, cp: [9661]);
+    expect(film.problems, {WorkProblem.checkpointPastEnd});
   });
 }

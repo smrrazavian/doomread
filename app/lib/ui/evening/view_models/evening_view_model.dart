@@ -45,12 +45,14 @@ class EveningViewModel extends ChangeNotifier {
   bool get finished => _finished;
   bool _finished = false;
 
-  /// Whether this Session grew the Longest stretch.
+  /// Whether this Session grew the Longest stretch, for reading or for
+  /// watching, whichever its Work is.
   bool get newBest {
     final record = this.record;
     if (record == null) return false;
     final now = _sessions.now();
-    return isNewBest(record.at(now), _before.map((r) => r.at(now)));
+    final before = alike(_before, record.road.work.kind);
+    return isNewBest(record.at(now), before.map((r) => r.at(now)));
   }
 
   Future<Result<void>> _save(({int? page, String note}) input) async {

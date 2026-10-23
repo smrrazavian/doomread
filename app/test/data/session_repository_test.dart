@@ -119,4 +119,28 @@ void main() {
     expect(all.map((r) => r.id), [first, second]);
     expect(all.every((r) => r.events.length == 1), isTrue);
   });
+
+  test('reading and watching keep their Longest stretch apart', () async {
+    final dark = await WorkRepository(db).add(
+      title: 'Dark',
+      author: '',
+      totalPages: 10,
+      checkpoints: const [],
+      kind: WorkKind.series,
+    );
+    Future<void> sit(String work, Duration length) async {
+      await sessions.start(work);
+      now = now.add(length);
+      final open = (await sessions.watchAll().first).last;
+      await sessions.add(open, SessionEventKind.stop);
+    }
+
+    await sit(workId, const Duration(minutes: 6));
+    await sit(dark, const Duration(minutes: 40));
+    final all = await sessions.watchAll().first;
+    Duration longest(WorkKind kind) =>
+        longestStretch(alike(all, kind).map((r) => r.at(now)));
+    expect(longest(WorkKind.ebook), const Duration(minutes: 6));
+    expect(longest(WorkKind.podcast), const Duration(minutes: 40));
+  });
 }

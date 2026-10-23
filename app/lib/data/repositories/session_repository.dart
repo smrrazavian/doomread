@@ -29,6 +29,12 @@ class SessionRecord {
   Session at(DateTime now) => Session.fromEvents(events, now: now);
 }
 
+/// The Sessions in [all] on Works the user reads, or else watches, like a
+/// Work of [kind]. The Longest stretch and the Aim are kept apart for the
+/// two, so watching a film can't set the bar for reading.
+Iterable<SessionRecord> alike(Iterable<SessionRecord> all, WorkKind kind) =>
+    all.where((r) => r.road.work.kind.watched == kind.watched);
+
 /// Sessions: the append-only journal of what happened, and how each ended.
 class SessionRepository {
   SessionRepository(this._db, {DateTime Function()? clock})

@@ -285,5 +285,243 @@
         "format": "decimalPattern"
       }
     }
+  },
+  "kindPaperBook": "Book",
+  "kindEbook": "Ebook",
+  "kindSeries": "Series",
+  "kindFilm": "Film",
+  "kindPodcast": "Podcast",
+  "fieldCreator": "Made by",
+  "fieldEpisodes": "Number of episodes",
+  "fieldDuration": "Length",
+  "fieldDurationHint": "e.g. 2:41:00",
+  "fieldTimestamps": "Where segments end (optional)",
+  "fieldTimestampsHint": "e.g. 42:30, 1:15:00",
+  "problemNoEpisodes": "How many episodes does it have?",
+  "problemNoDuration": "How long is it? Like 2:41:00",
+  "problemTimestampPastEnd": "Times must be within its length",
+  "episodeOf": "Episode {episode} of {total}",
+  "@episodeOf": {
+    "placeholders": {
+      "episode": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "total": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "timeOf": "{time} of {total}",
+  "@timeOf": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "episodesLeft": "{count, plural, =1{1 episode left} other{{count} episodes left}}",
+  "@episodesLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "timeLeft": "{time} left",
+  "@timeLeft": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "nextEpisode": "Next up: episode {episode}",
+  "@nextEpisode": {
+    "placeholders": {
+      "episode": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "nextTimestamp": "Next segment ends at {time}",
+  "@nextTimestamp": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "startWork": "{kind, select, series{Start watching} film{Start watching} podcast{Start listening} other{Start reading}}",
+  "@startWork": {
+    "description": "kind is a WorkKind name: paperBook, ebook, series, film or podcast.",
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "backToWork": "{kind, select, series{Back to watching} film{Back to watching} podcast{Back to listening} other{Back to reading}}",
+  "@backToWork": {
+    "description": "kind is a WorkKind name: paperBook, ebook, series, film or podcast.",
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "workNow": "{kind, select, series{Watching now} film{Watching now} podcast{Listening now} other{Reading now}}",
+  "@workNow": {
+    "description": "kind is a WorkKind name: paperBook, ebook, series, film or podcast.",
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "whichEpisode": "Which episode did you get to?",
+  "whereStopped": "Where did you stop?",
+  "ofStartedAtTime": "of {total}, started at {from}",
+  "@ofStartedAtTime": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      },
+      "from": {
+        "type": "String"
+      }
+    }
+  },
+  "problemNoEpisode": "Which episode? Just the number.",
+  "problemNoTime": "Where? Like 1:12:20",
+  "problemEpisodeOutOfRange": "An episode from {from} to {total}",
+  "@problemEpisodeOutOfRange": {
+    "placeholders": {
+      "from": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "total": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "problemTimeOutOfRange": "A time from {from} to {total}",
+  "@problemTimeOutOfRange": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "episodeRange": "ep. {from}–{to}",
+  "@episodeRange": {
+    "placeholders": {
+      "from": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "to": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "timeRange": "{from}–{to}",
+  "@timeRange": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "finishedSubEpisodes": "{episodes, plural, =1{1 episode} other{{episodes} episodes}} over {evenings, plural, =1{1 evening} other{{evenings} evenings}}. Your building grew a floor.",
+  "@finishedSubEpisodes": {
+    "placeholders": {
+      "episodes": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "evenings": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "finishedSubTime": "{time} over {evenings, plural, =1{1 evening} other{{evenings} evenings}}. Your building grew a floor.",
+  "@finishedSubTime": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "evenings": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "floorDetailsEpisodes": "{episodes, plural, =1{1 episode} other{{episodes} episodes}}, {evenings, plural, =1{1 evening} other{{evenings} evenings}}",
+  "@floorDetailsEpisodes": {
+    "placeholders": {
+      "episodes": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "evenings": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "floorDetailsTime": "{time}, {evenings, plural, =1{1 evening} other{{evenings} evenings}}",
+  "@floorDetailsTime": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "evenings": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "watchedFinished": "Finished, right to the end.",
+  "trendReading": "Reading",
+  "trendWatching": "Watching",
+  "ofStartedAtEpisode": "of {total}, started at episode {from}",
+  "@ofStartedAtEpisode": {
+    "placeholders": {
+      "total": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "from": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "inOneGoTonightWatched": "{minutes, plural, =0{Under a minute in one go tonight.} =1{1 minute in one go tonight.} other{{minutes} minutes in one go tonight.}}",
+  "@inOneGoTonightWatched": {
+    "description": "inOneGoTonight for a Work that is watched or listened to, not read.",
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
   }
 }

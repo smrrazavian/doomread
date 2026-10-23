@@ -42,11 +42,13 @@ class WorkRepository {
           .map((w) => w == null ? null : Road(toWork(w), position: w.position));
 
   /// Adds a Work and returns its id. The first Work becomes the current one.
+  /// The numbers are in the [kind]'s unit.
   Future<String> add({
     required String title,
     required String author,
     required int totalPages,
     required List<int> checkpoints,
+    WorkKind kind = WorkKind.paperBook,
   }) => _db.transaction(() async {
     final id = newId();
     await _db
@@ -56,6 +58,7 @@ class WorkRepository {
             id: id,
             title: title,
             author: author,
+            kind: Value(kind),
             totalPages: totalPages,
             checkpoints: checkpoints.join(','),
             updatedAt: _now(),
@@ -65,6 +68,8 @@ class WorkRepository {
     return id;
   });
 
+  /// Changes a Work's details. Its kind stays, since the Position already
+  /// saved is in that kind's unit.
   Future<void> edit(
     String id, {
     required String title,
@@ -91,6 +96,7 @@ class WorkRepository {
     id: w.id,
     title: w.title,
     author: w.author,
+    kind: w.kind,
     totalPages: w.totalPages,
     checkpoints: [
       for (final c in w.checkpoints.split(','))

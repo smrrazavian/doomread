@@ -6,7 +6,8 @@ class SessionEndDraft {
     required this.totalPages,
   });
 
-  /// The page they stopped at; null when the field is empty or unreadable.
+  /// Where they stopped, in the Work's unit; null when the field is empty
+  /// or unreadable.
   final int? page;
 
   /// The Position when the Session started.

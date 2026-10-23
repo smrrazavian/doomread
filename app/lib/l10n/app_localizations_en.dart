@@ -483,4 +483,300 @@ class AppLocalizationsEn extends AppLocalizations {
 
     return 'p. $fromString–$toString';
   }
+
+  @override
+  String get kindPaperBook => 'Book';
+
+  @override
+  String get kindEbook => 'Ebook';
+
+  @override
+  String get kindSeries => 'Series';
+
+  @override
+  String get kindFilm => 'Film';
+
+  @override
+  String get kindPodcast => 'Podcast';
+
+  @override
+  String get fieldCreator => 'Made by';
+
+  @override
+  String get fieldEpisodes => 'Number of episodes';
+
+  @override
+  String get fieldDuration => 'Length';
+
+  @override
+  String get fieldDurationHint => 'e.g. 2:41:00';
+
+  @override
+  String get fieldTimestamps => 'Where segments end (optional)';
+
+  @override
+  String get fieldTimestampsHint => 'e.g. 42:30, 1:15:00';
+
+  @override
+  String get problemNoEpisodes => 'How many episodes does it have?';
+
+  @override
+  String get problemNoDuration => 'How long is it? Like 2:41:00';
+
+  @override
+  String get problemTimestampPastEnd => 'Times must be within its length';
+
+  @override
+  String episodeOf(int episode, int total) {
+    final intl.NumberFormat episodeNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String episodeString = episodeNumberFormat.format(episode);
+    final intl.NumberFormat totalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String totalString = totalNumberFormat.format(total);
+
+    return 'Episode $episodeString of $totalString';
+  }
+
+  @override
+  String timeOf(String time, String total) {
+    return '$time of $total';
+  }
+
+  @override
+  String episodesLeft(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString episodes left',
+      one: '1 episode left',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeLeft(String time) {
+    return '$time left';
+  }
+
+  @override
+  String nextEpisode(int episode) {
+    final intl.NumberFormat episodeNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String episodeString = episodeNumberFormat.format(episode);
+
+    return 'Next up: episode $episodeString';
+  }
+
+  @override
+  String nextTimestamp(String time) {
+    return 'Next segment ends at $time';
+  }
+
+  @override
+  String startWork(String kind) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'series': 'Start watching',
+      'film': 'Start watching',
+      'podcast': 'Start listening',
+      'other': 'Start reading',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String backToWork(String kind) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'series': 'Back to watching',
+      'film': 'Back to watching',
+      'podcast': 'Back to listening',
+      'other': 'Back to reading',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String workNow(String kind) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'series': 'Watching now',
+      'film': 'Watching now',
+      'podcast': 'Listening now',
+      'other': 'Reading now',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get whichEpisode => 'Which episode did you get to?';
+
+  @override
+  String get whereStopped => 'Where did you stop?';
+
+  @override
+  String ofStartedAtTime(String total, String from) {
+    return 'of $total, started at $from';
+  }
+
+  @override
+  String get problemNoEpisode => 'Which episode? Just the number.';
+
+  @override
+  String get problemNoTime => 'Where? Like 1:12:20';
+
+  @override
+  String problemEpisodeOutOfRange(int from, int total) {
+    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String fromString = fromNumberFormat.format(from);
+    final intl.NumberFormat totalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String totalString = totalNumberFormat.format(total);
+
+    return 'An episode from $fromString to $totalString';
+  }
+
+  @override
+  String problemTimeOutOfRange(String from, String total) {
+    return 'A time from $from to $total';
+  }
+
+  @override
+  String episodeRange(int from, int to) {
+    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String fromString = fromNumberFormat.format(from);
+    final intl.NumberFormat toNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String toString = toNumberFormat.format(to);
+
+    return 'ep. $fromString–$toString';
+  }
+
+  @override
+  String timeRange(String from, String to) {
+    return '$from–$to';
+  }
+
+  @override
+  String finishedSubEpisodes(int episodes, int evenings) {
+    final intl.NumberFormat episodesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String episodesString = episodesNumberFormat.format(episodes);
+    final intl.NumberFormat eveningsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String eveningsString = eveningsNumberFormat.format(evenings);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      episodes,
+      locale: localeName,
+      other: '$episodesString episodes',
+      one: '1 episode',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      evenings,
+      locale: localeName,
+      other: '$eveningsString evenings',
+      one: '1 evening',
+    );
+    return '$_temp0 over $_temp1. Your building grew a floor.';
+  }
+
+  @override
+  String finishedSubTime(String time, int evenings) {
+    final intl.NumberFormat eveningsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String eveningsString = eveningsNumberFormat.format(evenings);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      evenings,
+      locale: localeName,
+      other: '$eveningsString evenings',
+      one: '1 evening',
+    );
+    return '$time over $_temp0. Your building grew a floor.';
+  }
+
+  @override
+  String floorDetailsEpisodes(int episodes, int evenings) {
+    final intl.NumberFormat episodesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String episodesString = episodesNumberFormat.format(episodes);
+    final intl.NumberFormat eveningsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String eveningsString = eveningsNumberFormat.format(evenings);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      episodes,
+      locale: localeName,
+      other: '$episodesString episodes',
+      one: '1 episode',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      evenings,
+      locale: localeName,
+      other: '$eveningsString evenings',
+      one: '1 evening',
+    );
+    return '$_temp0, $_temp1';
+  }
+
+  @override
+  String floorDetailsTime(String time, int evenings) {
+    final intl.NumberFormat eveningsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String eveningsString = eveningsNumberFormat.format(evenings);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      evenings,
+      locale: localeName,
+      other: '$eveningsString evenings',
+      one: '1 evening',
+    );
+    return '$time, $_temp0';
+  }
+
+  @override
+  String get watchedFinished => 'Finished, right to the end.';
+
+  @override
+  String get trendReading => 'Reading';
+
+  @override
+  String get trendWatching => 'Watching';
+
+  @override
+  String ofStartedAtEpisode(int total, int from) {
+    final intl.NumberFormat totalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String totalString = totalNumberFormat.format(total);
+    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String fromString = fromNumberFormat.format(from);
+
+    return 'of $totalString, started at episode $fromString';
+  }
+
+  @override
+  String inOneGoTonightWatched(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: '$minutesString minutes in one go tonight.',
+      one: '1 minute in one go tonight.',
+      zero: 'Under a minute in one go tonight.',
+    );
+    return '$_temp0';
+  }
 }

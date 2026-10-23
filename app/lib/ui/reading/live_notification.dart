@@ -51,7 +51,10 @@ class LiveNotification {
     final running = session.current;
     final String text;
     if (running != null) {
-      final before = all.where((r) => r.id != open.id).map((r) => r.at(now));
+      final before = alike(
+        all.where((r) => r.id != open.id),
+        open.road.work.kind,
+      ).map((r) => r.at(now));
       text = l10n.aim(aimFor(longestStretch(before)).inMinutes);
     } else {
       final last = session.stretches.lastOrNull?.length ?? Duration.zero;

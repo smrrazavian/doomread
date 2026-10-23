@@ -2,6 +2,7 @@ import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/number_format.dart';
 import 'package:doomread/ui/core/theme.dart';
+import 'package:doomread/ui/core/work_text.dart';
 import 'package:doomread/ui/evening/view_models/evening_view_model.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +41,11 @@ class _EveningState extends State<_Evening> {
   }
 
   Future<void> _save(EveningViewModel vm) async {
-    await vm.save.execute((page: parseNumber(_page.text), note: _note.text));
+    final timed = vm.record!.road.work.kind.unit == WorkUnit.second;
+    await vm.save.execute((
+      page: timed ? parseClock(_page.text) : parseNumber(_page.text),
+      note: _note.text,
+    ));
     if (!mounted || !vm.save.completed) return;
     // Entering the last page is the Finish: the Building grows a floor.
     context.go(
@@ -55,13 +60,27 @@ class _EveningState extends State<_Evening> {
     final vm = context.watch<EveningViewModel>();
     final record = vm.record;
     if (record == null) return const Scaffold();
+    final work = record.road.work;
+    final unit = work.kind.unit;
     final from = record.road.position;
-    final total = record.road.work.totalPages;
+    final total = work.totalPages;
+    final (fromText, totalText) = (
+      formatAmount(context, work, from),
+      formatAmount(context, work, total),
+    );
     final String? pageProblem;
     if (vm.problems.contains(SessionEndProblem.noPage)) {
-      pageProblem = l10n.problemNoPage;
+      pageProblem = switch (unit) {
+        WorkUnit.page => l10n.problemNoPage,
+        WorkUnit.episode => l10n.problemNoEpisode,
+        WorkUnit.second => l10n.problemNoTime,
+      };
     } else if (vm.problems.contains(SessionEndProblem.pageOutOfRange)) {
-      pageProblem = l10n.problemPageOutOfRange(from, total);
+      pageProblem = switch (unit) {
+        WorkUnit.page => l10n.problemPageOutOfRange(from, total),
+        WorkUnit.episode => l10n.problemEpisodeOutOfRange(from, total),
+        WorkUnit.second => l10n.problemTimeOutOfRange(fromText, totalText),
+      };
     } else {
       pageProblem = null;
     }
@@ -84,21 +103,34 @@ class _EveningState extends State<_Evening> {
                     const SizedBox(height: 12),
                   ],
                   Text(
-                    l10n.inOneGoTonight(vm.longestTonight.inMinutes),
+                    (work.kind.watched
+                        ? l10n.inOneGoTonightWatched
+                        : l10n.inOneGoTonight)(vm.longestTonight.inMinutes),
                     style: text.headlineSmall,
                   ),
                   const SizedBox(height: 32),
-                  Text(l10n.whichPage, style: text.bodyMedium),
+                  Text(switch (unit) {
+                    WorkUnit.page => l10n.whichPage,
+                    WorkUnit.episode => l10n.whichEpisode,
+                    WorkUnit.second => l10n.whereStopped,
+                  }, style: text.bodyMedium),
                   const SizedBox(height: 8),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
-                        width: 120,
+                        width: unit == WorkUnit.second ? 168 : 120,
                         child: TextField(
                           key: const Key('page'),
                           controller: _page,
-                          keyboardType: TextInputType.number,
+                          keyboardType: unit == WorkUnit.second
+                              ? TextInputType.datetime
+                              : TextInputType.number,
+                          // A timestamp reads like a clock, which never
+                          // mirrors.
+                          textDirection: unit == WorkUnit.second
+                              ? TextDirection.ltr
+                              : null,
                           style: text.headlineSmall,
                           decoration: InputDecoration(
                             border: const OutlineInputBorder(),
@@ -111,10 +143,17 @@ class _EveningState extends State<_Evening> {
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.only(top: 16),
-                          child: Text(
-                            l10n.ofStartedAt(total, from),
-                            style: text.bodySmall,
-                          ),
+                          child: Text(switch (unit) {
+                            WorkUnit.page => l10n.ofStartedAt(total, from),
+                            WorkUnit.episode => l10n.ofStartedAtEpisode(
+                              total,
+                              from,
+                            ),
+                            WorkUnit.second => l10n.ofStartedAtTime(
+                              totalText,
+                              fromText,
+                            ),
+                          }, style: text.bodySmall),
                         ),
                       ),
                     ],

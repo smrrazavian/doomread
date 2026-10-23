@@ -5,6 +5,7 @@ import 'package:doomread/data/services/session_notification.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/road_view.dart';
 import 'package:doomread/ui/core/theme.dart';
+import 'package:doomread/ui/core/work_text.dart';
 import 'package:doomread/ui/tonight/view_models/tonight_view_model.dart';
 import 'package:doomread/utils/result.dart';
 import 'package:doomread_core/doomread_core.dart';
@@ -79,8 +80,8 @@ class _Tonight extends StatelessWidget {
                           : () => _start(context, vm),
                       child: Text(
                         vm.openSession == null
-                            ? l10n.startReading
-                            : l10n.backToReading,
+                            ? l10n.startWork(road.work.kind.name)
+                            : l10n.backToWork(road.work.kind.name),
                       ),
                     ),
                   ] else if (vm.loaded) ...[
@@ -162,7 +163,7 @@ class _WorkCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final text = Theme.of(context).textTheme;
     final work = road.work;
-    final next = road.next;
+    final next = nextCheckpoint(context, road);
     return DecoratedBox(
       decoration: BoxDecoration(
         color: Palette.panel,
@@ -189,18 +190,11 @@ class _WorkCard extends StatelessWidget {
             const SizedBox(height: 12),
             RoadView(road: road),
             const SizedBox(height: 12),
-            Text(
-              l10n.pageOf(road.position, work.totalPages),
-              style: text.bodyMedium,
-            ),
-            Text(
-              l10n.pagesLeft(work.totalPages - road.position),
-              style: text.bodySmall,
-            ),
+            Text(positionOf(context, road), style: text.bodyMedium),
+            Text(amountLeft(context, road), style: text.bodySmall),
             if (evenings case final n?)
               Text(l10n.eveningsLeft(n), style: text.bodySmall),
-            if (next != null)
-              Text(l10n.nextCheckpoint(next), style: text.bodySmall),
+            if (next != null) Text(next, style: text.bodySmall),
             Align(
               alignment: AlignmentDirectional.centerEnd,
               child: TextButton(
