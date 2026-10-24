@@ -164,7 +164,7 @@
     }
   },
   "readingWeekTitle": "This week",
-  "readingWeekCount": "{count, plural, =0{A fresh week} =1{1 reading night so far} other{{count} reading nights so far}}",
+  "readingWeekCount": "{count, plural, =0{A fresh week} =1{1 night so far} other{{count} nights so far}}",
   "@readingWeekCount": {
     "description": "The Reading week: nights this week with a Session. It never mentions missed nights.",
     "placeholders": {

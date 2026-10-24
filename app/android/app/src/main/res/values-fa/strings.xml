@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">باز گوشی؟!</string>
     <!-- The notification channel for the timer while a Session runs. -->
-    <string name="session_channel">تایمر خوندن</string>
+    <string name="session_channel">تایمر</string>
     <!-- The notification channel for "break's over" after a Planned break. -->
     <string name="break_channel">تموم شدن استراحت</string>
     <!-- The home screen widget's description in the widget picker. -->

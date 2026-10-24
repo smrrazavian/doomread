@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Doomread</string>
     <!-- The notification channel for the timer while a Session runs. -->
-    <string name="session_channel">Reading timer</string>
+    <string name="session_channel">Session timer</string>
     <!-- The notification channel for "break's over" after a Planned break. -->
     <string name="break_channel">Break over</string>
     <!-- The home screen widget's description in the widget picker. -->

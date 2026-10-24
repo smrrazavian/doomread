@@ -65,7 +65,7 @@
   "problemNoPage": "کدوم صفحه؟ فقط عددش رو بنویس.",
   "problemPageOutOfRange": "یه صفحه از {from} تا {total}",
   "readingWeekTitle": "این هفته",
-  "readingWeekCount": "{count, plural, =0{یه هفته‌ی تازه} other{تا الان {count} شب خوندی}}",
+  "readingWeekCount": "{count, plural, =0{یه هفته‌ی تازه} other{تا الان {count} شب نشستی پاش}}",
   "@readingWeekCount": {
     "description": "TODO(owner): review this Persian copy."
   },

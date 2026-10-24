@@ -313,8 +313,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString reading nights so far',
-      one: '1 reading night so far',
+      other: '$countString nights so far',
+      one: '1 night so far',
       zero: 'A fresh week',
     );
     return '$_temp0';

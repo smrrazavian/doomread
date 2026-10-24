@@ -287,7 +287,7 @@ class AppLocalizationsFa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'تا الان $countString شب خوندی',
+      other: 'تا الان $countString شب نشستی پاش',
       zero: 'یه هفته‌ی تازه',
     );
     return '$_temp0';

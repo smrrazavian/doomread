@@ -473,7 +473,7 @@ abstract class AppLocalizations {
   /// The Reading week: nights this week with a Session. It never mentions missed nights.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =0{A fresh week} =1{1 reading night so far} other{{count} reading nights so far}}'**
+  /// **'{count, plural, =0{A fresh week} =1{1 night so far} other{{count} nights so far}}'**
   String readingWeekCount(int count);
 
   /// No description provided for @stretchTrendGrew.
