@@ -51,21 +51,47 @@ void main() {
     expect(road.next, isNull);
   });
 
-  test('past the last Checkpoint the end is near, but not once finished', () {
-    expect(Road(book, position: 221).nearEnd, isFalse);
-    expect(Road(book, position: 222).nearEnd, isTrue);
-    expect(Road(book, position: 245).nearEnd, isFalse);
-  });
-
-  test('without Checkpoints the end is near in the last 5%', () {
-    final noChapters = Work(
-      id: 'w2',
-      title: 'Essays',
-      author: 'Someone',
-      totalPages: 200,
-      checkpoints: const [],
+  group('nearEnd', () {
+    Work work(int total, List<int> checkpoints, [WorkKind? kind]) => Work(
+      id: 'w',
+      title: 'T',
+      author: '',
+      totalPages: total,
+      checkpoints: checkpoints,
+      kind: kind ?? WorkKind.paperBook,
     );
-    expect(Road(noChapters, position: 189).nearEnd, isFalse);
-    expect(Road(noChapters, position: 190).nearEnd, isTrue);
+
+    test('past the last Checkpoint and 90%, but not once finished', () {
+      // 245 * 0.9 = 220.5, before the last Checkpoint at 222.
+      expect(Road(book, position: 221).nearEnd, isFalse);
+      expect(Road(book, position: 222).nearEnd, isTrue);
+      expect(Road(book, position: 245).nearEnd, isFalse);
+    });
+
+    test('one early Checkpoint does not make it near', () {
+      final early = work(200, [20]);
+      expect(Road(early, position: 25).nearEnd, isFalse);
+      expect(Road(early, position: 179).nearEnd, isFalse);
+      expect(Road(early, position: 180).nearEnd, isTrue);
+    });
+
+    test('without Checkpoints it is the last 10%', () {
+      final essays = work(200, const []);
+      expect(Road(essays, position: 179).nearEnd, isFalse);
+      expect(Road(essays, position: 180).nearEnd, isTrue);
+    });
+
+    test('a timed Work counts in seconds', () {
+      // Two hours, a timestamp at the half.
+      final film = work(7200, [3600], WorkKind.film);
+      expect(Road(film, position: 6479).nearEnd, isFalse);
+      expect(Road(film, position: 6480).nearEnd, isTrue);
+    });
+
+    test('a Checkpoint at the end is ignored', () {
+      final ending = work(200, [100, 200]);
+      expect(Road(ending, position: 179).nearEnd, isFalse);
+      expect(Road(ending, position: 180).nearEnd, isTrue);
+    });
   });
 }

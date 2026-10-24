@@ -1,4 +1,9 @@
+import 'dart:math' as math;
+
 import 'package:doomread_core/src/work.dart';
+
+/// How far along a Road must be, at the least, for [Road.nearEnd].
+const nearEndShare = 0.9;
 
 /// The path from the start of a [Work] to its end, seen from a Position.
 class Road {
@@ -21,12 +26,15 @@ class Road {
   List<int> get passed =>
       work.checkpoints.where((c) => c <= position).toList(growable: false);
 
-  /// Whether the end is close enough to offer the Finish mid-Session: past
-  /// the last Checkpoint, or without any, in the last 5%. Not once finished.
+  /// Whether the Finish is close enough to offer mid-Session: the Position
+  /// has reached the last Checkpoint and [nearEndShare] of the length,
+  /// whichever comes later, so one early Checkpoint doesn't count. A
+  /// Checkpoint at the end is the end itself, not one before it.
   bool get nearEnd {
     if (finished) return false;
-    final last = work.checkpoints.lastOrNull;
-    return last == null ? position >= work.totalPages * 0.95 : position >= last;
+    final last =
+        work.checkpoints.where((c) => c < work.totalPages).lastOrNull ?? 0;
+    return position >= math.max(last, work.totalPages * nearEndShare);
   }
 
   /// The next Checkpoint ahead, if any.
