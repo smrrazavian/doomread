@@ -11,13 +11,22 @@ import java.io.File
 /**
  * Hands an image the app drew (the Finish poster) to the system share sheet:
  * a plain ACTION_SEND through a FileProvider, so no plugin and no Google
- * services (ADR 0002, ADR 0009's pattern). The image lives in the cache, and
- * only the newest one is kept.
+ * services (ADR 0018). The image lives only in the cache, and only the app
+ * the user picks may read it.
  */
 object ShareSheet {
     private const val DIR = "share"
 
+    /** Whether this process has cleared the last poster yet. */
+    private var cleared = false
+
     fun register(activity: Activity, messenger: BinaryMessenger) {
+        // A poster may carry a private Note: it goes when the app next starts,
+        // not while the app the user shared to may still be reading it.
+        if (!cleared) {
+            File(activity.cacheDir, DIR).deleteRecursively()
+            cleared = true
+        }
         MethodChannel(messenger, "doomread/share").setMethodCallHandler { call, result ->
             when (call.method) {
                 "sharePng" -> {
@@ -36,6 +45,7 @@ object ShareSheet {
 
     private fun share(activity: Activity, png: ByteArray, name: String, title: String) {
         val dir = File(activity.cacheDir, DIR)
+        // Only the newest poster is kept.
         dir.deleteRecursively()
         dir.mkdirs()
         // The name only, never a path out of the folder.
