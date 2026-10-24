@@ -47,6 +47,26 @@ void main() {
     expect(widget.shown?.workId, isNull);
     expect(widget.shown?.sessionId, isNull);
     expect(widget.shown?.litUntil, isNull);
+    expect(widget.shown?.floors, 0, reason: 'no Building yet');
+  });
+
+  testApp('the Building widget grows a floor with each Finish', (
+    tester,
+    db,
+  ) async {
+    await addBook(db);
+    final widget = FakeHomeWidget();
+    await pumpApp(tester, db, clock: () => now, homeWidget: widget);
+    expect(widget.shown?.floors, 0);
+    expect(widget.shown?.litUntil, isNull, reason: "tonight's Window is dark");
+
+    await tap(tester, find.text(en.startReading));
+    await wait(tester, const Duration(minutes: 30));
+    await tap(tester, find.text(en.stopForTonight));
+    await tester.enterText(find.byKey(const Key('page')), '245');
+    await tap(tester, find.text(en.saveAndLightsOut));
+    expect(widget.shown?.floors, 1, reason: 'the Finish adds a floor');
+    expect(widget.shown?.litUntil, fourAm, reason: "tonight's Window is lit");
   });
 
   testApp("the widget follows the Road and tonight's Window", (
@@ -67,6 +87,7 @@ void main() {
       sessionId: null,
       workId: work,
       rtl: false,
+      floors: 0,
     ));
 
     await tap(tester, find.text(en.startReading));

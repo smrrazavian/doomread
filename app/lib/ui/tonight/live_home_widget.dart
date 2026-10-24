@@ -10,8 +10,9 @@ import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart' show Bidi;
 
-/// Keeps the home screen widget in step with the current Work's Road, the
-/// journal and the app language, and starts the Session its button asks for.
+/// Keeps the home screen widgets in step with the current Work's Road,
+/// the journal, the Building and the app language, and starts the Session
+/// its button asks for.
 class LiveHomeWidget {
   LiveHomeWidget(this._works, this._sessions, this._settings, this._widget) {
     _subs = [
@@ -21,6 +22,10 @@ class LiveHomeWidget {
       }),
       _sessions.watchAll().listen((all) {
         _all = all;
+        _sync();
+      }),
+      _sessions.watchFinishes().listen((f) {
+        _floors = f.length;
         _sync();
       }),
     ];
@@ -37,16 +42,21 @@ class LiveHomeWidget {
   (Road?,)? _road;
   List<SessionRecord>? _all;
 
+  /// The Building's floors once loaded: one per Finish.
+  int? _floors;
+
   /// What was last sent, so nothing is sent when it is unchanged.
   HomeWidgetContent? _last;
 
   void _sync() {
     final (road,) = _road ?? (null,);
     final all = _all;
-    if (_road == null || all == null) return;
+    final floors = _floors;
+    if (_road == null || all == null || floors == null) return;
     final content = homeWidgetContent(
       road: road,
       history: all,
+      floors: floors,
       now: _sessions.now(),
       locale: _settings.locale,
     );
@@ -75,11 +85,12 @@ class LiveHomeWidget {
   }
 }
 
-/// What the widget shows for [road], the current Work, given every Session
-/// so far, in [locale].
+/// What the widgets show for [road], the current Work, given every Session
+/// so far and the Building's [floors], in [locale].
 HomeWidgetContent homeWidgetContent({
   required Road? road,
   required List<SessionRecord> history,
+  required int floors,
   required DateTime now,
   required Locale locale,
 }) {
@@ -99,6 +110,7 @@ HomeWidgetContent homeWidgetContent({
         ? DateTime(tonight.year, tonight.month, tonight.day + 1, 4)
         : null,
     rtl: Bidi.isRtlLanguage(lang),
+    floors: floors,
   );
   if (road == null) {
     return (
@@ -112,6 +124,7 @@ HomeWidgetContent homeWidgetContent({
       sessionId: null,
       workId: null,
       rtl: common.rtl,
+      floors: common.floors,
     );
   }
 
@@ -132,5 +145,6 @@ HomeWidgetContent homeWidgetContent({
     sessionId: open,
     workId: open == null ? work.id : null,
     rtl: common.rtl,
+    floors: common.floors,
   );
 }

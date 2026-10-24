@@ -18,14 +18,18 @@ import androidx.glance.ButtonDefaults
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.LocalContext
+import androidx.glance.LocalSize
+import androidx.glance.action.clickable
 import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
+import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
 import androidx.glance.appwidget.updateAll
 import androidx.glance.background
 import androidx.glance.currentState
+import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.Column
 import androidx.glance.layout.Row
@@ -51,8 +55,9 @@ import org.json.JSONObject
 import java.io.File
 
 /**
- * The home screen widget (ADR 0011): the current Work's Road, whether
- * tonight's Window is lit, and Start.
+ * The home screen widgets (ADR 0011): the current Work's Road, whether
+ * tonight's Window is lit, and Start; and the user's Building, one floor per
+ * Finish, with tonight's Window on top, lit or dark.
  *
  * Every word and number on it is worked out in Dart, in the app's language,
  * and pushed over the channel; this side only keeps the last push and draws
@@ -76,6 +81,7 @@ object HomeWidget {
                     CoroutineScope(Dispatchers.Default).launch {
                         context.store.edit { it[PUSHED] = pushed }
                         Widget().updateAll(context)
+                        BuildingWidget().updateAll(context)
                     }
                     result.success(null)
                 }
@@ -110,10 +116,28 @@ object HomeWidget {
         override val glanceAppWidget = Widget()
     }
 
+    /** The Building: drawn from the same push, sized to the cell it's given. */
+    class BuildingWidget : GlanceAppWidget() {
+        override val stateDefinition: GlanceStateDefinition<*> = State
+        override val sizeMode = SizeMode.Exact
+
+        override suspend fun provideGlance(context: Context, id: GlanceId) = provideContent {
+            Building(currentState<Preferences>()[PUSHED]?.let(::JSONObject))
+        }
+    }
+
+    class BuildingReceiver : GlanceAppWidgetReceiver() {
+        override val glanceAppWidget = BuildingWidget()
+    }
+
     // The app's night palette (lib/ui/core/theme.dart).
     private val night = ColorProvider(Color(0xFF18213A))
+    private val wall = ColorProvider(Color(0xFF222C49))
+    private val deep = ColorProvider(Color(0xFF141B2F))
+    private val newFloor = ColorProvider(Color(0xFF2B3758))
     private val unlit = ColorProvider(Color(0xFF1A2238))
     private val lamp = ColorProvider(Color(0xFFF6C453))
+    private val me = ColorProvider(Color(0xFFFFE29A))
     private val paper = ColorProvider(Color(0xFFEDE6D6))
     private val soft = ColorProvider(Color(0xFFC9C3B6))
     private val mute = ColorProvider(Color(0xFF9AA3BD))
@@ -134,9 +158,7 @@ object HomeWidget {
         text("sessionId")?.let { launch.putExtra(SessionNotification.EXTRA_SESSION, it) }
             ?: text("workId")?.let { launch.putExtra(EXTRA_START, it) }
 
-        // Tonight's Window goes dark again when the evening turns over.
-        val until = pushed?.optLong("litUntil") ?: 0
-        val lit = System.currentTimeMillis() < until
+        val lit = litTonight(pushed)
 
         Column(
             modifier = GlanceModifier.fillMaxSize().background(night).cornerRadius(16.dp).padding(16.dp),
@@ -188,6 +210,136 @@ object HomeWidget {
                 modifier = GlanceModifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(backgroundColor = lamp, contentColor = night),
             )
+        }
+    }
+
+    /** Tonight's Window goes dark again when the evening turns over. */
+    private fun litTonight(pushed: JSONObject?) =
+        System.currentTimeMillis() < (pushed?.optLong("litUntil") ?: 0)
+
+    /** Whether the app's language runs the other way to the launcher's. */
+    private fun flipped(context: Context, pushed: JSONObject?) =
+        (pushed?.optBoolean("rtl") ?: false) !=
+            (context.resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL)
+
+    // The Building's measures, a small copy of BuildingView's tower.
+    private val towerWidth = 96.dp
+    private const val FLOOR = 22
+    private const val GAP = 3
+    private const val WINDOWS = 4
+
+    /**
+     * The user's tower at night, like the Building screen: tonight's floor on
+     * top with its one Window lit or dark, then a lit floor per Finish, the
+     * ground with its door, a neighbour and the moon. When the floors don't
+     * fit, the top ones are drawn and the tower runs on below the frame. The
+     * door and the neighbour sit on the start side and the moon on the end,
+     * so they swap sides in Persian. A tap opens the app.
+     */
+    @Composable
+    private fun Building(pushed: JSONObject?) {
+        val context = LocalContext.current
+        val flip = flipped(context, pushed)
+        val rtl = pushed?.optBoolean("rtl") ?: false
+        val lit = litTonight(pushed)
+        val floors = pushed?.optInt("floors") ?: 0
+        val label = pushed?.takeUnless { it.isNull(if (lit) "lit" else "dark") }
+            ?.optString(if (lit) "lit" else "dark") ?: ""
+
+        // What's left under the top row and tonight's floor, for the rest.
+        val room = LocalSize.current.height.value.toInt() - 12 - 18 - 8 - (FLOOR + GAP)
+        val fits = room / (FLOOR + GAP)
+        val whole = floors + 1 <= fits // every floor and the ground
+        val shown = if (whole) floors else (fits - 1).coerceIn(0, floors)
+
+        val open = Intent(context, MainActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+
+        Box(
+            modifier = GlanceModifier.fillMaxSize().background(night).cornerRadius(16.dp)
+                .clickable(actionStartActivity(open)),
+            contentAlignment = if (flip) Alignment.BottomEnd else Alignment.BottomStart,
+        ) {
+            // The neighbour, on the start side.
+            Box(modifier = GlanceModifier.width(28.dp).height(48.dp).background(deep)) {}
+            Column(
+                modifier = GlanceModifier.fillMaxSize().padding(start = 12.dp, top = 12.dp, end = 12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Row(
+                    modifier = GlanceModifier.fillMaxWidth().height(18.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    val text = @Composable {
+                        Text(
+                            text = label,
+                            modifier = GlanceModifier.defaultWeight(),
+                            maxLines = 1,
+                            style = TextStyle(
+                                color = mute,
+                                fontSize = 12.sp,
+                                textAlign = if (rtl) TextAlign.Right else TextAlign.Left,
+                            ),
+                        )
+                    }
+                    val moon = @Composable {
+                        Box(modifier = GlanceModifier.size(16.dp).cornerRadius(8.dp).background(paper)) {}
+                    }
+                    if (flip) { moon(); text() } else { text(); moon() }
+                }
+                Spacer(GlanceModifier.defaultWeight())
+                // Tonight's floor: one Window, lit once tonight has a Session.
+                Box(
+                    modifier = GlanceModifier.width(towerWidth).height(FLOOR.dp).background(newFloor),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Box(
+                        modifier = GlanceModifier.width(12.dp).height(14.dp).cornerRadius(2.dp)
+                            .background(if (lit) me else unlit),
+                    ) {}
+                }
+                Spacer(GlanceModifier.height(GAP.dp))
+                repeat(shown) {
+                    Floor(FLOOR)
+                    Spacer(GlanceModifier.height(GAP.dp))
+                }
+                if (whole) {
+                    Row(
+                        modifier = GlanceModifier.width(towerWidth).height(FLOOR.dp).background(wall),
+                        verticalAlignment = Alignment.Bottom,
+                    ) {
+                        val door = @Composable {
+                            Box(modifier = GlanceModifier.width(14.dp).height(16.dp).background(deep)) {}
+                        }
+                        val side = @Composable { Spacer(GlanceModifier.width(14.dp)) }
+                        val rest = @Composable { Spacer(GlanceModifier.defaultWeight()) }
+                        if (flip) { rest(); door(); side() } else { side(); door(); rest() }
+                    }
+                } else {
+                    // More floors than fit: the tower runs on below the frame.
+                    Floor(FLOOR / 2)
+                }
+            }
+        }
+    }
+
+    /** One finished floor, its windows lit; cut to [height] dp at the frame. */
+    @Composable
+    private fun Floor(height: Int) {
+        val cut = height < FLOOR
+        Row(
+            modifier = GlanceModifier.width(towerWidth).height(height.dp).background(wall)
+                .padding(top = if (cut) 4.dp else 0.dp),
+            verticalAlignment = if (cut) Alignment.Top else Alignment.CenterVertically,
+        ) {
+            repeat(WINDOWS) {
+                Spacer(GlanceModifier.defaultWeight())
+                Box(
+                    modifier = GlanceModifier.width(12.dp).height(minOf(14, height - 4).dp)
+                        .cornerRadius(2.dp).background(lamp),
+                ) {}
+            }
+            Spacer(GlanceModifier.defaultWeight())
         }
     }
 }

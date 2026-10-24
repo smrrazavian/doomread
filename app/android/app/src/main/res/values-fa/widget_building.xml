@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The Building widget's name and description in the widget picker. -->
+    <string name="widget_building_label">ساختمونت</string>
+    <string name="widget_building_description">یه طبقه برای هر چیزی که تموم کردی، و پنجره‌ی امشب</string>
+</resources>
