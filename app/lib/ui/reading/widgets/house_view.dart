@@ -46,7 +46,7 @@ class _HouseViewState extends State<HouseView> with TickerProviderStateMixin {
         ? _flickerTime
         : _lightUp(math.min(widget.windows.length, _slots.length)),
   );
-  late final _backOn = widget.backOn;
+  late final bool _backOn = widget.backOn;
   late final _pulse = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 3200),

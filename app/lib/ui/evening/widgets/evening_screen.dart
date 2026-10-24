@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/number_format.dart';
@@ -5,12 +7,16 @@ import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/voice_text.dart';
 import 'package:doomread/ui/core/work_text.dart';
 import 'package:doomread/ui/evening/view_models/evening_view_model.dart';
+import 'package:doomread/ui/evening/widgets/odometer.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-/// End of the evening: which page, one sentence, and lights out.
+/// End of the evening: which page, one sentence, and lights out. The page
+/// rolls like an odometer on the steppers, and saving dims the screen
+/// before Tonight, as a lamp turned off would.
 class EveningScreen extends StatelessWidget {
   const EveningScreen({required this.sessionId, super.key});
 
@@ -30,15 +36,42 @@ class _Evening extends StatefulWidget {
   State<_Evening> createState() => _EveningState();
 }
 
-class _EveningState extends State<_Evening> {
+class _EveningState extends State<_Evening> with TickerProviderStateMixin {
   // Made on the first build with the journal loaded, prefilled then.
   TextEditingController? _page;
   final _note = TextEditingController();
+
+  // The page rolling from one number to the next, and which way.
+  late final _roll = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 260),
+  );
+  ({String from, String to, bool up}) _rolled = (from: '', to: '', up: true);
+  // Where the field's text sits, so the roll lands exactly on it.
+  final GlobalKey _field = GlobalKey();
+  Rect? _textAt;
+
+  // Lights out, before leaving for Tonight.
+  late final _dim = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 450),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    // The field shows its own text again once the roll is over.
+    _roll.addStatusListener((status) {
+      if (status == AnimationStatus.completed) setState(() {});
+    });
+  }
 
   @override
   void dispose() {
     _page?.dispose();
     _note.dispose();
+    _roll.dispose();
+    _dim.dispose();
     super.dispose();
   }
 
@@ -53,6 +86,11 @@ class _EveningState extends State<_Evening> {
       note: _note.text,
     ));
     if (!mounted || !vm.save.completed) return;
+    // The Finish has its own moment; otherwise the light goes off first.
+    if (!vm.finished && !MediaQuery.disableAnimationsOf(context)) {
+      await _dim.forward();
+      if (!mounted) return;
+    }
     // Entering the last page is the Finish: the Building grows a floor.
     context.go(
       vm.finished ? '/building/finish/${vm.record!.road.work.id}' : '/tonight',
@@ -61,7 +99,30 @@ class _EveningState extends State<_Evening> {
 
   void _step(EveningViewModel vm, int by) {
     final work = vm.record!.road.work;
-    _page!.text = formatAmount(context, work, vm.step(_typed(work), by));
+    final from = _page!.text;
+    final to = formatAmount(context, work, vm.step(_typed(work), by));
+    _page!.text = to;
+    if (from == to || MediaQuery.disableAnimationsOf(context)) return;
+    final box = _field.currentContext?.findRenderObject() as RenderBox?;
+    final text = box == null ? null : _editable(box);
+    if (box == null || text == null) return;
+    // Centred text keeps its middle whatever the number, so the roll is
+    // centred on the old one's: the field keeps room for the caret on one
+    // side, off the box's own middle.
+    final at = text.localToGlobal(Offset.zero, ancestor: box) & text.size;
+    final glyphs = text
+        .getBoxesForSelection(
+          TextSelection(baseOffset: 0, extentOffset: from.length),
+        )
+        .map((b) => b.toRect())
+        .fold<Rect?>(null, (all, r) => all?.expandToInclude(r) ?? r);
+    final middle = glyphs == null ? at.center.dx : at.left + glyphs.center.dx;
+    final half = math.min(middle - at.left, at.right - middle);
+    setState(() {
+      _textAt = Rect.fromLTRB(middle - half, at.top, middle + half, at.bottom);
+      _rolled = (from: from, to: to, up: by > 0);
+    });
+    _roll.forward(from: 0);
   }
 
   @override
@@ -99,7 +160,7 @@ class _EveningState extends State<_Evening> {
       pageProblem = null;
     }
 
-    return Scaffold(
+    final screen = Scaffold(
       appBar: AppBar(),
       body: SafeArea(
         child: Column(
@@ -148,23 +209,30 @@ class _EveningState extends State<_Evening> {
                       const SizedBox(width: 8),
                       SizedBox(
                         width: unit == WorkUnit.second ? 152 : 104,
-                        child: TextField(
-                          key: const Key('page'),
-                          controller: page,
-                          textAlign: TextAlign.center,
-                          keyboardType: unit == WorkUnit.second
-                              ? TextInputType.datetime
-                              : TextInputType.number,
-                          // A timestamp reads like a clock, which never
-                          // mirrors.
-                          textDirection: unit == WorkUnit.second
-                              ? TextDirection.ltr
-                              : null,
-                          style: text.headlineSmall,
-                          decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
-                            errorText: pageProblem,
-                            errorMaxLines: 3,
+                        child: _rolling(
+                          context,
+                          TextField(
+                            key: const Key('page'),
+                            controller: page,
+                            textAlign: TextAlign.center,
+                            keyboardType: unit == WorkUnit.second
+                                ? TextInputType.datetime
+                                : TextInputType.number,
+                            // A timestamp reads like a clock, which never
+                            // mirrors.
+                            textDirection: unit == WorkUnit.second
+                                ? TextDirection.ltr
+                                : null,
+                            style: _roll.isAnimating
+                                ? text.headlineSmall!.copyWith(
+                                    color: Colors.transparent,
+                                  )
+                                : text.headlineSmall,
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              errorText: pageProblem,
+                              errorMaxLines: 3,
+                            ),
                           ),
                         ),
                       ),
@@ -226,7 +294,61 @@ class _EveningState extends State<_Evening> {
         ),
       ),
     );
+    return AnimatedBuilder(
+      animation: _dim,
+      child: screen,
+      // Always a Stack, so the screen under it keeps its state (the Note's
+      // focus, the scroll) as the light goes off.
+      builder: (context, screen) => Stack(
+        children: [
+          screen!,
+          if (!_dim.isDismissed)
+            Positioned.fill(
+              key: const Key('lightsOut'),
+              child: ColoredBox(
+                color: Colors.black.withValues(
+                  alpha: 0.85 * Curves.easeIn.transform(_dim.value),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
   }
+
+  /// The page field, with the number rolling over it while it changes.
+  Widget _rolling(BuildContext context, Widget field) => AnimatedBuilder(
+    animation: _roll,
+    child: field,
+    builder: (context, field) => Stack(
+      key: _field,
+      children: [
+        field!,
+        if (_roll.isAnimating && _textAt != null)
+          Positioned.fromRect(
+            rect: _textAt!,
+            child: IgnorePointer(
+              child: Odometer(
+                from: _rolled.from,
+                to: _rolled.to,
+                up: _rolled.up,
+                t: Curves.easeOutCubic.transform(_roll.value),
+                style: Theme.of(context).textTheme.bodyLarge!
+                    .merge(Theme.of(context).textTheme.headlineSmall),
+              ),
+            ),
+          ),
+      ],
+    ),
+  );
+}
+
+/// The field's text, found in its render tree.
+RenderEditable? _editable(RenderObject o) {
+  if (o is RenderEditable) return o;
+  RenderEditable? found;
+  o.visitChildren((c) => found ??= _editable(c));
+  return found;
 }
 
 /// The "new best stretch" moment.

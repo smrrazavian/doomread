@@ -10,14 +10,16 @@ Future<void> pumpHouse(
   List<HouseWindow> windows, {
   bool backOn = false,
 }) => tester.pumpWidget(
-      MaterialApp(
-        locale: const Locale('en'),
-        supportedLocales: AppLocalizations.supportedLocales,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        theme: buildTheme(const Locale('en')),
-        home: Scaffold(body: HouseView(windows: windows, backOn: backOn)),
-      ),
-    );
+  MaterialApp(
+    locale: const Locale('en'),
+    supportedLocales: AppLocalizations.supportedLocales,
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    theme: buildTheme(const Locale('en')),
+    home: Scaffold(
+      body: HouseView(windows: windows, backOn: backOn),
+    ),
+  ),
+);
 
 void reduceMotion(WidgetTester tester) {
   tester.platformDispatcher.accessibilityFeaturesTestValue =

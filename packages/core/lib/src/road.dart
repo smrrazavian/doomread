@@ -26,9 +26,7 @@ class Road {
   bool get nearEnd {
     if (finished) return false;
     final last = work.checkpoints.lastOrNull;
-    return last == null
-        ? position >= work.totalPages * 0.95
-        : position >= last;
+    return last == null ? position >= work.totalPages * 0.95 : position >= last;
   }
 
   /// The next Checkpoint ahead, if any.
