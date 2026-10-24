@@ -241,19 +241,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get whichPage => 'تا کدوم صفحه خوندی؟';
 
   @override
-  String ofStartedAt(int total, int from) {
-    final intl.NumberFormat totalNumberFormat =
-        intl.NumberFormat.decimalPattern(localeName);
-    final String totalString = totalNumberFormat.format(total);
-    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
-      localeName,
-    );
-    final String fromString = fromNumberFormat.format(from);
-
-    return 'از $totalString، از صفحه‌ی $fromString شروع کردی';
-  }
-
-  @override
   String get whatHappened => 'تو یه جمله، چی شد؟';
 
   @override
@@ -699,11 +686,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get whereStopped => 'تا کجاش رفتی؟';
 
   @override
-  String ofStartedAtTime(String total, String from) {
-    return 'از $total، از $from شروع کردی';
-  }
-
-  @override
   String get problemNoEpisode => 'کدوم قسمت؟ فقط عددش رو بنویس.';
 
   @override
@@ -796,19 +778,6 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get trendWatching => 'دیدن';
-
-  @override
-  String ofStartedAtEpisode(int total, int from) {
-    final intl.NumberFormat totalNumberFormat =
-        intl.NumberFormat.decimalPattern(localeName);
-    final String totalString = totalNumberFormat.format(total);
-    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
-      localeName,
-    );
-    final String fromString = fromNumberFormat.format(from);
-
-    return 'از $totalString، از قسمت $fromString شروع کردی';
-  }
 
   @override
   String inOneGoTonightWatched(int minutes) {
@@ -1042,4 +1011,37 @@ class AppLocalizationsFa extends AppLocalizations {
 
     return 'شروع استراحت ($minutesString دقیقه)';
   }
+
+  @override
+  String eveningOfTotal(String total) {
+    return 'از $total';
+  }
+
+  @override
+  String eveningStartedAtPage(int from) {
+    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String fromString = fromNumberFormat.format(from);
+
+    return 'امشب از صفحه‌ی $fromString شروع کردی';
+  }
+
+  @override
+  String eveningStartedAtEpisode(int from) {
+    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String fromString = fromNumberFormat.format(from);
+
+    return 'امشب از قسمت $fromString شروع کردی';
+  }
+
+  @override
+  String eveningStartedAtTime(String from) {
+    return 'امشب از $from شروع کردی';
+  }
+
+  @override
+  String get eveningFinished => 'تمومش کردم!';
 }

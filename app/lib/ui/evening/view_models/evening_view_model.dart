@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/utils/command.dart';
@@ -56,6 +57,33 @@ class EveningViewModel extends ChangeNotifier {
       watched: record.road.work.kind.watched,
     );
     return isNewBest(record.at(now), before);
+  }
+
+  /// Where the user most likely stopped, to prefill the page: the Position
+  /// plus tonight's reading at their pace for this Work. Without a pace it's
+  /// the Position itself. It stays short of the end, since the Finish is its
+  /// own action.
+  int get suggested {
+    final record = this.record!;
+    final from = record.road.position;
+    final session = record.at(_sessions.now());
+    final perPage = timePerPage(
+      sittingsOf(record.road.work, measured(_before, _sessions.now())),
+    );
+    if (perPage == null || perPage <= Duration.zero) return from;
+    final tonight = session.readingBetween(session.startedAt, null);
+    final guess = from + tonight.inMicroseconds ~/ perPage.inMicroseconds;
+    return max(from, min(guess, record.road.work.totalPages - 1));
+  }
+
+  /// [value] moved one step by the −/+ buttons ([by] is -1 or 1), kept
+  /// between where tonight started and the end. A minute for a timed Work,
+  /// one page or episode otherwise; with nothing readable, the suggestion.
+  int step(int? value, int by) {
+    final road = record!.road;
+    final unit = road.work.kind.unit == WorkUnit.second ? 60 : 1;
+    final next = (value ?? suggested) + by * unit;
+    return next.clamp(road.position, road.work.totalPages);
   }
 
   Future<Result<void>> _save(({int? page, String note}) input) async {

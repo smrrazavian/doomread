@@ -31,20 +31,25 @@ class _Evening extends StatefulWidget {
 }
 
 class _EveningState extends State<_Evening> {
-  final _page = TextEditingController();
+  // Made on the first build with the journal loaded, prefilled then.
+  TextEditingController? _page;
   final _note = TextEditingController();
 
   @override
   void dispose() {
-    _page.dispose();
+    _page?.dispose();
     _note.dispose();
     super.dispose();
   }
 
-  Future<void> _save(EveningViewModel vm) async {
-    final timed = vm.record!.road.work.kind.unit == WorkUnit.second;
+  int? _typed(Work work) => work.kind.unit == WorkUnit.second
+      ? parseClock(_page!.text)
+      : parseNumber(_page!.text);
+
+  /// Saves [page], or what the user typed.
+  Future<void> _save(EveningViewModel vm, {int? page}) async {
     await vm.save.execute((
-      page: timed ? parseClock(_page.text) : parseNumber(_page.text),
+      page: page ?? _typed(vm.record!.road.work),
       note: _note.text,
     ));
     if (!mounted || !vm.save.completed) return;
@@ -52,6 +57,11 @@ class _EveningState extends State<_Evening> {
     context.go(
       vm.finished ? '/building/finish/${vm.record!.road.work.id}' : '/tonight',
     );
+  }
+
+  void _step(EveningViewModel vm, int by) {
+    final work = vm.record!.road.work;
+    _page!.text = formatAmount(context, work, vm.step(_typed(work), by));
   }
 
   @override
@@ -68,6 +78,9 @@ class _EveningState extends State<_Evening> {
     final (fromText, totalText) = (
       formatAmount(context, work, from),
       formatAmount(context, work, total),
+    );
+    final page = _page ??= TextEditingController(
+      text: formatAmount(context, work, vm.suggested),
     );
     final String? pageProblem;
     if (vm.problems.contains(SessionEndProblem.noPage)) {
@@ -121,11 +134,24 @@ class _EveningState extends State<_Evening> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Level with the field, which grows downwards with a
+                      // problem under it.
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: IconButton.filledTonal(
+                          key: const Key('pageDown'),
+                          onPressed: () => _step(vm, -1),
+                          icon: const Icon(Icons.remove),
+                          iconSize: 28,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
                       SizedBox(
-                        width: unit == WorkUnit.second ? 168 : 120,
+                        width: unit == WorkUnit.second ? 152 : 104,
                         child: TextField(
                           key: const Key('page'),
-                          controller: _page,
+                          controller: page,
+                          textAlign: TextAlign.center,
                           keyboardType: unit == WorkUnit.second
                               ? TextInputType.datetime
                               : TextInputType.number,
@@ -142,24 +168,34 @@ class _EveningState extends State<_Evening> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 16),
-                          child: Text(switch (unit) {
-                            WorkUnit.page => l10n.ofStartedAt(total, from),
-                            WorkUnit.episode => l10n.ofStartedAtEpisode(
-                              total,
-                              from,
-                            ),
-                            WorkUnit.second => l10n.ofStartedAtTime(
-                              totalText,
-                              fromText,
-                            ),
-                          }, style: text.bodySmall),
+                      const SizedBox(width: 8),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: IconButton.filledTonal(
+                          key: const Key('pageUp'),
+                          onPressed: () => _step(vm, 1),
+                          icon: const Icon(Icons.add),
+                          iconSize: 28,
                         ),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(l10n.eveningOfTotal(totalText), style: text.bodyMedium),
+                  const SizedBox(height: 4),
+                  Text(switch (unit) {
+                    WorkUnit.page => l10n.eveningStartedAtPage(from),
+                    WorkUnit.episode => l10n.eveningStartedAtEpisode(from),
+                    WorkUnit.second => l10n.eveningStartedAtTime(fromText),
+                  }, style: text.bodySmall),
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: TextButton(
+                      onPressed: vm.save.running
+                          ? null
+                          : () => _save(vm, page: total),
+                      child: Text(l10n.eveningFinished),
+                    ),
                   ),
                   const SizedBox(height: 24),
                   Text(l10n.whatHappened, style: text.bodyMedium),
