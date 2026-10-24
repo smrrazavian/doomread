@@ -19,6 +19,7 @@ class HouseView extends StatefulWidget {
     required this.windows,
     this.kind,
     this.backOn = false,
+    this.onBackOn,
     super.key,
   });
 
@@ -32,6 +33,10 @@ class HouseView extends StatefulWidget {
   /// Whether the user is back from an Urge they let pass. Read once, when
   /// the House first shows.
   final bool backOn;
+
+  /// Called once the user's Window is back on, so whoever asked for
+  /// [backOn] can stop asking and a later House lights up as usual.
+  final VoidCallback? onBackOn;
 
   @override
   State<HouseView> createState() => _HouseViewState();
@@ -51,6 +56,16 @@ class _HouseViewState extends State<HouseView> with TickerProviderStateMixin {
     vsync: this,
     duration: const Duration(milliseconds: 3200),
   );
+
+  @override
+  void initState() {
+    super.initState();
+    if (_backOn) {
+      _light.addStatusListener((status) {
+        if (status == AnimationStatus.completed) widget.onBackOn?.call();
+      });
+    }
+  }
 
   @override
   void didChangeDependencies() {
@@ -145,19 +160,21 @@ Duration _lightUp(int lit) => Duration(
 /// a stutter before it holds. Brightness at points through its half second.
 const _lamp = [(0.0, 0.0), (0.08, 1.0), (0.2, 0.4), (0.3, 1.0)];
 
-/// Back from an Urge: a couple of flickers, then on.
-const _flickerTime = Duration(milliseconds: 700);
+/// Back from an Urge: a couple of quick flickers, then on. The only motion
+/// during the Stretch besides the pulse, so it's kept short.
+const _flickerTime = Duration(milliseconds: 450);
 const _flicker = [
   (0.0, 0.0),
-  (0.1, 0.9),
-  (0.22, 0.15),
-  (0.36, 1.0),
-  (0.48, 0.45),
-  (0.62, 1.0),
+  (0.15, 0.9),
+  (0.35, 0.15),
+  (0.6, 1.0),
+  (0.75, 0.5),
+  (1.0, 1.0),
 ];
 
-/// [keys] at [t], straight between them and holding after the last.
-double _at(List<(double, double)> keys, double t) {
+/// How bright a Window is at [t] through [keys], each a (time, brightness)
+/// pair: straight between them, and holding after the last.
+double _brightnessAt(List<(double, double)> keys, double t) {
   for (var k = 1; k < keys.length; k++) {
     final (t1, v1) = keys[k];
     if (t <= t1) {
@@ -284,10 +301,10 @@ class _HousePainter extends CustomPainter {
   /// own when [yours].
   double _on(int i, bool yours) {
     if (light.isCompleted) return 1;
-    if (backOn) return yours ? _at(_flicker, light.value) : 1;
+    if (backOn) return yours ? _brightnessAt(_flicker, light.value) : 1;
     final t = light.value * light.duration!.inMilliseconds / 1000;
     final on = ((t - _firstOn - i * _between) / _fade).clamp(0.0, 1.0);
-    return yours ? _at(_lamp, on) : on;
+    return yours ? _brightnessAt(_lamp, on) : on;
   }
 
   void _window(Canvas canvas, RRect pane, HouseWindow window, double on) {

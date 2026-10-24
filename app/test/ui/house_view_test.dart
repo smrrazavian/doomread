@@ -9,6 +9,7 @@ Future<void> pumpHouse(
   WidgetTester tester,
   List<HouseWindow> windows, {
   bool backOn = false,
+  VoidCallback? onBackOn,
 }) => tester.pumpWidget(
   MaterialApp(
     locale: const Locale('en'),
@@ -16,7 +17,7 @@ Future<void> pumpHouse(
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     theme: buildTheme(const Locale('en')),
     home: Scaffold(
-      body: HouseView(windows: windows, backOn: backOn),
+      body: HouseView(windows: windows, backOn: backOn, onBackOn: onBackOn),
     ),
   ),
 );
@@ -103,13 +104,18 @@ void main() {
   testWidgets("back from an Urge, only the user's Window flickers on", (
     tester,
   ) async {
-    await pumpHouse(tester, some, backOn: true);
+    var shown = 0;
+    await pumpHouse(tester, some, backOn: true, onBackOn: () => shown++);
     expect(lit(tester), (yours: 0.0, past: 1.0));
-    await tester.pump(const Duration(milliseconds: 70));
+    await tester.pump(const Duration(milliseconds: 68));
     final first = lit(tester).yours;
-    await tester.pump(const Duration(milliseconds: 85));
+    await tester.pump(const Duration(milliseconds: 90));
     expect(lit(tester).yours, lessThan(first - 0.5), reason: 'a flicker');
+    expect(shown, 0);
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(shown, 1, reason: 'over in under half a second');
     await tester.pump(const Duration(seconds: 1));
+    expect(shown, 1);
     expect(lit(tester).yours, greaterThan(0.6));
     expect(lit(tester).past, 1);
     await tester.pumpWidget(const SizedBox());
@@ -117,8 +123,10 @@ void main() {
 
   testWidgets('with reduced motion, it is simply back on', (tester) async {
     reduceMotion(tester);
-    await pumpHouse(tester, some, backOn: true);
+    var shown = 0;
+    await pumpHouse(tester, some, backOn: true, onBackOn: () => shown++);
     expect(lit(tester), (yours: 1.0, past: 1.0));
+    expect(shown, 1);
     await tester.pump();
     expect(tester.binding.hasScheduledFrame, isFalse);
   });

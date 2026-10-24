@@ -85,6 +85,12 @@ void main() {
       isTrue,
       reason: "the user's Window flickers back on",
     );
+    await wait(tester, const Duration(seconds: 1));
+    expect(
+      tester.widget<HouseView>(find.byType(HouseView)).backOn,
+      isFalse,
+      reason: 'once, not again on the next rebuild',
+    );
     expect(await journal(db), [
       SessionEventKind.start,
       SessionEventKind.urge,
