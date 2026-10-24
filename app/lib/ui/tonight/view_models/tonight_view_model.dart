@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
-import 'package:doomread/data/services/app_watch.dart';
 import 'package:doomread/data/services/session_notification.dart';
 import 'package:doomread/utils/command.dart';
 import 'package:doomread/utils/result.dart';
@@ -16,7 +15,6 @@ class TonightViewModel extends ChangeNotifier {
     this._sessions,
     this._settings,
     this._notification,
-    this._watch,
   ) {
     start = Command0(_start);
     _subs = [
@@ -35,7 +33,6 @@ class TonightViewModel extends ChangeNotifier {
   final SessionRepository _sessions;
   final SettingsRepository _settings;
   final SessionNotification _notification;
-  final AppWatch _watch;
   late final List<StreamSubscription<Object?>> _subs;
   List<SessionRecord> _history = const [];
 
@@ -96,19 +93,6 @@ class TonightViewModel extends ChangeNotifier {
     await _settings.setNotificationsAsked();
     if (allow) await _notification.ask();
   }
-
-  /// Whether to offer the "not yet" screen before this Start: once, only
-  /// where it can be turned on and no way to watch is on yet, and not while
-  /// the tour's demo Urge is still to come, since it's asked right after.
-  Future<bool> shouldOfferWatch() async =>
-      _watch.available &&
-      !await _settings.watchAsked() &&
-      (await _settings.hintsSeen()).contains(Hint.demoUrge) &&
-      await _watch.method() == null;
-
-  /// Remembers the offer was answered, whatever the answer; on yes the
-  /// screen opens the system's Accessibility settings.
-  Future<void> answerWatch() => _settings.setWatchAsked();
 
   Future<Result<String>> _start() async =>
       Result.ok(openSession ?? await _sessions.start(road!.work.id));

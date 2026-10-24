@@ -152,6 +152,9 @@ void main() {
     await pumpApp(tester, db, tour: true);
     await tap(tester, find.byKey(const Key('introSkip')));
     expect(find.text(en.emptyTonight), findsOne);
+    expect(await SettingsRepository(db).hintsSeen(), {
+      Hint.demoUrge,
+    }, reason: 'the one-line hints still come, once each');
     await tester.pumpWidget(const SizedBox());
     await pumpApp(tester, db, tour: true);
     expect(find.text(en.tourStoryTitle), findsNothing);
@@ -174,21 +177,38 @@ void main() {
     expect(find.byKey(const Key('language_en')), findsNothing);
   });
 
-  testApp('on a Persian phone the intro starts in Persian, unsaved', (
-    tester,
-    db,
-  ) async {
-    tester.platformDispatcher.localeTestValue = const Locale('fa');
-    addTearDown(tester.platformDispatcher.clearLocaleTestValue);
-    await pumpApp(tester, db, tour: true);
+  testApp('on a Persian phone a new user starts in Persian, kept once the '
+      'intro is skipped', (tester, db) async {
+    await pumpApp(tester, db, tour: true, phoneLocale: const Locale('fa'));
     expect(find.text(fa.tourStoryTitle), findsOne);
     expect(
       Directionality.of(tester.element(find.text(fa.tourStoryTitle))),
       TextDirection.rtl,
     );
     expect(await SettingsRepository(db).locale(), isNull);
+    await tap(tester, find.byKey(const Key('introSkip')));
+    expect(await SettingsRepository(db).locale(), const Locale('fa'));
+  });
+
+  testApp('the switch on a Persian phone picks English', (tester, db) async {
+    await pumpApp(tester, db, tour: true, phoneLocale: const Locale('fa'));
     await tap(tester, find.byKey(const Key('language_en')));
     expect(find.text(en.tourStoryTitle), findsOne);
+    expect(await SettingsRepository(db).locale(), const Locale('en'));
+  });
+
+  testApp('someone upgrading on a Persian phone stays in English', (
+    tester,
+    db,
+  ) async {
+    await WorkRepository(db).add(
+      title: 'Piranesi',
+      author: 'Susanna Clarke',
+      totalPages: 245,
+      checkpoints: const [],
+    );
+    await pumpApp(tester, db, tour: true, phoneLocale: const Locale('fa'));
+    expect(find.text(en.startReading), findsOne);
     expect(await SettingsRepository(db).locale(), const Locale('en'));
   });
 
@@ -258,6 +278,28 @@ void main() {
     await tap(tester, find.text(en.backToBook));
     await tap(tester, find.byKey(const Key('watchAgree')));
     expect(w.settingsOpened, 1);
+    w.isEnabled = true;
+    await comeBack(tester);
+    expect(find.text(en.tourWatchOn), findsOne);
+  });
+
+  testApp('a resume without leaving for the settings says nothing yet', (
+    tester,
+    db,
+  ) async {
+    final w = FakeAppWatch(isEnabled: false);
+    await throughIntro(tester, db, watch: w);
+    await tap(tester, find.byKey(const Key('hintGotIt')));
+    await tap(tester, find.byKey(const Key('demoShow')));
+    await tap(tester, find.text(en.backToBook));
+    await tap(tester, find.byKey(const Key('watchAgree')));
+    // A dialog closing, say: inactive and back, never hidden.
+    [
+      AppLifecycleState.inactive,
+      AppLifecycleState.resumed,
+    ].forEach(tester.binding.handleAppLifecycleStateChanged);
+    await tester.pumpAndSettle();
+    expect(find.text(en.tourWatchOff), findsNothing);
     w.isEnabled = true;
     await comeBack(tester);
     expect(find.text(en.tourWatchOn), findsOne);

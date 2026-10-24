@@ -38,7 +38,8 @@ void testApp(
 /// would otherwise never settle.
 ///
 /// The first-run tour is marked done, intro and hints, unless [tour] is
-/// true: then the app starts as a fresh install or an upgrade would.
+/// true: then the app starts as a fresh install or an upgrade would. The
+/// phone is in [phoneLocale].
 Future<void> pumpApp(
   WidgetTester tester,
   AppDatabase db, {
@@ -50,6 +51,7 @@ Future<void> pumpApp(
   AppWatch? watch,
   ShareSheet? share,
   bool tour = false,
+  Locale phoneLocale = const Locale('en'),
 }) async {
   if (!tour) await skipTour(db);
   if (reduceMotion) {
@@ -66,6 +68,7 @@ Future<void> pumpApp(
       homeWidget: homeWidget,
       watch: watch ?? FakeAppWatch(),
       share: share ?? FakeShareSheet(),
+      phoneLocale: () => phoneLocale,
     ),
   );
   await tester.pumpAndSettle();

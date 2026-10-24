@@ -1,14 +1,17 @@
 import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/domain/use_cases/first_run_use_case.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 
 /// The first-run tour, app-wide: whether the intro is due, and which of the
 /// one-line hints the guided first Session has still to show.
 class TourViewModel extends ChangeNotifier {
-  TourViewModel(this._settings, this._firstRun);
+  /// [language] is the language the app is in now, saved when the intro
+  /// ends if the user never picked one there.
+  TourViewModel(this._settings, this._firstRun, {required this.language});
 
   final SettingsRepository _settings;
   final FirstRunUseCase _firstRun;
+  final Locale Function() language;
 
   /// Whether [load] has finished.
   bool get loaded => _loaded;
@@ -46,14 +49,23 @@ class TourViewModel extends ChangeNotifier {
     _introDue = false;
     notifyListeners();
     await _settings.setIntroSeen();
+    // The phone's language, kept from now on, so it can't change under
+    // the user later.
+    if (await _settings.locale() == null) {
+      await _settings.setLocale(language());
+    }
   }
 
-  /// Skipping the intro skips the whole tour, hints included.
+  /// Skipping skips the cards and the demo Urge; the one-line hints still
+  /// show once each, when their thing first appears.
   Future<void> skipIntro() async {
-    _seen = Hint.values.toSet();
+    await seen(Hint.demoUrge);
     await finishIntro();
-    await _settings.setHintsSeen(_seen);
   }
+
+  /// Whether the "not yet" screen's ask waits for the demo Urge, which asks
+  /// it right after, rather than coming at a Start.
+  bool get watchAskWaits => shows(Hint.demoUrge);
 
   /// Whether Tonight should start the Session now; true once.
   bool takeStart() {

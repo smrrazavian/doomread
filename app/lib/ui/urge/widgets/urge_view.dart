@@ -175,14 +175,22 @@ class _Moment extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // The note sits over the House, so the headline stays put.
               Expanded(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: HouseView(windows: house, kind: kind),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ?note,
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: HouseView(windows: house, kind: kind),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 32),
-              ?note,
               Text(title, style: text.headlineSmall),
               const SizedBox(height: 8),
               for (final b in body)

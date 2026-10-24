@@ -1,22 +1,27 @@
 import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/data/services/app_watch.dart';
 import 'package:doomread_core/doomread_core.dart';
+
 import 'package:flutter/widgets.dart';
 
 class SettingsViewModel extends ChangeNotifier {
-  SettingsViewModel(this._settings);
+  /// [phoneLocale] is the phone's language; the platform's unless a test
+  /// gives one.
+  SettingsViewModel(this._settings, {Locale Function()? phoneLocale})
+    : locale = spokenLanguage(
+        (phoneLocale ??
+            () => WidgetsBinding.instance.platformDispatcher.locale)(),
+      );
 
   final SettingsRepository _settings;
 
-  /// The phone's language while it's one the app speaks, English otherwise,
-  /// until the user picks one. The phone's isn't saved, so it still follows
-  /// the phone until then.
-  Locale locale = _phoneLanguage();
+  /// Until a language is saved: the phone's, when the app speaks it, or
+  /// English. [load] replaces it with the saved one.
+  Locale locale;
 
-  static Locale _phoneLanguage() =>
-      WidgetsBinding.instance.platformDispatcher.locale.languageCode == 'fa'
-      ? const Locale('fa')
-      : const Locale('en');
+  /// [phone] if the app speaks it, otherwise English.
+  static Locale spokenLanguage(Locale phone) =>
+      phone.languageCode == 'fa' ? const Locale('fa') : const Locale('en');
 
   /// The Watched apps the user picked.
   Set<String> watched = defaultWatched;

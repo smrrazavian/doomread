@@ -17,7 +17,6 @@ import 'package:doomread/ui/tour/widgets/hint_card.dart';
 import 'package:doomread/ui/urge/urge_watch.dart';
 import 'package:doomread/ui/urge/widgets/urge_view.dart';
 import 'package:doomread/ui/watch/view_models/watch_ask_view_model.dart';
-import 'package:doomread/ui/watch/watch_return.dart';
 import 'package:doomread/ui/watch/widgets/watch_disclosure.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
@@ -33,16 +32,8 @@ class ReadingScreen extends StatelessWidget {
   final String sessionId;
 
   @override
-  Widget build(BuildContext context) => MultiProvider(
-    providers: [
-      ChangeNotifierProvider(
-        create: (c) => ReadingViewModel(c.read<SessionRepository>(), sessionId),
-      ),
-      ChangeNotifierProvider(
-        create: (c) =>
-            WatchAskViewModel(c.read<SettingsRepository>(), c.read<AppWatch>()),
-      ),
-    ],
+  Widget build(BuildContext context) => ChangeNotifierProvider(
+    create: (c) => ReadingViewModel(c.read<SessionRepository>(), sessionId),
     child: const _Reading(),
   );
 }
@@ -88,7 +79,7 @@ class _Reading extends StatelessWidget {
       return UrgeView(
         record: record,
         house: vm.house,
-        app: 'Instagram',
+        app: sampleApp(Localizations.localeOf(context).languageCode),
         onBack: () => _endDemo(context, vm),
         onOpen: () => _endDemo(context, vm),
         note: const _UrgeNote(demo: true),
@@ -209,11 +200,9 @@ Future<void> _endDemo(BuildContext context, ReadingViewModel vm) async {
   vm.endDemo();
   final ask = context.read<WatchAskViewModel>();
   if (!ask.due) return;
-  // Answered before it shows, so Reading's own card for it never shows too.
-  await ask.answered();
-  if (!context.mounted) return;
-  final agree = await askToWatch(context);
-  if (agree && context.mounted) await openWatchSettings(context);
+  await ask.ask.execute(
+    () async => context.mounted && await askToWatch(context),
+  );
 }
 
 /// The first Session's guide under the Aim, one line at a time: the Aim,
@@ -267,12 +256,9 @@ class _Guide extends StatelessWidget {
           TextButton(
             key: const Key('watchCardTurnOn'),
             // The card gives way to the disclosure, so only one shows.
-            onPressed: () async {
-              await ask.answered();
-              if (!context.mounted) return;
-              final agree = await askToWatch(context);
-              if (agree && context.mounted) await openWatchSettings(context);
-            },
+            onPressed: () => ask.ask.execute(
+              () async => context.mounted && await askToWatch(context),
+            ),
             child: Text(l10n.tourWatchTurnOn),
           ),
         ],
