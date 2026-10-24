@@ -434,12 +434,6 @@ abstract class AppLocalizations {
   /// **'Which page did you stop at?'**
   String get whichPage;
 
-  /// No description provided for @ofStartedAt.
-  ///
-  /// In en, this message translates to:
-  /// **'of {total}, started at {from}'**
-  String ofStartedAt(int total, int from);
-
   /// No description provided for @whatHappened.
   ///
   /// In en, this message translates to:
@@ -914,12 +908,6 @@ abstract class AppLocalizations {
   /// **'Where did you stop?'**
   String get whereStopped;
 
-  /// No description provided for @ofStartedAtTime.
-  ///
-  /// In en, this message translates to:
-  /// **'of {total}, started at {from}'**
-  String ofStartedAtTime(String total, String from);
-
   /// No description provided for @problemNoEpisode.
   ///
   /// In en, this message translates to:
@@ -997,12 +985,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Watching'**
   String get trendWatching;
-
-  /// No description provided for @ofStartedAtEpisode.
-  ///
-  /// In en, this message translates to:
-  /// **'of {total}, started at episode {from}'**
-  String ofStartedAtEpisode(int total, int from);
 
   /// inOneGoTonight for a Work that is watched or listened to, not read.
   ///
@@ -1285,6 +1267,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Whichever you pick, it roasts the urge, never you, and it\'s always kind after a slip.'**
   String get toneHint;
+
+  /// End of the evening, beside the page field: the Work's length, a page count, episode count or timestamp in the user's digits.
+  ///
+  /// In en, this message translates to:
+  /// **'of {total}'**
+  String eveningOfTotal(String total);
+
+  /// End of the evening, under the page field: where tonight's Session started, as a quiet reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Tonight you started at page {from}'**
+  String eveningStartedAtPage(int from);
+
+  /// No description provided for @eveningStartedAtEpisode.
+  ///
+  /// In en, this message translates to:
+  /// **'Tonight you started at episode {from}'**
+  String eveningStartedAtEpisode(int from);
+
+  /// No description provided for @eveningStartedAtTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Tonight you started at {from}'**
+  String eveningStartedAtTime(String from);
 }
 
 class _AppLocalizationsDelegate

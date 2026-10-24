@@ -267,19 +267,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get whichPage => 'Which page did you stop at?';
 
   @override
-  String ofStartedAt(int total, int from) {
-    final intl.NumberFormat totalNumberFormat =
-        intl.NumberFormat.decimalPattern(localeName);
-    final String totalString = totalNumberFormat.format(total);
-    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
-      localeName,
-    );
-    final String fromString = fromNumberFormat.format(from);
-
-    return 'of $totalString, started at $fromString';
-  }
-
-  @override
   String get whatHappened => 'In a sentence, what happened?';
 
   @override
@@ -782,11 +769,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get whereStopped => 'Where did you stop?';
 
   @override
-  String ofStartedAtTime(String total, String from) {
-    return 'of $total, started at $from';
-  }
-
-  @override
   String get problemNoEpisode => 'Which episode? Just the number.';
 
   @override
@@ -915,19 +897,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trendWatching => 'Watching';
-
-  @override
-  String ofStartedAtEpisode(int total, int from) {
-    final intl.NumberFormat totalNumberFormat =
-        intl.NumberFormat.decimalPattern(localeName);
-    final String totalString = totalNumberFormat.format(total);
-    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
-      localeName,
-    );
-    final String fromString = fromNumberFormat.format(from);
-
-    return 'of $totalString, started at episode $fromString';
-  }
 
   @override
   String inOneGoTonightWatched(int minutes) {
@@ -1148,4 +1117,34 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get toneHint =>
       'Whichever you pick, it roasts the urge, never you, and it\'s always kind after a slip.';
+
+  @override
+  String eveningOfTotal(String total) {
+    return 'of $total';
+  }
+
+  @override
+  String eveningStartedAtPage(int from) {
+    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String fromString = fromNumberFormat.format(from);
+
+    return 'Tonight you started at page $fromString';
+  }
+
+  @override
+  String eveningStartedAtEpisode(int from) {
+    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String fromString = fromNumberFormat.format(from);
+
+    return 'Tonight you started at episode $fromString';
+  }
+
+  @override
+  String eveningStartedAtTime(String from) {
+    return 'Tonight you started at $from';
+  }
 }

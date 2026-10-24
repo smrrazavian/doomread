@@ -59,7 +59,6 @@
   "newBestStretch": "بهترین تمرکزت تا حالا",
   "inOneGoTonight": "{minutes, plural, =0{امشب کمتر از یه دقیقه یه‌سره خوندی.} other{امشب {minutes} دقیقه یه‌سره خوندی.}}",
   "whichPage": "تا کدوم صفحه خوندی؟",
-  "ofStartedAt": "از {total}، از صفحه‌ی {from} شروع کردی",
   "whatHappened": "تو یه جمله، چی شد؟",
   "saveAndLightsOut": "ذخیره کن و چراغ رو خاموش کن",
   "problemNoPage": "کدوم صفحه؟ فقط عددش رو بنویس.",
@@ -160,7 +159,6 @@
   "workNow": "{kind, select, series{در حال دیدن} film{در حال دیدن} podcast{در حال گوش دادن} other{در حال خوندن}}",
   "whichEpisode": "تا کدوم قسمت دیدی؟",
   "whereStopped": "تا کجاش رفتی؟",
-  "ofStartedAtTime": "از {total}، از {from} شروع کردی",
   "problemNoEpisode": "کدوم قسمت؟ فقط عددش رو بنویس.",
   "problemNoTime": "کجاش؟ مثلاً ۱:۱۲:۲۰",
   "problemEpisodeOutOfRange": "یه قسمت از {from} تا {total}",
@@ -174,7 +172,6 @@
   "watchedFinished": "تمومش کردی، تا آخرش.",
   "trendReading": "خوندن",
   "trendWatching": "دیدن",
-  "ofStartedAtEpisode": "از {total}، از قسمت {from} شروع کردی",
   "inOneGoTonightWatched": "{minutes, plural, =0{امشب کمتر از یه دقیقه یه‌سره پاش نشستی.} other{امشب {minutes} دقیقه یه‌سره پاش نشستی.}}",
   "nextBreakAtEpisode": "استراحتت: آخر قسمت {episode}، حدوداً {minutes} دقیقه‌ی دیگه.",
   "breakDueAtEpisode": "آخر قسمت {episode} وقت استراحته.",
@@ -227,5 +224,9 @@
   "toneSpicy": "تند و تیز",
   "toneMom": "مامان‌مود",
   "toneAsk": "باز گوشی؟! چطوری باهات حرف بزنه؟",
-  "toneHint": "هر کدوم رو انتخاب کنی، وسوسه رو مسخره می‌کنه نه خودتو، و وقتی کم آوردی همیشه مهربونه."
+  "toneHint": "هر کدوم رو انتخاب کنی، وسوسه رو مسخره می‌کنه نه خودتو، و وقتی کم آوردی همیشه مهربونه.",
+  "eveningOfTotal": "از {total}",
+  "eveningStartedAtPage": "امشب از صفحه‌ی {from} شروع کردی",
+  "eveningStartedAtEpisode": "امشب از قسمت {from} شروع کردی",
+  "eveningStartedAtTime": "امشب از {from} شروع کردی"
 }
