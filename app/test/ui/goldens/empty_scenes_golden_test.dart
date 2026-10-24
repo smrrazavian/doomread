@@ -1,8 +1,12 @@
+import 'package:doomread/data/repositories/settings_repository.dart';
+import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/empty_scenes.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../../helpers.dart';
 
 /// Each empty-state scene close up, with the line that goes under it.
 void main() {
@@ -62,5 +66,30 @@ void main() {
         );
       });
     }
+  }
+
+  for (final lang in ['en', 'fa']) {
+    testApp('the Book page with no Notes yet, in $lang', (tester, db) async {
+      tester.view
+        ..physicalSize = const Size(720, 1560)
+        ..devicePixelRatio = 2;
+      addTearDown(tester.view.reset);
+      final title = lang == 'fa' ? 'بازمانده‌ی روز' : 'The Remains of the Day';
+      await WorkRepository(db).add(
+        title: title,
+        author: lang == 'fa' ? 'کازوئو ایشی‌گورو' : 'Kazuo Ishiguro',
+        totalPages: 245,
+        checkpoints: const [34, 66, 98, 128, 156, 194, 222],
+      );
+      await SettingsRepository(db).setLocale(Locale(lang));
+      await pumpApp(tester, db);
+      // The book's title on Tonight opens its page.
+      await tester.tap(find.text(title));
+      await tester.pumpAndSettle();
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('book_no_notes_$lang.png'),
+      );
+    });
   }
 }

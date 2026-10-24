@@ -122,14 +122,28 @@ abstract class _ScenePainter extends CustomPainter {
 
 Paint _fill(Color color) => Paint()..color = color;
 
-/// A warm pool of light around [center], strongest in the middle.
-Paint _glow(Offset center, double radius, double alpha) => Paint()
-  ..shader = RadialGradient(
-    colors: [
-      Palette.lamp.withValues(alpha: alpha),
-      Palette.lamp.withValues(alpha: 0),
-    ],
-  ).createShader(Rect.fromCircle(center: center, radius: radius));
+/// A warm pool of light around [centre], strongest in the middle.
+void _glowAt(Canvas canvas, Offset centre, double radius, double alpha) {
+  canvas.drawCircle(
+    centre,
+    radius,
+    Paint()
+      ..shader = RadialGradient(
+        colors: [
+          Palette.lamp.withValues(alpha: alpha),
+          Palette.lamp.withValues(alpha: 0),
+        ],
+      ).createShader(Rect.fromCircle(center: centre, radius: radius)),
+  );
+}
+
+/// The plant on the empty shelf, in the dark and in lamplight.
+const _leafDark = Color(0xFF2F4A44);
+const _leafLit = Color(0xFF5C8A6E);
+
+/// The pencil's sharpened wood, and its eraser.
+const _pencilWood = Color(0xFFE8C9A0);
+const _eraser = Color(0xFFD9918A);
 
 class _DarkWindowPainter extends _ScenePainter {
   _DarkWindowPainter(super.light, {required super.rtl});
@@ -210,8 +224,8 @@ class _DarkWindowPainter extends _ScenePainter {
     final ink = _fill(Palette.indicator);
     final x = pane.left;
     final y = pane.top;
+    _glowAt(canvas, pane.center, 18, 0.24 * on);
     canvas
-      ..drawRRect(rounded.inflate(3), _glow(pane.center, 18, 0.24 * on))
       ..drawPath(
         Path()
           ..moveTo(x + 6, y + 6)
@@ -251,12 +265,8 @@ class _EmptyShelfPainter extends _ScenePainter {
     const shelfTop = 88.0;
 
     // The lamp's light on the wall and down onto the shelf.
+    _glowAt(canvas, const Offset(120, 66), 54, 0.14 * on);
     canvas
-      ..drawCircle(
-        const Offset(120, 66),
-        54,
-        _glow(const Offset(120, 66), 54, 0.14 * on),
-      )
       ..drawPath(
         Path()
           ..moveTo(shade.dx - 13, shade.dy)
@@ -329,9 +339,7 @@ class _EmptyShelfPainter extends _ScenePainter {
 
     // A pot plant at the start and a bookend at the end, holding up nothing.
     final pot = _fill(Color.lerp(Palette.indicator, Palette.soft, 0.25 * on)!);
-    final leaf = _fill(
-      Color.lerp(const Color(0xFF2F4A44), const Color(0xFF5C8A6E), on)!,
-    );
+    final leaf = _fill(Color.lerp(_leafDark, _leafLit, on)!);
     canvas
       ..drawPath(
         Path()
@@ -388,12 +396,8 @@ class _BlankPagePainter extends _ScenePainter {
   @override
   void draw(Canvas canvas, double on) {
     const gutter = 120.0;
+    _glowAt(canvas, const Offset(gutter, 60), 58, 0.14 * on);
     canvas
-      ..drawCircle(
-        const Offset(gutter, 60),
-        58,
-        _glow(const Offset(gutter, 60), 58, 0.14 * on),
-      )
       // The cover peeking out under the pages, then the block of pages.
       ..drawRRect(
         RRect.fromLTRBR(36, 22, 204, 102, const Radius.circular(3)),
@@ -445,7 +449,7 @@ class _BlankPagePainter extends _ScenePainter {
     );
 
     // The pencil, waiting on the end page.
-    final wood = _fill(Color.lerp(Palette.soft, const Color(0xFFE8C9A0), on)!);
+    final wood = _fill(Color.lerp(Palette.soft, _pencilWood, on)!);
     canvas
       ..save()
       ..translate(176, 82)
@@ -465,7 +469,7 @@ class _BlankPagePainter extends _ScenePainter {
       ..drawRect(const Rect.fromLTRB(40, -3, 44, 3), _fill(Palette.mute))
       ..drawRRect(
         RRect.fromLTRBR(44, -3, 49, 3, const Radius.circular(1.5)),
-        _fill(const Color(0xFFD9918A)),
+        _fill(_eraser),
       )
       ..drawPath(
         Path()

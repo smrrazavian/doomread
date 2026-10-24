@@ -1063,5 +1063,5 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get emptyStory =>
-      'فعلاً صفحه سفیده. بعد هر شب یه خط بنویس، داستانت همین‌جا کم‌کم نوشته می‌شه.';
+      'فعلاً صفحه سفیده. بعد هر شب یه خط بنویس، داستانت همین‌جا کم‌کم شکل می‌گیره.';
 }
