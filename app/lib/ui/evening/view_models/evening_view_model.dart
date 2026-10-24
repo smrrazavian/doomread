@@ -61,7 +61,7 @@ class EveningViewModel extends ChangeNotifier {
     final now = _sessions.now();
     final before = alike(
       measured(_before, now),
-      watched: record.road.work.kind.watched,
+      record.road.work.kind.attention,
     );
     return isNewBest(record.at(now), before);
   }

@@ -12,6 +12,7 @@ import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/work_text.dart';
 import 'package:doomread/ui/reading/widgets/work_app_card.dart';
 import 'package:doomread/ui/settings/view_models/settings_view_model.dart';
+import 'package:doomread/ui/tasks/widgets/task_list.dart';
 import 'package:doomread/ui/tonight/view_models/tonight_view_model.dart';
 import 'package:doomread/ui/tonight/widgets/yalda_tonight.dart';
 import 'package:doomread/ui/tour/view_models/tour_view_model.dart';
@@ -24,6 +25,9 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+/// Today: the day's Tasks, then tonight's Work.
+// ponytail: the code still says Tonight, the screen's name before Tasks; a
+// rename can follow on its own.
 class TonightScreen extends StatelessWidget {
   const TonightScreen({super.key});
 
@@ -35,7 +39,8 @@ class TonightScreen extends StatelessWidget {
       c.read<SettingsRepository>(),
       c.read<SessionNotification>(),
     ),
-    child: const _Tonight(),
+    // Its own messenger, so a deleted Task's Undo shows over Today.
+    child: const ScaffoldMessenger(child: _Tonight()),
   );
 }
 
@@ -77,9 +82,16 @@ class _Tonight extends StatelessWidget {
                 // stretch so text hugs the start edge in both directions
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(l10n.navTonight, style: text.headlineSmall),
-                  const SizedBox(height: 16),
+                  Text(l10n.navToday, style: text.headlineSmall),
+                  const SizedBox(height: 12),
+                  const TaskList(),
+                  const SizedBox(height: 24),
                   if (road != null) ...[
+                    Text(
+                      l10n.tonightCard,
+                      style: text.bodySmall?.copyWith(color: Palette.mute),
+                    ),
+                    const SizedBox(height: 8),
                     _WorkCard(road: road, evenings: vm.evenings),
                     const SizedBox(height: 16),
                     Text(l10n.aim(vm.aim.inMinutes), style: text.bodyMedium),

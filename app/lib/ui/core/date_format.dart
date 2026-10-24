@@ -26,6 +26,17 @@ String formatDayMonth(BuildContext context, DateTime date) {
   return '${formatNumber(d.day, locale)} ${_persianMonths[d.month - 1]}';
 }
 
+/// [date] with its weekday: "شنبه ۲ آبان" in Persian, on the Solar Hijri
+/// calendar, and "Saturday, October 24" in English.
+String formatWeekdayDayMonth(BuildContext context, DateTime date) {
+  final locale = Localizations.localeOf(context);
+  if (locale.languageCode != 'fa') {
+    return DateFormat.MMMMEEEEd(locale.languageCode).format(date);
+  }
+  final weekday = DateFormat.EEEE('fa').format(date);
+  return '$weekday ${formatDayMonth(context, date)}';
+}
+
 /// A month and its year, in the calendar of the locale: "آبان ۱۴۰۵" in
 /// Persian, where [month] is Solar Hijri, and "October 2026" in English.
 String formatMonthYear(BuildContext context, ({int year, int month}) month) {

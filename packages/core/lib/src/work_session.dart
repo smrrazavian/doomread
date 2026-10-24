@@ -12,16 +12,16 @@ typedef WorkSession = ({
   ({int from, int to})? pages,
 });
 
-/// The Sessions in [all] on Works the user reads, or with [watched], watches.
-/// The Longest stretch and the Aim are kept apart for the two, so watching a
-/// film can't set the bar for reading.
-Iterable<Session> alike(Iterable<WorkSession> all, {required bool watched}) =>
-    all.where((s) => s.road.work.kind.watched == watched).map((s) => s.session);
+/// The Sessions in [all] that take [attention]: reading, watching or
+/// working. The Longest stretch and the Aim are kept apart for each, so
+/// watching a film can't set the bar for reading, nor a Task for either.
+Iterable<Session> alike(Iterable<WorkSession> all, Attention attention) => all
+    .where((s) => s.road.work.kind.attention == attention)
+    .map((s) => s.session);
 
-/// Tonight's Aim for reading, or with [watched], watching, after the
-/// Sessions in [before].
-Duration aimAfter(Iterable<WorkSession> before, {required bool watched}) =>
-    aimFor(longestStretch(alike(before, watched: watched)));
+/// Tonight's Aim for [attention], after the Sessions in [before].
+Duration aimAfter(Iterable<WorkSession> before, Attention attention) =>
+    aimFor(longestStretch(alike(before, attention)));
 
 /// [work]'s ended Sessions in [history], each as one [PaceSitting].
 List<PaceSitting> sittingsOf(Work work, Iterable<WorkSession> history) => [
@@ -54,7 +54,7 @@ PlannedBreak? plannedBreakOf(
   final work = tonight.road.work;
   return plannedBreak(
     tonight.session,
-    longestStretch: longestStretch(alike(before, watched: work.kind.watched)),
+    longestStretch: longestStretch(alike(before, work.kind.attention)),
     // The Position moves as Checkpoints are marked done, so it's the start
     // only for a Session from before its Start kept the page.
     startPage:

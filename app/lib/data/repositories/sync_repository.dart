@@ -261,7 +261,8 @@ class SyncRepository {
   /// is the highest page wins, so a Position can still be corrected down.
   /// Deleting keeps its own too (`deletedChangedAt`), so a later edit or
   /// Session elsewhere can't bring a deleted Work back, but a later Undo
-  /// can.
+  /// can. So does a Task's Done (`doneChangedAt`), so a later rename can't
+  /// undo it.
   ///
   /// When each side has a later part, the merge is a new write, sent
   /// back so the server and every other device get it. It is stamped a
@@ -291,15 +292,24 @@ class SyncRepository {
         )
         ? (incoming.deleted.value, incoming.deletedChangedAt.value)
         : (local.deleted, local.deletedChangedAt);
+    final (doneAt, doneChangedAt) =
+        deviceTakes(
+          incoming.doneChangedAt.value ?? _never,
+          local.doneChangedAt ?? _never,
+        )
+        ? (incoming.doneAt.value, incoming.doneChangedAt.value)
+        : (local.doneAt, local.doneChangedAt);
     if (rowFromServer &&
         position == incoming.position.value &&
-        deleted == incoming.deleted.value) {
+        deleted == incoming.deleted.value &&
+        doneAt == incoming.doneAt.value) {
       await _db.into(_db.works).insertOnConflictUpdate(incoming);
       return false;
     }
     if (!rowFromServer &&
         position == local.position &&
-        deleted == local.deleted) {
+        deleted == local.deleted &&
+        doneAt == local.doneAt) {
       return false;
     }
     final later = item.updatedAt.isAfter(local.updatedAt)
@@ -314,6 +324,8 @@ class SyncRepository {
             positionAt: Value(positionAt),
             deleted: Value(deleted),
             deletedChangedAt: Value(deletedChangedAt),
+            doneAt: Value(doneAt),
+            doneChangedAt: Value(doneChangedAt),
             updatedAt: Value(later.add(const Duration(seconds: 1))),
             syncedAt: const Value(null),
           ),
@@ -333,6 +345,8 @@ class SyncRepository {
     data: {
       'title': w.title,
       'author': w.author,
+      // ponytail: a device from before Tasks takes a Task for a paper book
+      // and shows it in its Library, until it updates.
       'kind': w.kind.name,
       'totalPages': w.totalPages,
       'checkpoints': [
@@ -343,8 +357,23 @@ class SyncRepository {
       'positionAt': (w.positionAt ?? w.updatedAt).microsecondsSinceEpoch,
       'deleted': w.deleted,
       'deletedChangedAt': w.deletedChangedAt?.microsecondsSinceEpoch,
+      // A Task's. Its day is a calendar date, the same in any time zone.
+      if (w.day case final day?) 'day': _date(day),
+      'estimate': ?w.estimate,
+      'doneAt': ?w.doneAt?.microsecondsSinceEpoch,
+      'doneChangedAt': ?w.doneChangedAt?.microsecondsSinceEpoch,
     },
   );
+
+  static String _date(DateTime d) =>
+      '${d.year.toString().padLeft(4, '0')}-'
+      '${d.month.toString().padLeft(2, '0')}-'
+      '${d.day.toString().padLeft(2, '0')}';
+
+  static DateTime? _micros(Object? us) => switch (us) {
+    final int us => DateTime.fromMicrosecondsSinceEpoch(us, isUtc: true),
+    _ => null,
+  };
 
   static WorksCompanion _workRow(SyncItem i) => WorksCompanion.insert(
     id: i.id,
@@ -365,10 +394,15 @@ class SyncRepository {
     // Devices from before deleting never send these, and so never undo a
     // delete made here.
     deleted: Value(i.data['deleted'] == true),
-    deletedChangedAt: Value(switch (i.data['deletedChangedAt']) {
-      final int us => DateTime.fromMicrosecondsSinceEpoch(us, isUtc: true),
+    deletedChangedAt: Value(_micros(i.data['deletedChangedAt'])),
+    // Only a Task has these; devices from before Tasks never send them.
+    day: Value(switch (i.data['day']) {
+      final String d => DateTime.parse(d),
       _ => null,
     }),
+    estimate: Value(i.data['estimate'] as int?),
+    doneAt: Value(_micros(i.data['doneAt'])),
+    doneChangedAt: Value(_micros(i.data['doneChangedAt'])),
     updatedAt: i.updatedAt,
     syncedAt: Value(i.updatedAt),
   );

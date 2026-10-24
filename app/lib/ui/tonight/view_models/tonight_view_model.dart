@@ -51,7 +51,7 @@ class TonightViewModel extends ChangeNotifier {
   /// watching, whichever the current Work is.
   Duration get aim => aimAfter(
     measured(_history, _sessions.now()),
-    watched: road?.work.kind.watched ?? false,
+    road?.work.kind.attention ?? Attention.reading,
   );
 
   /// About how many evenings until the Finish; null until there's a pace.

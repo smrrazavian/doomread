@@ -10,10 +10,75 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Doomread';
+  String get navToday => 'Today';
 
   @override
-  String get navTonight => 'Tonight';
+  String get tonightCard => 'Tonight';
+
+  @override
+  String get taskAdd => 'Add a task';
+
+  @override
+  String taskAbout(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'About $minutesString min';
+  }
+
+  @override
+  String taskDoneAt(String time, int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'Done at $time, $minutesString min in one go';
+  }
+
+  @override
+  String taskDoneAtOnly(String time) {
+    return 'Done at $time';
+  }
+
+  @override
+  String get taskDone => 'Done';
+
+  @override
+  String get taskNotDone => 'Not done yet';
+
+  @override
+  String get taskNew => 'New task';
+
+  @override
+  String get taskEdit => 'Edit task';
+
+  @override
+  String get taskName => 'What\'s the task?';
+
+  @override
+  String get taskNoName => 'Give it a name.';
+
+  @override
+  String get taskEstimate => 'About how many minutes? Optional';
+
+  @override
+  String get taskEstimateUnreadable => 'Minutes, as a number.';
+
+  @override
+  String get taskAddButton => 'Add';
+
+  @override
+  String get taskDayToday => 'Today';
+
+  @override
+  String get taskDayTomorrow => 'Tomorrow';
+
+  @override
+  String get taskDayPick => 'Another day';
+
+  @override
+  String get appTitle => 'Doomread';
 
   @override
   String get navBooks => 'Library';
@@ -645,6 +710,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get kindPodcast => 'Podcast';
 
   @override
+  String get kindTask => 'Task';
+
+  @override
   String get fieldCreator => 'Made by';
 
   @override
@@ -728,6 +796,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'series': 'Start watching',
       'film': 'Start watching',
       'podcast': 'Start listening',
+      'task': 'Start',
       'other': 'Start reading',
     });
     return '$_temp0';
@@ -739,6 +808,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'series': 'Back to watching',
       'film': 'Back to watching',
       'podcast': 'Back to listening',
+      'task': 'Back to it',
       'other': 'Back to reading',
     });
     return '$_temp0';

@@ -26,6 +26,14 @@ _Avoid_: Progress bar, timeline
 Reaching the end of a **Work**. This is the outcome the product exists for.
 _Avoid_: Complete, done (when you mean the whole Work)
 
+**Task**:
+A kind of **Work** the user intends to get done in one sitting or a few, like "write the Q3 report" or "call the bank". It has a name and, optionally, a day it's planned for and a rough estimate in minutes. It has no Position, no Checkpoints and no Road, and it never appears in the Library or becomes the current Work.
+_Avoid_: To-do, todo item, ticket
+
+**Done**:
+The **Finish** of a **Task**, stored as it happens rather than worked out from a Position. It lights the Task's window on **Today**, but adds no floor to the **Building**: floors are for finished books, series, films and podcasts.
+_Avoid_: Complete, checked, finished (for a Task)
+
 **Note**:
 The one sentence the user writes after a **Session** about what happened in the part they just got through, in their own words.
 _Avoid_: Summary, review, journal entry
@@ -41,12 +49,16 @@ Unbroken Session time with the timer running. It ends at a **Pause**, a **Slip**
 _Avoid_: Streak, focus block, interval
 
 **Longest stretch**:
-The user's longest single **Stretch** for a kind of Work (reading or watching). It is the one number that measures attention span.
+The user's longest single **Stretch** for a kind of attention: reading, watching or **Working**. It is the one number that measures attention span.
 _Avoid_: Best time, record, score
 
 **Aim**:
 The Stretch length the app suggests for tonight: the **Longest stretch** plus one minute.
 _Avoid_: Goal, target (Goal is reserved for the Finish)
+
+**Working**:
+The third kind of attention, next to reading and watching: a **Session** on a **Task**. It keeps its own **Longest stretch** and **Aim**.
+_Avoid_: Productivity, focus time (for the kind)
 
 **Pause**:
 A deliberate, legitimate stop inside a **Session**, like a glass of water or the door. It ends the current **Stretch** but never counts as a **Slip**.
@@ -83,6 +95,10 @@ The voice the app speaks in, chosen by the user: Chill, Spicy, or Mom mode (ما
 _Avoid_: Personality, theme, mode (alone)
 
 ### Company and progress
+
+**Today**:
+The home screen, formerly Tonight: today's **Tasks**, then tonight's **Work** on a card that keeps the name "Tonight". An undone Task from an earlier day carries over with nothing to mark it: no "overdue", no count, no colour. Days turn over at 4 in the morning, as evenings do.
+_Avoid_: Dashboard, home, inbox
 
 **House**:
 The shared apartment block of lit windows showing who is reading now and who read earlier tonight. It is how company is shown.
@@ -133,7 +149,8 @@ _Avoid_: Fake urge, test urge, preview
 - A **Session** is made of **Stretches**, separated by **Pauses**, **Slips** and the **Planned break**.
 - An **Urge** ends either as **Let pass** or as a **Slip**.
 - A **Planned break** is anchored to one **Checkpoint**. After a Planned break, the same **Session** continues toward the next one.
-- Each **Finish** adds a floor to the user's **Building**.
+- Each **Finish** adds a floor to the user's **Building**; a **Task**'s **Done** doesn't.
+- A **Task** is a **Work** without a **Road**: its **Session** is **Working**, and it ends Done or stays undone.
 - A **Session** lights the user's **Window** in the **House**.
 
 ## Example dialogue

@@ -35,6 +35,8 @@ void testApp(
 /// one the clock stands still at [testNow], so no test depends on today's
 /// date (on Shab-e Yalda, say).
 ///
+/// The view is an upright phone unless the test sized it.
+///
 /// Reduced motion is on unless [reduceMotion] is false: the user's Window in
 /// the House pulses for as long as the Reading screen is open, so the app
 /// would otherwise never settle.
@@ -56,6 +58,15 @@ Future<void> pumpApp(
   Locale phoneLocale = const Locale('en'),
 }) async {
   if (!tour) await skipTour(db);
+  // An upright phone, as the goldens use, unless the test sized the view:
+  // Flutter's 800 by 600 default puts Today's Start below the fold.
+  if (tester.view.physicalSize / tester.view.devicePixelRatio ==
+      const Size(800, 600)) {
+    tester.view
+      ..physicalSize = const Size(720, 1560)
+      ..devicePixelRatio = 2;
+    addTearDown(tester.view.reset);
+  }
   if (reduceMotion) {
     tester.platformDispatcher.accessibilityFeaturesTestValue =
         const FakeAccessibilityFeatures(disableAnimations: true);

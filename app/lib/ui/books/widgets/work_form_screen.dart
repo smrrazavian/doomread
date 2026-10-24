@@ -109,7 +109,7 @@ class _WorkFormState extends State<_WorkForm> {
               spacing: 8,
               runSpacing: 8,
               children: [
-                for (final kind in WorkKind.values)
+                for (final kind in WorkKind.media)
                   ChoiceChip(
                     key: Key(kind.name),
                     avatar: Icon(kindIcon(kind)),

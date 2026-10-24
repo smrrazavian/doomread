@@ -414,6 +414,82 @@ void main() {
     expect((await a.works.watchCurrent().first)!.work.title, 'Piranesi');
   });
 
+  group('Tasks', () {
+    Future<String> addReport(Device d) => d.works.addTask(
+      name: 'Write the Q3 report',
+      day: DateTime(2026, 10, 22),
+      estimate: const Duration(minutes: 45),
+    );
+
+    Future<Task?> taskOn(Device d) async =>
+        (await d.works.watchTasks().first).singleOrNull;
+
+    test('a Task, its edits and its Done reach the other device', () async {
+      final id = await addReport(a);
+      await syncAll([a, b]);
+      var there = (await taskOn(b))!;
+      expect(there.name, 'Write the Q3 report');
+      expect(there.day, DateTime(2026, 10, 22));
+      expect(there.estimate, const Duration(minutes: 45));
+      expect(await b.works.watchAll().first, isEmpty, reason: 'no Library');
+      expect(await b.works.watchCurrent().first, isNull);
+
+      a.now = evening.add(const Duration(minutes: 1));
+      await a.works.editTask(
+        id,
+        name: 'Q3 report',
+        day: DateTime(2026, 10, 23),
+      );
+      a.now = evening.add(const Duration(minutes: 2));
+      await a.works.setDone(id);
+      await syncAll([a, b]);
+      there = (await taskOn(b))!;
+      expect(there.name, 'Q3 report');
+      expect(there.day, DateTime(2026, 10, 23));
+      expect(there.estimate, isNull);
+      expect(there.doneAt, a.now);
+    });
+
+    test('a deleted Task leaves the other device, and Undo brings it '
+        'back', () async {
+      final id = await addReport(a);
+      await syncAll([a, b]);
+      a.now = evening.add(const Duration(minutes: 1));
+      await a.works.delete(id);
+      await syncAll([a, b]);
+      expect(await taskOn(b), isNull);
+      a.now = evening.add(const Duration(minutes: 2));
+      await a.works.restore(id);
+      await syncAll([a, b]);
+      expect((await taskOn(b))?.name, 'Write the Q3 report');
+      expect(await b.works.watchCurrent().first, isNull);
+    });
+
+    test('a later rename elsewhere keeps the Done', () async {
+      final id = await addReport(a);
+      await syncAll([a, b]);
+      a
+        ..offline = true
+        ..now = evening.add(const Duration(minutes: 1));
+      await a.works.setDone(id);
+      b
+        ..offline = true
+        ..now = evening.add(const Duration(minutes: 2));
+      await b.works.editTask(
+        id,
+        name: 'Q3 report',
+        day: DateTime(2026, 10, 22),
+      );
+      // The device holding the later Done merges, and sends it back.
+      await syncAll([a, b, a, b]);
+      for (final d in [a, b]) {
+        final task = (await taskOn(d))!;
+        expect(task.name, 'Q3 report', reason: 'the later rename');
+        expect(task.done, isTrue, reason: 'the Done, kept apart');
+      }
+    });
+  });
+
   group('a delete keeps its own last write', () {
     late String id;
     setUp(() async {

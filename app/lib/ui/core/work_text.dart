@@ -97,6 +97,7 @@ String kindName(AppLocalizations l10n, WorkKind kind) => switch (kind) {
   WorkKind.series => l10n.kindSeries,
   WorkKind.film => l10n.kindFilm,
   WorkKind.podcast => l10n.kindPodcast,
+  WorkKind.task => l10n.kindTask,
 };
 
 IconData kindIcon(WorkKind kind) => switch (kind) {
@@ -105,4 +106,5 @@ IconData kindIcon(WorkKind kind) => switch (kind) {
   WorkKind.series => Icons.tv_outlined,
   WorkKind.film => Icons.movie_outlined,
   WorkKind.podcast => Icons.podcasts_outlined,
+  WorkKind.task => Icons.edit_note_outlined,
 };

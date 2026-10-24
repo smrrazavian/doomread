@@ -179,7 +179,8 @@ class SessionRepository {
   Stream<List<Finish>> watchFinishes() => watchAll().map((all) {
     final now = this.now();
     final byWork = <String, List<SessionRecord>>{};
-    for (final r in all) {
+    // A Task's Done is no Finish: it adds no floor to the Building.
+    for (final r in all.where((r) => r.road.work.kind != WorkKind.task)) {
       byWork.putIfAbsent(r.road.work.id, () => []).add(r);
     }
     return newestFirst([

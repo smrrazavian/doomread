@@ -4,19 +4,38 @@ enum WorkKind {
   ebook,
   series,
   film,
-  podcast;
+  podcast,
+
+  /// Something to get done in a sitting or a few: no length, Position,
+  /// Checkpoints or Road, and never in the Library or current.
+  task;
+
+  /// The kinds the Library holds, which the user adds there.
+  static const List<WorkKind> media = [paperBook, ebook, series, film, podcast];
 
   /// What its length, Position and Checkpoints count.
+  // ponytail: a Task has none; it says pages so the switches on a unit
+  // stay as they are, and no Task screen ever shows one.
   WorkUnit get unit => switch (this) {
-    paperBook || ebook => WorkUnit.page,
+    paperBook || ebook || task => WorkUnit.page,
     series => WorkUnit.episode,
     film || podcast => WorkUnit.second,
   };
 
-  /// Whether the user reads it or watches it. The Longest stretch and the Aim
-  /// are kept apart for the two.
-  bool get watched => unit != WorkUnit.page;
+  /// The kind of attention it takes. The Longest stretch and the Aim are
+  /// kept apart for each.
+  Attention get attention => switch (this) {
+    paperBook || ebook => Attention.reading,
+    series || film || podcast => Attention.watching,
+    task => Attention.working,
+  };
+
+  /// Whether the user watches or listens to it, for the copy that says so.
+  bool get watched => attention == Attention.watching;
 }
+
+/// Reading, watching (or listening), or working on a Task.
+enum Attention { reading, watching, working }
 
 /// What a Work's numbers count: pages, episodes, or seconds into it (shown
 /// as a timestamp).

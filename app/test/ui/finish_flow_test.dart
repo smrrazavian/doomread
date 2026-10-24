@@ -110,7 +110,7 @@ void main() {
     await openAt(tester, db, 240);
     await session(tester, 5, 245);
     await tap(tester, find.text(en.seeYourBuilding));
-    await tap(tester, find.text(en.navTonight));
+    await tap(tester, find.text(en.navToday));
 
     await session(tester, 5, 245);
     expect(find.text(en.finishedTitle(title)), findsNothing);

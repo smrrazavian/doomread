@@ -10,10 +10,75 @@ class AppLocalizationsFa extends AppLocalizations {
   AppLocalizationsFa([String locale = 'fa']) : super(locale);
 
   @override
-  String get appTitle => 'باز گوشی؟!';
+  String get navToday => 'امروز';
 
   @override
-  String get navTonight => 'امشب';
+  String get tonightCard => 'امشب';
+
+  @override
+  String get taskAdd => 'یه کار اضافه کن';
+
+  @override
+  String taskAbout(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'حدوداً $minutesString دقیقه';
+  }
+
+  @override
+  String taskDoneAt(String time, int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'ساعت $time تموم شد، $minutesString دقیقه یه‌سره';
+  }
+
+  @override
+  String taskDoneAtOnly(String time) {
+    return 'ساعت $time تموم شد';
+  }
+
+  @override
+  String get taskDone => 'تموم شد';
+
+  @override
+  String get taskNotDone => 'هنوز تموم نشده';
+
+  @override
+  String get taskNew => 'کار تازه';
+
+  @override
+  String get taskEdit => 'ویرایش کار';
+
+  @override
+  String get taskName => 'چه کاری؟';
+
+  @override
+  String get taskNoName => 'یه اسم براش بنویس.';
+
+  @override
+  String get taskEstimate => 'حدوداً چند دقیقه؟ اختیاریه';
+
+  @override
+  String get taskEstimateUnreadable => 'دقیقه رو با عدد بنویس.';
+
+  @override
+  String get taskAddButton => 'اضافه کن';
+
+  @override
+  String get taskDayToday => 'امروز';
+
+  @override
+  String get taskDayTomorrow => 'فردا';
+
+  @override
+  String get taskDayPick => 'یه روز دیگه';
+
+  @override
+  String get appTitle => 'باز گوشی؟!';
 
   @override
   String get navBooks => 'قفسه';
@@ -574,6 +639,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get kindPodcast => 'پادکست';
 
   @override
+  String get kindTask => 'کار';
+
+  @override
   String get fieldCreator => 'سازنده';
 
   @override
@@ -651,6 +719,7 @@ class AppLocalizationsFa extends AppLocalizations {
       'series': 'شروع دیدن',
       'film': 'شروع دیدن',
       'podcast': 'شروع گوش دادن',
+      'task': 'شروع',
       'other': 'شروع خوندن',
     });
     return '$_temp0';
@@ -662,6 +731,7 @@ class AppLocalizationsFa extends AppLocalizations {
       'series': 'برگرد سراغ دیدن',
       'film': 'برگرد سراغ دیدن',
       'podcast': 'برگرد سراغ گوش دادن',
+      'task': 'برگرد سراغش',
       'other': 'برگرد سراغ خوندن',
     });
     return '$_temp0';

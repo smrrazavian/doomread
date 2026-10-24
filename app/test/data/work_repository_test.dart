@@ -26,6 +26,77 @@ void main() {
     checkpoints: [34, 66],
   );
 
+  group('Tasks', () {
+    Future<String> addReport({DateTime? day}) => works.addTask(
+      name: 'Write the Q3 report',
+      day: day ?? DateTime(2026, 10, 22),
+      estimate: const Duration(minutes: 45),
+    );
+
+    test('a Task keeps its name, day and estimate, and is not Done', () async {
+      await addReport();
+      final task = (await works.watchTasks().first).single;
+      expect(task.name, 'Write the Q3 report');
+      expect(task.day, DateTime(2026, 10, 22));
+      expect(task.estimate, const Duration(minutes: 45));
+      expect(task.done, isFalse);
+    });
+
+    test('a Task is never in the Library and never current', () async {
+      final id = await addReport();
+      expect(await works.watchAll().first, isEmpty);
+      expect(await works.watchCurrent().first, isNull);
+      await works.keepOneCurrent();
+      expect(await works.watchCurrent().first, isNull);
+      await works.delete(id);
+      await works.restore(id);
+      expect(await works.watchCurrent().first, isNull);
+      expect(await works.watchTasks().first, hasLength(1));
+    });
+
+    test('a Task leaves the current Work as it is', () async {
+      await addRemains();
+      now = now.add(const Duration(minutes: 1));
+      await addReport();
+      expect(
+        (await works.watchCurrent().first)!.work.title,
+        'The Remains of the Day',
+      );
+      expect(await works.watchAll().first, hasLength(1));
+    });
+
+    test('a Task can be renamed, moved to another day and Done', () async {
+      final id = await addReport();
+      await works.editTask(
+        id,
+        name: 'Send the Q3 report',
+        day: DateTime(2026, 10, 23),
+      );
+      now = now.add(const Duration(minutes: 52));
+      await works.setDone(id);
+      var task = (await works.watchTasks().first).single;
+      expect(task.name, 'Send the Q3 report');
+      expect(task.day, DateTime(2026, 10, 23));
+      expect(task.estimate, isNull);
+      expect(task.doneAt, now);
+
+      await works.setDone(id, done: false);
+      task = (await works.watchTasks().first).single;
+      expect(task.done, isFalse);
+    });
+
+    test('Tasks list in the order they were added', () async {
+      await works.addTask(name: 'one');
+      await works.addTask(name: 'two');
+      await works.addTask(name: 'three');
+      expect((await works.watchTasks().first).map((t) => t.name), [
+        'one',
+        'two',
+        'three',
+      ]);
+    });
+  });
+
   test('an added Work shows up in the list', () async {
     await addRemains();
     final all = await works.watchAll().first;

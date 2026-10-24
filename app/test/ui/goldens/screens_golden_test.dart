@@ -125,6 +125,56 @@ void main() {
       );
     });
 
+    testApp("Today with Tasks and tonight's book in $lang", (
+      tester,
+      db,
+    ) async {
+      await addEarlierEvenings(tester, db, await addRemains(db, lang));
+      final works = WorkRepository(db, clock: () => now);
+      final sessions = SessionRepository(db, clock: () => now);
+      final today = DateTime(2026, 10, 22);
+      final fa = lang == 'fa';
+      // Done this morning, 38 minutes in one go.
+      now = DateTime(2026, 10, 22, 11, 2);
+      final emails = await works.addTask(
+        name: fa ? 'جواب ایمیل‌های مشتری' : 'Answer the client emails',
+        day: today,
+      );
+      final record = SessionRecord(
+        id: await sessions.start(emails),
+        road: Road(
+          Work(
+            id: emails,
+            title: '',
+            author: '',
+            totalPages: 1,
+            checkpoints: const [],
+          ),
+          position: 0,
+        ),
+        events: const [],
+      );
+      now = DateTime(2026, 10, 22, 11, 40);
+      await sessions.add(record, SessionEventKind.stop);
+      await works.setDone(emails);
+      await works.addTask(
+        name: fa ? 'نوشتن گزارش فصل سوم' : 'Write the Q3 report',
+        day: today,
+        estimate: const Duration(minutes: 45),
+      );
+      // From two days ago: it carries over, unmarked.
+      await works.addTask(
+        name: fa ? 'زنگ زدن به بانک' : 'Call the bank',
+        day: DateTime(2026, 10, 20),
+      );
+      now = DateTime(2026, 10, 22, 21);
+      await openIn(tester, db, lang);
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('today_tasks_$lang.png'),
+      );
+    });
+
     testApp('Reading in $lang', (tester, db) async {
       await addEarlierEvenings(tester, db, await addRemains(db, lang));
       await openIn(tester, db, lang);

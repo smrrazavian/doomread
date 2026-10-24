@@ -1,7 +1,74 @@
 {
   "@@locale": "en",
+  "navToday": "Today",
+  "@navToday": {
+    "description": "The home screen, formerly Tonight: its title and its tab. It holds today's Tasks and tonight's Work."
+  },
+  "tonightCard": "Tonight",
+  "@tonightCard": {
+    "description": "Over the current Work's card on Today."
+  },
+  "taskAdd": "Add a task",
+  "@taskAdd": {
+    "description": "The dashed row at the foot of Today's Tasks."
+  },
+  "taskAbout": "About {minutes} min",
+  "@taskAbout": {
+    "description": "Under an undone Task on Today: its estimate. Only ever shown; it's no deadline.",
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "taskDoneAt": "Done at {time}, {minutes} min in one go",
+  "@taskDoneAt": {
+    "description": "Under a Task Done today: when, and its longest Stretch.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "taskDoneAtOnly": "Done at {time}",
+  "@taskDoneAtOnly": {
+    "description": "The same, for a Task Done with no time in a Session.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "taskDone": "Done",
+  "@taskDone": {
+    "description": "A Task is Done: its lit window, read aloud."
+  },
+  "taskNotDone": "Not done yet",
+  "@taskNotDone": {
+    "description": "A Task's dark window, read aloud."
+  },
+  "taskNew": "New task",
+  "taskEdit": "Edit task",
+  "taskName": "What's the task?",
+  "taskNoName": "Give it a name.",
+  "taskEstimate": "About how many minutes? Optional",
+  "taskEstimateUnreadable": "Minutes, as a number.",
+  "taskAddButton": "Add",
+  "taskDayToday": "Today",
+  "@taskDayToday": {
+    "description": "The day chip on a Task: planned for today, the default."
+  },
+  "taskDayTomorrow": "Tomorrow",
+  "taskDayPick": "Another day",
+  "@taskDayPick": {
+    "description": "The day chip that opens a list of the days ahead, in the user's calendar."
+  },
   "appTitle": "Doomread",
-  "navTonight": "Tonight",
   "navBooks": "Library",
   "navBuilding": "Building",
   "navFriends": "Friends",
@@ -432,6 +499,7 @@
   "kindSeries": "Series",
   "kindFilm": "Film",
   "kindPodcast": "Podcast",
+  "kindTask": "Task",
   "fieldCreator": "Made by",
   "fieldEpisodes": "Number of episodes",
   "fieldDuration": "Length",
@@ -499,7 +567,7 @@
       }
     }
   },
-  "startWork": "{kind, select, series{Start watching} film{Start watching} podcast{Start listening} other{Start reading}}",
+  "startWork": "{kind, select, series{Start watching} film{Start watching} podcast{Start listening} task{Start} other{Start reading}}",
   "@startWork": {
     "description": "kind is a WorkKind name: paperBook, ebook, series, film or podcast.",
     "placeholders": {
@@ -508,7 +576,7 @@
       }
     }
   },
-  "backToWork": "{kind, select, series{Back to watching} film{Back to watching} podcast{Back to listening} other{Back to reading}}",
+  "backToWork": "{kind, select, series{Back to watching} film{Back to watching} podcast{Back to listening} task{Back to it} other{Back to reading}}",
   "@backToWork": {
     "description": "kind is a WorkKind name: paperBook, ebook, series, film or podcast.",
     "placeholders": {

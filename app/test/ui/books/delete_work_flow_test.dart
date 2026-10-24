@@ -91,7 +91,7 @@ void main() {
 
     await tester.drag(find.text('Dune'), const Offset(-600, 0));
     await tester.pumpAndSettle();
-    await tester.tap(find.text(en.navTonight));
+    await tester.tap(find.text(en.navToday));
     await tester.pumpAndSettle();
     await tester.pump(const Duration(seconds: 15));
     await tester.pumpAndSettle();

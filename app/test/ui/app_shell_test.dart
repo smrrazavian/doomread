@@ -17,7 +17,7 @@ void main() {
 
     final nav = find.byType(NavigationBar);
     for (final label in [
-      en.navTonight,
+      en.navToday,
       en.navBooks,
       en.navBuilding,
       en.navFriends,
@@ -41,7 +41,7 @@ void main() {
     await tester.binding.handlePopRoute(); // Android back
     await tester.pumpAndSettle();
 
-    final tonight = find.text(fa.navTonight).first;
+    final tonight = find.text(fa.navToday).first;
     expect(Directionality.of(tester.element(tonight)), TextDirection.rtl);
     expect(await SettingsRepository(db).locale(), const Locale('fa'));
   });

@@ -2,7 +2,9 @@ import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:drift/drift.dart';
 
-/// The Works the user is getting through, and which one is current.
+/// The Works the user is getting through, and which one is current. Tasks
+/// are Works in the same table, kept apart here: they're never in the
+/// Library and never current (ADR-0012).
 class WorkRepository {
   WorkRepository(this._db, {DateTime Function()? clock})
     : _now = clock ?? DateTime.now;
@@ -14,9 +16,10 @@ class WorkRepository {
 
   static const _currentKey = 'currentWork';
 
+  /// The Library: every Work but the Tasks, the latest changed first.
   Stream<List<Work>> watchAll() =>
       (_db.select(_db.works)
-            ..where((w) => w.deleted.not())
+            ..where((w) => w.deleted.not() & _notTask(w))
             ..orderBy([
               (w) => OrderingTerm.desc(w.updatedAt),
               // Same-second rows: the one added last first.
@@ -25,7 +28,8 @@ class WorkRepository {
           .watch()
           .map((rows) => rows.map(toWork).toList());
 
-  /// Whether any Work was ever added on this device, deleted ones included.
+  /// Whether any Work was ever added on this device, deleted ones and Tasks
+  /// included.
   Future<bool> any() async =>
       await (_db.select(_db.works)..limit(1)).getSingleOrNull() != null;
 
@@ -43,7 +47,7 @@ class WorkRepository {
           _db.settings.value.equalsExp(_db.works.id) &
               _db.settings.key.equals(_currentKey),
         ),
-      ])..where(_db.works.deleted.not());
+      ])..where(_db.works.deleted.not() & _notTask(_db.works));
 
   /// The Work with [id] on its Road, or null if there's no such Work.
   Stream<Road?> watchRoad(String id) =>
@@ -112,10 +116,14 @@ class WorkRepository {
   });
 
   /// Undoes [delete]. The Work becomes current again if it was, or if
-  /// none is.
+  /// none is; a Task never does.
   Future<void> restore(String id, {bool current = false}) =>
       _db.transaction(() async {
         await _setDeleted(id, false);
+        final row = await (_db.select(
+          _db.works,
+        )..where((w) => w.id.equals(id))).getSingle();
+        if (row.kind == WorkKind.task) return;
         if (current || await _db.setting(_currentKey) == null) {
           await setCurrent(id);
         }
@@ -146,7 +154,7 @@ class WorkRepository {
     if (await _current().getSingleOrNull() != null) return;
     final latest =
         await (_db.select(_db.works)
-              ..where((w) => w.deleted.not())
+              ..where((w) => w.deleted.not() & _notTask(w))
               ..orderBy([(w) => OrderingTerm.desc(w.updatedAt)])
               ..limit(1))
             .getSingleOrNull();
@@ -158,6 +166,81 @@ class WorkRepository {
       _db.settings,
     )..where((s) => s.key.equals(_currentKey))).go();
   });
+
+  static Expression<bool> _notTask($WorksTable w) =>
+      w.kind.equalsValue(WorkKind.task).not();
+
+  /// Every Task not deleted, in the order they were added.
+  Stream<List<Task>> watchTasks() =>
+      (_db.select(_db.works)
+            ..where((w) => w.deleted.not() & w.kind.equalsValue(WorkKind.task))
+            ..orderBy([
+              (_) => OrderingTerm.asc(const CustomExpression<int>('rowid')),
+            ]))
+          .watch()
+          .map((rows) => rows.map(toTask).toList());
+
+  /// Adds a Task and returns its id. It never becomes current.
+  Future<String> addTask({
+    required String name,
+    DateTime? day,
+    Duration? estimate,
+  }) async {
+    final id = newId();
+    final at = _now();
+    await _db
+        .into(_db.works)
+        .insert(
+          WorksCompanion.insert(
+            id: id,
+            title: name,
+            author: '',
+            kind: const Value(WorkKind.task),
+            totalPages: 1,
+            checkpoints: '',
+            updatedAt: at,
+            positionAt: Value(at),
+            day: Value(day),
+            estimate: Value(estimate?.inMinutes),
+          ),
+        );
+    return id;
+  }
+
+  /// Changes a Task's name, day and estimate.
+  Future<void> editTask(
+    String id, {
+    required String name,
+    DateTime? day,
+    Duration? estimate,
+  }) => (_db.update(_db.works)..where((w) => w.id.equals(id))).write(
+    WorksCompanion(
+      title: Value(name),
+      day: Value(day),
+      estimate: Value(estimate?.inMinutes),
+      updatedAt: Value(_now()),
+    ),
+  );
+
+  /// Marks a Task Done now, or with [done] false, undone again.
+  Future<void> setDone(String id, {bool done = true}) {
+    final at = _now();
+    return (_db.update(_db.works)..where((w) => w.id.equals(id))).write(
+      WorksCompanion(
+        doneAt: Value(done ? at : null),
+        doneChangedAt: Value(at),
+        updatedAt: Value(at),
+      ),
+    );
+  }
+
+  static Task toTask(WorkRow w) => Task(
+    id: w.id,
+    name: w.title,
+    day: w.day,
+    estimate: w.estimate == null ? null : Duration(minutes: w.estimate!),
+    doneAt: w.doneAt,
+  );
 
   static Work toWork(WorkRow w) => Work(
     id: w.id,

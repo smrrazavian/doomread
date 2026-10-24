@@ -19,10 +19,10 @@ class BuildingViewModel extends ChangeNotifier {
         _history = all;
         final measuredAll = measured(all, sessions.now());
         _sessions = [for (final s in measuredAll) s.session];
-        List<StretchRise> trend({required bool watched}) =>
-            longestStretchTrend(alike(measuredAll, watched: watched));
-        _rises = trend(watched: false);
-        _watchingRises = trend(watched: true);
+        List<StretchRise> trend(Attention attention) =>
+            longestStretchTrend(alike(measuredAll, attention));
+        _rises = trend(Attention.reading);
+        _watchingRises = trend(Attention.watching);
         notifyListeners();
       }),
     ];

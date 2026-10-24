@@ -98,17 +98,119 @@ abstract class AppLocalizations {
     Locale('fa'),
   ];
 
+  /// The home screen, formerly Tonight: its title and its tab. It holds today's Tasks and tonight's Work.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get navToday;
+
+  /// Over the current Work's card on Today.
+  ///
+  /// In en, this message translates to:
+  /// **'Tonight'**
+  String get tonightCard;
+
+  /// The dashed row at the foot of Today's Tasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a task'**
+  String get taskAdd;
+
+  /// Under an undone Task on Today: its estimate. Only ever shown; it's no deadline.
+  ///
+  /// In en, this message translates to:
+  /// **'About {minutes} min'**
+  String taskAbout(int minutes);
+
+  /// Under a Task Done today: when, and its longest Stretch.
+  ///
+  /// In en, this message translates to:
+  /// **'Done at {time}, {minutes} min in one go'**
+  String taskDoneAt(String time, int minutes);
+
+  /// The same, for a Task Done with no time in a Session.
+  ///
+  /// In en, this message translates to:
+  /// **'Done at {time}'**
+  String taskDoneAtOnly(String time);
+
+  /// A Task is Done: its lit window, read aloud.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get taskDone;
+
+  /// A Task's dark window, read aloud.
+  ///
+  /// In en, this message translates to:
+  /// **'Not done yet'**
+  String get taskNotDone;
+
+  /// No description provided for @taskNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New task'**
+  String get taskNew;
+
+  /// No description provided for @taskEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit task'**
+  String get taskEdit;
+
+  /// No description provided for @taskName.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s the task?'**
+  String get taskName;
+
+  /// No description provided for @taskNoName.
+  ///
+  /// In en, this message translates to:
+  /// **'Give it a name.'**
+  String get taskNoName;
+
+  /// No description provided for @taskEstimate.
+  ///
+  /// In en, this message translates to:
+  /// **'About how many minutes? Optional'**
+  String get taskEstimate;
+
+  /// No description provided for @taskEstimateUnreadable.
+  ///
+  /// In en, this message translates to:
+  /// **'Minutes, as a number.'**
+  String get taskEstimateUnreadable;
+
+  /// No description provided for @taskAddButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get taskAddButton;
+
+  /// The day chip on a Task: planned for today, the default.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get taskDayToday;
+
+  /// No description provided for @taskDayTomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get taskDayTomorrow;
+
+  /// The day chip that opens a list of the days ahead, in the user's calendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Another day'**
+  String get taskDayPick;
+
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
   /// **'Doomread'**
   String get appTitle;
-
-  /// No description provided for @navTonight.
-  ///
-  /// In en, this message translates to:
-  /// **'Tonight'**
-  String get navTonight;
 
   /// No description provided for @navBooks.
   ///
@@ -764,6 +866,12 @@ abstract class AppLocalizations {
   /// **'Podcast'**
   String get kindPodcast;
 
+  /// No description provided for @kindTask.
+  ///
+  /// In en, this message translates to:
+  /// **'Task'**
+  String get kindTask;
+
   /// No description provided for @fieldCreator.
   ///
   /// In en, this message translates to:
@@ -857,13 +965,13 @@ abstract class AppLocalizations {
   /// kind is a WorkKind name: paperBook, ebook, series, film or podcast.
   ///
   /// In en, this message translates to:
-  /// **'{kind, select, series{Start watching} film{Start watching} podcast{Start listening} other{Start reading}}'**
+  /// **'{kind, select, series{Start watching} film{Start watching} podcast{Start listening} task{Start} other{Start reading}}'**
   String startWork(String kind);
 
   /// kind is a WorkKind name: paperBook, ebook, series, film or podcast.
   ///
   /// In en, this message translates to:
-  /// **'{kind, select, series{Back to watching} film{Back to watching} podcast{Back to listening} other{Back to reading}}'**
+  /// **'{kind, select, series{Back to watching} film{Back to watching} podcast{Back to listening} task{Back to it} other{Back to reading}}'**
   String backToWork(String kind);
 
   /// kind is a WorkKind name: paperBook, ebook, series, film or podcast.

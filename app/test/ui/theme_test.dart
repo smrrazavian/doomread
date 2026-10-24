@@ -13,7 +13,7 @@ void main() {
       await pumpApp(tester, db);
 
       // The theme as rendered, after Flutter localises it for Persian.
-      final tonight = lookupAppLocalizations(const Locale('fa')).navTonight;
+      final tonight = lookupAppLocalizations(const Locale('fa')).navToday;
       final t = Theme.of(tester.element(find.text(tonight).first)).textTheme;
       final styles = {
         'displayLarge': t.displayLarge,

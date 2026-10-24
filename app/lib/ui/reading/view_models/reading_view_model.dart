@@ -78,7 +78,7 @@ class ReadingViewModel extends ChangeNotifier {
   /// or watched, like this one.
   Duration get aim => aimAfter(
     measured(_before, _sessions.now()),
-    watched: record?.road.work.kind.watched ?? false,
+    record?.road.work.kind.attention ?? Attention.reading,
   );
 
   /// The House's lit Windows: this Session's, then the user's earlier ones.

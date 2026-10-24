@@ -13,6 +13,7 @@ export 'src/reading_week.dart';
 export 'src/road.dart';
 export 'src/session.dart';
 export 'src/session_end.dart';
+export 'src/task.dart';
 export 'src/urge.dart';
 export 'src/voice.dart';
 export 'src/work.dart';

@@ -53,7 +53,7 @@ class LiveNotification {
     if (running != null) {
       final aim = aimAfter(
         measured(all.where((r) => r.id != open.id), now),
-        watched: open.road.work.kind.watched,
+        open.road.work.kind.attention,
       );
       text = l10n.aim(aim.inMinutes);
     } else if (session.onBreak) {

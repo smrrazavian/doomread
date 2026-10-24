@@ -471,7 +471,9 @@ class _HousePainter extends CustomPainter {
     final x = pane.left;
     final y = pane.top;
     switch (kind) {
-      case WorkKind.paperBook || WorkKind.ebook:
+      // A Task's Session shows the desk, not the House; its lamp is the
+      // nearest thing.
+      case WorkKind.paperBook || WorkKind.ebook || WorkKind.task:
         // A reading lamp: shade, stem and foot, and its pool of light.
         canvas
           ..drawCircle(

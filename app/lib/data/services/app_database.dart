@@ -18,6 +18,11 @@ class Settings extends Table {
 /// Works the user is getting through. The length, Checkpoints and Position
 /// are in the kind's unit (pages, episodes or seconds); Checkpoints are stored
 /// as comma-separated text since they're only ever read and written whole.
+///
+/// Tasks are Works too, so their Sessions, deletes and sync are the same.
+/// The title is a Task's name; its length is 1 and it has no author,
+/// Checkpoints or Position, while [day], [estimate] and [doneAt] are only a
+/// Task's.
 @DataClassName('WorkRow')
 class Works extends Table {
   TextColumn get id => text()();
@@ -45,6 +50,19 @@ class Works extends Table {
   /// sync keeps its own last write, so an edit or a Session elsewhere
   /// can't bring a deleted Work back. Null means never.
   DateTimeColumn get deletedChangedAt => dateTime().nullable()();
+
+  /// The day a Task is planned for, as local midnight; null for none.
+  DateTimeColumn get day => dateTime().nullable()();
+
+  /// About how many minutes a Task takes; null when the user didn't say.
+  IntColumn get estimate => integer().nullable()();
+
+  /// When a Task was Done; null while it isn't.
+  DateTimeColumn get doneAt => dateTime().nullable()();
+
+  /// When [doneAt] last changed: Done or its Undo. Like [deletedChangedAt],
+  /// sync keeps its own last write, so an edit elsewhere can't undo a Done.
+  DateTimeColumn get doneChangedAt => dateTime().nullable()();
 
   /// The [updatedAt] last sent to or taken from the sync server. Null or
   /// different when there's a change to send.
@@ -108,7 +126,7 @@ class AppDatabase extends _$AppDatabase {
   )..where((s) => s.key.equals(key))).getSingleOrNull())?.value;
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -135,6 +153,12 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from >= 3 && from < 8) {
         await m.addColumn(sessionEvents, sessionEvents.page);
+      }
+      if (from >= 2 && from < 9) {
+        await m.addColumn(works, works.day);
+        await m.addColumn(works, works.estimate);
+        await m.addColumn(works, works.doneAt);
+        await m.addColumn(works, works.doneChangedAt);
       }
     },
   );

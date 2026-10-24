@@ -87,7 +87,7 @@ void main() {
     await tap(tester, find.text(en.navBooks));
     await add(tester, 'film', 'Paris, Texas', '2:25:00');
     await tap(tester, find.text('Paris, Texas'));
-    await tap(tester, find.text(en.navTonight));
+    await tap(tester, find.text(en.navToday));
     expect(find.text(en.aim(1)), findsOne);
   });
 }

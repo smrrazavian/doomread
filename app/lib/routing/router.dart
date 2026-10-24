@@ -129,8 +129,8 @@ class _NavShell extends StatelessWidget {
         onDestinationSelected: shell.goBranch,
         destinations: [
           NavigationDestination(
-            icon: const Icon(Icons.nightlight_outlined),
-            label: l10n.navTonight,
+            icon: const Icon(Icons.window_outlined),
+            label: l10n.navToday,
           ),
           NavigationDestination(
             icon: const Icon(Icons.video_library_outlined),

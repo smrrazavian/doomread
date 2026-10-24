@@ -41,11 +41,11 @@ void main() {
       sat(dark, yesterday, const Duration(minutes: 40)),
     ];
     expect(
-      longestStretch(alike(all, watched: false)),
+      longestStretch(alike(all, Attention.reading)),
       const Duration(minutes: 6),
     );
     expect(
-      longestStretch(alike(all, watched: true)),
+      longestStretch(alike(all, Attention.watching)),
       const Duration(minutes: 40),
     );
   });
@@ -56,9 +56,9 @@ void main() {
       sat(ebook, yesterday, const Duration(minutes: 9)),
       sat(dark, yesterday, const Duration(minutes: 40)),
     ];
-    expect(aimAfter(before, watched: false), const Duration(minutes: 10));
-    expect(aimAfter(before, watched: true), const Duration(minutes: 41));
-    expect(aimAfter(const [], watched: false), const Duration(minutes: 1));
+    expect(aimAfter(before, Attention.reading), const Duration(minutes: 10));
+    expect(aimAfter(before, Attention.watching), const Duration(minutes: 41));
+    expect(aimAfter(const [], Attention.reading), const Duration(minutes: 1));
   });
 
   test("a Work's sittings are its ended Sessions, with their reading", () {

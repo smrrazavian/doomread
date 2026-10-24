@@ -510,7 +510,7 @@ class _WorkStep extends StatelessWidget {
           spacing: 8,
           runSpacing: 8,
           children: [
-            for (final k in WorkKind.values)
+            for (final k in WorkKind.media)
               ChoiceChip(
                 key: Key(k.name),
                 avatar: Icon(kindIcon(k)),
