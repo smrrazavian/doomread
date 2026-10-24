@@ -4,6 +4,7 @@ import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/share/widgets/glow_up_poster.dart';
+import 'package:doomread/ui/share/widgets/month_poster.dart';
 import 'package:doomread/ui/share/widgets/receipt_poster.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:drift/drift.dart' show Value;
@@ -127,6 +128,20 @@ void main() {
       expect([for (final r in card.rises) r.longest.inMinutes], [5, 12, 31]);
       expect(find.text(en.minutesShort(5)), findsOne);
       expect(find.text(en.minutesShort(31)), findsOne);
+    });
+
+    testApp('the month of windows opens from the Building', (tester, db) async {
+      await readOn(db, [(3, 5, 20, ''), (9, 12, 60, ''), (20, 31, 120, '')]);
+      await open(tester, db);
+      await tap(tester, find.text(en.navBuilding));
+
+      await tap(tester, find.text(en.cardMonthAction));
+      final card = tester.widget<MonthPoster>(find.byType(MonthPoster));
+      expect(card.month.month, (year: 2026, month: 10));
+      expect(card.month.count, 3);
+      expect(card.month.readingOn(DateTime(2026, 10, 20)).inMinutes, 31);
+      expect(card.firstDay, DateTime.monday);
+      expect(find.text(en.cardMonthLit(3)), findsOne);
     });
 
     testApp('no glow-up while the line has not risen', (tester, db) async {

@@ -1,7 +1,7 @@
 import 'package:doomread/ui/core/number_format.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart' show DateFormat;
+import 'package:intl/intl.dart' show DateFormat, NumberFormat;
 
 /// [date] as a day and month: "۱۷ مهر" in Persian, on the Solar Hijri
 /// calendar, and "Oct 9" in English.
@@ -12,6 +12,18 @@ String formatDayMonth(BuildContext context, DateTime date) {
   }
   final d = toSolarHijri(date);
   return '${formatNumber(d.day, locale)} ${_persianMonths[d.month - 1]}';
+}
+
+/// A month and its year, in the calendar of the locale: "آبان ۱۴۰۵" in
+/// Persian, where [month] is Solar Hijri, and "October 2026" in English.
+String formatMonthYear(BuildContext context, ({int year, int month}) month) {
+  final locale = Localizations.localeOf(context);
+  if (locale.languageCode != 'fa') {
+    return DateFormat.yMMMM(locale.languageCode)
+        .format(DateTime(month.year, month.month));
+  }
+  return '${_persianMonths[month.month - 1]} '
+      '${NumberFormat('0', 'fa').format(month.year)}';
 }
 
 const _persianMonths = [

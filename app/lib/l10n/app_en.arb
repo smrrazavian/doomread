@@ -1138,5 +1138,28 @@
   "cardGlowUpSelf": "Me versus me. Nobody else on this line.",
   "@cardGlowUpSelf": {
     "description": "At the foot of the glow-up card: the user only ever compares with themselves."
-  }
+  },
+  "cardMonthAction": "Share this month",
+  "@cardMonthAction": {
+    "description": "On the Building: opens the month of windows card, one Window per night of this month."
+  },
+  "cardMonthHeading": "{month}, one window a night",
+  "@cardMonthHeading": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "cardMonthLit": "{count, plural, =0{No lamp on yet this month} =1{1 night with the lamp on} other{{count} nights with the lamp on}}",
+  "@cardMonthLit": {
+    "description": "Under the month of windows: how many nights had a Session. Never a streak.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "cardMonthLegend": "Brighter means longer"
 }

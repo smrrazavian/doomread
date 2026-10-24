@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 /// The user's Building: one floor per Finish, and how the Longest stretch
 /// has risen.
 class BuildingViewModel extends ChangeNotifier {
-  BuildingViewModel(SessionRepository sessions) {
+  BuildingViewModel(SessionRepository sessions) : _now = sessions.now {
     _subs = [
       sessions.watchFinishes().listen((f) {
         _floors = f;
@@ -16,6 +16,7 @@ class BuildingViewModel extends ChangeNotifier {
       }),
       sessions.watchAll().listen((all) {
         final measuredAll = measured(all, sessions.now());
+        _sessions = [for (final s in measuredAll) s.session];
         List<StretchRise> trend({required bool watched}) =>
             longestStretchTrend(alike(measuredAll, watched: watched));
         _rises = trend(watched: false);
@@ -26,6 +27,8 @@ class BuildingViewModel extends ChangeNotifier {
   }
 
   late final List<StreamSubscription<Object?>> _subs;
+  final DateTime Function() _now;
+  List<Session> _sessions = const [];
 
   /// Every Finish, the most recent first: the top floor.
   List<Finish> get floors => _floors;
@@ -41,6 +44,10 @@ class BuildingViewModel extends ChangeNotifier {
   /// The same for watching, kept apart; empty until something is watched.
   List<StretchRise> get watchingRises => _watchingRises;
   List<StretchRise> _watchingRises = const [];
+
+  /// This month's nights, read or watched: Solar Hijri when [solarHijri].
+  ReadingMonth month({required bool solarHijri}) =>
+      ReadingMonth(now: _now(), solarHijri: solarHijri, sessions: _sessions);
 
   @override
   void dispose() {

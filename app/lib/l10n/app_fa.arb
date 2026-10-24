@@ -291,5 +291,9 @@
   "cardGlowUpWhat": "{kind, select, watching{طولانی‌ترین تمرکز یه‌سره، موقع دیدن} other{طولانی‌ترین تمرکز یه‌سره، موقع خوندن}}",
   "cardGlowUpFirst": "اولش",
   "cardGlowUpNow": "الان",
-  "cardGlowUpSelf": "فقط خودم با خودم، نه هیچ‌کس دیگه."
+  "cardGlowUpSelf": "فقط خودم با خودم، نه هیچ‌کس دیگه.",
+  "cardMonthAction": "این ماهمو نشون بده",
+  "cardMonthHeading": "{month}، هر شب یه پنجره",
+  "cardMonthLit": "{count, plural, =0{این ماه هنوز چراغی روشن نشده} other{{count} شب چراغم روشن بود}}",
+  "cardMonthLegend": "هر چی روشن‌تر، بیشتر"
 }

@@ -1461,4 +1461,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cardGlowUpSelf => 'Me versus me. Nobody else on this line.';
+
+  @override
+  String get cardMonthAction => 'Share this month';
+
+  @override
+  String cardMonthHeading(String month) {
+    return '$month, one window a night';
+  }
+
+  @override
+  String cardMonthLit(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString nights with the lamp on',
+      one: '1 night with the lamp on',
+      zero: 'No lamp on yet this month',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get cardMonthLegend => 'Brighter means longer';
 }

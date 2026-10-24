@@ -2,6 +2,7 @@ import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/share/poster_image.dart';
 import 'package:doomread/ui/share/widgets/glow_up_poster.dart';
+import 'package:doomread/ui/share/widgets/month_poster.dart';
 import 'package:doomread/ui/share/widgets/receipt_poster.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
@@ -110,6 +111,43 @@ void main() {
         ),
       );
       await expectCard(tester, 'card_glow_up_$lang.png');
+    });
+
+    testWidgets('the month of windows, in $lang', (tester) async {
+      // The 27th night of the month: 1 Aban 1405 is 23 October 2026.
+      final first = fa ? DateTime(2026, 10, 23) : DateTime(2026, 10);
+      DateTime day(int n) => DateTime(first.year, first.month, first.day + n);
+      const minutes = [
+        6, 0, 9, 12, 0, 0, 14, 8, 17, 0, 21, 19, 0, 25, //
+        11, 0, 0, 28, 22, 30, 0, 26, 33, 18, 0, 35, 31,
+      ];
+      final sessions = [
+        for (final (n, m) in minutes.indexed)
+          if (m > 0)
+            Session.fromEvents([
+              SessionEvent(
+                SessionEventKind.start,
+                day(n).add(const Duration(hours: 21)),
+              ),
+              SessionEvent(
+                SessionEventKind.stop,
+                day(n).add(Duration(hours: 21, minutes: m)),
+              ),
+            ], now: day(40)),
+      ];
+      await pumpCard(
+        tester,
+        lang,
+        MonthPoster(
+          month: ReadingMonth(
+            now: day(26).add(const Duration(hours: 22)),
+            solarHijri: fa,
+            sessions: sessions,
+          ),
+          firstDay: firstDayOfWeek(lang),
+        ),
+      );
+      await expectCard(tester, 'card_month_$lang.png');
     });
   }
 }

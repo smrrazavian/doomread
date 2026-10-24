@@ -1669,6 +1669,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Me versus me. Nobody else on this line.'**
   String get cardGlowUpSelf;
+
+  /// On the Building: opens the month of windows card, one Window per night of this month.
+  ///
+  /// In en, this message translates to:
+  /// **'Share this month'**
+  String get cardMonthAction;
+
+  /// No description provided for @cardMonthHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'{month}, one window a night'**
+  String cardMonthHeading(String month);
+
+  /// Under the month of windows: how many nights had a Session. Never a streak.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No lamp on yet this month} =1{1 night with the lamp on} other{{count} nights with the lamp on}}'**
+  String cardMonthLit(int count);
+
+  /// No description provided for @cardMonthLegend.
+  ///
+  /// In en, this message translates to:
+  /// **'Brighter means longer'**
+  String get cardMonthLegend;
 }
 
 class _AppLocalizationsDelegate

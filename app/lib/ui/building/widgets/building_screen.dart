@@ -7,6 +7,7 @@ import 'package:doomread/ui/building/widgets/longest_stretch_trend.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/work_text.dart';
 import 'package:doomread/ui/share/widgets/glow_up_poster.dart';
+import 'package:doomread/ui/share/widgets/month_poster.dart';
 import 'package:doomread/ui/share/widgets/share_preview_screen.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +35,9 @@ class _Building extends StatelessWidget {
     final vm = context.watch<BuildingViewModel>();
     final floors = vm.floors;
     final canShare = context.read<ShareSheet>().available;
+    final locale = Localizations.localeOf(context);
+    // Until the Calendar has it, the month of windows is shared from here.
+    final month = vm.month(solarHijri: locale.languageCode == 'fa');
     VoidCallback? shareGlowUp(
       List<StretchRise> rises, {
       required bool watched,
@@ -71,6 +75,21 @@ class _Building extends StatelessWidget {
                 onShare: shareGlowUp(vm.watchingRises, watched: true),
               ),
             ],
+            if (canShare && month.count > 0)
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: TextButton.icon(
+                  onPressed: () => _share(
+                    context,
+                    MonthPoster(
+                      month: month,
+                      firstDay: firstDayOfWeek(locale.languageCode),
+                    ),
+                  ),
+                  icon: const Icon(Icons.calendar_view_month_outlined),
+                  label: Text(l10n.cardMonthAction),
+                ),
+              ),
             const SizedBox(height: 24),
             BuildingView(floors: floors.length, highlighted: 0),
             const SizedBox(height: 16),

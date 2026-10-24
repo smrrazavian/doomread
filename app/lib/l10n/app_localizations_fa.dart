@@ -1310,4 +1310,30 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get cardGlowUpSelf => 'فقط خودم با خودم، نه هیچ‌کس دیگه.';
+
+  @override
+  String get cardMonthAction => 'این ماهمو نشون بده';
+
+  @override
+  String cardMonthHeading(String month) {
+    return '$month، هر شب یه پنجره';
+  }
+
+  @override
+  String cardMonthLit(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString شب چراغم روشن بود',
+      zero: 'این ماه هنوز چراغی روشن نشده',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get cardMonthLegend => 'هر چی روشن‌تر، بیشتر';
 }

@@ -74,7 +74,7 @@ class LongestStretchTrend extends StatelessWidget {
       children: [
         trend,
         Align(
-          alignment: AlignmentDirectional.centerEnd,
+          alignment: AlignmentDirectional.centerStart,
           child: TextButton.icon(
             onPressed: onShare,
             icon: const Icon(Icons.share_outlined, size: 18),
