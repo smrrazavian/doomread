@@ -55,7 +55,7 @@ void main() {
     }
   });
 
-  test('the sample app is named in each locale\'s own letters', () {
+  test("the sample app is named in each locale's own letters", () {
     expect(sampleApp('en'), 'Instagram');
     expect(sampleApp('fa'), 'اینستاگرام');
     expect(sampleApp('de'), 'Instagram');
