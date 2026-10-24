@@ -34,6 +34,10 @@ enum Moment {
 
   /// The Aim is reached: a new Longest stretch.
   newBest,
+
+  /// The sign-off at the foot of tonight's receipt, the share card. A Slip
+  /// may be on the receipt, so every Tone's line here is kind.
+  receipt,
 }
 
 /// The lines for each Tone and moment, first choice first.

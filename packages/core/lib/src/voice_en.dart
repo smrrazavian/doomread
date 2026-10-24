@@ -18,6 +18,7 @@ const CopyPack en = {
     Moment.breakOver: ["Break's over."],
     Moment.evening: ['A good sitting. Well done.'],
     Moment.newBest: ['Aim reached. This is your longest stretch yet.'],
+    Moment.receipt: ['Calm and steady. Same time tomorrow?'],
   },
   Tone.spicy: {
     Moment.urge: [
@@ -28,6 +29,7 @@ const CopyPack en = {
     Moment.breakOver: ['Brainrot over. Lock back in.'],
     Moment.evening: ['Lowkey a great evening. Aura up.'],
     Moment.newBest: ['Longest stretch ever. The aura is real.'],
+    Moment.receipt: ['Locked in. Here are the receipts.'],
   },
   Tone.mom: {
     Moment.urge: [
@@ -40,5 +42,6 @@ const CopyPack en = {
     Moment.breakOver: ['Enough now! Back to it, go on.'],
     Moment.evening: ['Bravo! Now tell me, what happened?'],
     Moment.newBest: ['Look at you! Never this long in one go!'],
+    Moment.receipt: ['Well done! Now get up and make yourself some tea.'],
   },
 };

@@ -221,6 +221,13 @@ class Session {
       )
       .fold(Duration.zero, (sum, s) => sum + s.length);
 
+  /// All the time in Stretches: the Session's reading, without its
+  /// Pauses or Planned breaks.
+  Duration get reading => readingBetween(startedAt, null);
+
+  /// How many Urges ended as a Slip: each ended a Stretch.
+  int get slips => stretches.where((s) => s.endedBy == StretchEnd.slip).length;
+
   /// The Stretch running now, if any.
   Stretch? get current {
     final last = stretches.lastOrNull;

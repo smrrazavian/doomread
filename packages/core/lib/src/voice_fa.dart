@@ -18,6 +18,7 @@ const CopyPack fa = {
     Moment.breakOver: ['استراحت تموم شد.'],
     Moment.evening: ['شب خوبی بود. دمت گرم.'],
     Moment.newBest: ['به هدفت رسیدی. این طولانی‌ترین تمرکزت تا حالاست.'],
+    Moment.receipt: ['آروم و پیوسته. فردا شب همین موقع؟'],
   },
   Tone.spicy: {
     Moment.urge: [
@@ -28,6 +29,7 @@ const CopyPack fa = {
     Moment.breakOver: ['ریلز بسه. برگرد تو فاز.'],
     Moment.evening: ['امشب ترکوندی. پایه‌ای.'],
     Moment.newBest: ['طولانی‌ترین تمرکزت تا حالا. اورات رفت بالا.'],
+    Moment.receipt: ['امشب لاک‌این بودی. اینم مدرکش.'],
   },
   Tone.mom: {
     Moment.urge: [
@@ -38,5 +40,6 @@ const CopyPack fa = {
     Moment.breakOver: ['بسه دیگه! پاشو برگرد سراغش.'],
     Moment.evening: ['آفرین! حالا تعریف کن ببینم چی شد.'],
     Moment.newBest: ['ماشالله! تا حالا این‌قدر یه‌سره نشسته بودی؟'],
+    Moment.receipt: ['دمت گرم، حالا پاشو چایی بخور.'],
   },
 };

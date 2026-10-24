@@ -232,4 +232,39 @@ void main() {
       expect(s.urgesLetPass, 1);
     });
   });
+
+  group('the receipt numbers', () {
+    SessionEvent at(SessionEventKind kind, int m) => SessionEvent(kind, t(m));
+
+    test('a Slip counts once; a Let pass and a Pause never do', () {
+      final s = reduce([
+        start(0),
+        at(SessionEventKind.urge, 3),
+        at(SessionEventKind.letPass, 3),
+        at(SessionEventKind.urge, 9),
+        at(SessionEventKind.slip, 9),
+        at(SessionEventKind.slip, 9),
+        resume(12),
+        pause(14),
+        resume(15),
+        stop(20),
+      ]);
+      expect(s.slips, 1);
+      expect(reduce([start(0), pause(4), resume(5), stop(9)]).slips, 0);
+    });
+
+    test('reading leaves out Pauses and the Planned break', () {
+      final s = reduce([
+        start(0),
+        pause(5),
+        resume(7),
+        at(SessionEventKind.breakStart, 15),
+        at(SessionEventKind.breakEnd, 20),
+        stop(30),
+      ]);
+      expect(s.reading, const Duration(minutes: 23));
+      expect(s.breaks, hasLength(1));
+      expect(reduce(const []).reading, Duration.zero);
+    });
+  });
 }
