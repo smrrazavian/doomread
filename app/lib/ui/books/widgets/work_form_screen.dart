@@ -70,15 +70,15 @@ class _WorkFormState extends State<_WorkForm> {
   }
 
   Future<void> _save(WorkFormViewModel vm) async {
+    final parse = _timed ? parseClocks : parseNumbers;
+    final checkpoints = parse(_checkpoints.text);
     await vm.save.execute(
       WorkDraft(
         title: _title.text,
         author: _author.text,
         totalPages: (_timed ? parseClock : parseNumber)(_pages.text) ?? 0,
-        // Unreadable chapter ends count as out of range, so the user is told.
-        checkpoints:
-            (_timed ? parseClocks : parseNumbers)(_checkpoints.text) ??
-            const [-1],
+        checkpoints: checkpoints ?? const [],
+        checkpointsUnreadable: checkpoints == null,
         kind: _kind,
       ),
     );
@@ -184,12 +184,19 @@ class _WorkFormState extends State<_WorkForm> {
                 hintText: _timed
                     ? l10n.fieldTimestampsHint
                     : l10n.fieldCheckpointsHint,
-                errorText: problem(
-                  WorkProblem.checkpointPastEnd,
-                  _timed
-                      ? l10n.problemTimestampPastEnd
-                      : l10n.problemCheckpointPastEnd,
-                ),
+                errorText:
+                    problem(
+                      WorkProblem.checkpointsUnreadable,
+                      _timed
+                          ? l10n.checkpointsFormatTimestamps
+                          : l10n.checkpointsFormatPages,
+                    ) ??
+                    problem(
+                      WorkProblem.checkpointPastEnd,
+                      _timed
+                          ? l10n.problemTimestampPastEnd
+                          : l10n.problemCheckpointPastEnd,
+                    ),
               ),
             ),
           ],

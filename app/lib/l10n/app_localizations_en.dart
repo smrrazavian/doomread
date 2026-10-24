@@ -1148,4 +1148,12 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get toneHint =>
       'Whichever you pick, it roasts the urge, never you, and it\'s always kind after a slip.';
+
+  @override
+  String get checkpointsFormatPages =>
+      'Chapter ends are page numbers separated by commas, like 34, 66, 98';
+
+  @override
+  String get checkpointsFormatTimestamps =>
+      'Segment ends are timestamps separated by commas, like 42:30, 1:15:00';
 }

@@ -20,7 +20,10 @@ int? parseNumber(String text) {
 List<int>? parseNumbers(String text) => _parseList(text, parseNumber);
 
 List<int>? _parseList(String text, int? Function(String) parse) {
-  final parts = text.split(RegExp(r'[,،\s]+')).where((p) => p.isNotEmpty);
+  final trimmed = text.trim();
+  if (trimmed.isEmpty) return const [];
+  // An empty part, as in "34,, 98", is a typo rather than a separator.
+  final parts = trimmed.split(RegExp(r'\s*[,،]\s*|\s+'));
   final numbers = parts.map(parse).toList();
   return numbers.contains(null) ? null : numbers.cast<int>();
 }

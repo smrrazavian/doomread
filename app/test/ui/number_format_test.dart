@@ -41,6 +41,15 @@ void main() {
     expect(parseClocks('۴۲:۳۰، ۱:۱۵:۰۰'), [2550, 4500]);
     expect(parseClocks(''), isEmpty);
     expect(parseClocks('42:30, 1:99'), isNull);
+    expect(parseClocks('42:3x'), isNull);
+  });
+
+  test('a list with an empty part or a stray word is unreadable', () {
+    expect(parseNumbers('34, 66, 98'), [34, 66, 98]);
+    expect(parseNumbers('34 66'), [34, 66]);
+    for (final bad in ['34, 66,, 98', 'abc', '34, 66,', ',34']) {
+      expect(parseNumbers(bad), isNull, reason: bad);
+    }
   });
 
   test("timestamps prefill in the user's digits", () {
