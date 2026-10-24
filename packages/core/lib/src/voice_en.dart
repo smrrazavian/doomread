@@ -25,6 +25,8 @@ const CopyPack en = {
     Moment.newBest: ['Aim reached. This is your longest stretch yet.'],
     Moment.receipt: ['Calm and steady. Same time tomorrow?'],
     Moment.receiptAfterSlip: ['You came back. Same time tomorrow?'],
+    Moment.taskDone: ['Done. {minutes} calm minutes, nicely done.'],
+    Moment.taskDoneAfterSlip: ['Done. You came back to it, and finished.'],
   },
   Tone.spicy: {
     Moment.urge: [
@@ -42,6 +44,10 @@ const CopyPack en = {
     Moment.newBest: ['Longest stretch ever. The aura is real.'],
     Moment.receipt: ['Locked in. Here are the receipts.'],
     Moment.receiptAfterSlip: ['Wandered off, came back anyway. That counts.'],
+    Moment.taskDone: ['Locked in. {minutes} minutes, phone stayed face down.'],
+    Moment.taskDoneAfterSlip: [
+      'Wandered off, came back, got it done. That counts.',
+    ],
   },
   Tone.mom: {
     Moment.urge: [
@@ -62,6 +68,12 @@ const CopyPack en = {
     Moment.receipt: ['Well done! Now get up and make yourself some tea.'],
     Moment.receiptAfterSlip: [
       "You came back, and that's what matters. Now go have some tea.",
+    ],
+    Moment.taskDone: [
+      "Bravo! {minutes} minutes and it's done. Now have some tea.",
+    ],
+    Moment.taskDoneAfterSlip: [
+      "It's done, and that's what matters. Now go have some tea.",
     ],
   },
 };

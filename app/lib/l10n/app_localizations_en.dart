@@ -131,6 +131,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get oneSessionNotNow => 'Not now';
 
   @override
+  String doneTitle(String name) {
+    return '$name: done.';
+  }
+
+  @override
+  String get doneMinutes => 'min';
+
+  @override
+  String get doneLongest => 'longest, in one go';
+
+  @override
+  String get doneUrges => 'urges let pass';
+
+  @override
+  String doneNext(String name) {
+    return 'Next: $name';
+  }
+
+  @override
+  String get doneBreather => 'Take a breather';
+
+  @override
   String get appTitle => 'Doomread';
 
   @override

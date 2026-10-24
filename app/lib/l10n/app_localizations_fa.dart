@@ -131,6 +131,28 @@ class AppLocalizationsFa extends AppLocalizations {
   String get oneSessionNotNow => 'الان نه';
 
   @override
+  String doneTitle(String name) {
+    return '«$name»: تموم شد.';
+  }
+
+  @override
+  String get doneMinutes => 'دقیقه';
+
+  @override
+  String get doneLongest => 'بیشترین، یه‌سره';
+
+  @override
+  String get doneUrges => 'وسوسه که رد کردی';
+
+  @override
+  String doneNext(String name) {
+    return 'بعدی: «$name»';
+  }
+
+  @override
+  String get doneBreather => 'یه نفس تازه کن';
+
+  @override
   String get appTitle => 'باز گوشی؟!';
 
   @override

@@ -284,6 +284,42 @@ abstract class AppLocalizations {
   /// **'Not now'**
   String get oneSessionNotNow;
 
+  /// The heading of a Task's Done moment, with its name as typed.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}: done.'**
+  String doneTitle(String name);
+
+  /// Under the minutes spent on the Task, on its Done moment.
+  ///
+  /// In en, this message translates to:
+  /// **'min'**
+  String get doneMinutes;
+
+  /// Under its Longest stretch, in minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'longest, in one go'**
+  String get doneLongest;
+
+  /// Under how many Urges were let pass.
+  ///
+  /// In en, this message translates to:
+  /// **'urges let pass'**
+  String get doneUrges;
+
+  /// Starts the next undone Task.
+  ///
+  /// In en, this message translates to:
+  /// **'Next: {name}'**
+  String doneNext(String name);
+
+  /// Back to Today from the Done moment.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a breather'**
+  String get doneBreather;
+
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:

@@ -124,6 +124,40 @@
   "oneSessionBody": "Stop it first, then start this?",
   "oneSessionStop": "Stop it",
   "oneSessionNotNow": "Not now",
+  "doneTitle": "{name}: done.",
+  "@doneTitle": {
+    "description": "The heading of a Task's Done moment, with its name as typed.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "doneMinutes": "min",
+  "@doneMinutes": {
+    "description": "Under the minutes spent on the Task, on its Done moment."
+  },
+  "doneLongest": "longest, in one go",
+  "@doneLongest": {
+    "description": "Under its Longest stretch, in minutes."
+  },
+  "doneUrges": "urges let pass",
+  "@doneUrges": {
+    "description": "Under how many Urges were let pass."
+  },
+  "doneNext": "Next: {name}",
+  "@doneNext": {
+    "description": "Starts the next undone Task.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "doneBreather": "Take a breather",
+  "@doneBreather": {
+    "description": "Back to Today from the Done moment."
+  },
   "appTitle": "Doomread",
   "navBooks": "Library",
   "navBuilding": "Building",

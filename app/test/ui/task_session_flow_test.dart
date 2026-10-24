@@ -100,6 +100,8 @@ void main() {
     await tap(tester, start);
     await wait(tester, const Duration(minutes: 38));
     await tap(tester, find.text(en.taskDone));
+    expect(find.text(en.doneTitle(report)), findsOne, reason: 'the moment');
+    await tap(tester, find.text(en.doneBreather));
 
     expect(find.text(en.taskDoneAt('21:38', 38)), findsOne);
     expect(tester.widget<TaskWindow>(find.byType(TaskWindow)).lit, isTrue);
@@ -245,6 +247,8 @@ void main() {
     await tester.pumpAndSettle();
     expect((await task(db)).done, isTrue);
     expect(notification.shown, isNull);
+    expect(find.text(en.doneTitle(report)), findsOne, reason: 'the moment');
+    await tap(tester, find.text(en.doneBreather));
     expect(find.text(en.taskAdd), findsOne, reason: 'on Today');
   });
 
@@ -259,5 +263,6 @@ void main() {
     await pumpApp(tester, db, clock: () => now, notification: notification);
     await tester.pumpAndSettle();
     expect((await task(db)).done, isTrue);
+    expect(find.text(en.doneTitle(report)), findsOne);
   });
 }

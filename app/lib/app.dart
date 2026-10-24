@@ -19,6 +19,7 @@ import 'package:doomread/domain/use_cases/task_done_use_case.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/routing/router.dart';
 import 'package:doomread/ui/core/theme.dart';
+import 'package:doomread/ui/done/widgets/done_screen.dart';
 import 'package:doomread/ui/planned_break/break_over_alarm.dart';
 import 'package:doomread/ui/reading/live_notification.dart';
 import 'package:doomread/ui/settings/view_models/settings_view_model.dart';
@@ -236,10 +237,12 @@ class _DoomreadAppState extends State<DoomreadApp> {
   }
 
   /// Done, from the Task's notification: the Session ends, the Task is
-  /// Done, and Today shows it lit.
+  /// Done, and its Done moment plays over Today.
   Future<void> _doneFromNotification(String sessionId) async {
     final task = await _taskDone(sessionId);
-    if (task != null && mounted) _router.go('/tonight');
+    if (task == null || !mounted) return;
+    _router.go('/tonight');
+    unawaited(_router.push(donePath(task)));
   }
 
   void _openReading(String sessionId) {

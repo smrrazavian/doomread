@@ -135,4 +135,54 @@ void main() {
   test('Spicy is the default Tone', () {
     expect(Tone.byDefault, Tone.spicy);
   });
+
+  group("a Task's Done line", () {
+    final at = DateTime(2026, 10, 24, 15);
+    Session sat({bool slip = false}) => Session.fromEvents([
+      SessionEvent(SessionEventKind.start, at),
+      if (slip) ...[
+        SessionEvent(SessionEventKind.urge, at.add(const Duration(minutes: 5))),
+        SessionEvent(SessionEventKind.slip, at.add(const Duration(minutes: 6))),
+        SessionEvent(
+          SessionEventKind.resume,
+          at.add(const Duration(minutes: 8)),
+        ),
+      ],
+      SessionEvent(SessionEventKind.stop, at.add(const Duration(minutes: 52))),
+    ], now: at.add(const Duration(hours: 1)));
+
+    test('says the minutes, in each Tone its own way', () {
+      for (final locale in locales) {
+        final lines = {
+          for (final tone in Tone.values)
+            doneLine([sat()], tone, locale, minutes: '52'),
+        };
+        expect(lines, hasLength(Tone.values.length), reason: locale);
+        for (final l in lines) {
+          expect(l, contains('52'), reason: locale);
+        }
+      }
+    });
+
+    test('after a Slip, each Tone is kind and claims no clean run', () {
+      for (final locale in locales) {
+        for (final tone in Tone.values) {
+          final clean = doneLine([sat()], tone, locale, minutes: '52');
+          final slipped = doneLine(
+            [sat(), sat(slip: true)],
+            tone,
+            locale,
+            minutes: '52',
+          );
+          expect(slipped, isNot(clean), reason: '$locale $tone');
+          expect(
+            slipped,
+            voice(Moment.taskDoneAfterSlip, tone, locale, const {
+              'minutes': '52',
+            }),
+          );
+        }
+      }
+    });
+  });
 }

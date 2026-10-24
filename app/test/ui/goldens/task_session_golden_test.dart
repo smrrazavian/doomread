@@ -54,5 +54,24 @@ void main() {
         matchesGoldenFile('task_session_paused_$lang.png'),
       );
     });
+
+    testApp('the Done moment, in $lang', (tester, db) async {
+      await workOnReport(tester, db, lang);
+      // Another Task is left, so Next shows.
+      await WorkRepository(db).addTask(
+        name: lang == 'fa' ? 'زنگ زدن به بانک' : 'Call the bank',
+        day: DateTime(2026, 10, 22),
+      );
+      now = now.add(const Duration(minutes: 33, seconds: 18));
+      await tester.pump(const Duration(seconds: 1));
+      await tester.tap(
+        find.text(lookupAppLocalizations(Locale(lang)).taskDone),
+      );
+      await tester.pumpAndSettle();
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('done_$lang.png'),
+      );
+    });
   }
 }

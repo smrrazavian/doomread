@@ -154,10 +154,14 @@ void main() {
       final sheet = await open(tester, db, finish);
 
       await tester.tap(find.text(en.shareSend));
-      // Drawing the image is real work, outside the test's fake time.
-      await tester.runAsync(
-        () => Future<void>.delayed(const Duration(milliseconds: 500)),
-      );
+      // Drawing the image is real work, outside the test's fake time, and
+      // slower while the rest of the suite runs alongside.
+      for (var i = 0; i < 50 && sheet.shared.isEmpty; i++) {
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 100)),
+        );
+        await tester.pump();
+      }
       await tester.pumpAndSettle();
 
       final png = sheet.shared.single;

@@ -8,6 +8,7 @@ import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/number_format.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/voice_text.dart';
+import 'package:doomread/ui/done/widgets/done_screen.dart';
 import 'package:doomread/ui/evening/widgets/evening_screen.dart';
 import 'package:doomread/ui/planned_break/widgets/next_break_card.dart';
 import 'package:doomread/ui/reading/view_models/reading_view_model.dart';
@@ -61,10 +62,13 @@ class _Reading extends StatelessWidget {
     }
   }
 
-  /// The Task is Done: its Session ends, and it's marked Done.
+  /// The Task is Done: its Session ends, it's marked Done, and its Done
+  /// moment plays.
   Future<void> _done(BuildContext context, ReadingViewModel vm) async {
-    await context.read<TaskDoneUseCase>()(vm.id);
-    if (context.mounted) context.go('/tonight');
+    final task = await context.read<TaskDoneUseCase>()(vm.id);
+    if (task != null && context.mounted) {
+      context.pushReplacement(donePath(task));
+    }
   }
 
   @override

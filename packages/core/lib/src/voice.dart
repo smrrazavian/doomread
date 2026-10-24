@@ -47,6 +47,14 @@ enum Moment {
   /// The same for a Session with a Slip: kind, and true about it, so no
   /// Tone claims a perfect evening. Said through [receiptSignOff].
   receiptAfterSlip,
+
+  /// A Task is Done, on its Done moment. Facts: minutes, the time on it.
+  /// Said through [doneLine].
+  taskDone,
+
+  /// The same when its Sessions had a Slip: kind, and claiming no clean
+  /// run. Said through [doneLine].
+  taskDoneAfterSlip,
 }
 
 /// The lines for each Tone and moment, first choice first.
@@ -85,6 +93,22 @@ String voice(
   );
   return line.replaceAllMapped(_placeholder, (m) => facts[m[1]] ?? '');
 }
+
+/// The line on a Task's Done moment, after its [sessions], in [tone] and
+/// [locale], with the [minutes] spent on it. With a Slip in any of them, it
+/// is the Tone's after-a-Slip line, so it never says the phone stayed face
+/// down when it didn't.
+String doneLine(
+  Iterable<Session> sessions,
+  Tone tone,
+  String locale, {
+  required String minutes,
+}) => voice(
+  sessions.any((s) => s.slips > 0) ? Moment.taskDoneAfterSlip : Moment.taskDone,
+  tone,
+  locale,
+  {'minutes': minutes},
+);
 
 /// The sign-off on [session]'s receipt in [tone] and [locale]. A Session
 /// with a Slip gets its Tone's after-a-Slip line, so a receipt that shows a

@@ -25,6 +25,8 @@ const CopyPack fa = {
     Moment.newBest: ['به هدفت رسیدی. این طولانی‌ترین تمرکزت تا حالاست.'],
     Moment.receipt: ['آروم و پیوسته. فردا شب همین موقع؟'],
     Moment.receiptAfterSlip: ['برگشتی. فردا شب همین موقع؟'],
+    Moment.taskDone: ['تموم شد. {minutes} دقیقه‌ی آروم، دمت گرم.'],
+    Moment.taskDoneAfterSlip: ['برگشتی سراغش و تمومش کردی. دمت گرم.'],
   },
   Tone.spicy: {
     Moment.urge: [
@@ -42,6 +44,8 @@ const CopyPack fa = {
     Moment.newBest: ['طولانی‌ترین تمرکزت تا حالا. اورات رفت بالا.'],
     Moment.receipt: ['امشب لاک‌این بودی. اینم مدرکش.'],
     Moment.receiptAfterSlip: ['حواست پرت شد ولی برگشتی. همینه.'],
+    Moment.taskDone: ['لاک‌این بودی. {minutes} دقیقه، گوشی هم برعکس موند.'],
+    Moment.taskDoneAfterSlip: ['حواست پرت شد، برگشتی، تمومش کردی. همینه.'],
   },
   Tone.mom: {
     Moment.urge: [
@@ -59,5 +63,11 @@ const CopyPack fa = {
     Moment.newBest: ['ماشالله! تا حالا این‌قدر یه‌سره نشسته بودی؟'],
     Moment.receipt: ['دمت گرم، حالا پاشو چایی بخور.'],
     Moment.receiptAfterSlip: ['برگشتی، همینش مهمه. حالا پاشو یه چایی بخور.'],
+    Moment.taskDone: [
+      'آفرین! {minutes} دقیقه و تموم شد. حالا پاشو یه چایی بخور.',
+    ],
+    Moment.taskDoneAfterSlip: [
+      'تمومش کردی، همینش مهمه. حالا پاشو یه چایی بخور.',
+    ],
   },
 };
