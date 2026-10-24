@@ -11,6 +11,7 @@ import 'package:doomread/data/services/auto_sync.dart';
 import 'package:doomread/data/services/break_over_notification.dart';
 import 'package:doomread/data/services/home_widget.dart';
 import 'package:doomread/data/services/session_notification.dart';
+import 'package:doomread/domain/use_cases/stop_deleted_sessions_use_case.dart';
 import 'package:doomread/domain/use_cases/sync_use_case.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/routing/router.dart';
@@ -80,6 +81,8 @@ class _DoomreadAppState extends State<DoomreadApp> {
     widget.db,
     clock: widget.clock,
   );
+  late final StopDeletedSessionsUseCase _stopDeleted =
+      StopDeletedSessionsUseCase(_works, _sessions);
   late final SettingsRepository _settingsRepository = SettingsRepository(
     widget.db,
   );
@@ -110,7 +113,7 @@ class _DoomreadAppState extends State<DoomreadApp> {
     unawaited(_openReadingIfTapped());
     if ((widget.auth, widget.sync) case (final auth?, final sync?)) {
       _autoSync = AutoSync(
-        SyncUseCase(auth, sync, _works).call,
+        SyncUseCase(auth, sync, _works, _stopDeleted).call,
         triggers: [sync.localChanges, auth.changes],
       );
     }
@@ -118,6 +121,8 @@ class _DoomreadAppState extends State<DoomreadApp> {
     _homeWidget.onStart = _startFromWidget;
     _urges = UrgeWatch(_sessions, _watch, _settings)..onUrge = _openReading;
     unawaited(_startIfWidgetTapped());
+    // A delete left unsettled when the app last closed.
+    unawaited(_stopDeleted());
   }
 
   /// When Start on the home screen widget started the app, starts that
@@ -171,6 +176,7 @@ class _DoomreadAppState extends State<DoomreadApp> {
     providers: [
       Provider.value(value: _works),
       Provider.value(value: _sessions),
+      Provider.value(value: _stopDeleted),
       Provider.value(value: _settingsRepository),
       Provider.value(value: _notification),
       Provider.value(value: _watch),

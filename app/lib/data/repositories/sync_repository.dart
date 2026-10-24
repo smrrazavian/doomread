@@ -259,10 +259,13 @@ class SyncRepository {
   /// but the Position keeps its own (`positionAt`): a rename made elsewhere
   /// after this device moved the Position must not move it back. Neither
   /// is the highest page wins, so a Position can still be corrected down.
+  /// Deleting keeps its own too (`deletedChangedAt`), so a later edit or
+  /// Session elsewhere can't bring a deleted Work back, but a later Undo
+  /// can.
   ///
-  /// When each side has the later half, the merge is a new write, sent
+  /// When each side has a later part, the merge is a new write, sent
   /// back so the server and every other device get it. It is stamped a
-  /// second after both halves: rows keep whole seconds, and on a tie the
+  /// second after both rows: rows keep whole seconds, and on a tie the
   /// server keeps what it has. Returns whether there was such a merge.
   Future<bool> _takeWork(SyncItem item) async {
     final incoming = _workRow(item);
@@ -281,11 +284,24 @@ class SyncRepository {
     ) = deviceTakes(incoming.positionAt.value!, localPositionAt)
         ? (incoming.position.value, incoming.positionAt.value!)
         : (local.position, localPositionAt);
-    if (rowFromServer && position == incoming.position.value) {
+    final (deleted, deletedChangedAt) =
+        deviceTakes(
+          incoming.deletedChangedAt.value ?? _never,
+          local.deletedChangedAt ?? _never,
+        )
+        ? (incoming.deleted.value, incoming.deletedChangedAt.value)
+        : (local.deleted, local.deletedChangedAt);
+    if (rowFromServer &&
+        position == incoming.position.value &&
+        deleted == incoming.deleted.value) {
       await _db.into(_db.works).insertOnConflictUpdate(incoming);
       return false;
     }
-    if (!rowFromServer && position == local.position) return false;
+    if (!rowFromServer &&
+        position == local.position &&
+        deleted == local.deleted) {
+      return false;
+    }
     final later = item.updatedAt.isAfter(local.updatedAt)
         ? item.updatedAt
         : local.updatedAt;
@@ -296,12 +312,16 @@ class SyncRepository {
           row.copyWith(
             position: Value(position),
             positionAt: Value(positionAt),
+            deleted: Value(deleted),
+            deletedChangedAt: Value(deletedChangedAt),
             updatedAt: Value(later.add(const Duration(seconds: 1))),
             syncedAt: const Value(null),
           ),
         );
     return true;
   }
+
+  static final _never = DateTime.fromMicrosecondsSinceEpoch(0, isUtc: true);
 
   // How each row travels. The server never reads `data`, so a Work can
   // gain fields by changing only these two Work functions.
@@ -322,6 +342,7 @@ class SyncRepository {
       'position': w.position,
       'positionAt': (w.positionAt ?? w.updatedAt).microsecondsSinceEpoch,
       'deleted': w.deleted,
+      'deletedChangedAt': w.deletedChangedAt?.microsecondsSinceEpoch,
     },
   );
 
@@ -341,8 +362,13 @@ class SyncRepository {
       final int us => DateTime.fromMicrosecondsSinceEpoch(us, isUtc: true),
       _ => i.updatedAt,
     }),
-    // Devices from before deleting never send it.
+    // Devices from before deleting never send these, and so never undo a
+    // delete made here.
     deleted: Value(i.data['deleted'] == true),
+    deletedChangedAt: Value(switch (i.data['deletedChangedAt']) {
+      final int us => DateTime.fromMicrosecondsSinceEpoch(us, isUtc: true),
+      _ => null,
+    }),
     updatedAt: i.updatedAt,
     syncedAt: Value(i.updatedAt),
   );

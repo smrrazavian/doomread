@@ -1,5 +1,6 @@
 import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
+import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
@@ -55,19 +56,40 @@ void main() {
     expect(find.text(en.workDeleted('Dune')), findsOne);
   });
 
-  testApp('deleting a Work stops its open Session', (tester, db) async {
+  // Plain queries: watching the journal waits on drift timers that fake
+  // time never fires.
+  Future<List<SessionEventKind>> journal(AppDatabase db) async => [
+    for (final e in await db.select(db.sessionEvents).get()) e.kind,
+  ];
+
+  testApp('a Session open on a deleted Work stops once Undo is gone', (
+    tester,
+    db,
+  ) async {
     await SessionRepository(db).start(await addDune(WorkRepository(db)));
     await pumpApp(tester, db);
     await openLibrary(tester);
 
     await tester.drag(find.text('Dune'), const Offset(-600, 0));
     await tester.pumpAndSettle();
+    expect(await journal(db), [SessionEventKind.start]);
 
-    // A plain query: watching the journal waits on drift timers that fake
-    // time never fires.
-    final kinds = [
-      for (final e in await db.select(db.sessionEvents).get()) e.kind,
-    ];
-    expect(kinds, [SessionEventKind.start, SessionEventKind.stop]);
+    await tester.pump(const Duration(seconds: 10));
+    await tester.pumpAndSettle();
+    expect(find.text(en.undo), findsNothing);
+    await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+    expect(await journal(db), [SessionEventKind.start, SessionEventKind.stop]);
+  });
+
+  testApp('Undo keeps a Session open on the Work running', (tester, db) async {
+    await SessionRepository(db).start(await addDune(WorkRepository(db)));
+    await pumpApp(tester, db);
+    await openLibrary(tester);
+
+    await tester.drag(find.text('Dune'), const Offset(-600, 0));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(en.undo));
+    await tester.pumpAndSettle();
+    expect(await journal(db), [SessionEventKind.start]);
   });
 }

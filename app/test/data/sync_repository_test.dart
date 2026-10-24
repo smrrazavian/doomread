@@ -5,6 +5,7 @@ import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/data/repositories/sync_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/data/services/app_database.dart';
+import 'package:doomread/domain/use_cases/stop_deleted_sessions_use_case.dart';
 import 'package:doomread/domain/use_cases/sync_use_case.dart';
 import 'package:doomread/utils/result.dart';
 import 'package:doomread_core/accounts.dart';
@@ -43,8 +44,13 @@ class Device {
     auth = AuthRepository(db, client, server: _url);
     syncer = SyncRepository(db, client, server: _url);
     works = WorkRepository(db, clock: () => now);
-    syncing = SyncUseCase(auth, syncer, works);
     sessions = SessionRepository(db, clock: () => now);
+    syncing = SyncUseCase(
+      auth,
+      syncer,
+      works,
+      StopDeletedSessionsUseCase(works, sessions),
+    );
   }
 
   static final Uri _url = Uri.parse('http://doomread.test/');
@@ -393,6 +399,63 @@ void main() {
     expect((await a.works.watchCurrent().first)!.work.title, 'Piranesi');
   });
 
+  group('a delete keeps its own last write', () {
+    late String id;
+    setUp(() async {
+      id = await addDune(a);
+      await syncAll([a, b]);
+    });
+
+    Future<List<bool>> gone() async => [
+      for (final d in [a, b]) (await d.works.watchAll().first).isEmpty,
+    ];
+
+    test('through a later Session on a device that was offline', () async {
+      a
+        ..offline = true
+        ..now = evening.add(const Duration(minutes: 1));
+      await a.works.delete(id);
+      await read(b, id, to: 50, minute: 2, offline: true);
+      await syncAll([a, b, a, b]);
+      expect(await gone(), [true, true]);
+    });
+
+    test('when the later Session syncs first', () async {
+      a
+        ..offline = true
+        ..now = evening.add(const Duration(minutes: 1));
+      await a.works.delete(id);
+      await read(b, id, to: 50, minute: 2, offline: true);
+      await syncAll([b, a, b]);
+      expect(await gone(), [true, true]);
+    });
+
+    test('stops a Session left open on it on the other device', () async {
+      b.now = evening.add(const Duration(minutes: 1));
+      await b.sessions.start(id);
+      await syncAll([b]);
+      a.now = evening.add(const Duration(minutes: 2));
+      await a.works.delete(id);
+      await syncAll([a]);
+      b.now = evening.add(const Duration(minutes: 3));
+      await syncAll([b]);
+      expect((await b.last()).at(b.now).stopped, isTrue);
+    });
+
+    test('but Undo after it still wins', () async {
+      a
+        ..offline = true
+        ..now = evening.add(const Duration(minutes: 1));
+      await a.works.delete(id);
+      await read(b, id, to: 50, minute: 2, offline: true);
+      a.now = evening.add(const Duration(minutes: 3));
+      await a.works.restore(id);
+      await syncAll([b, a, b]);
+      expect(await gone(), [false, false]);
+      expect((await b.works.watchRoad(id).first)!.position, 50);
+    });
+  });
+
   test('pulls a long journal in pages', () async {
     final workId = await addDune(a);
     // More than one request's worth each way.
@@ -509,6 +572,7 @@ void main() {
       AuthRepository(old, client, server: Device._url),
       SyncRepository(old, client, server: Device._url),
       WorkRepository(old),
+      StopDeletedSessionsUseCase(WorkRepository(old), SessionRepository(old)),
     );
     expect(await syncing(), isA<Ok<void>>());
 

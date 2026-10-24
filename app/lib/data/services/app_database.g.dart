@@ -321,6 +321,18 @@ class $WorksTable extends Works with TableInfo<$WorksTable, WorkRow> {
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _deletedChangedAtMeta = const VerificationMeta(
+    'deletedChangedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedChangedAt =
+      GeneratedColumn<DateTime>(
+        'deleted_changed_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _syncedAtMeta = const VerificationMeta(
     'syncedAt',
   );
@@ -344,6 +356,7 @@ class $WorksTable extends Works with TableInfo<$WorksTable, WorkRow> {
     updatedAt,
     positionAt,
     deleted,
+    deletedChangedAt,
     syncedAt,
   ];
   @override
@@ -424,6 +437,15 @@ class $WorksTable extends Works with TableInfo<$WorksTable, WorkRow> {
         deleted.isAcceptableOrUnknown(data['deleted']!, _deletedMeta),
       );
     }
+    if (data.containsKey('deleted_changed_at')) {
+      context.handle(
+        _deletedChangedAtMeta,
+        deletedChangedAt.isAcceptableOrUnknown(
+          data['deleted_changed_at']!,
+          _deletedChangedAtMeta,
+        ),
+      );
+    }
     if (data.containsKey('synced_at')) {
       context.handle(
         _syncedAtMeta,
@@ -481,6 +503,10 @@ class $WorksTable extends Works with TableInfo<$WorksTable, WorkRow> {
         DriftSqlType.bool,
         data['${effectivePrefix}deleted'],
       )!,
+      deletedChangedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_changed_at'],
+      ),
       syncedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}synced_at'],
@@ -513,9 +539,14 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
   /// the migration fills it in, and null reads as [updatedAt].
   final DateTime? positionAt;
 
-  /// A deleted Work stays as a tombstone, so the delete syncs like any
-  /// other last write. Its Sessions and Notes stay too.
+  /// A deleted Work stays as a tombstone, so the delete syncs. Its
+  /// Sessions and Notes stay too.
   final bool deleted;
+
+  /// When [deleted] last changed: a delete or its Undo. Like [positionAt],
+  /// sync keeps its own last write, so an edit or a Session elsewhere
+  /// can't bring a deleted Work back. Null means never.
+  final DateTime? deletedChangedAt;
 
   /// The [updatedAt] last sent to or taken from the sync server. Null or
   /// different when there's a change to send.
@@ -531,6 +562,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
     required this.updatedAt,
     this.positionAt,
     required this.deleted,
+    this.deletedChangedAt,
     this.syncedAt,
   });
   @override
@@ -550,6 +582,9 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
       map['position_at'] = Variable<DateTime>(positionAt);
     }
     map['deleted'] = Variable<bool>(deleted);
+    if (!nullToAbsent || deletedChangedAt != null) {
+      map['deleted_changed_at'] = Variable<DateTime>(deletedChangedAt);
+    }
     if (!nullToAbsent || syncedAt != null) {
       map['synced_at'] = Variable<DateTime>(syncedAt);
     }
@@ -570,6 +605,9 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
           ? const Value.absent()
           : Value(positionAt),
       deleted: Value(deleted),
+      deletedChangedAt: deletedChangedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedChangedAt),
       syncedAt: syncedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(syncedAt),
@@ -594,6 +632,9 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       positionAt: serializer.fromJson<DateTime?>(json['positionAt']),
       deleted: serializer.fromJson<bool>(json['deleted']),
+      deletedChangedAt: serializer.fromJson<DateTime?>(
+        json['deletedChangedAt'],
+      ),
       syncedAt: serializer.fromJson<DateTime?>(json['syncedAt']),
     );
   }
@@ -613,6 +654,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'positionAt': serializer.toJson<DateTime?>(positionAt),
       'deleted': serializer.toJson<bool>(deleted),
+      'deletedChangedAt': serializer.toJson<DateTime?>(deletedChangedAt),
       'syncedAt': serializer.toJson<DateTime?>(syncedAt),
     };
   }
@@ -628,6 +670,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
     DateTime? updatedAt,
     Value<DateTime?> positionAt = const Value.absent(),
     bool? deleted,
+    Value<DateTime?> deletedChangedAt = const Value.absent(),
     Value<DateTime?> syncedAt = const Value.absent(),
   }) => WorkRow(
     id: id ?? this.id,
@@ -640,6 +683,9 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
     updatedAt: updatedAt ?? this.updatedAt,
     positionAt: positionAt.present ? positionAt.value : this.positionAt,
     deleted: deleted ?? this.deleted,
+    deletedChangedAt: deletedChangedAt.present
+        ? deletedChangedAt.value
+        : this.deletedChangedAt,
     syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
   );
   WorkRow copyWithCompanion(WorksCompanion data) {
@@ -660,6 +706,9 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
           ? data.positionAt.value
           : this.positionAt,
       deleted: data.deleted.present ? data.deleted.value : this.deleted,
+      deletedChangedAt: data.deletedChangedAt.present
+          ? data.deletedChangedAt.value
+          : this.deletedChangedAt,
       syncedAt: data.syncedAt.present ? data.syncedAt.value : this.syncedAt,
     );
   }
@@ -677,6 +726,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
           ..write('updatedAt: $updatedAt, ')
           ..write('positionAt: $positionAt, ')
           ..write('deleted: $deleted, ')
+          ..write('deletedChangedAt: $deletedChangedAt, ')
           ..write('syncedAt: $syncedAt')
           ..write(')'))
         .toString();
@@ -694,6 +744,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
     updatedAt,
     positionAt,
     deleted,
+    deletedChangedAt,
     syncedAt,
   );
   @override
@@ -710,6 +761,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
           other.updatedAt == this.updatedAt &&
           other.positionAt == this.positionAt &&
           other.deleted == this.deleted &&
+          other.deletedChangedAt == this.deletedChangedAt &&
           other.syncedAt == this.syncedAt);
 }
 
@@ -724,6 +776,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
   final Value<DateTime> updatedAt;
   final Value<DateTime?> positionAt;
   final Value<bool> deleted;
+  final Value<DateTime?> deletedChangedAt;
   final Value<DateTime?> syncedAt;
   final Value<int> rowid;
   const WorksCompanion({
@@ -737,6 +790,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
     this.updatedAt = const Value.absent(),
     this.positionAt = const Value.absent(),
     this.deleted = const Value.absent(),
+    this.deletedChangedAt = const Value.absent(),
     this.syncedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -751,6 +805,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
     required DateTime updatedAt,
     this.positionAt = const Value.absent(),
     this.deleted = const Value.absent(),
+    this.deletedChangedAt = const Value.absent(),
     this.syncedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -770,6 +825,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
     Expression<DateTime>? updatedAt,
     Expression<DateTime>? positionAt,
     Expression<bool>? deleted,
+    Expression<DateTime>? deletedChangedAt,
     Expression<DateTime>? syncedAt,
     Expression<int>? rowid,
   }) {
@@ -784,6 +840,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
       if (updatedAt != null) 'updated_at': updatedAt,
       if (positionAt != null) 'position_at': positionAt,
       if (deleted != null) 'deleted': deleted,
+      if (deletedChangedAt != null) 'deleted_changed_at': deletedChangedAt,
       if (syncedAt != null) 'synced_at': syncedAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -800,6 +857,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
     Value<DateTime>? updatedAt,
     Value<DateTime?>? positionAt,
     Value<bool>? deleted,
+    Value<DateTime?>? deletedChangedAt,
     Value<DateTime?>? syncedAt,
     Value<int>? rowid,
   }) {
@@ -814,6 +872,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
       updatedAt: updatedAt ?? this.updatedAt,
       positionAt: positionAt ?? this.positionAt,
       deleted: deleted ?? this.deleted,
+      deletedChangedAt: deletedChangedAt ?? this.deletedChangedAt,
       syncedAt: syncedAt ?? this.syncedAt,
       rowid: rowid ?? this.rowid,
     );
@@ -854,6 +913,9 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
     if (deleted.present) {
       map['deleted'] = Variable<bool>(deleted.value);
     }
+    if (deletedChangedAt.present) {
+      map['deleted_changed_at'] = Variable<DateTime>(deletedChangedAt.value);
+    }
     if (syncedAt.present) {
       map['synced_at'] = Variable<DateTime>(syncedAt.value);
     }
@@ -876,6 +938,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
           ..write('updatedAt: $updatedAt, ')
           ..write('positionAt: $positionAt, ')
           ..write('deleted: $deleted, ')
+          ..write('deletedChangedAt: $deletedChangedAt, ')
           ..write('syncedAt: $syncedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -1964,6 +2027,7 @@ typedef $$WorksTableCreateCompanionBuilder = WorksCompanion Function({
   required DateTime updatedAt,
   Value<DateTime?> positionAt,
   Value<bool> deleted,
+  Value<DateTime?> deletedChangedAt,
   Value<DateTime?> syncedAt,
   Value<int> rowid,
 });
@@ -1978,6 +2042,7 @@ typedef $$WorksTableUpdateCompanionBuilder = WorksCompanion Function({
   Value<DateTime> updatedAt,
   Value<DateTime?> positionAt,
   Value<bool> deleted,
+  Value<DateTime?> deletedChangedAt,
   Value<DateTime?> syncedAt,
   Value<int> rowid,
 });
@@ -2038,6 +2103,11 @@ class $$WorksTableFilterComposer extends Composer<_$AppDatabase, $WorksTable> {
 
   ColumnFilters<bool> get deleted => $composableBuilder(
     column: $table.deleted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedChangedAt => $composableBuilder(
+    column: $table.deletedChangedAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2106,6 +2176,11 @@ class $$WorksTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<DateTime> get deletedChangedAt => $composableBuilder(
+    column: $table.deletedChangedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get syncedAt => $composableBuilder(
     column: $table.syncedAt,
     builder: (column) => ColumnOrderings(column),
@@ -2157,6 +2232,11 @@ class $$WorksTableAnnotationComposer
   GeneratedColumn<bool> get deleted =>
       $composableBuilder(column: $table.deleted, builder: (column) => column);
 
+  GeneratedColumn<DateTime> get deletedChangedAt => $composableBuilder(
+    column: $table.deletedChangedAt,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get syncedAt =>
       $composableBuilder(column: $table.syncedAt, builder: (column) => column);
 }
@@ -2199,6 +2279,7 @@ class $$WorksTableTableManager
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<DateTime?> positionAt = const Value.absent(),
                 Value<bool> deleted = const Value.absent(),
+                Value<DateTime?> deletedChangedAt = const Value.absent(),
                 Value<DateTime?> syncedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WorksCompanion(
@@ -2212,6 +2293,7 @@ class $$WorksTableTableManager
                 updatedAt: updatedAt,
                 positionAt: positionAt,
                 deleted: deleted,
+                deletedChangedAt: deletedChangedAt,
                 syncedAt: syncedAt,
                 rowid: rowid,
               ),
@@ -2227,6 +2309,7 @@ class $$WorksTableTableManager
                 required DateTime updatedAt,
                 Value<DateTime?> positionAt = const Value.absent(),
                 Value<bool> deleted = const Value.absent(),
+                Value<DateTime?> deletedChangedAt = const Value.absent(),
                 Value<DateTime?> syncedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WorksCompanion.insert(
@@ -2240,6 +2323,7 @@ class $$WorksTableTableManager
                 updatedAt: updatedAt,
                 positionAt: positionAt,
                 deleted: deleted,
+                deletedChangedAt: deletedChangedAt,
                 syncedAt: syncedAt,
                 rowid: rowid,
               ),

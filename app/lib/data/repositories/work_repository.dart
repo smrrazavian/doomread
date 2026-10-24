@@ -117,10 +117,24 @@ class WorkRepository {
         }
       });
 
-  Future<void> _setDeleted(String id, bool deleted) =>
-      (_db.update(_db.works)..where((w) => w.id.equals(id))).write(
-        WorksCompanion(deleted: Value(deleted), updatedAt: Value(_now())),
-      );
+  Future<void> _setDeleted(String id, bool deleted) {
+    final at = _now();
+    return (_db.update(_db.works)..where((w) => w.id.equals(id))).write(
+      WorksCompanion(
+        deleted: Value(deleted),
+        deletedChangedAt: Value(at),
+        updatedAt: Value(at),
+      ),
+    );
+  }
+
+  /// Each deleted Work's id, with when it was deleted.
+  Future<Map<String, DateTime>> deleted() async => {
+    for (final w in await (_db.select(
+      _db.works,
+    )..where((w) => w.deleted)).get())
+      w.id: w.deletedChangedAt ?? w.updatedAt,
+  };
 
   /// Makes the most recently changed Work current when none is, or the
   /// current one was deleted, here or by sync. With no Works left, none is.

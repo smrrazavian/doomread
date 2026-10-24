@@ -73,33 +73,35 @@ class SessionRepository {
           );
 
   /// Every Session, oldest first.
-  Stream<List<SessionRecord>> watchAll() {
+  Stream<List<SessionRecord>> watchAll() => _all().watch().map(_records);
+
+  /// The same, read once.
+  Future<List<SessionRecord>> all() => _all().get().then(_records);
+
+  JoinedSelectStatement<HasResultSet, dynamic> _all() {
     final e = _db.sessionEvents;
-    final query =
-        _db.select(e).join([
-            innerJoin(_db.works, _db.works.id.equalsExp(e.workId)),
-            leftOuterJoin(
-              _db.notes,
-              _db.notes.sessionId.equalsExp(e.sessionId),
-            ),
-          ])
-          // Same-second events keep the order they were written in.
-          ..orderBy([
-            OrderingTerm.asc(e.at),
-            OrderingTerm.asc(
-              const CustomExpression<int>('session_events.rowid'),
-            ),
-          ]);
-    return query.watch().map((rows) {
-      final byId = <String, List<TypedResult>>{};
-      for (final r in rows) {
-        byId.putIfAbsent(r.readTable(e).sessionId, () => []).add(r);
-      }
-      return [
-        for (final MapEntry(key: id, value: rows) in byId.entries)
-          _toRecord(id, rows),
-      ];
-    });
+    return _db.select(e).join([
+        innerJoin(_db.works, _db.works.id.equalsExp(e.workId)),
+        leftOuterJoin(_db.notes, _db.notes.sessionId.equalsExp(e.sessionId)),
+      ])
+      // Same-second events keep the order they were written in.
+      ..orderBy([
+        OrderingTerm.asc(e.at),
+        OrderingTerm.asc(const CustomExpression<int>('session_events.rowid')),
+      ]);
+  }
+
+  List<SessionRecord> _records(List<TypedResult> rows) {
+    final byId = <String, List<TypedResult>>{};
+    for (final r in rows) {
+      byId
+          .putIfAbsent(r.readTable(_db.sessionEvents).sessionId, () => [])
+          .add(r);
+    }
+    return [
+      for (final MapEntry(key: id, value: rows) in byId.entries)
+        _toRecord(id, rows),
+    ];
   }
 
   SessionRecord _toRecord(String id, List<TypedResult> rows) {

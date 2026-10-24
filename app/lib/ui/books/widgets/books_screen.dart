@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
+import 'package:doomread/domain/use_cases/stop_deleted_sessions_use_case.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/books/view_models/books_view_model.dart';
 import 'package:doomread/ui/core/theme.dart';
@@ -16,8 +16,10 @@ class BooksScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ChangeNotifierProvider(
-    create: (c) =>
-        BooksViewModel(c.read<WorkRepository>(), c.read<SessionRepository>()),
+    create: (c) => BooksViewModel(
+      c.read<WorkRepository>(),
+      c.read<StopDeletedSessionsUseCase>(),
+    ),
     // Its own messenger, so the Undo snackbar lifts the Library's button
     // instead of covering it from the shell's Scaffold.
     child: const ScaffoldMessenger(child: _Books()),
@@ -95,17 +97,25 @@ void _delete(BuildContext context, BooksViewModel vm, Work work) {
   final l10n = AppLocalizations.of(context);
   final current = work.id == vm.currentId;
   unawaited(vm.delete(work));
-  ScaffoldMessenger.of(context)
-    ..hideCurrentSnackBar()
-    ..showSnackBar(
-      SnackBar(
-        content: Text(l10n.workDeleted(work.title)),
-        action: SnackBarAction(
-          label: l10n.undo,
-          onPressed: () => unawaited(vm.restore(work, current: current)),
-        ),
+  final messenger = ScaffoldMessenger.of(context)..hideCurrentSnackBar();
+  final undo = messenger.showSnackBar(
+    SnackBar(
+      content: Text(l10n.workDeleted(work.title)),
+      // With an action, Flutter keeps it up for good unless told not to.
+      persist: false,
+      action: SnackBarAction(
+        label: l10n.undo,
+        onPressed: () => unawaited(vm.restore(work, current: current)),
       ),
-    );
+    ),
+  );
+  // However else it closes (timing out, another delete, leaving the
+  // Library), there's no Undo any more.
+  unawaited(
+    undo.closed.then((reason) async {
+      if (reason != SnackBarClosedReason.action) await vm.settle(work);
+    }),
+  );
 }
 
 class _DeleteBackground extends StatelessWidget {
