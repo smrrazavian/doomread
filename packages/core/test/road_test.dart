@@ -50,4 +50,22 @@ void main() {
     expect(road.passed, isEmpty);
     expect(road.next, isNull);
   });
+
+  test('past the last Checkpoint the end is near, but not once finished', () {
+    expect(Road(book, position: 221).nearEnd, isFalse);
+    expect(Road(book, position: 222).nearEnd, isTrue);
+    expect(Road(book, position: 245).nearEnd, isFalse);
+  });
+
+  test('without Checkpoints the end is near in the last 5%', () {
+    final noChapters = Work(
+      id: 'w2',
+      title: 'Essays',
+      author: 'Someone',
+      totalPages: 200,
+      checkpoints: const [],
+    );
+    expect(Road(noChapters, position: 189).nearEnd, isFalse);
+    expect(Road(noChapters, position: 190).nearEnd, isTrue);
+  });
 }

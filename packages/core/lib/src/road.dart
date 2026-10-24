@@ -21,6 +21,16 @@ class Road {
   List<int> get passed =>
       work.checkpoints.where((c) => c <= position).toList(growable: false);
 
+  /// Whether the end is close enough to offer the Finish mid-Session: past
+  /// the last Checkpoint, or without any, in the last 5%. Not once finished.
+  bool get nearEnd {
+    if (finished) return false;
+    final last = work.checkpoints.lastOrNull;
+    return last == null
+        ? position >= work.totalPages * 0.95
+        : position >= last;
+  }
+
   /// The next Checkpoint ahead, if any.
   int? get next {
     for (final c in work.checkpoints) {

@@ -14,6 +14,7 @@ class ReadingViewModel extends ChangeNotifier {
     resume = Command0(() => _add(SessionEventKind.resume));
     stop = Command0(() => _add(SessionEventKind.stop));
     letPass = Command0(() => _add(SessionEventKind.letPass));
+    finish = Command0(_finish);
     _sub = _sessions.watchAll().listen((all) {
       _record = all.where((r) => r.id == id).firstOrNull;
       _before = all.where((r) => r.id != id).toList();
@@ -44,6 +45,11 @@ class ReadingViewModel extends ChangeNotifier {
   /// opens the Watched app too.
   late final Command0<void> letPass;
 
+  /// "I finished it!": stops the Session and ends it with the Position at
+  /// the Work's end, as End of the evening's Finish does. Offered once the
+  /// Road is [Road.nearEnd].
+  late final Command0<void> finish;
+
   Session? get session => record?.at(_sessions.now());
 
   /// The Aim for tonight, from the Sessions before this one on Works read,
@@ -67,6 +73,15 @@ class ReadingViewModel extends ChangeNotifier {
 
   Future<Result<void>> _add(SessionEventKind kind) async {
     await _sessions.add(record!, kind);
+    return const Result.ok(null);
+  }
+
+  Future<Result<void>> _finish() async {
+    final record = this.record!;
+    if (!record.at(_sessions.now()).stopped) {
+      await _sessions.add(record, SessionEventKind.stop);
+    }
+    await _sessions.end(record, page: record.road.work.totalPages);
     return const Result.ok(null);
   }
 

@@ -39,6 +39,14 @@ class _Reading extends StatelessWidget {
     }
   }
 
+  Future<void> _finish(BuildContext context, ReadingViewModel vm) async {
+    final work = vm.record!.road.work;
+    await vm.finish.execute();
+    if (context.mounted && vm.finish.completed) {
+      context.go('/building/finish/${work.id}');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -122,6 +130,18 @@ class _Reading extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
+              // Near the end, the Finish is one tap, as on End of the
+              // evening.
+              if (record.road.nearEnd)
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: TextButton(
+                    onPressed: vm.finish.running
+                        ? null
+                        : () => _finish(context, vm),
+                    child: Text(l10n.eveningFinished),
+                  ),
+                ),
               Row(
                 children: [
                   Expanded(
