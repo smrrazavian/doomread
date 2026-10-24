@@ -62,6 +62,7 @@ class _Reading extends StatelessWidget {
       return AfterSlipView(
         session: session,
         house: vm.house,
+        kind: record.road.work.kind,
         onBackIn: vm.resume.execute,
         onDone: () => _stop(context, vm),
       );

@@ -79,11 +79,15 @@ class AfterSlipView extends StatelessWidget {
     required this.house,
     required this.onBackIn,
     required this.onDone,
+    this.kind,
     super.key,
   });
 
   final Session session;
   final List<HouseWindow> house;
+
+  /// What the user is on, shown in their Window as on Reading.
+  final WorkKind? kind;
   final VoidCallback onBackIn;
   final VoidCallback onDone;
 
@@ -93,6 +97,7 @@ class AfterSlipView extends StatelessWidget {
     final last = session.stretches.lastOrNull?.length ?? Duration.zero;
     return _Moment(
       house: house,
+      kind: kind,
       title: say(context, Moment.afterSlip),
       body: [l10n.slipBody(last.inMinutes)],
       go: l10n.backIn,
