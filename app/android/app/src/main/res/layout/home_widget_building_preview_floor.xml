@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One finished floor in the Building widget's picker preview. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="96dp"
+    android:layout_height="22dp"
+    android:layout_marginTop="3dp"
+    android:background="#222C49"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <FrameLayout android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
+    <FrameLayout android:layout_width="12dp" android:layout_height="14dp" android:background="#F6C453" />
+    <FrameLayout android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
+    <FrameLayout android:layout_width="12dp" android:layout_height="14dp" android:background="#F6C453" />
+    <FrameLayout android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
+    <FrameLayout android:layout_width="12dp" android:layout_height="14dp" android:background="#F6C453" />
+    <FrameLayout android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
+    <FrameLayout android:layout_width="12dp" android:layout_height="14dp" android:background="#F6C453" />
+    <FrameLayout android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
+</LinearLayout>

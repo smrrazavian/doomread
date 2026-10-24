@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- What the widget picker shows for the Building widget (Android 12 and
+     later): a small tower of three lit floors under tonight's Window, lit.
+     Plain RemoteViews, since Glance only draws once the widget is placed. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_building_preview_sky">
+
+    <FrameLayout
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="12dp"
+        android:background="@drawable/widget_building_preview_moon" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:orientation="vertical">
+
+        <!-- Tonight's floor, its one Window lit. -->
+        <FrameLayout
+            android:layout_width="96dp"
+            android:layout_height="22dp"
+            android:background="#2B3758">
+
+            <FrameLayout
+                android:layout_width="12dp"
+                android:layout_height="14dp"
+                android:layout_gravity="center"
+                android:background="#FFE29A" />
+        </FrameLayout>
+
+        <include layout="@layout/home_widget_building_preview_floor" />
+        <include layout="@layout/home_widget_building_preview_floor" />
+        <include layout="@layout/home_widget_building_preview_floor" />
+
+        <!-- The ground, with the door on the start side. -->
+        <FrameLayout
+            android:layout_width="96dp"
+            android:layout_height="22dp"
+            android:layout_marginTop="3dp"
+            android:background="#222C49">
+
+            <FrameLayout
+                android:layout_width="14dp"
+                android:layout_height="16dp"
+                android:layout_gravity="bottom|start"
+                android:layout_marginStart="14dp"
+                android:background="#141B2F" />
+        </FrameLayout>
+    </LinearLayout>
+</FrameLayout>

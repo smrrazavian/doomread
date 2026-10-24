@@ -227,11 +227,16 @@ object HomeWidget {
     private const val FLOOR = 22
     private const val GAP = 3
     private const val WINDOWS = 4
+    private const val PAD = 12 // round the frame, but not under the tower
+    private const val TOP_ROW = 18 // tonight's label and the moon
+    private const val SKY = 8 // at least this much between the moon and the roof
+    private val neighbourWidth = 28.dp
 
     /**
      * The user's tower at night, like the Building screen: tonight's floor on
      * top with its one Window lit or dark, then a lit floor per Finish, the
-     * ground with its door, a neighbour and the moon. When the floors don't
+     * ground with its door, the moon and, when there's room beside the tower,
+     * a neighbour. When the floors don't
      * fit, the top ones are drawn and the tower runs on below the frame. The
      * door and the neighbour sit on the start side and the moon on the end,
      * so they swap sides in Persian. A tap opens the app.
@@ -246,11 +251,14 @@ object HomeWidget {
         val label = pushed?.takeUnless { it.isNull(if (lit) "lit" else "dark") }
             ?.optString(if (lit) "lit" else "dark") ?: ""
 
+        val size = LocalSize.current
         // What's left under the top row and tonight's floor, for the rest.
-        val room = LocalSize.current.height.value.toInt() - 12 - 18 - 8 - (FLOOR + GAP)
+        val room = size.height.value.toInt() - PAD - TOP_ROW - SKY - (FLOOR + GAP)
         val fits = room / (FLOOR + GAP)
         val whole = floors + 1 <= fits // every floor and the ground
         val shown = if (whole) floors else (fits - 1).coerceIn(0, floors)
+        // The neighbour only when it fits beside the centred tower, not under it.
+        val neighbour = (size.width - towerWidth) / 2 >= neighbourWidth + PAD.dp / 2
 
         val open = Intent(context, MainActivity::class.java)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
@@ -261,13 +269,15 @@ object HomeWidget {
             contentAlignment = if (flip) Alignment.BottomEnd else Alignment.BottomStart,
         ) {
             // The neighbour, on the start side.
-            Box(modifier = GlanceModifier.width(28.dp).height(48.dp).background(deep)) {}
+            if (neighbour) {
+                Box(modifier = GlanceModifier.width(neighbourWidth).height(48.dp).background(deep)) {}
+            }
             Column(
-                modifier = GlanceModifier.fillMaxSize().padding(start = 12.dp, top = 12.dp, end = 12.dp),
+                modifier = GlanceModifier.fillMaxSize().padding(start = PAD.dp, top = PAD.dp, end = PAD.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Row(
-                    modifier = GlanceModifier.fillMaxWidth().height(18.dp),
+                    modifier = GlanceModifier.fillMaxWidth().height(TOP_ROW.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     val text = @Composable {
