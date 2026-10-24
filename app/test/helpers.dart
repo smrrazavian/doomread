@@ -31,7 +31,9 @@ void testApp(
 }
 
 /// Starts the app on [db] and waits for it to settle. Widget tests run on
-/// fake time, so Session tests pass a [clock] they move by hand.
+/// fake time, so Session tests pass a [clock] they move by hand. Without
+/// one the clock stands still at [testNow], so no test depends on today's
+/// date (on Shab-e Yalda, say).
 ///
 /// Reduced motion is on unless [reduceMotion] is false: the user's Window in
 /// the House pulses for as long as the Reading screen is open, so the app
@@ -62,7 +64,7 @@ Future<void> pumpApp(
   await tester.pumpWidget(
     DoomreadApp(
       db: db,
-      clock: clock,
+      clock: clock ?? () => testNow,
       notification: notification,
       breakOver: breakOver,
       homeWidget: homeWidget,
@@ -81,6 +83,10 @@ Future<void> skipTour(AppDatabase db) async {
   await settings.setIntroSeen();
   await settings.setHintsSeen(Hint.values.toSet());
 }
+
+/// The clock [pumpApp] stands at when a test gives none: an ordinary
+/// Thursday evening, not Shab-e Yalda.
+final testNow = DateTime(2026, 10, 22, 21);
 
 /// Stands in for the Android notification and records what the app did.
 class FakeSessionNotification implements SessionNotification {
