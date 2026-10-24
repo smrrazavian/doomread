@@ -1,5 +1,5 @@
 import 'package:doomread/data/repositories/session_repository.dart';
-import 'package:doomread/ui/core/voice_text.dart';
+import 'package:doomread/ui/settings/view_models/settings_view_model.dart';
 import 'package:doomread/ui/share/view_models/receipt_view_model.dart';
 import 'package:doomread/ui/share/widgets/receipt_poster.dart';
 import 'package:doomread/ui/share/widgets/share_preview_screen.dart';
@@ -26,7 +26,11 @@ class ReceiptShareScreen extends StatelessWidget {
           work: record.road.work,
           session: vm.session!,
           pages: record.pages,
-          signOff: say(context, Moment.receipt),
+          signOff: receiptSignOff(
+            vm.session!,
+            context.watch<SettingsViewModel>().tone,
+            Localizations.localeOf(context).languageCode,
+          ),
         ),
       );
     },

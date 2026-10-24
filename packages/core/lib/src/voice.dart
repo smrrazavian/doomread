@@ -1,3 +1,4 @@
+import 'package:doomread_core/src/session.dart';
 import 'package:doomread_core/src/voice_en.dart';
 import 'package:doomread_core/src/voice_fa.dart';
 
@@ -35,9 +36,13 @@ enum Moment {
   /// The Aim is reached: a new Longest stretch.
   newBest,
 
-  /// The sign-off at the foot of tonight's receipt, the share card. A Slip
-  /// may be on the receipt, so every Tone's line here is kind.
+  /// The sign-off at the foot of tonight's receipt, the share card, for a
+  /// Session without a Slip. Said through [receiptSignOff].
   receipt,
+
+  /// The same for a Session with a Slip: kind, and true about it, so no
+  /// Tone claims a perfect evening. Said through [receiptSignOff].
+  receiptAfterSlip,
 }
 
 /// The lines for each Tone and moment, first choice first.
@@ -76,3 +81,12 @@ String voice(
   );
   return line.replaceAllMapped(_placeholder, (m) => facts[m[1]] ?? '');
 }
+
+/// The sign-off on [session]'s receipt in [tone] and [locale]. A Session
+/// with a Slip gets its Tone's after-a-Slip line, so a receipt that shows a
+/// Slip never also says the evening went perfectly.
+String receiptSignOff(Session session, Tone tone, String locale) => voice(
+  session.slips > 0 ? Moment.receiptAfterSlip : Moment.receipt,
+  tone,
+  locale,
+);

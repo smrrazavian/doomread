@@ -69,6 +69,49 @@ void main() {
     );
   });
 
+  group("the receipt's sign-off", () {
+    final start = DateTime(2026, 10, 24, 21);
+    SessionEvent at(SessionEventKind kind, int m) =>
+        SessionEvent(kind, start.add(Duration(minutes: m)));
+    final clean = Session.fromEvents([
+      at(SessionEventKind.start, 0),
+      at(SessionEventKind.urge, 5),
+      at(SessionEventKind.letPass, 5),
+      at(SessionEventKind.stop, 20),
+    ], now: start.add(const Duration(hours: 1)));
+    final slipped = Session.fromEvents([
+      at(SessionEventKind.start, 0),
+      at(SessionEventKind.urge, 5),
+      at(SessionEventKind.slip, 5),
+      at(SessionEventKind.resume, 8),
+      at(SessionEventKind.stop, 20),
+    ], now: start.add(const Duration(hours: 1)));
+
+    test('without a Slip, each Tone says its receipt line', () {
+      for (final locale in locales) {
+        for (final tone in Tone.values) {
+          expect(
+            receiptSignOff(clean, tone, locale),
+            voice(Moment.receipt, tone, locale),
+          );
+        }
+      }
+    });
+
+    test('with a Slip, each Tone says its own kind line instead', () {
+      for (final locale in locales) {
+        final lines = <String>{};
+        for (final tone in Tone.values) {
+          final line = receiptSignOff(slipped, tone, locale);
+          expect(line, voice(Moment.receiptAfterSlip, tone, locale));
+          expect(line, isNot(voice(Moment.receipt, tone, locale)));
+          lines.add(line);
+        }
+        expect(lines, hasLength(Tone.values.length), reason: locale);
+      }
+    });
+  });
+
   test('Spicy is the default Tone', () {
     expect(Tone.byDefault, Tone.spicy);
   });

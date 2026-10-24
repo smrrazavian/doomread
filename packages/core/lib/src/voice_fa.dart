@@ -19,6 +19,9 @@ const CopyPack fa = {
     Moment.evening: ['شب خوبی بود. دمت گرم.'],
     Moment.newBest: ['به هدفت رسیدی. این طولانی‌ترین تمرکزت تا حالاست.'],
     Moment.receipt: ['آروم و پیوسته. فردا شب همین موقع؟'],
+    Moment.receiptAfterSlip: [
+      'یه کم حواست رفت، ولی برگشتی. فردا شب همین موقع؟',
+    ],
   },
   Tone.spicy: {
     Moment.urge: [
@@ -30,6 +33,7 @@ const CopyPack fa = {
     Moment.evening: ['امشب ترکوندی. پایه‌ای.'],
     Moment.newBest: ['طولانی‌ترین تمرکزت تا حالا. اورات رفت بالا.'],
     Moment.receipt: ['امشب لاک‌این بودی. اینم مدرکش.'],
+    Moment.receiptAfterSlip: ['حواست پرت شد ولی برگشتی. همینه.'],
   },
   Tone.mom: {
     Moment.urge: [
@@ -41,5 +45,6 @@ const CopyPack fa = {
     Moment.evening: ['آفرین! حالا تعریف کن ببینم چی شد.'],
     Moment.newBest: ['ماشالله! تا حالا این‌قدر یه‌سره نشسته بودی؟'],
     Moment.receipt: ['دمت گرم، حالا پاشو چایی بخور.'],
+    Moment.receiptAfterSlip: ['برگشتی، همینش مهمه. حالا پاشو یه چایی بخور.'],
   },
 };

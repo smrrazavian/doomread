@@ -59,6 +59,7 @@ void main() {
     expect(receipt.pages, (from: 142, to: 156));
     expect(receipt.session.reading, const Duration(minutes: 12));
     expect(receipt.signOff, voice(Moment.receipt, Tone.mom, 'en'));
+    expect(receipt.signOff, receiptSignOff(receipt.session, Tone.mom, 'en'));
     // No Urges tonight: no zero to read as a score.
     expect(find.text(en.cardReceiptUrges), findsNothing);
     // The Note stays off the receipt.
