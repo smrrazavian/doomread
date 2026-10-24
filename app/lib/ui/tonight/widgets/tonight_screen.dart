@@ -7,6 +7,8 @@ import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/road_view.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/work_text.dart';
+import 'package:doomread/ui/reading/widgets/work_app_card.dart';
+import 'package:doomread/ui/settings/view_models/settings_view_model.dart';
 import 'package:doomread/ui/tone/widgets/tone_screen.dart';
 import 'package:doomread/ui/tonight/view_models/tonight_view_model.dart';
 import 'package:doomread/ui/watch/widgets/watch_disclosure.dart';
@@ -210,15 +212,63 @@ class _WorkCard extends StatelessWidget {
             if (evenings case final n?)
               Text(l10n.eveningsLeft(n), style: text.bodySmall),
             if (next != null) Text(next, style: text.bodySmall),
-            Align(
-              alignment: AlignmentDirectional.centerEnd,
-              child: TextButton(
-                onPressed: () => context.go('/books'),
-                child: Text(l10n.changeBook),
-              ),
+            // On the row "Change book" already takes, so Start stays put.
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                if (context.read<AppWatch>().available) _WhereIsIt(work: work),
+                TextButton(
+                  onPressed: () => context.go('/books'),
+                  child: Text(l10n.changeBook),
+                ),
+              ],
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Paper or this phone, asked before Start so the Work app is set before
+/// an Urge could need it. It's the Work's Work app, kept as the Reading card
+/// keeps it, and still changeable there.
+class _WhereIsIt extends StatelessWidget {
+  const _WhereIsIt({required this.work});
+
+  final Work work;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final settings = context.watch<SettingsViewModel>();
+    final app = settings.workApps[work.id];
+    return Semantics(
+      container: true,
+      label: l10n.workAppPick,
+      // Side by side always; a long app name shortens instead.
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ChoiceChip(
+            label: Text(l10n.whereIsElsewhere(work.kind.name)),
+            selected: app == null,
+            onSelected: (_) => settings.setWorkApp(work.id, null),
+          ),
+          const SizedBox(width: 8),
+          // Tapped again, it asks again: that's how the app is changed.
+          Flexible(
+            child: ChoiceChip(
+              label: Text(
+                app?.label ?? l10n.whereIsPhone,
+                overflow: TextOverflow.ellipsis,
+              ),
+              selected: app != null,
+              onSelected: (_) => pickWorkApp(context, work.id),
+            ),
+          ),
+        ],
       ),
     );
   }

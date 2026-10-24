@@ -910,5 +910,22 @@
   "eveningFinished": "I finished it!",
   "@eveningFinished": {
     "description": "End of the evening: one tap to record the Finish, the Position at the Work's end, without typing the last page."
+  },
+  "whereIsElsewhere": "{kind, select, paperBook{On paper} other{Elsewhere}}",
+  "@whereIsElsewhere": {
+    "description": "Tonight, under workAppPick: the choice for a Work that isn't in an app on the phone. kind is a WorkKind name: paperBook, ebook, series, film or podcast.",
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "whereIsPhone": "On this phone",
+  "@whereIsPhone": {
+    "description": "Tonight, beside whereIsElsewhere: opens the Work app picker. Shows the app's name instead once one is picked."
+  },
+  "whereIsSearch": "Search apps",
+  "@whereIsSearch": {
+    "description": "Hint in the search field of the Work app picker."
   }
 }

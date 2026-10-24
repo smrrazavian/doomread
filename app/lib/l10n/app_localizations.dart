@@ -1297,6 +1297,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'I finished it!'**
   String get eveningFinished;
+
+  /// Tonight, under workAppPick: the choice for a Work that isn't in an app on the phone. kind is a WorkKind name: paperBook, ebook, series, film or podcast.
+  ///
+  /// In en, this message translates to:
+  /// **'{kind, select, paperBook{On paper} other{Elsewhere}}'**
+  String whereIsElsewhere(String kind);
+
+  /// Tonight, beside whereIsElsewhere: opens the Work app picker. Shows the app's name instead once one is picked.
+  ///
+  /// In en, this message translates to:
+  /// **'On this phone'**
+  String get whereIsPhone;
+
+  /// Hint in the search field of the Work app picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Search apps'**
+  String get whereIsSearch;
 }
 
 class _AppLocalizationsDelegate

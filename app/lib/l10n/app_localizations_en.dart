@@ -1158,4 +1158,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eveningFinished => 'I finished it!';
+
+  @override
+  String whereIsElsewhere(String kind) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'paperBook': 'On paper',
+      'other': 'Elsewhere',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get whereIsPhone => 'On this phone';
+
+  @override
+  String get whereIsSearch => 'Search apps';
 }
