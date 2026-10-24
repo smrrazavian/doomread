@@ -535,9 +535,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get breakDueAtPage => 'Break time. Finish the page you\'re on.';
 
   @override
-  String get takeBreak => 'I\'m there';
-
-  @override
   String get nudgeBreak => 'Later';
 
   @override
@@ -604,9 +601,6 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
-
-  @override
-  String get keepReading => 'Keep reading instead';
 
   @override
   String get onBreak => 'On your break.';
@@ -1025,9 +1019,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get keepGoing => 'Keep going instead';
-
-  @override
   String get urgeBody => 'You planned that break yourself, remember?';
 
   @override
@@ -1156,4 +1147,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get checkpointsFormatTimestamps =>
       'Segment ends are timestamps separated by commas, like 42:30, 1:15:00';
+
+  @override
+  String breakCardStart(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'Start break ($minutesString min)';
+  }
 }

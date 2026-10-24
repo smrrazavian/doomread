@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/date_format.dart';
@@ -62,9 +64,12 @@ class _Card extends StatelessWidget {
       actions = [
         if (vm.due) ...[
           TextButton(onPressed: vm.nudge.execute, child: Text(l10n.nudgeBreak)),
-          TextButton(
-            onPressed: () => context.push('/break/${vm.id}'),
-            child: Text(l10n.takeBreak),
+          FilledButton(
+            onPressed: () async {
+              await vm.take.execute();
+              if (context.mounted) unawaited(context.push('/break/${vm.id}'));
+            },
+            child: Text(l10n.breakCardStart(offer.length.inMinutes)),
           ),
         ],
       ];

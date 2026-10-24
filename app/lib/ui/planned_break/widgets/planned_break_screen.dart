@@ -139,20 +139,11 @@ class _PlannedBreak extends StatelessWidget {
                     over ? l10n.backToWork(work.kind.name) : l10n.imBack,
                   ),
                 )
-              else ...[
+              else
                 FilledButton(
                   onPressed: vm.take.execute,
                   child: Text(l10n.startMyBreak(minutes)),
                 ),
-                const SizedBox(height: 8),
-                TextButton(
-                  onPressed: () =>
-                      _thenRead(context, vm.nudge.execute, record.id),
-                  child: Text(
-                    work.kind.watched ? l10n.keepGoing : l10n.keepReading,
-                  ),
-                ),
-              ],
             ],
           ),
         ),

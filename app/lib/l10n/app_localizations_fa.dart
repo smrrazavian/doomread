@@ -477,9 +477,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get breakDueAtPage => 'وقت استراحته. این صفحه رو تموم کن.';
 
   @override
-  String get takeBreak => 'رسیدم';
-
-  @override
   String get nudgeBreak => 'بعداً';
 
   @override
@@ -539,9 +536,6 @@ class AppLocalizationsFa extends AppLocalizations {
 
     return '$minutesString دقیقه‌م رو شروع کن';
   }
-
-  @override
-  String get keepReading => 'نه، ادامه می‌دم';
 
   @override
   String get onBreak => 'داری استراحت می‌کنی.';
@@ -911,9 +905,6 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get keepGoing => 'نه، ادامه می‌دم';
-
-  @override
   String get urgeBody => 'خودت قرار این استراحت رو گذاشتی، یادته؟';
 
   @override
@@ -1042,4 +1033,13 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get checkpointsFormatTimestamps =>
       'پایان بخش‌ها زمانه و با ویرگول جدا می‌شن، مثلاً ۴۲:۳۰، ۱:۱۵:۰۰';
+
+  @override
+  String breakCardStart(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'شروع استراحت ($minutesString دقیقه)';
+  }
 }
