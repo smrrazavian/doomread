@@ -19,9 +19,7 @@ const CopyPack fa = {
     Moment.evening: ['شب خوبی بود. دمت گرم.'],
     Moment.newBest: ['به هدفت رسیدی. این طولانی‌ترین تمرکزت تا حالاست.'],
     Moment.receipt: ['آروم و پیوسته. فردا شب همین موقع؟'],
-    Moment.receiptAfterSlip: [
-      'یه کم حواست رفت، ولی برگشتی. فردا شب همین موقع؟',
-    ],
+    Moment.receiptAfterSlip: ['برگشتی. فردا شب همین موقع؟'],
   },
   Tone.spicy: {
     Moment.urge: [

@@ -19,9 +19,7 @@ const CopyPack en = {
     Moment.evening: ['A good sitting. Well done.'],
     Moment.newBest: ['Aim reached. This is your longest stretch yet.'],
     Moment.receipt: ['Calm and steady. Same time tomorrow?'],
-    Moment.receiptAfterSlip: [
-      'Drifted off, then came back. Same time tomorrow?',
-    ],
+    Moment.receiptAfterSlip: ['You came back. Same time tomorrow?'],
   },
   Tone.spicy: {
     Moment.urge: [
@@ -48,7 +46,7 @@ const CopyPack en = {
     Moment.newBest: ['Look at you! Never this long in one go!'],
     Moment.receipt: ['Well done! Now get up and make yourself some tea.'],
     Moment.receiptAfterSlip: [
-      'You came back, and that is what matters. Now go have some tea.',
+      "You came back, and that's what matters. Now go have some tea.",
     ],
   },
 };

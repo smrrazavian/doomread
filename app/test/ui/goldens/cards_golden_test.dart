@@ -55,38 +55,79 @@ void main() {
       checkpoints: const [],
     );
 
-    testWidgets("tonight's receipt, with a Slip and a break, in $lang", (
-      tester,
-    ) async {
-      DateTime t(int m) =>
-          DateTime(2026, 10, 24, 21, 4).add(Duration(minutes: m));
-      SessionEvent e(SessionEventKind kind, int m) => SessionEvent(kind, t(m));
-      final session = Session.fromEvents([
-        e(SessionEventKind.start, 0),
-        e(SessionEventKind.urge, 6),
-        e(SessionEventKind.letPass, 6),
-        e(SessionEventKind.urge, 14),
-        e(SessionEventKind.letPass, 14),
-        e(SessionEventKind.breakStart, 19),
-        e(SessionEventKind.breakEnd, 24),
-        e(SessionEventKind.urge, 30),
-        e(SessionEventKind.slip, 30),
-        e(SessionEventKind.resume, 33),
-        e(SessionEventKind.urge, 41),
-        e(SessionEventKind.letPass, 41),
-        e(SessionEventKind.stop, 52),
-      ], now: t(60));
-      await pumpCard(
-        tester,
-        lang,
-        ReceiptPoster(
-          work: remains,
-          session: session,
-          pages: (from: 142, to: 168),
-          signOff: voice(Moment.receipt, Tone.mom, lang),
-        ),
-      );
-      await expectCard(tester, 'card_receipt_$lang.png');
+    // Mom mode with a Slip and a tea break; Spicy without a Slip, then
+    // Spicy with one, whose sign-off must not claim a perfect evening.
+    for (final (name, tone, slip) in [
+      ('receipt', Tone.mom, true),
+      ('receipt_spicy', Tone.spicy, false),
+      ('receipt_spicy_slip', Tone.spicy, true),
+    ]) {
+      testWidgets("tonight's $name, in $lang", (tester) async {
+        DateTime t(int m) =>
+            DateTime(2026, 10, 24, 21, 4).add(Duration(minutes: m));
+        SessionEvent e(SessionEventKind kind, int m) =>
+            SessionEvent(kind, t(m));
+        final session = Session.fromEvents([
+          e(SessionEventKind.start, 0),
+          e(SessionEventKind.urge, 6),
+          e(SessionEventKind.letPass, 6),
+          e(SessionEventKind.urge, 14),
+          e(SessionEventKind.letPass, 14),
+          if (tone == Tone.mom) ...[
+            e(SessionEventKind.breakStart, 19),
+            e(SessionEventKind.breakEnd, 24),
+          ],
+          if (slip) ...[
+            e(SessionEventKind.urge, 30),
+            e(SessionEventKind.slip, 30),
+            e(SessionEventKind.resume, 33),
+          ],
+          e(SessionEventKind.urge, 41),
+          e(SessionEventKind.letPass, 41),
+          e(SessionEventKind.stop, 52),
+        ], now: t(60));
+        expect(session.slips, slip ? 1 : 0);
+        await pumpCard(
+          tester,
+          lang,
+          ReceiptPoster(
+            work: remains,
+            session: session,
+            pages: (from: 142, to: 168),
+            signOff: receiptSignOff(session, tone, lang),
+          ),
+        );
+        await expectCard(tester, 'card_${name}_$lang.png');
+      });
+    }
+
+    testWidgets('the glow-up after shorter nights, in $lang', (tester) async {
+      // Longest in one go each evening: it rose to 18, then the last two
+      // evenings were shorter. The card shows the rise to 18 and its date,
+      // never a fall, and says nothing about the shorter nights.
+      final sessions = [
+        for (final (day, minutes) in [
+          (2, 5),
+          (6, 12),
+          (9, 9),
+          (12, 7),
+          (16, 18),
+          (20, 11),
+          (23, 6),
+        ])
+          Session.fromEvents([
+            SessionEvent(SessionEventKind.start, DateTime(2026, 10, day, 21)),
+            SessionEvent(
+              SessionEventKind.stop,
+              DateTime(2026, 10, day, 21, minutes),
+            ),
+          ], now: DateTime(2026, 10, 24)),
+      ];
+      final rises = longestStretchTrend(sessions);
+      expect([for (final r in rises) r.longest.inMinutes], [5, 12, 18]);
+      expect(rises.last.evening, DateTime(2026, 10, 16));
+      await pumpCard(tester, lang, GlowUpPoster(rises: rises, watched: false));
+      await expectCard(tester, 'card_glow_up_dipped_$lang.png');
     });
 
     testWidgets('the attention glow-up, in $lang', (tester) async {
@@ -145,7 +186,6 @@ void main() {
             solarHijri: fa,
             sessions: sessions,
           ),
-          firstDay: firstDayOfWeek(lang),
         ),
       );
       await expectCard(tester, 'card_month_$lang.png');
