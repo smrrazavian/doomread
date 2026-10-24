@@ -26,3 +26,6 @@ Use these alongside the triage roles to say where an issue lives. Create them on
 | `server`  | Sync/accounts server, docker compose, ntfy                    |
 | `persian` | Persian locale: RTL, copy, Solar Hijri calendar, digits, fonts |
 | `design`  | Visual design, mockups, copy and tone                         |
+| `P1`      | Priority: do next                                             |
+| `P2`      | Priority: soon                                                |
+| `P3`      | Priority: later / nice to have                                |
