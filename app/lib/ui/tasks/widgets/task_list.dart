@@ -5,6 +5,7 @@ import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/domain/use_cases/stop_deleted_sessions_use_case.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/date_format.dart';
+import 'package:doomread/ui/core/one_session.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/tasks/view_models/tasks_view_model.dart';
 import 'package:doomread/ui/tasks/widgets/task_sheet.dart';
@@ -151,6 +152,8 @@ class _TaskRow extends StatelessWidget {
 
 Future<void> _start(BuildContext context, Task task) async {
   final vm = context.read<TasksViewModel>();
+  if (!await stopOtherSessionFirst(context, task.id)) return;
+  if (!context.mounted) return;
   await vm.start.execute(task.id);
   if (!context.mounted) return;
   if (vm.start.result case Ok(:final value)) {

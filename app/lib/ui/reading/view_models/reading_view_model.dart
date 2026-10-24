@@ -86,7 +86,7 @@ class ReadingViewModel extends ChangeNotifier {
     final now = _sessions.now();
     return houseWindows(
       now: now,
-      before: [for (final r in _before) ?r.at(now).startedAt],
+      before: [for (final r in withoutTasks(_before)) ?r.at(now).startedAt],
     );
   }
 

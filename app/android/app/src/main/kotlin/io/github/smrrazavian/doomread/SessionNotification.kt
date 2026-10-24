@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Icon
 import android.os.Build
 
 /**
@@ -18,10 +19,14 @@ import android.os.Build
  */
 object SessionNotification {
     const val EXTRA_SESSION = "io.github.smrrazavian.doomread.SESSION"
+
+    /** On the Done action of a Task's Session: that Session's id. */
+    const val EXTRA_DONE = "io.github.smrrazavian.doomread.DONE"
     private const val CHANNEL = "session"
     private const val ID = 1
 
-    fun show(context: Context, sessionId: String, title: String, text: String, runningSince: Long?) {
+    /** [done] labels a Done action, for a Task's Session; null shows none. */
+    fun show(context: Context, sessionId: String, title: String, text: String, runningSince: Long?, done: String?) {
         val manager = context.getSystemService(NotificationManager::class.java)
         // Low importance: silent, no heads-up. Creating it again is a no-op.
         manager.createNotificationChannel(
@@ -51,6 +56,24 @@ object SessionNotification {
             .setShowWhen(runningSince != null)
             .setUsesChronometer(runningSince != null)
         if (runningSince != null) builder.setWhen(runningSince)
+        if (done != null) {
+            // Opens the app, which ends the Session and plays the Done moment.
+            val finish = PendingIntent.getActivity(
+                context,
+                1,
+                Intent(context, MainActivity::class.java)
+                    .putExtra(EXTRA_DONE, sessionId)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP),
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+            )
+            builder.addAction(
+                Notification.Action.Builder(
+                    Icon.createWithResource(context, R.drawable.ic_session),
+                    done,
+                    finish,
+                ).build(),
+            )
+        }
         if (Build.VERSION.SDK_INT >= 36) {
             builder.setFlag(Notification.FLAG_PROMOTED_ONGOING, true)
         }

@@ -44,12 +44,15 @@ String breakLine(
         ? l10n.nextBreakAtTimestamp(at, minutes)
         : l10n.breakDueAtTimestamp(at);
   }
-  if (work.kind.watched) {
-    return soon
-        ? l10n.nextBreakWatching(minutes)
-        : l10n.breakDueAfterWatching(read);
-  }
-  return soon ? l10n.nextBreakAtPage(minutes) : l10n.breakDueAfterReading(read);
+  return switch (work.kind.attention) {
+    Attention.reading =>
+      soon ? l10n.nextBreakAtPage(minutes) : l10n.breakDueAfterReading(read),
+    Attention.watching =>
+      soon ? l10n.nextBreakWatching(minutes) : l10n.breakDueAfterWatching(read),
+    // A Task has no Checkpoints, so its break never mentions one.
+    Attention.working =>
+      soon ? l10n.nextBreakWorking(minutes) : l10n.breakDueAfterWorking(read),
+  };
 }
 
 /// The chip on the break, and the button that marks a Checkpoint done: the
@@ -94,5 +97,7 @@ String backAt(AppLocalizations l10n, Work work, int? checkpoint, String time) {
         break;
     }
   }
-  return work.kind.watched ? l10n.backToWorkAt(time) : l10n.backToBookAt(time);
+  return work.kind.attention == Attention.reading
+      ? l10n.backToBookAt(time)
+      : l10n.backToWorkAt(time);
 }

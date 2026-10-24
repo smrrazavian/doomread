@@ -112,12 +112,24 @@ class FakeSessionNotification implements SessionNotification {
   /// The Session whose notification "started" the app.
   String? opened;
 
+  /// The Task's Session whose Done "started" the app.
+  String? doneOpened;
+
   /// What the notification shows now; null when there is none.
-  ({String sessionId, String title, String text, DateTime? runningSince})?
+  ({
+    String sessionId,
+    String title,
+    String text,
+    DateTime? runningSince,
+    String? done,
+  })?
   shown;
 
   @override
   void Function(String sessionId)? onTapped;
+
+  @override
+  void Function(String sessionId)? onDone;
 
   @override
   Future<bool> canAsk() async => askable;
@@ -135,11 +147,13 @@ class FakeSessionNotification implements SessionNotification {
     required String title,
     required String text,
     DateTime? runningSince,
+    String? done,
   }) async => shown = (
     sessionId: sessionId,
     title: title,
     text: text,
     runningSince: runningSince,
+    done: done,
   );
 
   @override
@@ -149,6 +163,13 @@ class FakeSessionNotification implements SessionNotification {
   Future<String?> openedFrom() async {
     final id = opened;
     opened = null;
+    return id;
+  }
+
+  @override
+  Future<String?> doneFrom() async {
+    final id = doneOpened;
+    doneOpened = null;
     return id;
   }
 }

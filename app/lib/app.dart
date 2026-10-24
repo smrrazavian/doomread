@@ -15,6 +15,7 @@ import 'package:doomread/data/services/share_sheet.dart';
 import 'package:doomread/domain/use_cases/first_run_use_case.dart';
 import 'package:doomread/domain/use_cases/stop_deleted_sessions_use_case.dart';
 import 'package:doomread/domain/use_cases/sync_use_case.dart';
+import 'package:doomread/domain/use_cases/task_done_use_case.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/routing/router.dart';
 import 'package:doomread/ui/core/theme.dart';
@@ -96,6 +97,7 @@ class _DoomreadAppState extends State<DoomreadApp> {
   );
   late final StopDeletedSessionsUseCase _stopDeleted =
       StopDeletedSessionsUseCase(_works, _sessions);
+  late final TaskDoneUseCase _taskDone = TaskDoneUseCase(_works, _sessions);
   late final SettingsRepository _settingsRepository = SettingsRepository(
     widget.db,
   );
@@ -141,8 +143,11 @@ class _DoomreadAppState extends State<DoomreadApp> {
       widget.breakOver ?? BreakOverNotification(),
       _settings,
     );
-    _notification.onTapped = _openReading;
+    _notification
+      ..onTapped = _openReading
+      ..onDone = _doneFromNotification;
     unawaited(_openReadingIfTapped());
+    unawaited(_doneIfTapped());
     if ((widget.auth, widget.sync) case (final auth?, final sync?)) {
       _autoSync = AutoSync(
         SyncUseCase(auth, sync, _works, _stopDeleted).call,
@@ -220,6 +225,23 @@ class _DoomreadAppState extends State<DoomreadApp> {
     if (mounted) _openReading(id);
   }
 
+  /// When Done on a Task's notification started the app, marks it Done
+  /// once the first frame is up.
+  Future<void> _doneIfTapped() async {
+    await _ready;
+    final id = await _notification.doneFrom();
+    if (id == null || !mounted) return;
+    await WidgetsBinding.instance.endOfFrame;
+    if (mounted) await _doneFromNotification(id);
+  }
+
+  /// Done, from the Task's notification: the Session ends, the Task is
+  /// Done, and Today shows it lit.
+  Future<void> _doneFromNotification(String sessionId) async {
+    final task = await _taskDone(sessionId);
+    if (task != null && mounted) _router.go('/tonight');
+  }
+
   void _openReading(String sessionId) {
     final path = '/reading/$sessionId';
     if (_router.routerDelegate.currentConfiguration.uri.path != path) {
@@ -229,7 +251,9 @@ class _DoomreadAppState extends State<DoomreadApp> {
 
   @override
   void dispose() {
-    _notification.onTapped = null;
+    _notification
+      ..onTapped = null
+      ..onDone = null;
     _autoSync?.dispose();
     _live.dispose();
     _breakOver.dispose();
@@ -255,6 +279,7 @@ class _DoomreadAppState extends State<DoomreadApp> {
             Provider.value(value: _works),
             Provider.value(value: _sessions),
             Provider.value(value: _stopDeleted),
+            Provider.value(value: _taskDone),
             Provider.value(value: _settingsRepository),
             Provider.value(value: _notification),
             Provider.value(value: _watch),

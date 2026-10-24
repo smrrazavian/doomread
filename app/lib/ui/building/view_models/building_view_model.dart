@@ -18,7 +18,7 @@ class BuildingViewModel extends ChangeNotifier {
       sessions.watchAll().listen((all) {
         _history = all;
         final measuredAll = measured(all, sessions.now());
-        _sessions = [for (final s in measuredAll) s.session];
+        _sessions = [for (final r in withoutTasks(all)) r.at(sessions.now())];
         List<StretchRise> trend(Attention attention) =>
             longestStretchTrend(alike(measuredAll, attention));
         _rises = trend(Attention.reading);

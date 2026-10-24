@@ -48,6 +48,7 @@ class MainActivity : FlutterActivity() {
                         call.argument<String>("title")!!,
                         call.argument<String>("text")!!,
                         call.argument<Number>("runningSince")?.toLong(),
+                        call.argument<String>("done"),
                     )
                     result.success(null)
                 }
@@ -60,6 +61,10 @@ class MainActivity : FlutterActivity() {
                     // Once: a later restore of this Activity isn't a tap.
                     intent.removeExtra(SessionNotification.EXTRA_SESSION)
                 }
+                "doneFrom" -> {
+                    result.success(intent.getStringExtra(SessionNotification.EXTRA_DONE))
+                    intent.removeExtra(SessionNotification.EXTRA_DONE)
+                }
                 else -> result.notImplemented()
             }
         }
@@ -67,6 +72,7 @@ class MainActivity : FlutterActivity() {
         if (warm) {
             delivered(intent)
             intent.removeExtra(SessionNotification.EXTRA_SESSION)
+            intent.removeExtra(SessionNotification.EXTRA_DONE)
             intent.removeExtra(HomeWidget.EXTRA_START)
         }
     }
@@ -80,6 +86,9 @@ class MainActivity : FlutterActivity() {
     private fun delivered(intent: Intent) {
         intent.getStringExtra(SessionNotification.EXTRA_SESSION)?.let {
             channel?.invokeMethod("tapped", it)
+        }
+        intent.getStringExtra(SessionNotification.EXTRA_DONE)?.let {
+            channel?.invokeMethod("done", it)
         }
         intent.getStringExtra(HomeWidget.EXTRA_START)?.let {
             widget?.invokeMethod("start", it)

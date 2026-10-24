@@ -206,6 +206,84 @@ abstract class AppLocalizations {
   /// **'Another day'**
   String get taskDayPick;
 
+  /// Over a Task's name on its Session screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Working on'**
+  String get taskWorkingOn;
+
+  /// Under the big clock on a Task's Session: the clock is the pause button.
+  ///
+  /// In en, this message translates to:
+  /// **'in one go, tap the clock to pause'**
+  String get taskClockRunning;
+
+  /// Under the clock while a Task's Session is paused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused. Tap to keep going, no harm done'**
+  String get taskClockPaused;
+
+  /// The clock as a button, read aloud while it runs.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get taskPause;
+
+  /// The clock as a button, read aloud while paused.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep going'**
+  String get taskResume;
+
+  /// The Aim card on a Task's Session.
+  ///
+  /// In en, this message translates to:
+  /// **'Aim: {minutes} min of work in one go'**
+  String taskAim(int minutes);
+
+  /// No description provided for @taskAimToGo.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min to go'**
+  String taskAimToGo(int minutes);
+
+  /// No description provided for @taskAimBeaten.
+  ///
+  /// In en, this message translates to:
+  /// **'Aim beaten'**
+  String get taskAimBeaten;
+
+  /// Ends a Task's Session, back to Today; the Task stays undone and nothing is asked.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop for now'**
+  String get taskStop;
+
+  /// Starting a Session while another runs: one Session at a time.
+  ///
+  /// In en, this message translates to:
+  /// **'“{title}” is still on'**
+  String oneSessionTitle(String title);
+
+  /// No description provided for @oneSessionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop it first, then start this?'**
+  String get oneSessionBody;
+
+  /// No description provided for @oneSessionStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop it'**
+  String get oneSessionStop;
+
+  /// No description provided for @oneSessionNotNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get oneSessionNotNow;
+
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
@@ -1106,11 +1184,23 @@ abstract class AppLocalizations {
   /// **'Your break: in about {minutes} min, when this segment ends.'**
   String nextBreakWatching(int minutes);
 
+  /// The next Planned break on a Task's Session, which has no Checkpoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Your break: in about {minutes} min.'**
+  String nextBreakWorking(int minutes);
+
   /// The same for a series, film or podcast.
   ///
   /// In en, this message translates to:
   /// **'You\'re {minutes} min in. Good place to pause?'**
   String breakDueAfterWatching(int minutes);
+
+  /// The same as breakDueAfterReading, on a Task.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve worked {minutes} min. Good place to stop?'**
+  String breakDueAfterWorking(int minutes);
 
   /// No description provided for @episodeDone.
   ///

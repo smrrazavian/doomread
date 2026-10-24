@@ -21,6 +21,10 @@ enum Moment {
   /// The "not yet" headline. Facts: app, when known.
   urge,
 
+  /// The same during a Task's Session. Facts: task, its name; app, when
+  /// known.
+  urgeTask,
+
   /// The headline when the user comes back after a Slip.
   afterSlip,
 

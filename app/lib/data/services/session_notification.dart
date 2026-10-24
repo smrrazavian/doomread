@@ -17,8 +17,17 @@ class SessionNotification {
   /// the app is alive.
   void Function(String sessionId)? onTapped;
 
+  /// Called with a Task's Session's id when the user taps Done on its
+  /// notification while the app is alive.
+  void Function(String sessionId)? onDone;
+
   Future<Object?> _fromNative(MethodCall call) async {
-    if (call.method == 'tapped') onTapped?.call(call.arguments! as String);
+    switch (call.method) {
+      case 'tapped':
+        onTapped?.call(call.arguments! as String);
+      case 'done':
+        onDone?.call(call.arguments! as String);
+    }
     return null;
   }
 
@@ -33,12 +42,14 @@ class SessionNotification {
 
   /// Shows or updates the notification for [sessionId]. While a Stretch runs,
   /// [runningSince] is its start and the system counts up from it, so nothing
-  /// in the app has to keep ticking; null shows [text] alone.
+  /// in the app has to keep ticking; null shows [text] alone. With [done], a
+  /// Task's Session gets a Done button with that label.
   Future<void> show({
     required String sessionId,
     required String title,
     required String text,
     DateTime? runningSince,
+    String? done,
   }) async {
     if (!_android) return;
     await _channel.invokeMethod<void>('show', {
@@ -46,6 +57,7 @@ class SessionNotification {
       'title': title,
       'text': text,
       'runningSince': runningSince?.millisecondsSinceEpoch,
+      'done': done,
     });
   }
 
@@ -57,4 +69,8 @@ class SessionNotification {
   /// was started some other way.
   Future<String?> openedFrom() async =>
       _android ? await _channel.invokeMethod<String>('openedFrom') : null;
+
+  /// The same for a tap on Done: the Task's Session, once.
+  Future<String?> doneFrom() async =>
+      _android ? await _channel.invokeMethod<String>('doneFrom') : null;
 }

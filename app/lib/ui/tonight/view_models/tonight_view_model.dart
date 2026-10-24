@@ -69,7 +69,9 @@ class TonightViewModel extends ChangeNotifier {
     return ReadingWeek(
       now: now,
       firstDay: firstDay,
-      sessionStarts: [for (final r in _history) ?r.at(now).startedAt],
+      sessionStarts: [
+        for (final r in withoutTasks(_history)) ?r.at(now).startedAt,
+      ],
     );
   }
 

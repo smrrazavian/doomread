@@ -45,6 +45,12 @@ List<WorkSession> measured(Iterable<SessionRecord> records, DateTime now) => [
   for (final r in records) r.measured(now),
 ];
 
+/// [records] without the Sessions on Tasks. Those are Working, and stay
+/// out of reading's places: the Reading week, the House and the Reading
+/// month.
+Iterable<SessionRecord> withoutTasks(Iterable<SessionRecord> records) =>
+    records.where((r) => r.road.work.kind != WorkKind.task);
+
 /// Sessions: the append-only journal of what happened, and how each ended.
 class SessionRepository {
   SessionRepository(this._db, {DateTime Function()? clock})
@@ -122,6 +128,16 @@ class SessionRepository {
           page: Value(page),
         ),
       );
+
+  /// The Session running on a Work other than [workId], if any. Only one
+  /// runs at a time, so it's stopped before another starts.
+  Future<SessionRecord?> runningElsewhere(String workId) async {
+    final now = this.now();
+    return (await all()).reversed.where((r) {
+      final s = r.at(now);
+      return r.road.work.id != workId && s.startedAt != null && !s.stopped;
+    }).firstOrNull;
+  }
 
   /// Every Session, oldest first.
   Stream<List<SessionRecord>> watchAll() => _all().watch().map(_records);

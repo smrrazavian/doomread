@@ -13,6 +13,11 @@ const CopyPack en = {
       'Not yet. {app} can wait for your break.',
       'Not yet. It can wait for your break.',
     ],
+    Moment.urgeTask: [
+      'Not yet. {task} first, {app} at the break.',
+      'Not yet. {task} first, the rest at the break.',
+      'Not yet. It can wait for your break.',
+    ],
     Moment.afterSlip: ['Fumbled. It happens.'],
     Moment.breakHere: ['{minutes} min of Reels, messages, anything.'],
     Moment.breakOver: ["Break's over."],
@@ -26,6 +31,11 @@ const CopyPack en = {
       'Not yet. {app} will survive without you till the break.',
       'Not yet. The feed will survive without you till the break.',
     ],
+    Moment.urgeTask: [
+      "Not yet. {task} won't do itself. {app} can wait for the break.",
+      "Not yet. {task} won't do itself. The feed can wait for the break.",
+      'Not yet. The feed can wait for the break.',
+    ],
     Moment.breakHere: ['{minutes} min of legal brainrot. Enjoy.'],
     Moment.breakOver: ['Brainrot over. Lock back in.'],
     Moment.evening: ['Lowkey a great evening. Aura up.'],
@@ -37,6 +47,11 @@ const CopyPack en = {
     Moment.urge: [
       'Phone. AGAIN?! {app} will still be there after your break!',
       'Phone. AGAIN?! It will still be there after your break!',
+    ],
+    Moment.urgeTask: [
+      'Phone. AGAIN?! First {task}, then {app}!',
+      'Phone. AGAIN?! First {task}, then your break!',
+      'Phone. AGAIN?! Work first, then your break!',
     ],
     Moment.breakHere: [
       'Bravo! Now get up and have some tea. {minutes} minutes.',

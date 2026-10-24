@@ -68,6 +68,62 @@
   "@taskDayPick": {
     "description": "The day chip that opens a list of the days ahead, in the user's calendar."
   },
+  "taskWorkingOn": "Working on",
+  "@taskWorkingOn": {
+    "description": "Over a Task's name on its Session screen."
+  },
+  "taskClockRunning": "in one go, tap the clock to pause",
+  "@taskClockRunning": {
+    "description": "Under the big clock on a Task's Session: the clock is the pause button."
+  },
+  "taskClockPaused": "Paused. Tap to keep going, no harm done",
+  "@taskClockPaused": {
+    "description": "Under the clock while a Task's Session is paused."
+  },
+  "taskPause": "Pause",
+  "@taskPause": {
+    "description": "The clock as a button, read aloud while it runs."
+  },
+  "taskResume": "Keep going",
+  "@taskResume": {
+    "description": "The clock as a button, read aloud while paused."
+  },
+  "taskAim": "Aim: {minutes} min of work in one go",
+  "@taskAim": {
+    "description": "The Aim card on a Task's Session.",
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "taskAimToGo": "{minutes} min to go",
+  "@taskAimToGo": {
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "taskAimBeaten": "Aim beaten",
+  "taskStop": "Stop for now",
+  "@taskStop": {
+    "description": "Ends a Task's Session, back to Today; the Task stays undone and nothing is asked."
+  },
+  "oneSessionTitle": "“{title}” is still on",
+  "@oneSessionTitle": {
+    "description": "Starting a Session while another runs: one Session at a time.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "oneSessionBody": "Stop it first, then start this?",
+  "oneSessionStop": "Stop it",
+  "oneSessionNotNow": "Not now",
   "appTitle": "Doomread",
   "navBooks": "Library",
   "navBuilding": "Building",
@@ -760,9 +816,29 @@
       }
     }
   },
+  "nextBreakWorking": "Your break: in about {minutes} min.",
+  "@nextBreakWorking": {
+    "description": "The next Planned break on a Task's Session, which has no Checkpoints.",
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "breakDueAfterWatching": "You're {minutes} min in. Good place to pause?",
   "@breakDueAfterWatching": {
     "description": "The same for a series, film or podcast.",
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "breakDueAfterWorking": "You've worked {minutes} min. Good place to stop?",
+  "@breakDueAfterWorking": {
+    "description": "The same as breakDueAfterReading, on a Task.",
     "placeholders": {
       "minutes": {
         "type": "int",

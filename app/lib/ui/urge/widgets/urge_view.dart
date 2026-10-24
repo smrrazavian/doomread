@@ -6,6 +6,7 @@ import 'package:doomread/ui/core/number_format.dart';
 import 'package:doomread/ui/core/voice_text.dart';
 import 'package:doomread/ui/planned_break/break_text.dart';
 import 'package:doomread/ui/planned_break/view_models/planned_break_view_model.dart';
+import 'package:doomread/ui/reading/widgets/desk_view.dart';
 import 'package:doomread/ui/reading/widgets/house_view.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
@@ -63,7 +64,9 @@ class UrgeView extends StatelessWidget {
         yalda: yalda,
         kind: work.kind,
         note: note,
-        title: say(context, Moment.urge, {'app': ?app}),
+        title: work.kind == WorkKind.task
+            ? say(context, Moment.urgeTask, {'task': work.title, 'app': ?app})
+            : say(context, Moment.urge, {'app': ?app}),
         body: [
           ChangeNotifierProvider(
             create: (c) =>
@@ -72,7 +75,7 @@ class UrgeView extends StatelessWidget {
           ),
           l10n.urgeBody,
         ],
-        go: work.kind.unit == WorkUnit.page
+        go: work.kind.attention == Attention.reading
             ? l10n.backToBook
             : l10n.backToWork(work.kind.name),
         onGo: back,
@@ -118,7 +121,7 @@ class AfterSlipView extends StatelessWidget {
       body: [l10n.slipBody(last.inMinutes)],
       go: l10n.backIn,
       onGo: onBackIn,
-      quiet: l10n.doneForTonight,
+      quiet: kind == WorkKind.task ? l10n.taskStop : l10n.doneForTonight,
       onQuiet: onDone,
     );
   }
@@ -151,8 +154,8 @@ class _BreakDistance extends StatelessWidget {
   }
 }
 
-/// The House on top, a heading and a few lines, then a big button and a
-/// full-size quiet one, as in the mockups.
+/// The House on top, or for a Task the desk, a heading and a few lines,
+/// then a big button and a full-size quiet one, as in the mockups.
 class _Moment extends StatelessWidget {
   const _Moment({
     required this.house,
@@ -200,11 +203,13 @@ class _Moment extends StatelessWidget {
                     Expanded(
                       child: Align(
                         alignment: Alignment.bottomCenter,
-                        child: HouseView(
-                          windows: house,
-                          kind: kind,
-                          yalda: yalda,
-                        ),
+                        child: kind == WorkKind.task
+                            ? const DeskView()
+                            : HouseView(
+                                windows: house,
+                                kind: kind,
+                                yalda: yalda,
+                              ),
                       ),
                     ),
                   ],

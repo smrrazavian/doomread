@@ -62,7 +62,11 @@ class LiveNotification {
       final last = session.stretches.lastOrNull?.length ?? Duration.zero;
       text = l10n.notificationPaused(formatClock(last, locale));
     }
-    final shown = (open.id, open.road.work.title, text, running?.start);
+    // A Task can be Done from here, but not mid-break.
+    final done = open.road.work.kind == WorkKind.task && !session.onBreak
+        ? l10n.taskDone
+        : null;
+    final shown = (open.id, open.road.work.title, text, running?.start, done);
     if (shown == _last) return;
     _last = shown;
     unawaited(
@@ -71,6 +75,7 @@ class LiveNotification {
         title: open.road.work.title,
         text: text,
         runningSince: running?.start,
+        done: done,
       ),
     );
   }

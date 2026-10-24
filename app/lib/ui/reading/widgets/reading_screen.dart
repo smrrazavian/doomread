@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/data/services/app_watch.dart';
+import 'package:doomread/domain/use_cases/task_done_use_case.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/number_format.dart';
 import 'package:doomread/ui/core/theme.dart';
@@ -11,6 +12,7 @@ import 'package:doomread/ui/evening/widgets/evening_screen.dart';
 import 'package:doomread/ui/planned_break/widgets/next_break_card.dart';
 import 'package:doomread/ui/reading/view_models/reading_view_model.dart';
 import 'package:doomread/ui/reading/widgets/house_view.dart';
+import 'package:doomread/ui/reading/widgets/task_session_view.dart';
 import 'package:doomread/ui/reading/widgets/work_app_card.dart';
 import 'package:doomread/ui/tour/view_models/tour_view_model.dart';
 import 'package:doomread/ui/tour/widgets/hint_card.dart';
@@ -42,16 +44,27 @@ class _Reading extends StatelessWidget {
   const _Reading();
 
   /// Stops the Session for End of the evening; [finishing] when the user
-  /// said "I finished it!", so the page there starts at the end.
+  /// said "I finished it!", so the page there starts at the end. A Task's
+  /// Session has no End of the evening: it goes back to Today, asking
+  /// nothing, and the Task stays undone.
   Future<void> _stop(
     BuildContext context,
     ReadingViewModel vm, {
     bool finishing = false,
   }) async {
     await vm.stop.execute();
-    if (context.mounted && vm.stop.completed) {
+    if (!context.mounted || !vm.stop.completed) return;
+    if (vm.record?.road.work.kind == WorkKind.task) {
+      context.go('/tonight');
+    } else {
       context.pushReplacement(eveningPath(vm.id, finishing: finishing));
     }
+  }
+
+  /// The Task is Done: its Session ends, and it's marked Done.
+  Future<void> _done(BuildContext context, ReadingViewModel vm) async {
+    await context.read<TaskDoneUseCase>()(vm.id);
+    if (context.mounted) context.go('/tonight');
   }
 
   @override
@@ -94,6 +107,14 @@ class _Reading extends StatelessWidget {
         kind: record.road.work.kind,
         onBackIn: vm.resume.execute,
         onDone: () => _stop(context, vm),
+      );
+    }
+
+    if (record.road.work.kind == WorkKind.task) {
+      return TaskSessionView(
+        record: record,
+        onStop: () => _stop(context, vm),
+        onDone: () => _done(context, vm),
       );
     }
 

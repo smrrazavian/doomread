@@ -7,6 +7,7 @@ import 'package:doomread/data/services/app_watch.dart';
 import 'package:doomread/data/services/session_notification.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/empty_scenes.dart';
+import 'package:doomread/ui/core/one_session.dart';
 import 'package:doomread/ui/core/road_view.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/work_text.dart';
@@ -145,6 +146,8 @@ class _Tonight extends StatelessWidget {
 }
 
 Future<void> _start(BuildContext context, TonightViewModel vm) async {
+  if (!await stopOtherSessionFirst(context, vm.road!.work.id)) return;
+  if (!context.mounted) return;
   // Asked here, the moment the timer is about to matter, and never in the
   // way: the Session starts whatever the answer. One ask per tap at most;
   // the "not yet" screen waits for Reading or the next Start when the

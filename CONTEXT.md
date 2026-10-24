@@ -57,7 +57,7 @@ The Stretch length the app suggests for tonight: the **Longest stretch** plus on
 _Avoid_: Goal, target (Goal is reserved for the Finish)
 
 **Working**:
-The third kind of attention, next to reading and watching: a **Session** on a **Task**. It keeps its own **Longest stretch** and **Aim**.
+The third kind of attention, next to reading and watching: a **Session** on a **Task**, at a desk instead of the **House**. It keeps its own **Longest stretch** and **Aim**, and stays out of the **Reading week**, the **House** and the **Reading month**. It ends with Stop for now, which asks nothing, or **Done**.
 _Avoid_: Productivity, focus time (for the kind)
 
 **Pause**:

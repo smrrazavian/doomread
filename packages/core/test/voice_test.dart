@@ -28,6 +28,26 @@ void main() {
     }
   });
 
+  test("during a Task, each Tone names it, and the app when it's known", () {
+    for (final locale in locales) {
+      final lines = <String>{};
+      for (final tone in Tone.values) {
+        final line = voice(Moment.urgeTask, tone, locale, const {
+          'task': 'Write the Q3 report',
+          'app': 'TikTok',
+        });
+        expect(line, contains('Write the Q3 report'), reason: '$locale $tone');
+        expect(line, contains('TikTok'), reason: '$locale $tone');
+        lines.add(line);
+        expect(
+          voice(Moment.urgeTask, tone, locale, const {'task': 'Call the bank'}),
+          allOf(contains('Call the bank'), isNot(contains('{'))),
+        );
+      }
+      expect(lines, hasLength(Tone.values.length), reason: locale);
+    }
+  });
+
   test('facts fill the line', () {
     expect(
       voice(Moment.urge, Tone.chill, 'en', const {'app': 'TikTok'}),

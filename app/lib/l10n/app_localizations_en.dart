@@ -78,6 +78,59 @@ class AppLocalizationsEn extends AppLocalizations {
   String get taskDayPick => 'Another day';
 
   @override
+  String get taskWorkingOn => 'Working on';
+
+  @override
+  String get taskClockRunning => 'in one go, tap the clock to pause';
+
+  @override
+  String get taskClockPaused => 'Paused. Tap to keep going, no harm done';
+
+  @override
+  String get taskPause => 'Pause';
+
+  @override
+  String get taskResume => 'Keep going';
+
+  @override
+  String taskAim(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'Aim: $minutesString min of work in one go';
+  }
+
+  @override
+  String taskAimToGo(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '$minutesString min to go';
+  }
+
+  @override
+  String get taskAimBeaten => 'Aim beaten';
+
+  @override
+  String get taskStop => 'Stop for now';
+
+  @override
+  String oneSessionTitle(String title) {
+    return '“$title” is still on';
+  }
+
+  @override
+  String get oneSessionBody => 'Stop it first, then start this?';
+
+  @override
+  String get oneSessionStop => 'Stop it';
+
+  @override
+  String get oneSessionNotNow => 'Not now';
+
+  @override
   String get appTitle => 'Doomread';
 
   @override
@@ -1022,12 +1075,30 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String nextBreakWorking(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'Your break: in about $minutesString min.';
+  }
+
+  @override
   String breakDueAfterWatching(int minutes) {
     final intl.NumberFormat minutesNumberFormat =
         intl.NumberFormat.decimalPattern(localeName);
     final String minutesString = minutesNumberFormat.format(minutes);
 
     return 'You\'re $minutesString min in. Good place to pause?';
+  }
+
+  @override
+  String breakDueAfterWorking(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'You\'ve worked $minutesString min. Good place to stop?';
   }
 
   @override

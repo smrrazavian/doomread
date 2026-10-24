@@ -100,7 +100,9 @@ HomeWidgetContent homeWidgetContent({
   final lit = ReadingWeek(
     now: now,
     firstDay: firstDayOfWeek(lang),
-    sessionStarts: [for (final r in history) ?r.at(now).startedAt],
+    sessionStarts: [
+      for (final r in withoutTasks(history)) ?r.at(now).startedAt,
+    ],
   ).isLit(tonight);
   final common = (
     lit: l10n.widgetLit,

@@ -13,11 +13,12 @@ typedef YaldaNight = ({
   List<HouseWindow> house,
 });
 
-/// Tonight's [YaldaNight] from every Session in [records], measured at
-/// [now]; null on any other night. Whether a Work is current doesn't
-/// matter, so a Work finished tonight still counts.
-YaldaNight? yaldaNight(Iterable<SessionRecord> records, DateTime now) {
+/// Tonight's [YaldaNight] from every Session in [all] but the Tasks',
+/// measured at [now]; null on any other night. Whether a Work is current
+/// doesn't matter, so a Work finished tonight still counts.
+YaldaNight? yaldaNight(Iterable<SessionRecord> all, DateTime now) {
   if (!yaldaAt(now)) return null;
+  final records = withoutTasks(all);
   final evening = eveningOf(now);
   final tonight = [
     for (final r in records)
