@@ -70,17 +70,12 @@ class _WorkFormState extends State<_WorkForm> {
   }
 
   Future<void> _save(WorkFormViewModel vm) async {
-    final parse = _timed ? parseClocks : parseNumbers;
-    final checkpoints = parse(_checkpoints.text);
-    await vm.save.execute(
-      WorkDraft(
-        title: _title.text,
-        author: _author.text,
-        totalPages: (_timed ? parseClock : parseNumber)(_pages.text) ?? 0,
-        checkpoints: checkpoints ?? const [],
-        checkpointsUnreadable: checkpoints == null,
-        kind: _kind,
-      ),
+    await vm.saveTyped(
+      title: _title.text,
+      author: _author.text,
+      length: _pages.text,
+      checkpoints: _checkpoints.text,
+      kind: _kind,
     );
     if (mounted && vm.save.result is Ok) context.pop();
   }

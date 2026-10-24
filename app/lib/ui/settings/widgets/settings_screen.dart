@@ -37,7 +37,7 @@ class SettingsScreen extends StatelessWidget {
             if (context.read<AppWatch>().available) const _WatchedAppsTile(),
             ListTile(
               key: const Key('replayIntro'),
-              leading: const Icon(Icons.movie_outlined),
+              leading: const Icon(Icons.auto_stories_outlined),
               title: Text(l10n.tourReplay),
               onTap: () => context.push('/intro?replay'),
             ),

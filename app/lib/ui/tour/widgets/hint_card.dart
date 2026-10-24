@@ -37,7 +37,7 @@ class HintCard extends StatelessWidget {
                     const Padding(
                       padding: EdgeInsetsDirectional.only(top: 2, end: 12),
                       child: Icon(
-                        Icons.lightbulb_outline,
+                        Icons.lightbulb_outlined,
                         size: 18,
                         color: Palette.lamp,
                       ),

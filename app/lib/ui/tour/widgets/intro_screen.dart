@@ -2,7 +2,6 @@ import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/books/view_models/work_form_view_model.dart';
 import 'package:doomread/ui/core/empty_scenes.dart';
-import 'package:doomread/ui/core/number_format.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/work_text.dart';
 import 'package:doomread/ui/settings/view_models/settings_view_model.dart';
@@ -39,9 +38,24 @@ class _Intro extends StatefulWidget {
   State<_Intro> createState() => _IntroState();
 }
 
+/// The intro's steps, in order: three cards, then the Work.
+enum _Step {
+  story,
+  company,
+  tone,
+
+  /// "What are you trying to finish?", on the first run only.
+  work;
+
+  /// The cards, which the progress windows count.
+  static const List<_Step> cards = [story, company, tone];
+
+  _Step? get next => index + 1 < values.length ? values[index + 1] : null;
+  _Step get previous => values[index - 1];
+}
+
 class _IntroState extends State<_Intro> {
-  static const _cards = 3;
-  var _step = 0;
+  _Step _step = _Step.story;
 
   final _title = TextEditingController();
   final _length = TextEditingController();
@@ -79,23 +93,20 @@ class _IntroState extends State<_Intro> {
   }
 
   void _next() {
-    if (_step == _cards - 1 && widget.replay) return _leave();
-    setState(() => _step++);
+    final next = _step.next;
+    // A replay is only the cards.
+    if (next == null || (widget.replay && next == _Step.work)) {
+      return _leave();
+    }
+    setState(() => _step = next);
   }
 
+  /// Title, length, Start: the Work is saved as the Work form saves it,
+  /// then Tonight starts its Session.
   Future<void> _start() async {
     final vm = context.read<WorkFormViewModel>();
     final tour = context.read<TourViewModel>();
-    final timed = _kind.unit == WorkUnit.second;
-    await vm.save.execute(
-      WorkDraft(
-        title: _title.text,
-        author: '',
-        totalPages: (timed ? parseClock : parseNumber)(_length.text) ?? 0,
-        checkpoints: const [],
-        kind: _kind,
-      ),
-    );
+    await vm.saveTyped(title: _title.text, length: _length.text, kind: _kind);
     if (vm.save.result is! Ok) return;
     await tour.finishIntro(startNow: true);
     if (mounted) _leave();
@@ -105,42 +116,45 @@ class _IntroState extends State<_Intro> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final calm = MediaQuery.disableAnimationsOf(context);
-    final working = _step == _cards;
-    final Widget card = switch (_step) {
-      0 => _Card(
-        scene: MovieNightPainter.new,
-        heading: l10n.tourStoryTitle,
-        body: l10n.tourStoryBody,
-        top: const _LanguageSwitch(),
+    final working = _step == _Step.work;
+    final (Widget card, String next) = switch (_step) {
+      _Step.story => (
+        _Card(
+          scene: MovieNightPainter.new,
+          heading: l10n.tourStoryTitle,
+          body: l10n.tourStoryBody,
+          top: const _LanguageSwitch(),
+        ),
+        l10n.tourStoryNext,
       ),
-      1 => _Card(
-        scene: CompanyPainter.new,
-        // Its Windows come on one after another: a little slower.
-        duration: const Duration(milliseconds: 2400),
-        heading: l10n.tourCompanyTitle,
-        body: l10n.tourCompanyBody,
+      _Step.company => (
+        _Card(
+          scene: CompanyPainter.new,
+          // Its Windows come on one after another: a little slower.
+          duration: const Duration(milliseconds: 2400),
+          heading: l10n.tourCompanyTitle,
+          body: l10n.tourCompanyBody,
+        ),
+        l10n.tourCompanyNext,
       ),
-      2 => const _ToneCard(),
-      _ => _WorkStep(
-        title: _title,
-        length: _length,
-        kind: _kind,
-        onKind: (k) => setState(() => _kind = k),
-        onDone: _start,
+      _Step.tone => (const _ToneCard(), l10n.tourToneNext),
+      _Step.work => (
+        _WorkStep(
+          title: _title,
+          length: _length,
+          kind: _kind,
+          onKind: (k) => setState(() => _kind = k),
+          onDone: _start,
+        ),
+        l10n.startWork(_kind.name),
       ),
-    };
-    final next = switch (_step) {
-      0 => l10n.tourStoryNext,
-      1 => l10n.tourCompanyNext,
-      2 => l10n.tourToneNext,
-      _ => l10n.startWork(_kind.name),
     };
     final saving = context.watch<WorkFormViewModel>().save.running;
     return PopScope(
       // System back walks back through the cards.
-      canPop: _step == 0,
+      canPop: _step == _Step.story,
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) setState(() => _step--);
+        if (!didPop) setState(() => _step = _step.previous);
       },
       child: Scaffold(
         body: SafeArea(
@@ -151,7 +165,10 @@ class _IntroState extends State<_Intro> {
               children: [
                 Row(
                   children: [
-                    _Progress(step: _step, of: _cards),
+                    _Progress(
+                      lit: _Step.cards.indexOf(_step),
+                      of: _Step.cards.length,
+                    ),
                     const Spacer(),
                     TextButton(
                       key: const Key('introSkip'),
@@ -187,9 +204,10 @@ class _IntroState extends State<_Intro> {
 
 /// How far through the cards: three little windows, lit up to this one.
 class _Progress extends StatelessWidget {
-  const _Progress({required this.step, required this.of});
+  const _Progress({required this.lit, required this.of});
 
-  final int step;
+  /// The card showing, by index; past the cards (-1), all are lit.
+  final int lit;
   final int of;
 
   @override
@@ -206,9 +224,9 @@ class _Progress extends StatelessWidget {
               width: 10,
               height: 13,
               decoration: BoxDecoration(
-                color: i <= step ? Palette.lamp : Palette.unlit,
+                color: (lit < 0 || i <= lit) ? Palette.lamp : Palette.unlit,
                 border: Border.all(
-                  color: i <= step ? Palette.lamp : Palette.line,
+                  color: (lit < 0 || i <= lit) ? Palette.lamp : Palette.line,
                 ),
                 borderRadius: BorderRadius.circular(2),
               ),
@@ -245,9 +263,9 @@ class _Card extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (top case final top?) ...[const SizedBox(height: 8), top],
+        // In the middle of the room it has, not dropped to the text.
         Expanded(
           child: Align(
-            alignment: Alignment.bottomCenter,
             child: PaintedScene(scene, maxWidth: 360, duration: duration),
           ),
         ),
@@ -481,6 +499,9 @@ class _WorkStep extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.only(top: 24),
       children: [
+        // The shelf it'll go on.
+        const EmptySceneView(EmptyScene.emptyShelf, maxWidth: 260),
+        const SizedBox(height: 24),
         Text(l10n.tourWorkTitle, style: text.headlineSmall),
         const SizedBox(height: 12),
         Text(l10n.tourWorkBody, style: text.bodyMedium),

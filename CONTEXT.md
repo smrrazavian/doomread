@@ -108,6 +108,20 @@ _Avoid_: Follower, contact, buddy
 The count of nights in the current week with at least one **Session**. It restarts each week, never "breaks", and starts on Saturday in Persian.
 _Avoid_: Streak, chain
 
+### First run
+
+**Intro**:
+The three cards a new user sees once, before anything else: the movie-night story, the company coming back, and the Tone picked by hearing each one. Then the first Work, and its first Session. It can be replayed from Settings.
+_Avoid_: Onboarding (when you mean these cards), tutorial, walkthrough
+
+**Hint**:
+A one-line explainer shown in place the first time its thing appears (the Aim, the Urge, the Planned break), with "Got it", and never again. Never an overlay.
+_Avoid_: Tooltip, coach mark, tip
+
+**Demo Urge**:
+The real "not yet" screen, shown on request during the first Session as a demo. It records nothing: no **Urge**, no **Slip**, no journal event.
+_Avoid_: Fake urge, test urge, preview
+
 ## Relationships
 
 - A **Work** has a **Road** made of **Checkpoints**, and the user's **Position** sits on it.

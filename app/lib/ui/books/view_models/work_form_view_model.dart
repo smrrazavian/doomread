@@ -1,4 +1,5 @@
 import 'package:doomread/data/repositories/work_repository.dart';
+import 'package:doomread/ui/core/number_format.dart';
 import 'package:doomread/utils/command.dart';
 import 'package:doomread/utils/result.dart';
 import 'package:doomread_core/doomread_core.dart';
@@ -15,6 +16,29 @@ class WorkFormViewModel extends ChangeNotifier {
 
   /// Saves a draft; its result holds the Work's id.
   late final Command1<String, WorkDraft> save;
+
+  /// Saves what the user typed: the length and Checkpoints in the [kind]'s
+  /// unit (timestamps for a film or podcast), in either language's digits.
+  Future<void> saveTyped({
+    required String title,
+    required String length,
+    required WorkKind kind,
+    String author = '',
+    String checkpoints = '',
+  }) {
+    final timed = kind.unit == WorkUnit.second;
+    final marks = (timed ? parseClocks : parseNumbers)(checkpoints);
+    return save.execute(
+      WorkDraft(
+        title: title,
+        author: author,
+        totalPages: (timed ? parseClock : parseNumber)(length) ?? 0,
+        checkpoints: marks ?? const [],
+        checkpointsUnreadable: marks == null,
+        kind: kind,
+      ),
+    );
+  }
 
   /// What's wrong with the last draft the user tried to save.
   Set<WorkProblem> get problems => _problems;
