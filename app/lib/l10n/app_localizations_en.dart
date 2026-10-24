@@ -1147,4 +1147,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String eveningStartedAtTime(String from) {
     return 'Tonight you started at $from';
   }
+
+  @override
+  String get eveningFinished => 'I finished it!';
 }

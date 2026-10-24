@@ -46,9 +46,10 @@ class _EveningState extends State<_Evening> {
       ? parseClock(_page!.text)
       : parseNumber(_page!.text);
 
-  Future<void> _save(EveningViewModel vm) async {
+  /// Saves [page], or what the user typed.
+  Future<void> _save(EveningViewModel vm, {int? page}) async {
     await vm.save.execute((
-      page: _typed(vm.record!.road.work),
+      page: page ?? _typed(vm.record!.road.work),
       note: _note.text,
     ));
     if (!mounted || !vm.save.completed) return;
@@ -187,6 +188,15 @@ class _EveningState extends State<_Evening> {
                     WorkUnit.episode => l10n.eveningStartedAtEpisode(from),
                     WorkUnit.second => l10n.eveningStartedAtTime(fromText),
                   }, style: text.bodySmall),
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: TextButton(
+                      onPressed: vm.save.running
+                          ? null
+                          : () => _save(vm, page: total),
+                      child: Text(l10n.eveningFinished),
+                    ),
+                  ),
                   const SizedBox(height: 24),
                   Text(l10n.whatHappened, style: text.bodyMedium),
                   const SizedBox(height: 8),

@@ -228,5 +228,6 @@
   "eveningOfTotal": "از {total}",
   "eveningStartedAtPage": "امشب از صفحه‌ی {from} شروع کردی",
   "eveningStartedAtEpisode": "امشب از قسمت {from} شروع کردی",
-  "eveningStartedAtTime": "امشب از {from} شروع کردی"
+  "eveningStartedAtTime": "امشب از {from} شروع کردی",
+  "eveningFinished": "تمومش کردم!"
 }

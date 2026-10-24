@@ -1033,4 +1033,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String eveningStartedAtTime(String from) {
     return 'امشب از $from شروع کردی';
   }
+
+  @override
+  String get eveningFinished => 'تمومش کردم!';
 }

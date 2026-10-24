@@ -897,5 +897,9 @@
         "type": "String"
       }
     }
+  },
+  "eveningFinished": "I finished it!",
+  "@eveningFinished": {
+    "description": "End of the evening: one tap to record the Finish, the Position at the Work's end, without typing the last page."
   }
 }

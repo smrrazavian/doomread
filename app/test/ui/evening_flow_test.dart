@@ -130,4 +130,38 @@ void main() {
       lessThan(tester.getCenter(find.byKey(const Key('pageDown'))).dx),
     );
   });
+
+  testApp('"I finished it!" records the Finish at the end', (
+    tester,
+    db,
+  ) async {
+    await openAt(tester, db, 230);
+    await readFor(tester, 9);
+    await tap(tester, find.text(en.eveningFinished));
+
+    expect(find.text(en.finishedTitle(title)), findsOne);
+    expect(await position(db), 245);
+    final note = await db.select(db.notes).getSingle();
+    expect((note.fromPage, note.toPage), (230, 245));
+  });
+
+  testApp('"I finished it!" Finishes a series too', (tester, db) async {
+    now = DateTime(2026, 10, 22, 21);
+    await SettingsRepository(db).setLocale(const Locale('en'));
+    await pumpApp(tester, db, clock: () => now);
+    await tap(tester, find.text(en.tonightAddBook).first);
+    await tap(tester, find.byKey(const Key('series')));
+    await tester.enterText(find.byKey(const Key('title')), 'Dark');
+    await tester.enterText(find.byKey(const Key('pages')), '10');
+    await tap(tester, find.text(en.save));
+
+    await tap(tester, find.text(en.startWork('series')));
+    now = now.add(const Duration(minutes: 50));
+    await tester.pump(const Duration(seconds: 1));
+    await tap(tester, find.text(en.stopForTonight));
+    await tap(tester, find.text(en.eveningFinished));
+
+    expect(await position(db), 10);
+    expect(find.text(en.finishedTitle('Dark')), findsOne);
+  });
 }

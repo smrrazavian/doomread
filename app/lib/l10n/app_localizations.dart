@@ -1291,6 +1291,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tonight you started at {from}'**
   String eveningStartedAtTime(String from);
+
+  /// End of the evening: one tap to record the Finish, the Position at the Work's end, without typing the last page.
+  ///
+  /// In en, this message translates to:
+  /// **'I finished it!'**
+  String get eveningFinished;
 }
 
 class _AppLocalizationsDelegate
