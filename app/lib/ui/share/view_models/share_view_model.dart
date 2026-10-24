@@ -10,10 +10,9 @@ import 'package:flutter/foundation.dart';
 /// A drawn poster, and the share sheet's title for it.
 typedef Poster = ({Uint8List png, String title});
 
-/// Sharing a drawn card, whichever it is.
+/// Sharing a drawn card, whichever it is. The file is named by the clock.
 class ShareViewModel extends ChangeNotifier {
-  ShareViewModel(this._sheet, {required DateTime Function() now})
-    : _now = now {
+  ShareViewModel(this._sheet, this._now) {
     share = Command1(_share);
   }
 

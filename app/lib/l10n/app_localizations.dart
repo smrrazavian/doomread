@@ -1567,6 +1567,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Replay the intro'**
   String get tourReplay;
+
+  /// On End of the evening, next to Save: saves, then opens tonight's receipt to share. Never automatic.
+  ///
+  /// In en, this message translates to:
+  /// **'Share tonight'**
+  String get cardShareTonight;
+
+  /// No description provided for @cardReceiptHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Tonight’s receipt'**
+  String get cardReceiptHeading;
+
+  /// Under the receipt's heading: the evening, and when the Session started and stopped.
+  ///
+  /// In en, this message translates to:
+  /// **'{date}, {from} to {to}'**
+  String cardReceiptWhen(String date, String from, String to);
+
+  /// No description provided for @cardReceiptPages.
+  ///
+  /// In en, this message translates to:
+  /// **'Pages'**
+  String get cardReceiptPages;
+
+  /// No description provided for @cardReceiptEpisodes.
+  ///
+  /// In en, this message translates to:
+  /// **'Episodes'**
+  String get cardReceiptEpisodes;
+
+  /// On the receipt, before the timestamps a podcast or film went through tonight.
+  ///
+  /// In en, this message translates to:
+  /// **'Got through'**
+  String get cardReceiptTime;
+
+  /// No description provided for @cardReceiptLongest.
+  ///
+  /// In en, this message translates to:
+  /// **'Longest stretch'**
+  String get cardReceiptLongest;
+
+  /// No description provided for @cardReceiptUrges.
+  ///
+  /// In en, this message translates to:
+  /// **'Urges let pass'**
+  String get cardReceiptUrges;
+
+  /// No description provided for @cardReceiptBreaks.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned breaks'**
+  String get cardReceiptBreaks;
+
+  /// On the receipt, the Slips, said kindly: what counts is coming back. Never a minus or a shame line.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Wandered off once, came back} other{Wandered off {count} times, came back}}'**
+  String cardReceiptSlips(int count);
+
+  /// On the receipt, before tonight's reading time.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get cardReceiptTotal;
 }
 
 class _AppLocalizationsDelegate

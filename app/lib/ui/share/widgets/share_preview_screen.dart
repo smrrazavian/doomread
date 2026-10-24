@@ -29,10 +29,8 @@ class SharePreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ChangeNotifierProvider(
-    create: (c) => ShareViewModel(
-      c.read<ShareSheet>(),
-      now: c.read<SessionRepository>().now,
-    ),
+    create: (c) =>
+        ShareViewModel(c.read<ShareSheet>(), c.read<SessionRepository>().now),
     child: _Preview(poster: poster, controls: controls),
   );
 }

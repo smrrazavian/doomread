@@ -274,5 +274,16 @@
   "tourWatchOn": "صفحه‌ی «هنوز نه» روشنه.",
   "tourWatchOff": "هنوز خاموشه. اشکال نداره؛ توی دسترس‌پذیری، باز گوشی؟! رو پیدا کن و روشنش کن.",
   "tourWatchRetry": "دوباره",
-  "tourReplay": "دوباره دیدن معرفی"
+  "tourReplay": "دوباره دیدن معرفی",
+  "cardShareTonight": "پز امشبو بده",
+  "cardReceiptHeading": "رسید امشب",
+  "cardReceiptWhen": "{date}، {from} تا {to}",
+  "cardReceiptPages": "صفحه‌ها",
+  "cardReceiptEpisodes": "قسمت‌ها",
+  "cardReceiptTime": "جلو رفتم",
+  "cardReceiptLongest": "طولانی‌ترین تمرکز",
+  "cardReceiptUrges": "وسوسه‌هایی که رد کردم",
+  "cardReceiptBreaks": "استراحت قانونی",
+  "cardReceiptSlips": "{count, plural, =1{یه بار حواسم پرت شد، برگشتم} other{{count} بار حواسم پرت شد، برگشتم}}",
+  "cardReceiptTotal": "جمع کل"
 }

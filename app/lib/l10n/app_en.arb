@@ -1076,5 +1076,48 @@
     "description": "After coming back from Accessibility settings with it still off."
   },
   "tourWatchRetry": "Try again",
-  "tourReplay": "Replay the intro"
+  "tourReplay": "Replay the intro",
+  "cardShareTonight": "Share tonight",
+  "@cardShareTonight": {
+    "description": "On End of the evening, next to Save: saves, then opens tonight's receipt to share. Never automatic."
+  },
+  "cardReceiptHeading": "Tonight’s receipt",
+  "cardReceiptWhen": "{date}, {from} to {to}",
+  "@cardReceiptWhen": {
+    "description": "Under the receipt's heading: the evening, and when the Session started and stopped.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "cardReceiptPages": "Pages",
+  "cardReceiptEpisodes": "Episodes",
+  "cardReceiptTime": "Got through",
+  "@cardReceiptTime": {
+    "description": "On the receipt, before the timestamps a podcast or film went through tonight."
+  },
+  "cardReceiptLongest": "Longest stretch",
+  "cardReceiptUrges": "Urges let pass",
+  "cardReceiptBreaks": "Planned breaks",
+  "cardReceiptSlips": "{count, plural, =1{Wandered off once, came back} other{Wandered off {count} times, came back}}",
+  "@cardReceiptSlips": {
+    "description": "On the receipt, the Slips, said kindly: what counts is coming back. Never a minus or a shame line.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "cardReceiptTotal": "Total",
+  "@cardReceiptTotal": {
+    "description": "On the receipt, before tonight's reading time."
+  }
 }

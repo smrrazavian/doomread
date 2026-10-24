@@ -1,4 +1,5 @@
 import 'package:doomread/data/repositories/session_repository.dart';
+import 'package:doomread/data/services/share_sheet.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/number_format.dart';
 import 'package:doomread/ui/core/theme.dart';
@@ -6,6 +7,7 @@ import 'package:doomread/ui/core/voice_text.dart';
 import 'package:doomread/ui/core/work_text.dart';
 import 'package:doomread/ui/evening/view_models/evening_view_model.dart';
 import 'package:doomread/ui/evening/widgets/rolling_field.dart';
+import 'package:doomread/ui/share/widgets/receipt_share_screen.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -74,13 +76,26 @@ class _EveningState extends State<_Evening>
       ? parseClock(_page!.text)
       : parseNumber(_page!.text);
 
-  /// Saves [page], or what the user typed.
-  Future<void> _save(EveningViewModel vm, {int? page}) async {
+  /// Saves [page], or what the user typed. With [share], tonight's receipt
+  /// opens to share once it's saved, and the evening goes on after it.
+  Future<void> _save(
+    EveningViewModel vm, {
+    int? page,
+    bool share = false,
+  }) async {
     await vm.save.execute((
       page: page ?? _typed(vm.record!.road.work),
       note: _note.text,
     ));
     if (!mounted || !vm.save.completed) return;
+    if (share) {
+      await Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => ReceiptShareScreen(sessionId: vm.id),
+        ),
+      );
+      if (!mounted) return;
+    }
     // The Finish has its own moment; otherwise the light goes off first.
     if (!vm.finished && !MediaQuery.disableAnimationsOf(context)) {
       await _dim.forward();
@@ -139,6 +154,7 @@ class _EveningState extends State<_Evening>
       pageProblem = null;
     }
 
+    final canShare = context.read<ShareSheet>().available;
     final screen = Scaffold(
       appBar: AppBar(),
       body: SafeArea(
@@ -265,9 +281,27 @@ class _EveningState extends State<_Evening>
             ),
             Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 24),
-              child: FilledButton(
-                onPressed: vm.save.running ? null : () => _save(vm),
-                child: Text(l10n.saveAndLightsOut),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: vm.save.running ? null : () => _save(vm),
+                      child: Text(l10n.saveAndLightsOut),
+                    ),
+                  ),
+                  // Quiet and opt-in: saving never shares by itself.
+                  if (canShare) ...[
+                    const SizedBox(width: 8),
+                    IconButton.outlined(
+                      key: const Key('shareTonight'),
+                      tooltip: l10n.cardShareTonight,
+                      onPressed: vm.save.running
+                          ? null
+                          : () => _save(vm, share: true),
+                      icon: const Icon(Icons.share_outlined),
+                    ),
+                  ],
+                ],
               ),
             ),
           ],

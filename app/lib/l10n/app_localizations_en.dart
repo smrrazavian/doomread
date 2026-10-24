@@ -1390,4 +1390,51 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tourReplay => 'Replay the intro';
+
+  @override
+  String get cardShareTonight => 'Share tonight';
+
+  @override
+  String get cardReceiptHeading => 'Tonight’s receipt';
+
+  @override
+  String cardReceiptWhen(String date, String from, String to) {
+    return '$date, $from to $to';
+  }
+
+  @override
+  String get cardReceiptPages => 'Pages';
+
+  @override
+  String get cardReceiptEpisodes => 'Episodes';
+
+  @override
+  String get cardReceiptTime => 'Got through';
+
+  @override
+  String get cardReceiptLongest => 'Longest stretch';
+
+  @override
+  String get cardReceiptUrges => 'Urges let pass';
+
+  @override
+  String get cardReceiptBreaks => 'Planned breaks';
+
+  @override
+  String cardReceiptSlips(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Wandered off $countString times, came back',
+      one: 'Wandered off once, came back',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get cardReceiptTotal => 'Total';
 }

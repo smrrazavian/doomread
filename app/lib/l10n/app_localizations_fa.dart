@@ -1239,4 +1239,51 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get tourReplay => 'دوباره دیدن معرفی';
+
+  @override
+  String get cardShareTonight => 'پز امشبو بده';
+
+  @override
+  String get cardReceiptHeading => 'رسید امشب';
+
+  @override
+  String cardReceiptWhen(String date, String from, String to) {
+    return '$date، $from تا $to';
+  }
+
+  @override
+  String get cardReceiptPages => 'صفحه‌ها';
+
+  @override
+  String get cardReceiptEpisodes => 'قسمت‌ها';
+
+  @override
+  String get cardReceiptTime => 'جلو رفتم';
+
+  @override
+  String get cardReceiptLongest => 'طولانی‌ترین تمرکز';
+
+  @override
+  String get cardReceiptUrges => 'وسوسه‌هایی که رد کردم';
+
+  @override
+  String get cardReceiptBreaks => 'استراحت قانونی';
+
+  @override
+  String cardReceiptSlips(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString بار حواسم پرت شد، برگشتم',
+      one: 'یه بار حواسم پرت شد، برگشتم',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get cardReceiptTotal => 'جمع کل';
 }
