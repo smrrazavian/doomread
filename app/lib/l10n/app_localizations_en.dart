@@ -1178,4 +1178,113 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get emptyStory =>
       'Blank page for now. Write a line after each evening and the story fills in here.';
+
+  @override
+  String get shareAction => 'Show it off';
+
+  @override
+  String get sharePreviewTitle => 'Your poster';
+
+  @override
+  String get shareShowNote => 'Show my Note';
+
+  @override
+  String get shareShowNoteHint =>
+      'Your last Note, word for word. Off, it stays just yours.';
+
+  @override
+  String get shareSend => 'Share';
+
+  @override
+  String get shareSendTo => 'Send it to';
+
+  @override
+  String shareSavedTo(String path) {
+    return 'Saved to $path';
+  }
+
+  @override
+  String get shareFailed => 'Couldn\'t share it. Try again?';
+
+  @override
+  String get sharePosterFinished => 'I finished';
+
+  @override
+  String sharePosterTitle(String title) {
+    return '$title';
+  }
+
+  @override
+  String sharePosterPages(int pages, int evenings) {
+    final intl.NumberFormat pagesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String pagesString = pagesNumberFormat.format(pages);
+    final intl.NumberFormat eveningsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String eveningsString = eveningsNumberFormat.format(evenings);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      pages,
+      locale: localeName,
+      other: '$pagesString pages',
+      one: '1 page',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      evenings,
+      locale: localeName,
+      other: '$eveningsString evenings',
+      one: 'one evening',
+    );
+    return '$_temp0 over $_temp1';
+  }
+
+  @override
+  String sharePosterEpisodes(int episodes, int evenings) {
+    final intl.NumberFormat episodesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String episodesString = episodesNumberFormat.format(episodes);
+    final intl.NumberFormat eveningsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String eveningsString = eveningsNumberFormat.format(evenings);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      episodes,
+      locale: localeName,
+      other: '$episodesString episodes',
+      one: '1 episode',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      evenings,
+      locale: localeName,
+      other: '$eveningsString evenings',
+      one: 'one evening',
+    );
+    return '$_temp0 over $_temp1';
+  }
+
+  @override
+  String sharePosterTime(String time, int evenings) {
+    final intl.NumberFormat eveningsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String eveningsString = eveningsNumberFormat.format(evenings);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      evenings,
+      locale: localeName,
+      other: '$eveningsString evenings',
+      one: 'one evening',
+    );
+    return '$time over $_temp0';
+  }
+
+  @override
+  String sharePosterUrges(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'urges let pass',
+      one: 'urge let pass',
+    );
+    return '$_temp0';
+  }
 }

@@ -937,5 +937,90 @@
   "emptyStory": "Blank page for now. Write a line after each evening and the story fills in here.",
   "@emptyStory": {
     "description": "A Work's page with no Notes yet, under a painted open book with blank pages."
+  },
+  "shareAction": "Show it off",
+  "@shareAction": {
+    "description": "Finish screen: opens a preview of the Finish poster, a story-sized image to share."
+  },
+  "sharePreviewTitle": "Your poster",
+  "shareShowNote": "Show my Note",
+  "@shareShowNote": {
+    "description": "Switch under the poster preview, on by default: puts the Work's last Note on the poster."
+  },
+  "shareShowNoteHint": "Your last Note, word for word. Off, it stays just yours.",
+  "shareSend": "Share",
+  "shareSendTo": "Send it to",
+  "@shareSendTo": {
+    "description": "Title of the Android share sheet for the poster."
+  },
+  "shareSavedTo": "Saved to {path}",
+  "@shareSavedTo": {
+    "description": "On Linux, where the poster image was saved.",
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "shareFailed": "Couldn't share it. Try again?",
+  "sharePosterFinished": "I finished",
+  "@sharePosterFinished": {
+    "description": "On the poster, above the Work's title, in the user's voice."
+  },
+  "sharePosterTitle": "{title}",
+  "@sharePosterTitle": {
+    "description": "The Work's title on the poster. Persian puts it in guillemets.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "sharePosterPages": "{pages, plural, =1{1 page} other{{pages} pages}} over {evenings, plural, =1{one evening} other{{evenings} evenings}}",
+  "@sharePosterPages": {
+    "placeholders": {
+      "pages": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "evenings": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "sharePosterEpisodes": "{episodes, plural, =1{1 episode} other{{episodes} episodes}} over {evenings, plural, =1{one evening} other{{evenings} evenings}}",
+  "@sharePosterEpisodes": {
+    "placeholders": {
+      "episodes": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "evenings": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "sharePosterTime": "{time} over {evenings, plural, =1{one evening} other{{evenings} evenings}}",
+  "@sharePosterTime": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "evenings": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "sharePosterUrges": "{count, plural, =1{urge let pass} other{urges let pass}}",
+  "@sharePosterUrges": {
+    "description": "On the poster, the caption under the number of Urges let pass; the number is shown above it.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

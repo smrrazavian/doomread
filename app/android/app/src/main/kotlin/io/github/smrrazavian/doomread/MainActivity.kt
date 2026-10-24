@@ -28,6 +28,7 @@ class MainActivity : FlutterActivity() {
         val channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "doomread/session_notification")
         this.channel = channel
         widget = HomeWidget.register(this, flutterEngine.dartExecutor.binaryMessenger)
+        ShareSheet.register(this, flutterEngine.dartExecutor.binaryMessenger)
         channel.setMethodCallHandler { call, result ->
             when (call.method) {
                 "canAsk" -> result.success(

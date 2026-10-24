@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:doomread/data/repositories/session_repository.dart';
+import 'package:doomread/data/services/share_sheet.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/building/view_models/building_view_model.dart';
 import 'package:doomread/ui/building/widgets/building_view.dart';
 import 'package:doomread/ui/core/number_format.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/work_text.dart';
+import 'package:doomread/ui/share/widgets/share_preview_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -14,21 +16,25 @@ import 'package:provider/provider.dart';
 
 /// The last page: a new floor lights up on the Building, with what it took.
 class FinishScreen extends StatelessWidget {
-  const FinishScreen({required this.workId, super.key});
+  const FinishScreen({required this.workId, this.sheet, super.key});
 
   final String workId;
+
+  /// Where a shared poster goes; tests pass a fake.
+  final ShareSheet? sheet;
 
   @override
   Widget build(BuildContext context) => ChangeNotifierProvider(
     create: (c) => BuildingViewModel(c.read<SessionRepository>()),
-    child: _Finish(workId),
+    child: _Finish(workId, sheet ?? ShareSheet()),
   );
 }
 
 class _Finish extends StatelessWidget {
-  const _Finish(this.workId);
+  const _Finish(this.workId, this.sheet);
 
   final String workId;
+  final ShareSheet sheet;
 
   @override
   Widget build(BuildContext context) {
@@ -95,6 +101,22 @@ class _Finish extends StatelessWidget {
                     onPressed: () => context.push('/book/$workId'),
                     child: Text(l10n.readTheStory),
                   ),
+                  if (sheet.available) ...[
+                    const SizedBox(height: 8),
+                    OutlinedButton(
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => SharePreviewScreen(
+                            finish: finish,
+                            floors: floors.length,
+                            floor: floor,
+                            sheet: sheet,
+                          ),
+                        ),
+                      ),
+                      child: Text(l10n.shareAction),
+                    ),
+                  ],
                   const SizedBox(height: 8),
                   TextButton(
                     onPressed: () => context.go('/building'),

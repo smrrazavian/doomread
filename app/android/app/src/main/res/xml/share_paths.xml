@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- What ShareSheet.kt may hand out: the poster it just wrote to the cache. -->
+<paths>
+    <cache-path name="share" path="share/"/>
+</paths>

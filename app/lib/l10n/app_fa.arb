@@ -233,5 +233,22 @@
   "whereIsSearch": "دنبال اپ بگرد",
   "emptyTonight": "امشب هنوز همه‌ی پنجره‌ها خاموشن. تو اولین چراغو روشن کن.",
   "emptyLibrary": "قفسه خالیه، ولی چراغش روشنه. اون کتاب یا سریال یا پادکستی که هی می‌گی تمومش می‌کنم رو اضافه کن.",
-  "emptyStory": "فعلاً صفحه سفیده. بعد هر شب یه خط بنویس، داستانت همین‌جا کم‌کم شکل می‌گیره."
+  "emptyStory": "فعلاً صفحه سفیده. بعد هر شب یه خط بنویس، داستانت همین‌جا کم‌کم شکل می‌گیره.",
+  "shareAction": "پزش رو بده",
+  "@shareAction": {
+    "description": "TODO(owner): review this Persian copy (the share block, down to sharePosterUrges)."
+  },
+  "sharePreviewTitle": "پوسترت",
+  "shareShowNote": "یادداشتم هم باشه",
+  "shareShowNoteHint": "آخرین یادداشتت، همون‌جوری که نوشتی. خاموشش کنی، فقط مال خودت می‌مونه.",
+  "shareSend": "بفرست",
+  "shareSendTo": "بفرست برای",
+  "shareSavedTo": "ذخیره شد توی {path}",
+  "shareFailed": "نشد بفرستیمش. دوباره امتحان می‌کنی؟",
+  "sharePosterFinished": "تمومش کردم",
+  "sharePosterTitle": "«{title}»",
+  "sharePosterPages": "{pages} صفحه توی {evenings} شب",
+  "sharePosterEpisodes": "{episodes} قسمت توی {evenings} شب",
+  "sharePosterTime": "{time} توی {evenings} شب",
+  "sharePosterUrges": "بار وسوسه رو رد کردم"
 }

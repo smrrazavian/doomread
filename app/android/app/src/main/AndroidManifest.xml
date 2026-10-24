@@ -97,6 +97,18 @@
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="Notices which app comes to the front during a reading Session, through usage access, when the user has no Accessibility service on, to show a reminder screen."/>
         </service>
+        <!-- Hands the Finish poster to the share sheet (ShareSheet.kt): only
+             the image just drawn, from the cache, and only to the app the
+             user picks. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.share"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/share_paths"/>
+        </provider>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

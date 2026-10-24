@@ -1321,6 +1321,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Blank page for now. Write a line after each evening and the story fills in here.'**
   String get emptyStory;
+
+  /// Finish screen: opens a preview of the Finish poster, a story-sized image to share.
+  ///
+  /// In en, this message translates to:
+  /// **'Show it off'**
+  String get shareAction;
+
+  /// No description provided for @sharePreviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your poster'**
+  String get sharePreviewTitle;
+
+  /// Switch under the poster preview, on by default: puts the Work's last Note on the poster.
+  ///
+  /// In en, this message translates to:
+  /// **'Show my Note'**
+  String get shareShowNote;
+
+  /// No description provided for @shareShowNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your last Note, word for word. Off, it stays just yours.'**
+  String get shareShowNoteHint;
+
+  /// No description provided for @shareSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get shareSend;
+
+  /// Title of the Android share sheet for the poster.
+  ///
+  /// In en, this message translates to:
+  /// **'Send it to'**
+  String get shareSendTo;
+
+  /// On Linux, where the poster image was saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved to {path}'**
+  String shareSavedTo(String path);
+
+  /// No description provided for @shareFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t share it. Try again?'**
+  String get shareFailed;
+
+  /// On the poster, above the Work's title, in the user's voice.
+  ///
+  /// In en, this message translates to:
+  /// **'I finished'**
+  String get sharePosterFinished;
+
+  /// The Work's title on the poster. Persian puts it in guillemets.
+  ///
+  /// In en, this message translates to:
+  /// **'{title}'**
+  String sharePosterTitle(String title);
+
+  /// No description provided for @sharePosterPages.
+  ///
+  /// In en, this message translates to:
+  /// **'{pages, plural, =1{1 page} other{{pages} pages}} over {evenings, plural, =1{one evening} other{{evenings} evenings}}'**
+  String sharePosterPages(int pages, int evenings);
+
+  /// No description provided for @sharePosterEpisodes.
+  ///
+  /// In en, this message translates to:
+  /// **'{episodes, plural, =1{1 episode} other{{episodes} episodes}} over {evenings, plural, =1{one evening} other{{evenings} evenings}}'**
+  String sharePosterEpisodes(int episodes, int evenings);
+
+  /// No description provided for @sharePosterTime.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} over {evenings, plural, =1{one evening} other{{evenings} evenings}}'**
+  String sharePosterTime(String time, int evenings);
+
+  /// On the poster, the caption under the number of Urges let pass; the number is shown above it.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{urge let pass} other{urges let pass}}'**
+  String sharePosterUrges(int count);
 }
 
 class _AppLocalizationsDelegate

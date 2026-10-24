@@ -1064,4 +1064,77 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get emptyStory =>
       'فعلاً صفحه سفیده. بعد هر شب یه خط بنویس، داستانت همین‌جا کم‌کم شکل می‌گیره.';
+
+  @override
+  String get shareAction => 'پزش رو بده';
+
+  @override
+  String get sharePreviewTitle => 'پوسترت';
+
+  @override
+  String get shareShowNote => 'یادداشتم هم باشه';
+
+  @override
+  String get shareShowNoteHint =>
+      'آخرین یادداشتت، همون‌جوری که نوشتی. خاموشش کنی، فقط مال خودت می‌مونه.';
+
+  @override
+  String get shareSend => 'بفرست';
+
+  @override
+  String get shareSendTo => 'بفرست برای';
+
+  @override
+  String shareSavedTo(String path) {
+    return 'ذخیره شد توی $path';
+  }
+
+  @override
+  String get shareFailed => 'نشد بفرستیمش. دوباره امتحان می‌کنی؟';
+
+  @override
+  String get sharePosterFinished => 'تمومش کردم';
+
+  @override
+  String sharePosterTitle(String title) {
+    return '«$title»';
+  }
+
+  @override
+  String sharePosterPages(int pages, int evenings) {
+    final intl.NumberFormat pagesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String pagesString = pagesNumberFormat.format(pages);
+    final intl.NumberFormat eveningsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String eveningsString = eveningsNumberFormat.format(evenings);
+
+    return '$pagesString صفحه توی $eveningsString شب';
+  }
+
+  @override
+  String sharePosterEpisodes(int episodes, int evenings) {
+    final intl.NumberFormat episodesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String episodesString = episodesNumberFormat.format(episodes);
+    final intl.NumberFormat eveningsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String eveningsString = eveningsNumberFormat.format(evenings);
+
+    return '$episodesString قسمت توی $eveningsString شب';
+  }
+
+  @override
+  String sharePosterTime(String time, int evenings) {
+    final intl.NumberFormat eveningsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String eveningsString = eveningsNumberFormat.format(evenings);
+
+    return '$time توی $eveningsString شب';
+  }
+
+  @override
+  String sharePosterUrges(int count) {
+    return 'بار وسوسه رو رد کردم';
+  }
 }
