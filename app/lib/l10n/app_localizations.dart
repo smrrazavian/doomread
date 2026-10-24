@@ -1604,10 +1604,10 @@ abstract class AppLocalizations {
   /// **'Got through'**
   String get cardReceiptTime;
 
-  /// No description provided for @cardReceiptLongest.
+  /// On the receipt, tonight's longest Stretch, not the all-time Longest stretch.
   ///
   /// In en, this message translates to:
-  /// **'Longest stretch'**
+  /// **'In one go'**
   String get cardReceiptLongest;
 
   /// No description provided for @cardReceiptUrges.

@@ -281,7 +281,7 @@
   "cardReceiptPages": "صفحه‌ها",
   "cardReceiptEpisodes": "قسمت‌ها",
   "cardReceiptTime": "جلو رفتم",
-  "cardReceiptLongest": "طولانی‌ترین تمرکز",
+  "cardReceiptLongest": "یه‌سره",
   "cardReceiptUrges": "وسوسه‌هایی که رد کردم",
   "cardReceiptBreaks": "استراحت قانونی",
   "cardReceiptSlips": "{count, plural, =1{یه بار حواسم پرت شد، برگشتم} other{{count} بار حواسم پرت شد، برگشتم}}",

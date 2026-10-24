@@ -1412,7 +1412,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cardReceiptTime => 'Got through';
 
   @override
-  String get cardReceiptLongest => 'Longest stretch';
+  String get cardReceiptLongest => 'In one go';
 
   @override
   String get cardReceiptUrges => 'Urges let pass';

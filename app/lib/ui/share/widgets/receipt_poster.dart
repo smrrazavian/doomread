@@ -125,11 +125,13 @@ class ReceiptPoster extends StatelessWidget {
                         label: l10n.cardReceiptLongest,
                         value: l10n.minutesShort(longest),
                       ),
-                      _Line(
-                        ink: ink,
-                        label: l10n.cardReceiptUrges,
-                        value: formatNumber(session.urgesLetPass, locale),
-                      ),
+                      // A zero next to a Slip would read as a score.
+                      if (session.urgesLetPass > 0)
+                        _Line(
+                          ink: ink,
+                          label: l10n.cardReceiptUrges,
+                          value: formatNumber(session.urgesLetPass, locale),
+                        ),
                       if (breaks > 0)
                         _Line(
                           ink: ink,

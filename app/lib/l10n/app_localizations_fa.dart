@@ -1261,7 +1261,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get cardReceiptTime => 'جلو رفتم';
 
   @override
-  String get cardReceiptLongest => 'طولانی‌ترین تمرکز';
+  String get cardReceiptLongest => 'یه‌سره';
 
   @override
   String get cardReceiptUrges => 'وسوسه‌هایی که رد کردم';

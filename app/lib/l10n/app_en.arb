@@ -1103,7 +1103,10 @@
   "@cardReceiptTime": {
     "description": "On the receipt, before the timestamps a podcast or film went through tonight."
   },
-  "cardReceiptLongest": "Longest stretch",
+  "cardReceiptLongest": "In one go",
+  "@cardReceiptLongest": {
+    "description": "On the receipt, tonight's longest Stretch, not the all-time Longest stretch."
+  },
   "cardReceiptUrges": "Urges let pass",
   "cardReceiptBreaks": "Planned breaks",
   "cardReceiptSlips": "{count, plural, =1{Wandered off once, came back} other{Wandered off {count} times, came back}}",
