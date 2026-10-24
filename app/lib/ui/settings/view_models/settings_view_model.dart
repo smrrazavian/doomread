@@ -8,8 +8,15 @@ class SettingsViewModel extends ChangeNotifier {
 
   final SettingsRepository _settings;
 
-  /// English until the user picks otherwise.
-  Locale locale = const Locale('en');
+  /// The phone's language while it's one the app speaks, English otherwise,
+  /// until the user picks one. The phone's isn't saved, so it still follows
+  /// the phone until then.
+  Locale locale = _phoneLanguage();
+
+  static Locale _phoneLanguage() =>
+      WidgetsBinding.instance.platformDispatcher.locale.languageCode == 'fa'
+      ? const Locale('fa')
+      : const Locale('en');
 
   /// The Watched apps the user picked.
   Set<String> watched = defaultWatched;

@@ -174,6 +174,24 @@ void main() {
     expect(find.byKey(const Key('language_en')), findsNothing);
   });
 
+  testApp('on a Persian phone the intro starts in Persian, unsaved', (
+    tester,
+    db,
+  ) async {
+    tester.platformDispatcher.localeTestValue = const Locale('fa');
+    addTearDown(tester.platformDispatcher.clearLocaleTestValue);
+    await pumpApp(tester, db, tour: true);
+    expect(find.text(fa.tourStoryTitle), findsOne);
+    expect(
+      Directionality.of(tester.element(find.text(fa.tourStoryTitle))),
+      TextDirection.rtl,
+    );
+    expect(await SettingsRepository(db).locale(), isNull);
+    await tap(tester, find.byKey(const Key('language_en')));
+    expect(find.text(en.tourStoryTitle), findsOne);
+    expect(await SettingsRepository(db).locale(), const Locale('en'));
+  });
+
   testApp('the demo Urge records nothing, then asks for the "not yet" '
       'screen', (tester, db) async {
     final w = FakeAppWatch(isEnabled: false);
