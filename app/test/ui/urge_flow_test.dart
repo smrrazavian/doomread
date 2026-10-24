@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers.dart';
+import 'haptics.dart';
 
 void main() {
   var now = DateTime(2026, 10, 22, 21);
@@ -73,7 +74,9 @@ void main() {
     expect(w.fronts, 1);
 
     await wait(tester, const Duration(minutes: 1));
+    final buzzes = haptics(tester);
     await tap(tester, l10n.backToBook);
+    expect(buzzes, ['HapticFeedbackType.lightImpact']);
     expect(find.text(urgeTitle), findsNothing);
     expect(find.text('5:00'), findsOne, reason: 'Let pass keeps the Stretch');
     expect(await journal(db), [

@@ -114,7 +114,10 @@ class _Reading extends StatelessWidget {
               Expanded(
                 child: Align(
                   alignment: Alignment.bottomCenter,
-                  child: HouseView(windows: vm.house),
+                  child: HouseView(
+                    windows: vm.house,
+                    kind: record.road.work.kind,
+                  ),
                 ),
               ),
               const SizedBox(height: 24),

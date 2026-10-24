@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/building/view_models/building_view_model.dart';
@@ -6,6 +8,7 @@ import 'package:doomread/ui/core/number_format.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/work_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -45,11 +48,13 @@ class _Finish extends StatelessWidget {
             // The top of the tower only: the new floor is the moment.
             Padding(
               padding: const EdgeInsets.only(top: 16),
-              child: BuildingView(
-                floors: floors.length,
-                highlighted: floor,
-                lightUp: true,
-                maxFloors: 3,
+              child: _Thud(
+                child: BuildingView(
+                  floors: floors.length,
+                  highlighted: floor,
+                  lightUp: true,
+                  maxFloors: 3,
+                ),
               ),
             ),
             Expanded(
@@ -103,6 +108,29 @@ class _Finish extends StatelessWidget {
       ),
     );
   }
+}
+
+/// A firm haptic, once, as the new floor starts to light.
+class _Thud extends StatefulWidget {
+  const _Thud({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_Thud> createState() => _ThudState();
+}
+
+class _ThudState extends State<_Thud> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => unawaited(HapticFeedback.heavyImpact()),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
 
 class _Tally extends StatelessWidget {

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers.dart';
+import 'haptics.dart';
 
 void main() {
   var now = DateTime(2026, 10, 22, 21);
@@ -55,9 +56,11 @@ void main() {
     db,
   ) async {
     await openAt(tester, db, 230);
+    final buzzes = haptics(tester);
     await session(tester, 9, 245, 'Stevens looks at the pier lights.');
 
     expect(find.text(en.finishedTitle(title)), findsOne);
+    expect(buzzes, ['HapticFeedbackType.heavyImpact']);
     expect(find.text(en.finishedSub(245, 1)), findsOne);
     expect(find.text(en.minutesShort(9)), findsOne);
     expect(find.text(en.notesWritten(1)), findsOne);
