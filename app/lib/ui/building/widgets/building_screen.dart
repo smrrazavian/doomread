@@ -1,10 +1,13 @@
 import 'package:doomread/data/repositories/session_repository.dart';
+import 'package:doomread/data/services/share_sheet.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/building/view_models/building_view_model.dart';
 import 'package:doomread/ui/building/widgets/building_view.dart';
 import 'package:doomread/ui/building/widgets/longest_stretch_trend.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/work_text.dart';
+import 'package:doomread/ui/share/widgets/glow_up_poster.dart';
+import 'package:doomread/ui/share/widgets/share_preview_screen.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -30,6 +33,13 @@ class _Building extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     final vm = context.watch<BuildingViewModel>();
     final floors = vm.floors;
+    final canShare = context.read<ShareSheet>().available;
+    VoidCallback? shareGlowUp(
+      List<StretchRise> rises, {
+      required bool watched,
+    }) => canShare
+        ? () => _share(context, GlowUpPoster(rises: rises, watched: watched))
+        : null;
     return Scaffold(
       body: SafeArea(
         child: ListView(
@@ -48,12 +58,18 @@ class _Building extends StatelessWidget {
               Text(l10n.trendReading, style: text.titleSmall),
               const SizedBox(height: 8),
             ],
-            LongestStretchTrend(rises: vm.rises),
+            LongestStretchTrend(
+              rises: vm.rises,
+              onShare: shareGlowUp(vm.rises, watched: false),
+            ),
             if (vm.watchingRises.isNotEmpty) ...[
               const SizedBox(height: 24),
               Text(l10n.trendWatching, style: text.titleSmall),
               const SizedBox(height: 8),
-              LongestStretchTrend(rises: vm.watchingRises),
+              LongestStretchTrend(
+                rises: vm.watchingRises,
+                onShare: shareGlowUp(vm.watchingRises, watched: true),
+              ),
             ],
             const SizedBox(height: 24),
             BuildingView(floors: floors.length, highlighted: 0),
@@ -68,6 +84,11 @@ class _Building extends StatelessWidget {
     );
   }
 }
+
+/// Opens [poster] in the share preview.
+void _share(BuildContext context, Widget poster) => Navigator.of(
+  context,
+).push(MaterialPageRoute<void>(builder: (_) => SharePreview(poster: poster)));
 
 /// One finished Work in the list under the tower.
 class _FloorRow extends StatelessWidget {

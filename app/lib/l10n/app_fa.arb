@@ -285,5 +285,11 @@
   "cardReceiptUrges": "وسوسه‌هایی که رد کردم",
   "cardReceiptBreaks": "استراحت قانونی",
   "cardReceiptSlips": "{count, plural, =1{یه بار حواسم پرت شد، برگشتم} other{{count} بار حواسم پرت شد، برگشتم}}",
-  "cardReceiptTotal": "جمع کل"
+  "cardReceiptTotal": "جمع کل",
+  "cardGlowUpAction": "گلوآپتو نشون بده",
+  "cardGlowUpHeading": "گلوآپ تمرکزم",
+  "cardGlowUpWhat": "{kind, select, watching{طولانی‌ترین تمرکز یه‌سره، موقع دیدن} other{طولانی‌ترین تمرکز یه‌سره، موقع خوندن}}",
+  "cardGlowUpFirst": "اولش",
+  "cardGlowUpNow": "الان",
+  "cardGlowUpSelf": "فقط خودم با خودم، نه هیچ‌کس دیگه."
 }

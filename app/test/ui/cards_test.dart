@@ -1,7 +1,9 @@
+import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread/l10n/app_localizations.dart';
+import 'package:doomread/ui/share/widgets/glow_up_poster.dart';
 import 'package:doomread/ui/share/widgets/receipt_poster.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:drift/drift.dart' show Value;
@@ -62,5 +64,76 @@ void main() {
     await tap(tester, find.byType(BackButton));
     expect(find.byType(ReceiptPoster), findsNothing);
     expect(find.text(en.startReading), findsOne);
+  });
+
+  group('from the Building and the Book page', () {
+    var now = DateTime(2026, 10, 24, 21);
+
+    /// A book read on [evenings]: (day of October, minutes in one go,
+    /// page reached, Note). Returns its id.
+    Future<String> readOn(
+      AppDatabase db,
+      List<(int, int, int, String)> evenings,
+    ) async {
+      final sessions = SessionRepository(db, clock: () => now);
+      final id = await WorkRepository(db).add(
+        title: title,
+        author: 'Kazuo Ishiguro',
+        totalPages: 245,
+        checkpoints: const [],
+      );
+      final work = Work(
+        id: id,
+        title: title,
+        author: '',
+        totalPages: 245,
+        checkpoints: const [],
+      );
+      var from = 0;
+      for (final (day, minutes, page, note) in evenings) {
+        now = DateTime(2026, 10, day, 21);
+        final record = SessionRecord(
+          id: await sessions.start(id),
+          road: Road(work, position: from),
+          events: const [],
+        );
+        now = now.add(Duration(minutes: minutes));
+        await sessions.add(record, SessionEventKind.stop);
+        await sessions.end(record, page: page, note: note);
+        from = page;
+      }
+      now = DateTime(2026, 10, 24, 21);
+      return id;
+    }
+
+    Future<FakeShareSheet> open(WidgetTester tester, AppDatabase db) async {
+      await SettingsRepository(db).setLocale(const Locale('en'));
+      final sheet = FakeShareSheet();
+      await pumpApp(tester, db, clock: () => now, share: sheet);
+      return sheet;
+    }
+
+    testApp('the glow-up opens from the trend once it has risen', (
+      tester,
+      db,
+    ) async {
+      await readOn(db, [(3, 5, 20, ''), (9, 12, 60, ''), (20, 31, 120, '')]);
+      await open(tester, db);
+      await tap(tester, find.text(en.navBuilding));
+
+      await tap(tester, find.text(en.cardGlowUpAction));
+      final card = tester.widget<GlowUpPoster>(find.byType(GlowUpPoster));
+      expect(card.watched, isFalse);
+      expect([for (final r in card.rises) r.longest.inMinutes], [5, 12, 31]);
+      expect(find.text(en.minutesShort(5)), findsOne);
+      expect(find.text(en.minutesShort(31)), findsOne);
+    });
+
+    testApp('no glow-up while the line has not risen', (tester, db) async {
+      await readOn(db, [(9, 12, 60, '')]);
+      await open(tester, db);
+      await tap(tester, find.text(en.navBuilding));
+      expect(find.text(en.cardGlowUpAction), findsNothing);
+    });
   });
 }

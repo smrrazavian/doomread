@@ -1633,6 +1633,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Total'**
   String get cardReceiptTotal;
+
+  /// Under the Longest stretch trend on the Building, once it has risen: opens the glow-up card.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your glow-up'**
+  String get cardGlowUpAction;
+
+  /// No description provided for @cardGlowUpHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'My attention span glow-up'**
+  String get cardGlowUpHeading;
+
+  /// No description provided for @cardGlowUpWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'{kind, select, watching{Longest stretch in one go, watching} other{Longest stretch in one go, reading}}'**
+  String cardGlowUpWhat(String kind);
+
+  /// No description provided for @cardGlowUpFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'At first'**
+  String get cardGlowUpFirst;
+
+  /// No description provided for @cardGlowUpNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Now'**
+  String get cardGlowUpNow;
+
+  /// At the foot of the glow-up card: the user only ever compares with themselves.
+  ///
+  /// In en, this message translates to:
+  /// **'Me versus me. Nobody else on this line.'**
+  String get cardGlowUpSelf;
 }
 
 class _AppLocalizationsDelegate

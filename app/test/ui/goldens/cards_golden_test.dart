@@ -1,6 +1,7 @@
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/share/poster_image.dart';
+import 'package:doomread/ui/share/widgets/glow_up_poster.dart';
 import 'package:doomread/ui/share/widgets/receipt_poster.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
@@ -84,6 +85,31 @@ void main() {
         ),
       );
       await expectCard(tester, 'card_receipt_$lang.png');
+    });
+
+    testWidgets('the attention glow-up, in $lang', (tester) async {
+      await pumpCard(
+        tester,
+        lang,
+        GlowUpPoster(
+          rises: [
+            for (final (day, minutes) in [
+              (2, 5),
+              (5, 7),
+              (9, 12),
+              (13, 14),
+              (18, 22),
+              (24, 31),
+            ])
+              (
+                evening: DateTime(2026, 10, day),
+                longest: Duration(minutes: minutes, seconds: 20),
+              ),
+          ],
+          watched: false,
+        ),
+      );
+      await expectCard(tester, 'card_glow_up_$lang.png');
     });
   }
 }

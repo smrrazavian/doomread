@@ -1286,4 +1286,28 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get cardReceiptTotal => 'جمع کل';
+
+  @override
+  String get cardGlowUpAction => 'گلوآپتو نشون بده';
+
+  @override
+  String get cardGlowUpHeading => 'گلوآپ تمرکزم';
+
+  @override
+  String cardGlowUpWhat(String kind) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'watching': 'طولانی‌ترین تمرکز یه‌سره، موقع دیدن',
+      'other': 'طولانی‌ترین تمرکز یه‌سره، موقع خوندن',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get cardGlowUpFirst => 'اولش';
+
+  @override
+  String get cardGlowUpNow => 'الان';
+
+  @override
+  String get cardGlowUpSelf => 'فقط خودم با خودم، نه هیچ‌کس دیگه.';
 }

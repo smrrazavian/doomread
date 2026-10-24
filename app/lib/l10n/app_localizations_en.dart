@@ -1437,4 +1437,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cardReceiptTotal => 'Total';
+
+  @override
+  String get cardGlowUpAction => 'Share your glow-up';
+
+  @override
+  String get cardGlowUpHeading => 'My attention span glow-up';
+
+  @override
+  String cardGlowUpWhat(String kind) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'watching': 'Longest stretch in one go, watching',
+      'other': 'Longest stretch in one go, reading',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get cardGlowUpFirst => 'At first';
+
+  @override
+  String get cardGlowUpNow => 'Now';
+
+  @override
+  String get cardGlowUpSelf => 'Me versus me. Nobody else on this line.';
 }

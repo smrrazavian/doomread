@@ -1119,5 +1119,24 @@
   "cardReceiptTotal": "Total",
   "@cardReceiptTotal": {
     "description": "On the receipt, before tonight's reading time."
+  },
+  "cardGlowUpAction": "Share your glow-up",
+  "@cardGlowUpAction": {
+    "description": "Under the Longest stretch trend on the Building, once it has risen: opens the glow-up card."
+  },
+  "cardGlowUpHeading": "My attention span glow-up",
+  "cardGlowUpWhat": "{kind, select, watching{Longest stretch in one go, watching} other{Longest stretch in one go, reading}}",
+  "@cardGlowUpWhat": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "cardGlowUpFirst": "At first",
+  "cardGlowUpNow": "Now",
+  "cardGlowUpSelf": "Me versus me. Nobody else on this line.",
+  "@cardGlowUpSelf": {
+    "description": "At the foot of the glow-up card: the user only ever compares with themselves."
   }
 }
