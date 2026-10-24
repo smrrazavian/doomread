@@ -68,6 +68,7 @@ class _Reading extends StatelessWidget {
       return UrgeView(
         record: record,
         house: vm.house,
+        yalda: vm.yalda,
         app: urges.app?.label,
         onBack: vm.letPass.execute,
         onOpen: () => urges.slip(record),
@@ -89,6 +90,7 @@ class _Reading extends StatelessWidget {
       return AfterSlipView(
         session: session,
         house: vm.house,
+        yalda: vm.yalda,
         kind: record.road.work.kind,
         onBackIn: vm.resume.execute,
         onDone: () => _stop(context, vm),

@@ -23,6 +23,7 @@ class UrgeView extends StatelessWidget {
     required this.onBack,
     required this.onOpen,
     this.note,
+    this.yalda = false,
     super.key,
   });
 
@@ -32,6 +33,9 @@ class UrgeView extends StatelessWidget {
   /// demo, that it's a demo.
   final Widget? note;
   final List<HouseWindow> house;
+
+  /// Whether the House is in Yalda light, as on Reading.
+  final bool yalda;
 
   /// The app's name, or null when it isn't known.
   final String? app;
@@ -56,6 +60,7 @@ class UrgeView extends StatelessWidget {
       },
       child: _Moment(
         house: house,
+        yalda: yalda,
         kind: work.kind,
         note: note,
         title: say(context, Moment.urge, {'app': ?app}),
@@ -86,11 +91,15 @@ class AfterSlipView extends StatelessWidget {
     required this.onBackIn,
     required this.onDone,
     this.kind,
+    this.yalda = false,
     super.key,
   });
 
   final Session session;
   final List<HouseWindow> house;
+
+  /// Whether the House is in Yalda light, as on Reading.
+  final bool yalda;
 
   /// What the user is on, shown in their Window as on Reading.
   final WorkKind? kind;
@@ -103,6 +112,7 @@ class AfterSlipView extends StatelessWidget {
     final last = session.stretches.lastOrNull?.length ?? Duration.zero;
     return _Moment(
       house: house,
+      yalda: yalda,
       kind: kind,
       title: say(context, Moment.afterSlip),
       body: [l10n.slipBody(last.inMinutes)],
@@ -150,9 +160,11 @@ class _Moment extends StatelessWidget {
     required this.onQuiet,
     this.kind,
     this.note,
+    this.yalda = false,
   });
 
   final List<HouseWindow> house;
+  final bool yalda;
   final WorkKind? kind;
   final Widget? note;
   final String title;
@@ -184,7 +196,11 @@ class _Moment extends StatelessWidget {
                     Expanded(
                       child: Align(
                         alignment: Alignment.bottomCenter,
-                        child: HouseView(windows: house, kind: kind),
+                        child: HouseView(
+                          windows: house,
+                          kind: kind,
+                          yalda: yalda,
+                        ),
                       ),
                     ),
                   ],
