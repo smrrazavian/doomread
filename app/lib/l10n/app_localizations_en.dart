@@ -1488,4 +1488,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cardMonthLegend => 'Brighter means longer';
+
+  @override
+  String get cardNoteAction => 'Share this Note';
 }

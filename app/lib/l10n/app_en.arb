@@ -1161,5 +1161,9 @@
       }
     }
   },
-  "cardMonthLegend": "Brighter means longer"
+  "cardMonthLegend": "Brighter means longer",
+  "cardNoteAction": "Share this Note",
+  "@cardNoteAction": {
+    "description": "On a Note on the Book page: opens just that Note as a card to share. Notes are private unless shared this way, one at a time."
+  }
 }

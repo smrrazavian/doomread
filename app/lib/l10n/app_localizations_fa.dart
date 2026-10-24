@@ -1336,4 +1336,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get cardMonthLegend => 'هر چی روشن‌تر، بیشتر';
+
+  @override
+  String get cardNoteAction => 'این یادداشتو نشون بده';
 }

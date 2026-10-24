@@ -5,6 +5,7 @@ import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/share/widgets/glow_up_poster.dart';
 import 'package:doomread/ui/share/widgets/month_poster.dart';
+import 'package:doomread/ui/share/widgets/note_poster.dart';
 import 'package:doomread/ui/share/widgets/receipt_poster.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:drift/drift.dart' show Value;
@@ -142,6 +143,31 @@ void main() {
       expect(card.month.readingOn(DateTime(2026, 10, 20)).inMinutes, 31);
       expect(card.firstDay, DateTime.monday);
       expect(find.text(en.cardMonthLit(3)), findsOne);
+    });
+
+    testApp('a Note shares on its own, with no numbers', (tester, db) async {
+      await readOn(db, [
+        (3, 5, 20, 'Darlington Hall, in the old days.'),
+        (9, 12, 60, 'The car breaks down.'),
+      ]);
+      await open(tester, db);
+      await tap(tester, find.text(title));
+
+      final shares = find.byTooltip(en.cardNoteAction);
+      expect(shares, findsNWidgets(2));
+      // Newest first: the second one is the older Note.
+      await tap(tester, shares.last);
+      final card = tester.widget<NotePoster>(find.byType(NotePoster));
+      expect(card.note, 'Darlington Hall, in the old days.');
+      expect(find.text('Darlington Hall, in the old days.'), findsOne);
+      expect(find.text('The car breaks down.'), findsNothing);
+      expect(
+        find.descendant(
+          of: find.byType(NotePoster),
+          matching: find.textContaining(RegExp('[0-9]')),
+        ),
+        findsNothing,
+      );
     });
 
     testApp('no glow-up while the line has not risen', (tester, db) async {

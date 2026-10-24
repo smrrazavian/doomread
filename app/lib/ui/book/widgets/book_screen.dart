@@ -1,11 +1,14 @@
 import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
+import 'package:doomread/data/services/share_sheet.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/book/view_models/book_view_model.dart';
 import 'package:doomread/ui/core/empty_scenes.dart';
 import 'package:doomread/ui/core/road_view.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/work_text.dart';
+import 'package:doomread/ui/share/widgets/note_poster.dart';
+import 'package:doomread/ui/share/widgets/share_preview_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -38,6 +41,7 @@ class _Book extends StatelessWidget {
     if (road == null) return Scaffold(appBar: AppBar());
     final work = road.work;
     final persian = Localizations.localeOf(context).languageCode == 'fa';
+    final canShare = context.read<ShareSheet>().available;
     final noteStyle = text.bodyMedium?.copyWith(
       fontFamily: bookFamily(context),
       color: Palette.paper,
@@ -87,15 +91,36 @@ class _Book extends StatelessWidget {
               decoration: const BoxDecoration(
                 border: Border(bottom: BorderSide(color: Palette.line)),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    rangeOf(context, work, note.from, note.to),
-                    style: text.bodySmall?.copyWith(color: Palette.mute),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          rangeOf(context, work, note.from, note.to),
+                          style: text.bodySmall?.copyWith(color: Palette.mute),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(note.text, style: noteStyle),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 2),
-                  Text(note.text, style: noteStyle),
+                  // Notes are private: only this one, and only when asked.
+                  if (canShare)
+                    IconButton(
+                      tooltip: l10n.cardNoteAction,
+                      color: Palette.mute,
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => SharePreview(
+                            poster: NotePoster(note: note.text, work: work),
+                          ),
+                        ),
+                      ),
+                      icon: const Icon(Icons.share_outlined, size: 20),
+                    ),
                 ],
               ),
             ),

@@ -3,6 +3,7 @@ import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/share/poster_image.dart';
 import 'package:doomread/ui/share/widgets/glow_up_poster.dart';
 import 'package:doomread/ui/share/widgets/month_poster.dart';
+import 'package:doomread/ui/share/widgets/note_poster.dart';
 import 'package:doomread/ui/share/widgets/receipt_poster.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
@@ -148,6 +149,22 @@ void main() {
         ),
       );
       await expectCard(tester, 'card_month_$lang.png');
+    });
+
+    testWidgets('a Note on paper, in $lang', (tester) async {
+      await pumpCard(
+        tester,
+        lang,
+        NotePoster(
+          note: fa
+              ? 'استیونز بالاخره قبول می‌کنه دلش برای دوشیزه کنتون تنگ شده، '
+                    'ولی فقط پیش خودش.'
+              : 'Stevens finally admits he misses Miss Kenton, '
+                    'but only to himself.',
+          work: remains,
+        ),
+      );
+      await expectCard(tester, 'card_note_$lang.png');
     });
   }
 }

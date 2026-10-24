@@ -1693,6 +1693,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Brighter means longer'**
   String get cardMonthLegend;
+
+  /// On a Note on the Book page: opens just that Note as a card to share. Notes are private unless shared this way, one at a time.
+  ///
+  /// In en, this message translates to:
+  /// **'Share this Note'**
+  String get cardNoteAction;
 }
 
 class _AppLocalizationsDelegate
