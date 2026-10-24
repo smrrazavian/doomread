@@ -113,4 +113,91 @@ void main() {
     );
     expect(urges, hasLength(1));
   });
+
+  /// Tonight with a podcast, current, and a paper book behind it.
+  Future<(String, String)> openTonight(
+    WidgetTester tester,
+    AppDatabase db,
+  ) async {
+    final works = WorkRepository(db);
+    final podcast = await works.add(
+      title: 'Lex Fridman #400',
+      author: 'Lex Fridman',
+      totalPages: 180,
+      kind: WorkKind.podcast,
+      checkpoints: const [],
+    );
+    final book = await works.add(
+      title: 'The Remains of the Day',
+      author: 'Kazuo Ishiguro',
+      totalPages: 245,
+      checkpoints: const [],
+    );
+    await SettingsRepository(db).setLocale(const Locale('en'));
+    await pumpApp(
+      tester,
+      db,
+      clock: () => DateTime(2026, 10, 22, 21),
+      watch: FakeAppWatch(
+        installed: [
+          (package: 'com.instagram.android', label: 'Instagram'),
+          (package: 'org.telegram.messenger', label: 'Telegram'),
+          (package: youtube, label: 'YouTube'),
+        ],
+      ),
+    );
+    return (podcast, book);
+  }
+
+  bool selected(WidgetTester tester, String label) => tester
+      .widget<ChoiceChip>(find.widgetWithText(ChoiceChip, label))
+      .selected;
+
+  testApp('the Work app picked on Tonight is kept for that Work only', (
+    tester,
+    db,
+  ) async {
+    final (podcast, book) = await openTonight(tester, db);
+    expect(selected(tester, l10n.whereIsElsewhere('podcast')), isTrue);
+
+    await tester.tap(find.text(l10n.whereIsPhone));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('YouTube'));
+    await tester.pumpAndSettle();
+    expect(selected(tester, 'YouTube'), isTrue);
+    expect((await SettingsRepository(db).workApps()).keys, [podcast]);
+
+    await WorkRepository(db).setCurrent(book);
+    await tester.pumpAndSettle();
+    expect(selected(tester, l10n.whereIsElsewhere('paperBook')), isTrue);
+    expect(find.text('YouTube'), findsNothing);
+
+    await WorkRepository(db).setCurrent(podcast);
+    await tester.pumpAndSettle();
+    expect(selected(tester, 'YouTube'), isTrue);
+    await tester.tap(find.byType(FilledButton));
+    await tester.pumpAndSettle();
+    expect(find.text(l10n.workAppReading('YouTube')), findsOne);
+    expect(find.text(l10n.faceDown), findsNothing);
+  });
+
+  testApp('the picker puts likely apps first and searches by name', (
+    tester,
+    db,
+  ) async {
+    await openTonight(tester, db);
+    await tester.tap(find.text(l10n.whereIsPhone));
+    await tester.pumpAndSettle();
+    expect(
+      tester.getTopLeft(find.text('YouTube')).dy,
+      lessThan(tester.getTopLeft(find.text('Instagram')).dy),
+    );
+
+    await tester.enterText(find.byType(TextField), 'TEL');
+    await tester.pumpAndSettle();
+    expect(find.text('Telegram'), findsOne);
+    expect(find.text('YouTube'), findsNothing);
+    expect(find.text('Instagram'), findsNothing);
+    expect(find.text(l10n.workAppNone), findsOne);
+  });
 }

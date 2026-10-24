@@ -1034,4 +1034,19 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get toneHint =>
       'هر کدوم رو انتخاب کنی، وسوسه رو مسخره می‌کنه نه خودتو، و وقتی کم آوردی همیشه مهربونه.';
+
+  @override
+  String whereIsElsewhere(String kind) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'paperBook': 'کاغذی',
+      'other': 'جای دیگه',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get whereIsPhone => 'همین گوشی';
+
+  @override
+  String get whereIsSearch => 'دنبال اپ بگرد';
 }
