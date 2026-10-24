@@ -56,6 +56,40 @@ void main() {
     expect(find.text(en.problemNoPages), findsOne);
   });
 
+  testApp('a malformed Checkpoint list says what format is expected', (
+    tester,
+    db,
+  ) async {
+    await openApp(tester, db);
+    await tester.tap(find.text(en.tonightAddBook));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('title')), 'Dune');
+    await tester.enterText(find.byKey(const Key('pages')), '412');
+    for (final bad in ['34, 66,, 98', 'abc']) {
+      await tester.enterText(find.byKey(const Key('checkpoints')), bad);
+      await tester.tap(find.text(en.save));
+      await tester.pumpAndSettle();
+      expect(find.text(en.checkpointsFormatPages), findsOne, reason: bad);
+      expect(find.text(en.problemCheckpointPastEnd), findsNothing);
+    }
+  });
+
+  testApp('a Checkpoint beyond the length says past end, not format', (
+    tester,
+    db,
+  ) async {
+    await openApp(tester, db);
+    await tester.tap(find.text(en.tonightAddBook));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('title')), 'Dune');
+    await tester.enterText(find.byKey(const Key('pages')), '412');
+    await tester.enterText(find.byKey(const Key('checkpoints')), '34, 500');
+    await tester.tap(find.text(en.save));
+    await tester.pumpAndSettle();
+    expect(find.text(en.problemCheckpointPastEnd), findsOne);
+    expect(find.text(en.checkpointsFormatPages), findsNothing);
+  });
+
   testApp('Persian digits and the Persian comma are understood', (
     tester,
     db,

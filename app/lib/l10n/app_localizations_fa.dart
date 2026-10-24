@@ -1034,4 +1034,12 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get toneHint =>
       'هر کدوم رو انتخاب کنی، وسوسه رو مسخره می‌کنه نه خودتو، و وقتی کم آوردی همیشه مهربونه.';
+
+  @override
+  String get checkpointsFormatPages =>
+      'پایان فصل‌ها شماره‌ی صفحه‌ست و با ویرگول جدا می‌شن، مثلاً ۳۴، ۶۶، ۹۸';
+
+  @override
+  String get checkpointsFormatTimestamps =>
+      'پایان بخش‌ها زمانه و با ویرگول جدا می‌شن، مثلاً ۴۲:۳۰، ۱:۱۵:۰۰';
 }

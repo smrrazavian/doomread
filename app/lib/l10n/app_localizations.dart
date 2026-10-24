@@ -1285,6 +1285,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Whichever you pick, it roasts the urge, never you, and it\'s always kind after a slip.'**
   String get toneHint;
+
+  /// No description provided for @checkpointsFormatPages.
+  ///
+  /// In en, this message translates to:
+  /// **'Chapter ends are page numbers separated by commas, like 34, 66, 98'**
+  String get checkpointsFormatPages;
+
+  /// No description provided for @checkpointsFormatTimestamps.
+  ///
+  /// In en, this message translates to:
+  /// **'Segment ends are timestamps separated by commas, like 42:30, 1:15:00'**
+  String get checkpointsFormatTimestamps;
 }
 
 class _AppLocalizationsDelegate

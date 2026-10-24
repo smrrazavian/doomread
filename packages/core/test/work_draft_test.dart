@@ -7,12 +7,14 @@ void main() {
     int pages = 412,
     List<int> cp = const [],
     WorkKind kind = WorkKind.paperBook,
+    bool unreadable = false,
   }) => WorkDraft(
     title: title,
     author: '',
     totalPages: pages,
     checkpoints: cp,
     kind: kind,
+    checkpointsUnreadable: unreadable,
   );
 
   test('a titled Work with pages and in-range Checkpoints has no problems', () {
@@ -26,6 +28,16 @@ void main() {
   test('a Checkpoint before page 1 or after the last page is a problem', () {
     expect(draft(cp: [0]).problems, {WorkProblem.checkpointPastEnd});
     expect(draft(cp: [413]).problems, {WorkProblem.checkpointPastEnd});
+  });
+
+  test('unreadable Checkpoints are a format problem, not past the end', () {
+    expect(draft(unreadable: true).problems, {
+      WorkProblem.checkpointsUnreadable,
+    });
+    expect(draft(pages: 0, unreadable: true).problems, {
+      WorkProblem.noPages,
+      WorkProblem.checkpointsUnreadable,
+    });
   });
 
   test('a series needs episodes, and its Checkpoints are never asked', () {
