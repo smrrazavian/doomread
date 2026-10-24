@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
@@ -15,6 +17,7 @@ import 'package:doomread/ui/watch/widgets/watch_disclosure.dart';
 import 'package:doomread/utils/result.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -134,6 +137,8 @@ Future<void> _start(BuildContext context, TonightViewModel vm) async {
   await vm.start.execute();
   if (!context.mounted) return;
   if (vm.start.result case Ok(:final value)) {
+    // The click of the lamp: Reading opens with the user's Window coming on.
+    unawaited(HapticFeedback.lightImpact());
     await context.push('/reading/$value');
   }
 }

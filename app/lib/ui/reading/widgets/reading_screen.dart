@@ -126,6 +126,7 @@ class _Reading extends StatelessWidget {
                   child: HouseView(
                     windows: vm.house,
                     kind: record.road.work.kind,
+                    backOn: vm.letPassed,
                   ),
                 ),
               ),

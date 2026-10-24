@@ -3,6 +3,7 @@ import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread/l10n/app_localizations.dart';
+import 'package:doomread/ui/reading/widgets/house_view.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -79,6 +80,11 @@ void main() {
     expect(buzzes, ['HapticFeedbackType.lightImpact']);
     expect(find.text(urgeTitle), findsNothing);
     expect(find.text('5:00'), findsOne, reason: 'Let pass keeps the Stretch');
+    expect(
+      tester.widget<HouseView>(find.byType(HouseView)).backOn,
+      isTrue,
+      reason: "the user's Window flickers back on",
+    );
     expect(await journal(db), [
       SessionEventKind.start,
       SessionEventKind.urge,

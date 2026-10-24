@@ -60,7 +60,8 @@ void main() {
     await session(tester, 9, 245, 'Stevens looks at the pier lights.');
 
     expect(find.text(en.finishedTitle(title)), findsOne);
-    expect(buzzes, ['HapticFeedbackType.heavyImpact']);
+    // Start's click, then the Finish's.
+    expect(buzzes.last, 'HapticFeedbackType.heavyImpact');
     expect(find.text(en.finishedSub(245, 1)), findsOne);
     expect(find.text(en.minutesShort(9)), findsOne);
     expect(find.text(en.notesWritten(1)), findsOne);

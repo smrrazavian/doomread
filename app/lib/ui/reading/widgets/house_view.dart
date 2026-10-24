@@ -10,8 +10,17 @@ import 'package:flutter/material.dart';
 /// moon on the end side, so both swap sides in Persian. Only [windows] are
 /// lit, each from the journal, and the user's own one pulses slowly. A line
 /// under it says whose lights they are, or kindly that it's still empty.
+///
+/// When it opens, the user's Window switches on first, like a lamp, and the
+/// rest follow. Back from an Urge let pass ([backOn]) the others are on
+/// already and only the user's flickers back on.
 class HouseView extends StatefulWidget {
-  const HouseView({required this.windows, this.kind, super.key});
+  const HouseView({
+    required this.windows,
+    this.kind,
+    this.backOn = false,
+    super.key,
+  });
 
   /// From [houseWindows]; more than the House has room for are left dark.
   final List<HouseWindow> windows;
@@ -20,16 +29,24 @@ class HouseView extends StatefulWidget {
   /// TV for a film or series, headphones for a podcast. Plain when null.
   final WorkKind? kind;
 
+  /// Whether the user is back from an Urge they let pass. Read once, when
+  /// the House first shows.
+  final bool backOn;
+
   @override
   State<HouseView> createState() => _HouseViewState();
 }
 
 class _HouseViewState extends State<HouseView> with TickerProviderStateMixin {
-  // The Windows come on one after another, once, when the screen opens.
+  // The Windows come on one after another, once, when the screen opens;
+  // or only the user's flickers, when they're back from an Urge.
   late final _light = AnimationController(
     vsync: this,
-    duration: _lightUp(math.min(widget.windows.length, _slots.length)),
+    duration: widget.backOn
+        ? _flickerTime
+        : _lightUp(math.min(widget.windows.length, _slots.length)),
   );
+  late final _backOn = widget.backOn;
   late final _pulse = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 3200),
@@ -75,6 +92,7 @@ class _HouseViewState extends State<HouseView> with TickerProviderStateMixin {
                     windows: widget.windows.take(_slots.length).toList(),
                     light: _light,
                     pulse: _pulse,
+                    backOn: _backOn,
                     kind: widget.kind,
                     rtl: Directionality.of(context) == TextDirection.rtl,
                   ),
@@ -123,6 +141,33 @@ Duration _lightUp(int lit) => Duration(
   milliseconds: ((_firstOn + (lit - 1) * _between + _fade) * 1000).round(),
 );
 
+/// The user's own Window doesn't fade in: it switches on like a lamp, with
+/// a stutter before it holds. Brightness at points through its half second.
+const _lamp = [(0.0, 0.0), (0.08, 1.0), (0.2, 0.4), (0.3, 1.0)];
+
+/// Back from an Urge: a couple of flickers, then on.
+const _flickerTime = Duration(milliseconds: 700);
+const _flicker = [
+  (0.0, 0.0),
+  (0.1, 0.9),
+  (0.22, 0.15),
+  (0.36, 1.0),
+  (0.48, 0.45),
+  (0.62, 1.0),
+];
+
+/// [keys] at [t], straight between them and holding after the last.
+double _at(List<(double, double)> keys, double t) {
+  for (var k = 1; k < keys.length; k++) {
+    final (t1, v1) = keys[k];
+    if (t <= t1) {
+      final (t0, v0) = keys[k - 1];
+      return v0 + (v1 - v0) * ((t - t0) / (t1 - t0));
+    }
+  }
+  return keys.last.$2;
+}
+
 /// Earlier tonight: a dark pane with an amber outline (design section 8).
 const _earlierFill = Color(0xFF2A3350);
 const _earlierOutline = Color(0xFFE2B65A);
@@ -143,6 +188,7 @@ class _HousePainter extends CustomPainter {
     required this.windows,
     required this.light,
     required this.pulse,
+    required this.backOn,
     required this.kind,
     required this.rtl,
   }) : super(repaint: Listenable.merge([light, pulse]));
@@ -150,6 +196,7 @@ class _HousePainter extends CustomPainter {
   final List<HouseWindow> windows;
   final AnimationController light;
   final AnimationController pulse;
+  final bool backOn;
   final WorkKind? kind;
   final bool rtl;
 
@@ -214,7 +261,8 @@ class _HousePainter extends CustomPainter {
       );
 
     final lit = {for (final (i, w) in windows.indexed) _slots[i]: w};
-    var order = 0;
+    // The user's own comes on first, the others in reading order after it.
+    var order = 1;
     for (var r = 0; r < _rows; r++) {
       for (var c = 0; c < _columns; c++) {
         final pane = Rect.fromLTWH(61.0 + c * 28, 44.0 + r * 28, 16, 18);
@@ -225,17 +273,21 @@ class _HousePainter extends CustomPainter {
         canvas.drawRRect(rounded, Paint()..color = Palette.unlit);
         final window = lit[(r, c)];
         if (window == null) continue;
-        _window(canvas, rounded, window, _on(order++));
+        final yours = window == HouseWindow.yours;
+        _window(canvas, rounded, window, _on(yours ? 0 : order++, yours));
       }
     }
     canvas.restore();
   }
 
-  /// How far the [i]th lit Window has come on, from 0 to 1.
-  double _on(int i) {
+  /// How far the [i]th lit Window has come on, from 0 to 1; the user's
+  /// own when [yours].
+  double _on(int i, bool yours) {
     if (light.isCompleted) return 1;
+    if (backOn) return yours ? _at(_flicker, light.value) : 1;
     final t = light.value * light.duration!.inMilliseconds / 1000;
-    return ((t - _firstOn - i * _between) / _fade).clamp(0, 1);
+    final on = ((t - _firstOn - i * _between) / _fade).clamp(0.0, 1.0);
+    return yours ? _at(_lamp, on) : on;
   }
 
   void _window(Canvas canvas, RRect pane, HouseWindow window, double on) {

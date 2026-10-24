@@ -13,7 +13,10 @@ class ReadingViewModel extends ChangeNotifier {
     pause = Command0(() => _add(SessionEventKind.pause));
     resume = Command0(() => _add(SessionEventKind.resume));
     stop = Command0(() => _add(SessionEventKind.stop));
-    letPass = Command0(() => _add(SessionEventKind.letPass));
+    letPass = Command0(() {
+      _letPassed = true;
+      return _add(SessionEventKind.letPass);
+    });
     finish = Command0(_finish);
     _sub = _sessions.watchAll().listen((all) {
       _record = all.where((r) => r.id == id).firstOrNull;
@@ -44,6 +47,11 @@ class ReadingViewModel extends ChangeNotifier {
   /// Back to the Work from an Urge. Open anyway is UrgeWatch's, since it
   /// opens the Watched app too.
   late final Command0<void> letPass;
+
+  /// Whether the user let an Urge pass on this screen, so the House can
+  /// flicker their Window back on rather than light up all over again.
+  bool get letPassed => _letPassed;
+  bool _letPassed = false;
 
   /// "I finished it!": stops the Session and ends it with the Position at
   /// the Work's end, as End of the evening's Finish does. Offered once the
