@@ -6,6 +6,9 @@ abstract final class Palette {
   static const wall = Color(0xFF222C49);
   static const deep = Color(0xFF141B2F);
 
+  /// The top of the night sky, darker than [deep], on the Finish poster.
+  static const zenith = Color(0xFF0E1426);
+
   /// The wall of the floor a Finish has just added.
   static const newFloor = Color(0xFF2B3758);
   static const panel = Color(0xFF1F2945);

@@ -235,9 +235,6 @@
   "emptyLibrary": "قفسه خالیه، ولی چراغش روشنه. اون کتاب یا سریال یا پادکستی که هی می‌گی تمومش می‌کنم رو اضافه کن.",
   "emptyStory": "فعلاً صفحه سفیده. بعد هر شب یه خط بنویس، داستانت همین‌جا کم‌کم شکل می‌گیره.",
   "shareAction": "پزش رو بده",
-  "@shareAction": {
-    "description": "TODO(owner): review this Persian copy (the share block, down to sharePosterUrges)."
-  },
   "sharePreviewTitle": "پوسترت",
   "shareShowNote": "یادداشتم هم باشه",
   "shareShowNoteHint": "آخرین یادداشتت، همون‌جوری که نوشتی. خاموشش کنی، فقط مال خودت می‌مونه.",

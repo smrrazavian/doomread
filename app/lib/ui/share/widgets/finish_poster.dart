@@ -97,25 +97,38 @@ class FinishPoster extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(l10n.sharePosterFinished, style: type.lead),
-                            const SizedBox(height: 4),
-                            Text(
-                              // Isolated, so a Latin title in Persian (or the
-                              // reverse) can't pull the guillemets around.
-                              l10n.sharePosterTitle(
-                                '\u2068${finish.work.title}\u2069',
+                            // One heading in the book face: "I finished",
+                            // then the title, larger.
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: '${l10n.sharePosterFinished}\n',
+                                    style: type.finished,
+                                  ),
+                                  TextSpan(
+                                    // Isolated, so a Latin title in Persian
+                                    // (or the reverse) can't pull the
+                                    // guillemets around.
+                                    text: l10n.sharePosterTitle(
+                                      '\u2068${finish.work.title}\u2069',
+                                    ),
+                                  ),
+                                ],
                               ),
                               style: type.title,
-                              maxLines: 3,
+                              maxLines: 4,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            if (finish.work.author.trim().isNotEmpty)
+                            if (finish.work.author.trim().isNotEmpty) ...[
+                              const SizedBox(height: 10),
                               Text(
                                 finish.work.author,
                                 style: type.author,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
+                            ],
                             if (evenings > 0) ...[
                               const SizedBox(height: 12),
                               Text(_length(context, l10n), style: type.body),
@@ -174,14 +187,20 @@ class FinishPoster extends StatelessWidget {
 /// it. Persian has its own faces and taller lines, and no letter spacing.
 class _PosterType {
   _PosterType({required bool fa})
-    : lead = _ui(fa, 15, Palette.lamp, FontWeight.w500),
+    : finished = TextStyle(
+        fontSize: fa ? 21 : 22,
+        height: fa ? 1.7 : 1.35,
+        fontWeight: FontWeight.w400,
+        fontVariations: const [FontVariation.weight(400)],
+        color: Palette.soft,
+      ),
       title = TextStyle(
         fontFamily: fa ? 'NotoNaskhArabic' : 'Literata',
         fontFamilyFallback: [if (fa) 'Literata' else 'NotoNaskhArabic'],
-        fontSize: fa ? 27 : 30,
-        height: fa ? 1.6 : 1.2,
-        fontWeight: FontWeight.w500,
-        fontVariations: const [FontVariation.weight(500)],
+        fontSize: fa ? 30 : 32,
+        height: fa ? 1.55 : 1.15,
+        fontWeight: FontWeight.w600,
+        fontVariations: const [FontVariation.weight(600)],
         letterSpacing: 0,
         color: Palette.paper,
       ),
@@ -208,7 +227,8 @@ class _PosterType {
       ),
       mark = _ui(fa, 14, Palette.paper, FontWeight.w500);
 
-  final TextStyle lead;
+  /// "I finished", the quiet first line of the title's heading.
+  final TextStyle finished;
   final TextStyle title;
   final TextStyle author;
   final TextStyle body;
@@ -292,8 +312,21 @@ class _Tower extends StatelessWidget {
           : ((room / k - _top) / _floor).ceil().clamp(1, floors);
       final top = fits ? room - whole : 0.0;
       final lit = floor < shown ? floor : null;
+      // Where the new floor is, on the poster.
+      final width = box.maxWidth;
+      final floorRect = lit == null
+          ? null
+          : Rect.fromLTWH(
+              width / 2 - 76 * k,
+              top + (_top + lit * _floor) * k,
+              152 * k,
+              44 * k,
+            );
       return Stack(
+        clipBehavior: Clip.none,
         children: [
+          if (floorRect != null)
+            Positioned.fill(child: CustomPaint(painter: _Spill(floorRect))),
           Positioned(
             top: top,
             left: 0,
@@ -314,10 +347,85 @@ class _Tower extends StatelessWidget {
               ),
             ),
           ),
+          if (floorRect != null)
+            Positioned.fill(
+              child: CustomPaint(
+                painter: _Shade(floorRect, top + _top * k, room),
+              ),
+            ),
         ],
       );
     },
   );
+}
+
+/// The new floor's light on the night around it: a warm halo hugging the
+/// floor and a wide, faint spill onto the sky.
+class _Spill extends CustomPainter {
+  const _Spill(this.floor);
+
+  final Rect floor;
+
+  /// How far the light reaches into the sky.
+  static const _reach = 190.0;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final c = floor.center;
+    canvas
+      ..drawCircle(
+        c,
+        _reach,
+        Paint()
+          ..shader = RadialGradient(
+            colors: [
+              Palette.lamp.withValues(alpha: 0.22),
+              Palette.lamp.withValues(alpha: 0.06),
+              Palette.lamp.withValues(alpha: 0),
+            ],
+            stops: const [0, 0.45, 1],
+          ).createShader(Rect.fromCircle(center: c, radius: _reach)),
+      )
+      ..drawRRect(
+        RRect.fromRectAndRadius(floor.inflate(6), const Radius.circular(8)),
+        Paint()
+          ..color = Palette.lamp.withValues(alpha: 0.7)
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 16),
+      );
+  }
+
+  @override
+  bool shouldRepaint(_Spill old) => old.floor != floor;
+}
+
+/// Lets the older floors sit back in the night, so the new one is clearly
+/// the brightest.
+class _Shade extends CustomPainter {
+  const _Shade(this.floor, this.top, this.bottom);
+
+  final Rect floor;
+
+  /// Where the Building's top floor starts, and where the street is.
+  final double top;
+  final double bottom;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final shade = Paint()..color = Palette.night.withValues(alpha: 0.32);
+    // The floors above and below, with the gaps between them.
+    final above = Rect.fromLTRB(floor.left, top, floor.right, floor.top);
+    final below = Rect.fromLTRB(floor.left, floor.bottom, floor.right, bottom);
+    canvas
+      ..save()
+      ..clipRect(Offset.zero & Size(size.width, bottom))
+      ..drawRect(above, shade)
+      ..drawRect(below, shade)
+      ..restore();
+  }
+
+  @override
+  bool shouldRepaint(_Shade old) =>
+      old.floor != floor || old.top != top || old.bottom != bottom;
 }
 
 /// The numbers worth a flex, side by side with a hairline between them.
@@ -399,7 +507,7 @@ class _Sky extends CustomPainter {
         ..shader = const LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xFF0E1426), Palette.deep, Palette.night],
+          colors: [Palette.zenith, Palette.deep, Palette.night],
           stops: [0, 0.35, 0.62],
         ).createShader(rect),
     );
