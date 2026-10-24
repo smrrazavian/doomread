@@ -129,6 +129,14 @@ void main() {
       expect((await works.watchCurrent().first)!.work.id, id);
     });
 
+    test('undone, the current Work is current again', () async {
+      final remains = await addRemains();
+      await addDune();
+      await works.delete(remains);
+      await works.restore(remains, current: true);
+      expect((await works.watchCurrent().first)!.work.id, remains);
+    });
+
     test('stamps updatedAt, so sync sends it', () async {
       final id = await addRemains();
       now = DateTime(2026, 10, 23, 8);

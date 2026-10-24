@@ -49,7 +49,10 @@ class BooksViewModel extends ChangeNotifier {
     await _works.delete(work.id);
   }
 
-  Future<void> restore(String id) => _works.restore(id);
+  /// Undoes [delete], current again if it was. A Session it stopped stays
+  /// stopped.
+  Future<void> restore(Work work, {required bool current}) =>
+      _works.restore(work.id, current: current);
 
   @override
   void dispose() {

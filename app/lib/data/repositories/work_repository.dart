@@ -107,11 +107,15 @@ class WorkRepository {
     await keepOneCurrent();
   });
 
-  /// Undoes [delete]. The Work becomes current again if none is.
-  Future<void> restore(String id) => _db.transaction(() async {
-    await _setDeleted(id, false);
-    if (await _db.setting(_currentKey) == null) await setCurrent(id);
-  });
+  /// Undoes [delete]. The Work becomes current again if it was, or if
+  /// none is.
+  Future<void> restore(String id, {bool current = false}) =>
+      _db.transaction(() async {
+        await _setDeleted(id, false);
+        if (current || await _db.setting(_currentKey) == null) {
+          await setCurrent(id);
+        }
+      });
 
   Future<void> _setDeleted(String id, bool deleted) =>
       (_db.update(_db.works)..where((w) => w.id.equals(id))).write(

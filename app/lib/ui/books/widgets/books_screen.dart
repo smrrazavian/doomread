@@ -93,6 +93,7 @@ class _Books extends StatelessWidget {
 /// Deletes [work] and offers to undo it.
 void _delete(BuildContext context, BooksViewModel vm, Work work) {
   final l10n = AppLocalizations.of(context);
+  final current = work.id == vm.currentId;
   unawaited(vm.delete(work));
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
@@ -101,7 +102,7 @@ void _delete(BuildContext context, BooksViewModel vm, Work work) {
         content: Text(l10n.workDeleted(work.title)),
         action: SnackBarAction(
           label: l10n.undo,
-          onPressed: () => unawaited(vm.restore(work.id)),
+          onPressed: () => unawaited(vm.restore(work, current: current)),
         ),
       ),
     );
