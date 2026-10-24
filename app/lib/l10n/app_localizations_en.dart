@@ -1287,4 +1287,110 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get tourSkip => 'Skip';
+
+  @override
+  String get tourLater => 'Later';
+
+  @override
+  String get tourStoryTitle =>
+      'Ever watched a 2.5-hour film with friends and never touched your phone?';
+
+  @override
+  String get tourStoryBody =>
+      'The urge came. You let it pass, because everyone else was watching too.';
+
+  @override
+  String get tourStoryNext => 'Yeah, actually';
+
+  @override
+  String get tourCompanyTitle =>
+      'Alone, the urge wins. We bring the company back.';
+
+  @override
+  String get tourCompanyBody =>
+      'Other people\'s lit windows, a break you plan ahead, and the end of the book in sight.';
+
+  @override
+  String get tourCompanyNext => 'I\'m in';
+
+  @override
+  String get tourToneTitle => 'Pick how I talk to you';
+
+  @override
+  String get tourToneBody =>
+      'Instagram calls mid-chapter. Here\'s what I\'d say, three ways. Tap the one you want to hear.';
+
+  @override
+  String get tourToneNext => 'This one';
+
+  @override
+  String get tourToneLater => 'You can change it any time in Settings.';
+
+  @override
+  String get tourWorkTitle => 'What are you trying to finish?';
+
+  @override
+  String get tourWorkBody =>
+      'Just the title and how long it is. Chapters can wait.';
+
+  @override
+  String get tourGotIt => 'Got it';
+
+  @override
+  String tourAimHint(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: '$minutesString min. Your best + 1. Beat it and it grows.',
+      one: '1 min. Your best + 1. Beat it and it grows.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get tourDemoAsk => 'Want to see what happens when Instagram calls?';
+
+  @override
+  String get tourDemoShow => 'Show me';
+
+  @override
+  String get tourNotNow => 'Not now';
+
+  @override
+  String get tourDemoBadge => 'Just a demo. Nothing counts.';
+
+  @override
+  String get tourUrgeHint =>
+      'This is the \"not yet\" screen. Going back is a win, and opening it anyway is always allowed.';
+
+  @override
+  String get tourBreakHint =>
+      'This break is legal brainrot. Scroll guilt-free, then come back.';
+
+  @override
+  String get tourWatchAsk =>
+      'Want the \"not yet\" screen when Instagram calls for real?';
+
+  @override
+  String get tourWatchTurnOn => 'Turn it on';
+
+  @override
+  String get tourWatchOn => 'The \"not yet\" screen is on.';
+
+  @override
+  String get tourWatchOff =>
+      'It\'s still off. No stress: find Doomread under Accessibility and switch it on.';
+
+  @override
+  String get tourWatchRetry => 'Try again';
+
+  @override
+  String get tourReplay => 'Replay the intro';
 }

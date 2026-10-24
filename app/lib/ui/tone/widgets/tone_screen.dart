@@ -51,34 +51,3 @@ class ToneScreen extends StatelessWidget {
     );
   }
 }
-
-/// The Tone, offered on Tonight before the first Work: the three names,
-/// and what the picked one sounds like.
-class TonePicker extends StatelessWidget {
-  const TonePicker({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final text = Theme.of(context).textTheme;
-    final vm = context.watch<SettingsViewModel>();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(l10n.toneAsk, style: text.bodyMedium),
-        const SizedBox(height: 12),
-        SegmentedButton<Tone>(
-          showSelectedIcon: false,
-          segments: [
-            for (final t in Tone.values)
-              ButtonSegment(value: t, label: Text(toneName(l10n, t))),
-          ],
-          selected: {vm.tone},
-          onSelectionChanged: (s) => vm.setTone(s.single),
-        ),
-        const SizedBox(height: 12),
-        Text(toneSample(context, vm.tone), style: text.bodySmall),
-      ],
-    );
-  }
-}

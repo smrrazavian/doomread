@@ -23,6 +23,7 @@ void main() {
     AppDatabase db,
     MockClient server,
   ) async {
+    await skipTour(db);
     await tester.pumpWidget(
       DoomreadApp(db: db, auth: AuthRepository(db, server)),
     );

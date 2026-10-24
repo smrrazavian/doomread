@@ -12,8 +12,8 @@ import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/work_text.dart';
 import 'package:doomread/ui/reading/widgets/work_app_card.dart';
 import 'package:doomread/ui/settings/view_models/settings_view_model.dart';
-import 'package:doomread/ui/tone/widgets/tone_screen.dart';
 import 'package:doomread/ui/tonight/view_models/tonight_view_model.dart';
+import 'package:doomread/ui/tour/view_models/tour_view_model.dart';
 import 'package:doomread/ui/watch/widgets/watch_disclosure.dart';
 import 'package:doomread/utils/result.dart';
 import 'package:doomread_core/doomread_core.dart';
@@ -46,7 +46,14 @@ class _Tonight extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final text = Theme.of(context).textTheme;
     final vm = context.watch<TonightViewModel>();
+    final tour = context.watch<TourViewModel>();
     final road = vm.road;
+    // The first Work was just added in the intro: its Session starts now.
+    if (road != null && tour.takeStart()) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (context.mounted) unawaited(_start(context, vm));
+      });
+    }
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -94,7 +101,7 @@ class _Tonight extends StatelessWidget {
                             : l10n.backToWork(road.work.kind.name),
                       ),
                     ),
-                  ] else if (vm.loaded) ...[
+                  ] else if (vm.loaded && tour.loaded && !tour.introDue) ...[
                     const EmptySceneView(EmptyScene.darkWindow),
                     const SizedBox(height: 16),
                     Text(l10n.emptyTonight, style: text.titleMedium),
@@ -108,9 +115,6 @@ class _Tonight extends StatelessWidget {
                         child: Text(l10n.tonightAddBook),
                       ),
                     ),
-                    // Onboarding: the first evening, before any Work.
-                    const SizedBox(height: 48),
-                    const TonePicker(),
                   ],
                 ],
               ),

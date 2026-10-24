@@ -12,6 +12,7 @@ import 'package:doomread/data/services/break_over_notification.dart';
 import 'package:doomread/data/services/home_widget.dart';
 import 'package:doomread/data/services/session_notification.dart';
 import 'package:doomread/data/services/share_sheet.dart';
+import 'package:doomread/domain/use_cases/first_run_use_case.dart';
 import 'package:doomread/domain/use_cases/stop_deleted_sessions_use_case.dart';
 import 'package:doomread/domain/use_cases/sync_use_case.dart';
 import 'package:doomread/l10n/app_localizations.dart';
@@ -21,6 +22,7 @@ import 'package:doomread/ui/planned_break/break_over_alarm.dart';
 import 'package:doomread/ui/reading/live_notification.dart';
 import 'package:doomread/ui/settings/view_models/settings_view_model.dart';
 import 'package:doomread/ui/tonight/live_home_widget.dart';
+import 'package:doomread/ui/tour/view_models/tour_view_model.dart';
 import 'package:doomread/ui/urge/urge_watch.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -105,7 +107,11 @@ class _DoomreadAppState extends State<DoomreadApp> {
   late final AppWatch _watch = widget.watch ?? AppWatch();
   late final UrgeWatch _urges;
   late final ShareSheet _share = widget.share ?? ShareSheet();
-  final GoRouter _router = buildRouter();
+  late final TourViewModel _tour = TourViewModel(
+    _settingsRepository,
+    FirstRunUseCase(_settingsRepository, _works),
+  )..load();
+  late final GoRouter _router = buildRouter(_tour);
 
   @override
   void initState() {
@@ -175,6 +181,7 @@ class _DoomreadAppState extends State<DoomreadApp> {
       ..dispose();
     _settings.dispose();
     _router.dispose();
+    _tour.dispose();
     super.dispose();
   }
 
@@ -190,6 +197,7 @@ class _DoomreadAppState extends State<DoomreadApp> {
       Provider.value(value: _urges),
       Provider.value(value: _share),
       ChangeNotifierProvider.value(value: _settings),
+      ChangeNotifierProvider.value(value: _tour),
       if (widget.auth case final auth?) Provider.value(value: auth),
     ],
     child: ListenableBuilder(

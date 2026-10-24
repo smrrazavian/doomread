@@ -13,17 +13,24 @@ import 'package:doomread/ui/reading/widgets/reading_screen.dart';
 import 'package:doomread/ui/settings/widgets/settings_screen.dart';
 import 'package:doomread/ui/tone/widgets/tone_screen.dart';
 import 'package:doomread/ui/tonight/widgets/tonight_screen.dart';
+import 'package:doomread/ui/tour/view_models/tour_view_model.dart';
+import 'package:doomread/ui/tour/widgets/intro_screen.dart';
 import 'package:doomread/ui/watch/widgets/watched_apps_screen.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-GoRouter buildRouter() {
+/// The app's routes. Until the first-run intro is done, every location
+/// leads to it.
+GoRouter buildRouter(TourViewModel tour) {
   final root = GlobalKey<NavigatorState>();
   return GoRouter(
     navigatorKey: root,
     initialLocation: '/tonight',
+    refreshListenable: tour,
+    redirect: (_, state) =>
+        tour.introDue && state.matchedLocation != '/intro' ? '/intro' : null,
     routes: _routes(root),
   );
 }
@@ -57,6 +64,12 @@ List<RouteBase> _routes(GlobalKey<NavigatorState> root) => [
         (c) => SectionPlaceholder(title: AppLocalizations.of(c).navFriends),
       ),
     ],
+  ),
+  // From Settings, "Replay the intro" runs only its cards, then comes back.
+  GoRoute(
+    path: '/intro',
+    builder: (_, state) =>
+        IntroScreen(replay: state.uri.queryParameters.containsKey('replay')),
   ),
   GoRoute(path: '/settings', builder: (_, _) => const SettingsScreen()),
   GoRoute(path: '/tone', builder: (_, _) => const ToneScreen()),

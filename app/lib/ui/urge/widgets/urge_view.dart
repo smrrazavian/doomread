@@ -22,10 +22,15 @@ class UrgeView extends StatelessWidget {
     required this.app,
     required this.onBack,
     required this.onOpen,
+    this.note,
     super.key,
   });
 
   final SessionRecord record;
+
+  /// Above the headline: the tour's line about this screen, and in the
+  /// demo, that it's a demo.
+  final Widget? note;
   final List<HouseWindow> house;
 
   /// The app's name, or null when it isn't known.
@@ -52,6 +57,7 @@ class UrgeView extends StatelessWidget {
       child: _Moment(
         house: house,
         kind: work.kind,
+        note: note,
         title: say(context, Moment.urge, {'app': ?app}),
         body: [
           ChangeNotifierProvider(
@@ -143,10 +149,12 @@ class _Moment extends StatelessWidget {
     required this.quiet,
     required this.onQuiet,
     this.kind,
+    this.note,
   });
 
   final List<HouseWindow> house;
   final WorkKind? kind;
+  final Widget? note;
   final String title;
 
   /// Lines of text, or widgets.
@@ -174,6 +182,7 @@ class _Moment extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 32),
+              ?note,
               Text(title, style: text.headlineSmall),
               const SizedBox(height: 8),
               for (final b in body)

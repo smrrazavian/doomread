@@ -44,6 +44,7 @@ void main() {
       );
     }
 
+    await skipTour(db);
     await tester.pumpWidget(DoomreadApp(db: db, auth: auth));
     await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.tune));

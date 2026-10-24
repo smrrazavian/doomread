@@ -5,6 +5,22 @@ import 'package:doomread/data/services/app_watch.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/widgets.dart';
 
+/// A one-line explainer the first-run tour shows once, the first time its
+/// thing appears, and then remembers.
+enum Hint {
+  /// The Aim, on the first Reading.
+  aim,
+
+  /// The offer to show a demo Urge, on the first Reading.
+  demoUrge,
+
+  /// The "not yet" screen, the first time it shows.
+  urge,
+
+  /// The Planned break, the first time it's offered.
+  plannedBreak,
+}
+
 /// The user's app-wide preferences, stored on the device.
 class SettingsRepository {
   SettingsRepository(this._db);
@@ -17,6 +33,8 @@ class SettingsRepository {
   static const _watchAskedKey = 'watchAsked';
   static const _workAppsKey = 'workApps';
   static const _toneKey = 'tone';
+  static const _introSeenKey = 'introSeen';
+  static const _hintsSeenKey = 'hintsSeen';
 
   /// The language the user picked, or null if they never picked one.
   Future<Locale?> locale() async {
@@ -96,6 +114,33 @@ class SettingsRepository {
             for (final MapEntry(:key, :value) in apps.entries)
               key: {'package': value.package, 'label': value.label},
           }),
+        ),
+      );
+
+  /// Whether the first-run intro was seen, skipped, or not needed (the
+  /// user already had Works), so it shows once, unless replayed.
+  Future<bool> introSeen() async => await _db.setting(_introSeenKey) != null;
+
+  Future<void> setIntroSeen() => _db
+      .into(_db.settings)
+      .insertOnConflictUpdate(
+        SettingsCompanion.insert(key: _introSeenKey, value: '1'),
+      );
+
+  /// The tour's one-line explainers already shown, so each shows once.
+  Future<Set<Hint>> hintsSeen() async {
+    final v = await _db.setting(_hintsSeenKey);
+    if (v == null) return const {};
+    final byName = Hint.values.asNameMap();
+    return {for (final n in v.split(',')) ?byName[n]};
+  }
+
+  Future<void> setHintsSeen(Set<Hint> hints) => _db
+      .into(_db.settings)
+      .insertOnConflictUpdate(
+        SettingsCompanion.insert(
+          key: _hintsSeenKey,
+          value: [for (final h in hints) h.name].join(','),
         ),
       );
 }

@@ -6,4 +6,4 @@ The lines are copy packs: a `CopyPack` per locale (`voice_en.dart`, `voice_fa.da
 
 After a Slip, Voice ignores the Tone and says Chill's line. A roast there starts the what-the-hell spiral, and the owner chose one kind line over a kind line per Tone. Because the rule is in Voice, no screen or pack can break it, and the core test is exact: every Tone's after-slip line equals Chill's.
 
-The Tone is offered on Tonight before the first Work, which is the app's first-run moment, and in Settings. The Tone screen shows each Tone's real Urge line.
+The Tone is picked in the first-run intro, where each Tone says the same real Urge line in a speech bubble, and in Settings, whose Tone screen shows those lines too.

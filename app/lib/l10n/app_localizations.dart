@@ -1405,6 +1405,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{urge let pass} other{urges let pass}}'**
   String sharePosterUrges(int count);
+
+  /// On the intro cards: skips the intro and the whole first-run tour.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get tourSkip;
+
+  /// On the intro's last step: leaves without adding a Work yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get tourLater;
+
+  /// First intro card: the movie night that started Doomread.
+  ///
+  /// In en, this message translates to:
+  /// **'Ever watched a 2.5-hour film with friends and never touched your phone?'**
+  String get tourStoryTitle;
+
+  /// No description provided for @tourStoryBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The urge came. You let it pass, because everyone else was watching too.'**
+  String get tourStoryBody;
+
+  /// No description provided for @tourStoryNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Yeah, actually'**
+  String get tourStoryNext;
+
+  /// No description provided for @tourCompanyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Alone, the urge wins. We bring the company back.'**
+  String get tourCompanyTitle;
+
+  /// No description provided for @tourCompanyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Other people\'s lit windows, a break you plan ahead, and the end of the book in sight.'**
+  String get tourCompanyBody;
+
+  /// No description provided for @tourCompanyNext.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m in'**
+  String get tourCompanyNext;
+
+  /// Third intro card, over three speech bubbles: the same Urge line in each Tone.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick how I talk to you'**
+  String get tourToneTitle;
+
+  /// No description provided for @tourToneBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Instagram calls mid-chapter. Here\'s what I\'d say, three ways. Tap the one you want to hear.'**
+  String get tourToneBody;
+
+  /// No description provided for @tourToneNext.
+  ///
+  /// In en, this message translates to:
+  /// **'This one'**
+  String get tourToneNext;
+
+  /// No description provided for @tourToneLater.
+  ///
+  /// In en, this message translates to:
+  /// **'You can change it any time in Settings.'**
+  String get tourToneLater;
+
+  /// No description provided for @tourWorkTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What are you trying to finish?'**
+  String get tourWorkTitle;
+
+  /// No description provided for @tourWorkBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Just the title and how long it is. Chapters can wait.'**
+  String get tourWorkBody;
+
+  /// No description provided for @tourGotIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get tourGotIt;
+
+  /// The one-time line about the Aim on the first Reading.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes, plural, =1{1 min. Your best + 1. Beat it and it grows.} other{{minutes} min. Your best + 1. Beat it and it grows.}}'**
+  String tourAimHint(int minutes);
+
+  /// No description provided for @tourDemoAsk.
+  ///
+  /// In en, this message translates to:
+  /// **'Want to see what happens when Instagram calls?'**
+  String get tourDemoAsk;
+
+  /// No description provided for @tourDemoShow.
+  ///
+  /// In en, this message translates to:
+  /// **'Show me'**
+  String get tourDemoShow;
+
+  /// No description provided for @tourNotNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get tourNotNow;
+
+  /// On the demo Urge, which records nothing.
+  ///
+  /// In en, this message translates to:
+  /// **'Just a demo. Nothing counts.'**
+  String get tourDemoBadge;
+
+  /// No description provided for @tourUrgeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'This is the \"not yet\" screen. Going back is a win, and opening it anyway is always allowed.'**
+  String get tourUrgeHint;
+
+  /// No description provided for @tourBreakHint.
+  ///
+  /// In en, this message translates to:
+  /// **'This break is legal brainrot. Scroll guilt-free, then come back.'**
+  String get tourBreakHint;
+
+  /// No description provided for @tourWatchAsk.
+  ///
+  /// In en, this message translates to:
+  /// **'Want the \"not yet\" screen when Instagram calls for real?'**
+  String get tourWatchAsk;
+
+  /// No description provided for @tourWatchTurnOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn it on'**
+  String get tourWatchTurnOn;
+
+  /// After coming back from Accessibility settings with it switched on.
+  ///
+  /// In en, this message translates to:
+  /// **'The \"not yet\" screen is on.'**
+  String get tourWatchOn;
+
+  /// After coming back from Accessibility settings with it still off.
+  ///
+  /// In en, this message translates to:
+  /// **'It\'s still off. No stress: find Doomread under Accessibility and switch it on.'**
+  String get tourWatchOff;
+
+  /// No description provided for @tourWatchRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get tourWatchRetry;
+
+  /// No description provided for @tourReplay.
+  ///
+  /// In en, this message translates to:
+  /// **'Replay the intro'**
+  String get tourReplay;
 }
 
 class _AppLocalizationsDelegate

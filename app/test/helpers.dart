@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:doomread/app.dart';
+import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread/data/services/app_watch.dart';
 import 'package:doomread/data/services/break_over_notification.dart';
@@ -35,6 +36,9 @@ void testApp(
 /// Reduced motion is on unless [reduceMotion] is false: the user's Window in
 /// the House pulses for as long as the Reading screen is open, so the app
 /// would otherwise never settle.
+///
+/// The first-run tour is marked done, intro and hints, unless [tour] is
+/// true: then the app starts as a fresh install or an upgrade would.
 Future<void> pumpApp(
   WidgetTester tester,
   AppDatabase db, {
@@ -45,7 +49,9 @@ Future<void> pumpApp(
   HomeWidget? homeWidget,
   AppWatch? watch,
   ShareSheet? share,
+  bool tour = false,
 }) async {
+  if (!tour) await skipTour(db);
   if (reduceMotion) {
     tester.platformDispatcher.accessibilityFeaturesTestValue =
         const FakeAccessibilityFeatures(disableAnimations: true);
@@ -63,6 +69,14 @@ Future<void> pumpApp(
     ),
   );
   await tester.pumpAndSettle();
+}
+
+/// Marks the first-run tour as done, intro and hints, as for a user past
+/// their first evening.
+Future<void> skipTour(AppDatabase db) async {
+  final settings = SettingsRepository(db);
+  await settings.setIntroSeen();
+  await settings.setHintsSeen(Hint.values.toSet());
 }
 
 /// Stands in for the Android notification and records what the app did.

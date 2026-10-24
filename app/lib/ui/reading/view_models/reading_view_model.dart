@@ -56,6 +56,21 @@ class ReadingViewModel extends ChangeNotifier {
   /// a Slip say, lights up as usual. Nothing on screen changes now.
   void backOnShown() => _letPassed = false;
 
+  /// Whether the tour's demo Urge is showing: the real "not yet" screen,
+  /// held here only, so nothing about it reaches the journal.
+  bool get demo => _demo;
+  bool _demo = false;
+
+  void showDemo() {
+    _demo = true;
+    notifyListeners();
+  }
+
+  void endDemo() {
+    _demo = false;
+    notifyListeners();
+  }
+
   Session? get session => record?.at(_sessions.now());
 
   /// The Aim for tonight, from the Sessions before this one on Works read,

@@ -1137,4 +1137,109 @@ class AppLocalizationsFa extends AppLocalizations {
   String sharePosterUrges(int count) {
     return 'بار وسوسه رو رد کردم';
   }
+
+  @override
+  String get tourSkip => 'رد کن';
+
+  @override
+  String get tourLater => 'بعداً';
+
+  @override
+  String get tourStoryTitle =>
+      'تا حالا یه فیلم دو ساعت و نیمه رو با رفیقات دیدی و دستت نرفته سمت گوشی؟';
+
+  @override
+  String get tourStoryBody =>
+      'وسوسه اومد، ولی محلش ندادی؛ چون بقیه هم داشتن نگاه می‌کردن.';
+
+  @override
+  String get tourStoryNext => 'آره، دقیقاً';
+
+  @override
+  String get tourCompanyTitle =>
+      'تنهایی، وسوسه می‌بره. ما اون جمع رو برمی‌گردونیم.';
+
+  @override
+  String get tourCompanyBody =>
+      'پنجره‌ی روشن بقیه، یه استراحت که از قبل معلومه، و ته کتاب که جلوی چشمته.';
+
+  @override
+  String get tourCompanyNext => 'پایه‌ام';
+
+  @override
+  String get tourToneTitle => 'بگو چه‌جوری باهات حرف بزنم';
+
+  @override
+  String get tourToneBody =>
+      'وسط فصل، اینستاگرام صدات می‌کنه. این سه‌جور جوابیه که می‌دم. هر کدوم رو دوست داری بزن.';
+
+  @override
+  String get tourToneNext => 'همینه';
+
+  @override
+  String get tourToneLater => 'هر وقت خواستی از تنظیمات عوضش کن.';
+
+  @override
+  String get tourWorkTitle => 'چی رو می‌خوای تموم کنی؟';
+
+  @override
+  String get tourWorkBody => 'فقط اسمش و این‌که چقدره. فصل‌ها بمونه برای بعد.';
+
+  @override
+  String get tourGotIt => 'فهمیدم';
+
+  @override
+  String tourAimHint(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: '$minutesString دقیقه. رکوردت به‌علاوه‌ی یکی. بزنیش، بیشتر می‌شه.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get tourDemoAsk =>
+      'می‌خوای ببینی وقتی اینستاگرام صدات می‌کنه چی می‌شه؟';
+
+  @override
+  String get tourDemoShow => 'نشونم بده';
+
+  @override
+  String get tourNotNow => 'الان نه';
+
+  @override
+  String get tourDemoBadge => 'فقط نمایشیه. چیزی ثبت نمی‌شه.';
+
+  @override
+  String get tourUrgeHint =>
+      'این صفحه‌ی «هنوز نه»ـه. برگشتن یعنی بردی، باز کردنش هم همیشه آزاده.';
+
+  @override
+  String get tourBreakHint =>
+      'این استراحت یعنی ریلز قانونی. بی‌عذاب وجدان بچرخ، بعد برگرد.';
+
+  @override
+  String get tourWatchAsk =>
+      'می‌خوای وقتی اینستاگرام واقعاً صدات کرد، صفحه‌ی «هنوز نه» بیاد؟';
+
+  @override
+  String get tourWatchTurnOn => 'روشنش کن';
+
+  @override
+  String get tourWatchOn => 'صفحه‌ی «هنوز نه» روشنه.';
+
+  @override
+  String get tourWatchOff =>
+      'هنوز خاموشه. اشکال نداره؛ توی دسترس‌پذیری، باز گوشی؟! رو پیدا کن و روشنش کن.';
+
+  @override
+  String get tourWatchRetry => 'دوباره';
+
+  @override
+  String get tourReplay => 'دوباره دیدن معرفی';
 }

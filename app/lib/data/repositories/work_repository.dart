@@ -25,6 +25,10 @@ class WorkRepository {
           .watch()
           .map((rows) => rows.map(toWork).toList());
 
+  /// Whether any Work was ever added on this device, deleted ones included.
+  Future<bool> any() async =>
+      await (_db.select(_db.works)..limit(1)).getSingleOrNull() != null;
+
   /// The current Work on its Road, or null before any Work exists.
   Stream<Road?> watchCurrent() => _current().watchSingleOrNull().map((row) {
     if (row == null) return null;

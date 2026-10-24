@@ -18,27 +18,48 @@ enum EmptyScene {
 
   EmptyScene(this._painter);
 
-  final _ScenePainter Function(Animation<double> light, {required bool rtl})
+  final ScenePainter Function(Animation<double> light, {required bool rtl})
   _painter;
 }
 
 /// [scene], drawn up to [maxWidth] wide and centred. Its light comes on
 /// once, gently, when the screen opens, or is simply on with reduced motion.
-class EmptySceneView extends StatefulWidget {
+class EmptySceneView extends StatelessWidget {
   const EmptySceneView(this.scene, {this.maxWidth = 320, super.key});
 
   final EmptyScene scene;
   final double maxWidth;
 
   @override
-  State<EmptySceneView> createState() => _EmptySceneViewState();
+  Widget build(BuildContext context) =>
+      PaintedScene(scene._painter, maxWidth: maxWidth);
 }
 
-class _EmptySceneViewState extends State<EmptySceneView>
+/// A painted scene up to [maxWidth] wide and centred, its light coming on
+/// once over [duration] when it first shows, or simply on with reduced
+/// motion. It's art, so screen readers skip it.
+class PaintedScene extends StatefulWidget {
+  const PaintedScene(
+    this.painter, {
+    this.maxWidth = 320,
+    this.duration = const Duration(milliseconds: 1600),
+    super.key,
+  });
+
+  final ScenePainter Function(Animation<double> light, {required bool rtl})
+  painter;
+  final double maxWidth;
+  final Duration duration;
+
+  @override
+  State<PaintedScene> createState() => _PaintedSceneState();
+}
+
+class _PaintedSceneState extends State<PaintedScene>
     with SingleTickerProviderStateMixin {
   late final _controller = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 1600),
+    duration: widget.duration,
   );
   late final _light = CurvedAnimation(
     parent: _controller,
@@ -64,22 +85,25 @@ class _EmptySceneViewState extends State<EmptySceneView>
   }
 
   @override
-  Widget build(BuildContext context) => Center(
-    child: ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: widget.maxWidth),
-      child: ExcludeSemantics(
-        child: AspectRatio(
-          aspectRatio: _width / _height,
-          child: CustomPaint(
-            painter: widget.scene._painter(
-              _light,
-              rtl: Directionality.of(context) == TextDirection.rtl,
-            ),
+  Widget build(BuildContext context) {
+    final painter = widget.painter(
+      _light,
+      rtl: Directionality.of(context) == TextDirection.rtl,
+    );
+    // Only as tall as the scene, so a parent can place it.
+    return Center(
+      heightFactor: 1,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: widget.maxWidth),
+        child: ExcludeSemantics(
+          child: AspectRatio(
+            aspectRatio: painter.frame.aspectRatio,
+            child: CustomPaint(painter: painter),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 // Every scene is drawn left to right in these units, then scaled to fit and
@@ -87,15 +111,22 @@ class _EmptySceneViewState extends State<EmptySceneView>
 const _width = 240.0;
 const _height = 120.0;
 
-abstract class _ScenePainter extends CustomPainter {
-  _ScenePainter(this.light, {required this.rtl}) : super(repaint: light);
+/// A scene drawn left to right in its own [frame] units, then scaled to
+/// fit and flipped for right-to-left.
+abstract class ScenePainter extends CustomPainter {
+  ScenePainter(this.light, {required this.rtl}) : super(repaint: light);
 
   final Animation<double> light;
   final bool rtl;
 
+  /// The scene's own units; 240 by 120 unless a scene needs more.
+  Size get frame => const Size(_width, _height);
+
   @override
   void paint(Canvas canvas, Size size) {
-    final s = math.min(size.width / _width, size.height / _height);
+    final w = frame.width;
+    final h = frame.height;
+    final s = math.min(size.width / w, size.height / h);
     canvas.save();
     if (rtl) {
       canvas
@@ -103,12 +134,9 @@ abstract class _ScenePainter extends CustomPainter {
         ..scale(-1, 1);
     }
     canvas
-      ..translate(
-        (size.width - _width * s) / 2,
-        (size.height - _height * s) / 2,
-      )
+      ..translate((size.width - w * s) / 2, (size.height - h * s) / 2)
       ..scale(s)
-      ..clipRect(const Rect.fromLTWH(0, 0, _width, _height));
+      ..clipRect(Rect.fromLTWH(0, 0, w, h));
     draw(canvas, light.value);
     canvas.restore();
   }
@@ -117,13 +145,14 @@ abstract class _ScenePainter extends CustomPainter {
   void draw(Canvas canvas, double on);
 
   @override
-  bool shouldRepaint(_ScenePainter old) => old.rtl != rtl;
+  bool shouldRepaint(ScenePainter old) => old.rtl != rtl;
 }
 
-Paint _fill(Color color) => Paint()..color = color;
+/// A plain fill in [color].
+Paint sceneFill(Color color) => Paint()..color = color;
 
 /// A warm pool of light around [centre], strongest in the middle.
-void _glowAt(Canvas canvas, Offset centre, double radius, double alpha) {
+void sceneGlow(Canvas canvas, Offset centre, double radius, double alpha) {
   canvas.drawCircle(
     centre,
     radius,
@@ -145,7 +174,7 @@ const _leafLit = Color(0xFF5C8A6E);
 const _pencilWood = Color(0xFFE8C9A0);
 const _eraser = Color(0xFFD9918A);
 
-class _DarkWindowPainter extends _ScenePainter {
+class _DarkWindowPainter extends ScenePainter {
   _DarkWindowPainter(super.light, {required super.rtl});
 
   // The user's Window, second row from the top, in the middle of the block.
@@ -154,7 +183,7 @@ class _DarkWindowPainter extends _ScenePainter {
   @override
   void draw(Canvas canvas, double on) {
     // A few stars, the moon on the end side, and two dark neighbours.
-    final star = _fill(Palette.mute.withValues(alpha: 0.45));
+    final star = sceneFill(Palette.mute.withValues(alpha: 0.45));
     for (final (x, y, r) in [(20.0, 18.0, 0.9), (52.0, 8.0, 0.7)]) {
       canvas.drawCircle(Offset(x, y), r, star);
     }
@@ -165,10 +194,10 @@ class _DarkWindowPainter extends _ScenePainter {
       ..drawCircle(
         const Offset(214, 20),
         9,
-        _fill(Palette.paper.withValues(alpha: 0.9)),
+        sceneFill(Palette.paper.withValues(alpha: 0.9)),
       )
       // The shadow side of the moon, so it reads as a crescent.
-      ..drawCircle(const Offset(218, 17), 8, _fill(Palette.night))
+      ..drawCircle(const Offset(218, 17), 8, sceneFill(Palette.night))
       ..drawPath(
         Path()
           ..moveTo(0, _height)
@@ -178,16 +207,19 @@ class _DarkWindowPainter extends _ScenePainter {
           ..lineTo(28, 58)
           ..lineTo(28, _height)
           ..close(),
-        _fill(Palette.deep),
+        sceneFill(Palette.deep),
       )
       ..drawRect(
         const Rect.fromLTWH(210, 64, 30, _height - 64),
-        _fill(Palette.deep),
+        sceneFill(Palette.deep),
       )
       // The House: wall, chimney, the roof ledge.
-      ..drawRect(const Rect.fromLTWH(78, 22, 12, 12), _fill(Palette.wall))
-      ..drawRect(const Rect.fromLTWH(38, 30, 164, 90), _fill(Palette.wall))
-      ..drawRect(const Rect.fromLTWH(34, 28, 172, 5), _fill(Palette.newFloor));
+      ..drawRect(const Rect.fromLTWH(78, 22, 12, 12), sceneFill(Palette.wall))
+      ..drawRect(const Rect.fromLTWH(38, 30, 164, 90), sceneFill(Palette.wall))
+      ..drawRect(
+        const Rect.fromLTWH(34, 28, 172, 5),
+        sceneFill(Palette.newFloor),
+      );
 
     for (var r = 0; r < 2; r++) {
       for (var c = 0; c < 5; c++) {
@@ -205,26 +237,26 @@ class _DarkWindowPainter extends _ScenePainter {
   }) {
     final rounded = RRect.fromRectAndRadius(pane, const Radius.circular(1.5));
     canvas
-      ..drawRRect(rounded, _fill(Palette.unlit))
+      ..drawRRect(rounded, sceneFill(Palette.unlit))
       // A sill under each, catching a little moonlight.
       ..drawRect(
         Rect.fromLTWH(pane.left - 2, pane.bottom + 1, pane.width + 4, 2),
-        _fill(Palette.raise),
+        sceneFill(Palette.raise),
       );
     if (!mine) {
       // The frame's middle bar.
       canvas.drawRect(
         Rect.fromLTWH(pane.center.dx - 0.5, pane.top, 1, pane.height),
-        _fill(Palette.wall),
+        sceneFill(Palette.wall),
       );
       return;
     }
     // Yours: the lamp is in there, switched off, and the frame is warm,
     // as if it knows what's coming.
-    final ink = _fill(Palette.indicator);
+    final ink = sceneFill(Palette.indicator);
     final x = pane.left;
     final y = pane.top;
-    _glowAt(canvas, pane.center, 18, 0.24 * on);
+    sceneGlow(canvas, pane.center, 18, 0.24 * on);
     canvas
       ..drawPath(
         Path()
@@ -256,7 +288,7 @@ class _DarkWindowPainter extends _ScenePainter {
   }
 }
 
-class _EmptyShelfPainter extends _ScenePainter {
+class _EmptyShelfPainter extends ScenePainter {
   _EmptyShelfPainter(super.light, {required super.rtl});
 
   @override
@@ -265,7 +297,7 @@ class _EmptyShelfPainter extends _ScenePainter {
     const shelfTop = 88.0;
 
     // The lamp's light on the wall and down onto the shelf.
-    _glowAt(canvas, const Offset(120, 66), 54, 0.14 * on);
+    sceneGlow(canvas, const Offset(120, 66), 54, 0.14 * on);
     canvas
       ..drawPath(
         Path()
@@ -294,11 +326,11 @@ class _EmptyShelfPainter extends _ScenePainter {
       )
       ..drawRRect(
         RRect.fromLTRBR(116.5, 18, 123.5, 22, const Radius.circular(1)),
-        _fill(Palette.indicator),
+        sceneFill(Palette.indicator),
       )
       ..drawOval(
         Rect.fromCenter(center: shade.translate(0, -1), width: 26, height: 6),
-        _fill(Color.lerp(Palette.unlit, Palette.me, on)!),
+        sceneFill(Color.lerp(Palette.unlit, Palette.me, on)!),
       )
       ..drawPath(
         Path()
@@ -308,16 +340,16 @@ class _EmptyShelfPainter extends _ScenePainter {
           ..lineTo(107, shade.dy)
           ..quadraticBezierTo(109, 26, 114, 21)
           ..close(),
-        _fill(Palette.raise),
+        sceneFill(Palette.raise),
       )
       ..drawRect(
         const Rect.fromLTWH(107, 33, 26, 1.2),
-        _fill(Palette.lamp.withValues(alpha: 0.5 * on)),
+        sceneFill(Palette.lamp.withValues(alpha: 0.5 * on)),
       );
 
     // The shelf: a plank on two brackets, its top catching the light.
     final plank = Color.lerp(Palette.raise, Palette.tickPassed, 0.55 * on)!;
-    final bracket = _fill(Palette.line);
+    final bracket = sceneFill(Palette.line);
     for (final x in [62.0, 170.0]) {
       canvas.drawPath(
         Path()
@@ -333,13 +365,15 @@ class _EmptyShelfPainter extends _ScenePainter {
     canvas
       ..drawRect(
         const Rect.fromLTWH(46, shelfTop + 2, 148, 5),
-        _fill(Palette.raise),
+        sceneFill(Palette.raise),
       )
-      ..drawRect(const Rect.fromLTWH(46, shelfTop, 148, 2.5), _fill(plank));
+      ..drawRect(const Rect.fromLTWH(46, shelfTop, 148, 2.5), sceneFill(plank));
 
     // A pot plant at the start and a bookend at the end, holding up nothing.
-    final pot = _fill(Color.lerp(Palette.indicator, Palette.soft, 0.25 * on)!);
-    final leaf = _fill(Color.lerp(_leafDark, _leafLit, on)!);
+    final pot = sceneFill(
+      Color.lerp(Palette.indicator, Palette.soft, 0.25 * on)!,
+    );
+    final leaf = sceneFill(Color.lerp(_leafDark, _leafLit, on)!);
     canvas
       ..drawPath(
         Path()
@@ -385,34 +419,34 @@ class _EmptyShelfPainter extends _ScenePainter {
           ..lineTo(186, shelfTop - 2)
           ..lineTo(186, shelfTop)
           ..close(),
-        _fill(Color.lerp(Palette.indicator, Palette.mute, 0.4 * on)!),
+        sceneFill(Color.lerp(Palette.indicator, Palette.mute, 0.4 * on)!),
       );
   }
 }
 
-class _BlankPagePainter extends _ScenePainter {
+class _BlankPagePainter extends ScenePainter {
   _BlankPagePainter(super.light, {required super.rtl});
 
   @override
   void draw(Canvas canvas, double on) {
     const gutter = 120.0;
-    _glowAt(canvas, const Offset(gutter, 60), 58, 0.14 * on);
+    sceneGlow(canvas, const Offset(gutter, 60), 58, 0.14 * on);
     canvas
       // The cover peeking out under the pages, then the block of pages.
       ..drawRRect(
         RRect.fromLTRBR(36, 22, 204, 102, const Radius.circular(3)),
-        _fill(Palette.raise),
+        sceneFill(Palette.raise),
       )
       ..drawPath(
         _spread(gutter, top: 22, bottom: 99),
-        _fill(Palette.soft.withValues(alpha: 0.55)),
+        sceneFill(Palette.soft.withValues(alpha: 0.55)),
       );
 
     final paper = Color.lerp(Palette.soft, Palette.paper, on)!;
     for (final side in [-1.0, 1.0]) {
       final page = _page(gutter, side, top: 18, bottom: 96);
       canvas
-        ..drawPath(page, _fill(paper))
+        ..drawPath(page, sceneFill(paper))
         // The page dips into the gutter's shadow.
         ..drawPath(
           page,
@@ -445,31 +479,31 @@ class _BlankPagePainter extends _ScenePainter {
         ..lineTo(gutter + 5.5, 109)
         ..lineTo(gutter + 3, 113)
         ..close(),
-      _fill(Color.lerp(Palette.tickPassed, Palette.lamp, on)!),
+      sceneFill(Color.lerp(Palette.tickPassed, Palette.lamp, on)!),
     );
 
     // The pencil, waiting on the end page.
-    final wood = _fill(Color.lerp(Palette.soft, _pencilWood, on)!);
+    final wood = sceneFill(Color.lerp(Palette.soft, _pencilWood, on)!);
     canvas
       ..save()
       ..translate(176, 82)
       ..rotate(-0.42)
       ..drawRRect(
         RRect.fromLTRBR(-2, -2.6, 50, 2.6, const Radius.circular(1)),
-        _fill(Palette.deep.withValues(alpha: 0.18)),
+        sceneFill(Palette.deep.withValues(alpha: 0.18)),
       )
       ..drawRect(
         const Rect.fromLTRB(0, -3, 40, 3),
-        _fill(Color.lerp(Palette.tickPassed, Palette.lamp, on)!),
+        sceneFill(Color.lerp(Palette.tickPassed, Palette.lamp, on)!),
       )
       ..drawRect(
         const Rect.fromLTRB(0, -0.6, 40, 0.6),
-        _fill(Palette.deep.withValues(alpha: 0.12)),
+        sceneFill(Palette.deep.withValues(alpha: 0.12)),
       )
-      ..drawRect(const Rect.fromLTRB(40, -3, 44, 3), _fill(Palette.mute))
+      ..drawRect(const Rect.fromLTRB(40, -3, 44, 3), sceneFill(Palette.mute))
       ..drawRRect(
         RRect.fromLTRBR(44, -3, 49, 3, const Radius.circular(1.5)),
-        _fill(_eraser),
+        sceneFill(_eraser),
       )
       ..drawPath(
         Path()
@@ -485,7 +519,7 @@ class _BlankPagePainter extends _ScenePainter {
           ..lineTo(-9, 0)
           ..lineTo(-6, 1)
           ..close(),
-        _fill(Palette.deep),
+        sceneFill(Palette.deep),
       )
       ..restore();
   }

@@ -35,6 +35,12 @@ class SettingsScreen extends StatelessWidget {
               onTap: () => context.push('/tone'),
             ),
             if (context.read<AppWatch>().available) const _WatchedAppsTile(),
+            ListTile(
+              key: const Key('replayIntro'),
+              leading: const Icon(Icons.movie_outlined),
+              title: Text(l10n.tourReplay),
+              onTap: () => context.push('/intro?replay'),
+            ),
             ListTile(title: Text(l10n.language)),
             for (final MapEntry(:key, :value) in _languages.entries)
               RadioListTile<String>(value: key, title: Text(value)),

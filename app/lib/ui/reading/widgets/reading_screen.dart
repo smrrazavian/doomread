@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:doomread/data/repositories/session_repository.dart';
+import 'package:doomread/data/repositories/settings_repository.dart';
+import 'package:doomread/data/services/app_watch.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/number_format.dart';
 import 'package:doomread/ui/core/theme.dart';
@@ -8,6 +12,8 @@ import 'package:doomread/ui/planned_break/widgets/next_break_card.dart';
 import 'package:doomread/ui/reading/view_models/reading_view_model.dart';
 import 'package:doomread/ui/reading/widgets/house_view.dart';
 import 'package:doomread/ui/reading/widgets/work_app_card.dart';
+import 'package:doomread/ui/tour/view_models/tour_view_model.dart';
+import 'package:doomread/ui/tour/widgets/hint_card.dart';
 import 'package:doomread/ui/urge/urge_watch.dart';
 import 'package:doomread/ui/urge/widgets/urge_view.dart';
 import 'package:doomread_core/doomread_core.dart';
@@ -63,6 +69,18 @@ class _Reading extends StatelessWidget {
         app: urges.app?.label,
         onBack: vm.letPass.execute,
         onOpen: () => urges.slip(record),
+        note: const _UrgeNote(),
+      );
+    }
+    // The tour's demo: the real screen, but its buttons only close it.
+    if (vm.demo) {
+      return UrgeView(
+        record: record,
+        house: vm.house,
+        app: 'Instagram',
+        onBack: () => _endDemo(context, vm),
+        onOpen: () => _endDemo(context, vm),
+        note: const _UrgeNote(demo: true),
       );
     }
     if (session.slipped) {
@@ -115,6 +133,7 @@ class _Reading extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(aimLine, style: text.bodyMedium),
+              _Guide(aim: aim),
               const SizedBox(height: 24),
               NextBreakCard(sessionId: record.id),
               const SizedBox(height: 8),
@@ -168,6 +187,104 @@ class _Reading extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Out of the demo Urge, which leaves nothing behind.
+void _endDemo(BuildContext context, ReadingViewModel vm) => vm.endDemo();
+
+/// The first Session's guide under the Aim, one line at a time: the Aim,
+/// then the offer of a demo Urge. Each waits for the last one's answer.
+class _Guide extends StatelessWidget {
+  const _Guide({required this.aim});
+
+  final Duration aim;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final tour = context.watch<TourViewModel>();
+    final Widget card;
+    if (tour.shows(Hint.aim)) {
+      card = HintCard(
+        text: l10n.tourAimHint(aim.inMinutes),
+        onGotIt: () => tour.seen(Hint.aim),
+      );
+    } else if (tour.shows(Hint.demoUrge) &&
+        context.read<AppWatch>().available) {
+      card = HintCard(
+        text: l10n.tourDemoAsk,
+        actions: [
+          TextButton(
+            key: const Key('demoNotNow'),
+            onPressed: () => tour.seen(Hint.demoUrge),
+            child: Text(l10n.tourNotNow),
+          ),
+          TextButton(
+            key: const Key('demoShow'),
+            onPressed: () {
+              unawaited(tour.seen(Hint.demoUrge));
+              context.read<ReadingViewModel>().showDemo();
+            },
+            child: Text(l10n.tourDemoShow),
+          ),
+        ],
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
+    return Padding(padding: const EdgeInsets.only(top: 16), child: card);
+  }
+}
+
+/// Over the "not yet" screen: in the demo, that it is one, and the first
+/// time it shows, the tour's line about it.
+class _UrgeNote extends StatelessWidget {
+  const _UrgeNote({this.demo = false});
+
+  final bool demo;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final tour = context.watch<TourViewModel>();
+    final hint = tour.shows(Hint.urge);
+    if (!demo && !hint) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (demo)
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Palette.lamp),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
+                  child: Text(
+                    l10n.tourDemoBadge,
+                    style: Theme.of(context).textTheme.labelLarge
+                        ?.copyWith(color: Palette.lamp),
+                  ),
+                ),
+              ),
+            ),
+          if (demo && hint) const SizedBox(height: 12),
+          if (hint)
+            HintCard(
+              text: l10n.tourUrgeHint,
+              onGotIt: () => tour.seen(Hint.urge),
+            ),
+        ],
       ),
     );
   }

@@ -1022,5 +1022,63 @@
         "type": "int"
       }
     }
-  }
+  },
+  "tourSkip": "Skip",
+  "@tourSkip": {
+    "description": "On the intro cards: skips the intro and the whole first-run tour."
+  },
+  "tourLater": "Later",
+  "@tourLater": {
+    "description": "On the intro's last step: leaves without adding a Work yet."
+  },
+  "tourStoryTitle": "Ever watched a 2.5-hour film with friends and never touched your phone?",
+  "@tourStoryTitle": {
+    "description": "First intro card: the movie night that started Doomread."
+  },
+  "tourStoryBody": "The urge came. You let it pass, because everyone else was watching too.",
+  "tourStoryNext": "Yeah, actually",
+  "tourCompanyTitle": "Alone, the urge wins. We bring the company back.",
+  "tourCompanyBody": "Other people's lit windows, a break you plan ahead, and the end of the book in sight.",
+  "tourCompanyNext": "I'm in",
+  "tourToneTitle": "Pick how I talk to you",
+  "@tourToneTitle": {
+    "description": "Third intro card, over three speech bubbles: the same Urge line in each Tone."
+  },
+  "tourToneBody": "Instagram calls mid-chapter. Here's what I'd say, three ways. Tap the one you want to hear.",
+  "tourToneNext": "This one",
+  "tourToneLater": "You can change it any time in Settings.",
+  "tourWorkTitle": "What are you trying to finish?",
+  "tourWorkBody": "Just the title and how long it is. Chapters can wait.",
+  "tourGotIt": "Got it",
+  "tourAimHint": "{minutes, plural, =1{1 min. Your best + 1. Beat it and it grows.} other{{minutes} min. Your best + 1. Beat it and it grows.}}",
+  "@tourAimHint": {
+    "description": "The one-time line about the Aim on the first Reading.",
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "tourDemoAsk": "Want to see what happens when Instagram calls?",
+  "tourDemoShow": "Show me",
+  "tourNotNow": "Not now",
+  "tourDemoBadge": "Just a demo. Nothing counts.",
+  "@tourDemoBadge": {
+    "description": "On the demo Urge, which records nothing."
+  },
+  "tourUrgeHint": "This is the \"not yet\" screen. Going back is a win, and opening it anyway is always allowed.",
+  "tourBreakHint": "This break is legal brainrot. Scroll guilt-free, then come back.",
+  "tourWatchAsk": "Want the \"not yet\" screen when Instagram calls for real?",
+  "tourWatchTurnOn": "Turn it on",
+  "tourWatchOn": "The \"not yet\" screen is on.",
+  "@tourWatchOn": {
+    "description": "After coming back from Accessibility settings with it switched on."
+  },
+  "tourWatchOff": "It's still off. No stress: find Doomread under Accessibility and switch it on.",
+  "@tourWatchOff": {
+    "description": "After coming back from Accessibility settings with it still off."
+  },
+  "tourWatchRetry": "Try again",
+  "tourReplay": "Replay the intro"
 }

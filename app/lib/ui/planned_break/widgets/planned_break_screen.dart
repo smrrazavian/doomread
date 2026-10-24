@@ -1,4 +1,5 @@
 import 'package:doomread/data/repositories/session_repository.dart';
+import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/date_format.dart';
 import 'package:doomread/ui/core/number_format.dart';
@@ -6,6 +7,8 @@ import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/voice_text.dart';
 import 'package:doomread/ui/planned_break/break_text.dart';
 import 'package:doomread/ui/planned_break/view_models/planned_break_view_model.dart';
+import 'package:doomread/ui/tour/view_models/tour_view_model.dart';
+import 'package:doomread/ui/tour/widgets/hint_card.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -95,6 +98,14 @@ class _PlannedBreak extends StatelessWidget {
               Text(heading, style: text.headlineSmall),
               const SizedBox(height: 8),
               Text(sub, style: text.bodyMedium),
+              if (context.watch<TourViewModel>().shows(Hint.plannedBreak)) ...[
+                const SizedBox(height: 16),
+                HintCard(
+                  text: l10n.tourBreakHint,
+                  onGotIt: () =>
+                      context.read<TourViewModel>().seen(Hint.plannedBreak),
+                ),
+              ],
               const SizedBox(height: 32),
               Align(
                 alignment: AlignmentDirectional.centerStart,
