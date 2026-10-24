@@ -220,9 +220,6 @@
   "watchAllowUsage": "اجازه‌ی دسترسی به داده‌های استفاده",
   "watchAllowOverlay": "اجازه‌ی نمایش روی برنامه‌های دیگه",
   "tone": "لحن",
-  "@tone": {
-    "description": "TODO(owner): review this Persian copy (the Tone block, down to toneHint, and packages/core/lib/src/voice_fa.dart)."
-  },
   "toneChill": "ریلکس",
   "toneSpicy": "تند و تیز",
   "toneMom": "مامان‌مود",

@@ -3,7 +3,6 @@ import 'package:doomread_core/src/voice.dart';
 /// Persian Tone lines, in everyday spoken Persian (محاوره). Roast the
 /// Urge, never the person; no insults, no swearing, no guilt about the
 /// Planned break. After a Slip only Chill's line is ever said (see voice).
-// TODO(owner): review this Persian copy.
 const CopyPack fa = {
   Tone.chill: {
     Moment.urge: [
