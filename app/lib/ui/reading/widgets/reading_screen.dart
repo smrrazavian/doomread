@@ -148,6 +148,7 @@ class _Reading extends StatelessWidget {
                     kind: record.road.work.kind,
                     backOn: vm.letPassed,
                     onBackOn: vm.backOnShown,
+                    yalda: vm.yalda,
                   ),
                 ),
               ),

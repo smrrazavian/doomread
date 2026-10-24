@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:doomread/data/repositories/session_repository.dart';
+import 'package:doomread/ui/core/yalda.dart';
 import 'package:doomread/utils/command.dart';
 import 'package:doomread/utils/result.dart';
 import 'package:doomread_core/doomread_core.dart';
@@ -88,6 +89,9 @@ class ReadingViewModel extends ChangeNotifier {
       before: [for (final r in _before) ?r.at(now).startedAt],
     );
   }
+
+  /// Whether tonight is Shab-e Yalda, when the House has pomegranates.
+  bool get yalda => yaldaAt(_sessions.now());
 
   /// The clock: the Stretch running now, or while paused, the last one.
   Duration get shown => session?.stretches.lastOrNull?.length ?? Duration.zero;

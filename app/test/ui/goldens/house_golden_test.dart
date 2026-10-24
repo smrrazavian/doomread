@@ -5,7 +5,8 @@ import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The House close up, with the user's Window showing what they're on.
+/// The House close up, with the user's Window showing what they're on,
+/// and on Shab-e Yalda, with its pomegranates.
 void main() {
   const windows = [
     HouseWindow.yours,
@@ -15,8 +16,18 @@ void main() {
   ];
 
   for (final lang in ['en', 'fa']) {
-    for (final kind in [WorkKind.paperBook, WorkKind.film, WorkKind.podcast]) {
-      testWidgets('The House for a ${kind.name}, in $lang', (tester) async {
+    for (final (kind, yalda) in [
+      for (final yalda in [false, true])
+        for (final kind in [
+          WorkKind.paperBook,
+          WorkKind.film,
+          WorkKind.podcast,
+        ])
+          (kind, yalda),
+    ]) {
+      final name = '${yalda ? 'yalda_' : ''}${kind.name}';
+      testWidgets('The House for a ${kind.name}${yalda ? ' on Yalda' : ''}, '
+          'in $lang', (tester) async {
         tester.view
           ..physicalSize = const Size(1440, 800)
           ..devicePixelRatio = 4;
@@ -35,7 +46,7 @@ void main() {
             theme: buildTheme(Locale(lang)),
             home: Scaffold(
               body: Center(
-                child: HouseView(windows: windows, kind: kind),
+                child: HouseView(windows: windows, kind: kind, yalda: yalda),
               ),
             ),
           ),
@@ -43,7 +54,7 @@ void main() {
         await tester.pump();
         await expectLater(
           find.byType(HouseView),
-          matchesGoldenFile('house_${kind.name}_$lang.png'),
+          matchesGoldenFile('house_${name}_$lang.png'),
         );
       });
     }

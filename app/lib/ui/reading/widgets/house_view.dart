@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/theme.dart';
+import 'package:doomread/ui/core/yalda.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -14,12 +15,18 @@ import 'package:flutter/material.dart';
 /// When it opens, the user's Window switches on first, like a lamp, and the
 /// rest follow. Back from an Urge let pass ([backOn]) the others are on
 /// already and only the user's flickers back on.
+///
+/// On Shab-e Yalda ([yalda]) the light is warmer, pomegranates sit on a few
+/// windowsills, and there's half a one in the user's Window. They're painted
+/// with the scene, so they mirror with it and never move.
 class HouseView extends StatefulWidget {
   const HouseView({
     required this.windows,
     this.kind,
     this.backOn = false,
     this.onBackOn,
+    this.yalda = false,
+    this.caption = true,
     super.key,
   });
 
@@ -37,6 +44,12 @@ class HouseView extends StatefulWidget {
   /// Called once the user's Window is back on, so whoever asked for
   /// [backOn] can stop asking and a later House lights up as usual.
   final VoidCallback? onBackOn;
+
+  /// Whether tonight is Shab-e Yalda, the longest night.
+  final bool yalda;
+
+  /// Whether the line under the House shows; a poster leaves it out.
+  final bool caption;
 
   @override
   State<HouseView> createState() => _HouseViewState();
@@ -110,22 +123,25 @@ class _HouseViewState extends State<HouseView> with TickerProviderStateMixin {
                     backOn: _backOn,
                     kind: widget.kind,
                     rtl: Directionality.of(context) == TextDirection.rtl,
+                    yalda: widget.yalda,
                   ),
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            empty ? l10n.houseEmpty : l10n.houseYours,
-            style: Theme.of(context).textTheme.bodySmall!.copyWith(
-              color: Palette.mute,
-              // Persian needs taller lines once the line wraps.
-              height: Localizations.localeOf(context).languageCode == 'fa'
-                  ? 1.7
-                  : null,
+          if (widget.caption) ...[
+            const SizedBox(height: 8),
+            Text(
+              empty ? l10n.houseEmpty : l10n.houseYours,
+              style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                color: Palette.mute,
+                // Persian needs taller lines once the line wraps.
+                height: Localizations.localeOf(context).languageCode == 'fa'
+                    ? 1.7
+                    : null,
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );
@@ -200,6 +216,16 @@ const _tvOutline = Color(0xFFE4EEFF);
 /// The things in the user's Window, in shadow against its light.
 final Color _shadow = Palette.deep.withValues(alpha: 0.8);
 
+/// Yalda: the same Windows in warmer light.
+const _yaldaOutline = Color(0xFFFFEBD2);
+const _yaldaEarlierOutline = Color(0xFFEFA066);
+final Color _yaldaPastFill = Color.lerp(Palette.unlit, YaldaPalette.lamp, 0.4)!;
+
+/// The windowsills with pomegranates on them, by row and column. Fixed, so
+/// every Yalda looks the same: it's the night that brings them, not luck.
+const _pomegranateSills = [(0, 1), (1, 5), (2, 2), (0, 6)];
+const _sill = Color(0xFF34406A);
+
 class _HousePainter extends CustomPainter {
   _HousePainter({
     required this.windows,
@@ -208,6 +234,7 @@ class _HousePainter extends CustomPainter {
     required this.backOn,
     required this.kind,
     required this.rtl,
+    required this.yalda,
   }) : super(repaint: Listenable.merge([light, pulse]));
 
   final List<HouseWindow> windows;
@@ -216,6 +243,7 @@ class _HousePainter extends CustomPainter {
   final bool backOn;
   final WorkKind? kind;
   final bool rtl;
+  final bool yalda;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -289,9 +317,13 @@ class _HousePainter extends CustomPainter {
         );
         canvas.drawRRect(rounded, Paint()..color = Palette.unlit);
         final window = lit[(r, c)];
-        if (window == null) continue;
-        final yours = window == HouseWindow.yours;
-        _window(canvas, rounded, window, _on(yours ? 0 : order++, yours));
+        if (window != null) {
+          final yours = window == HouseWindow.yours;
+          _window(canvas, rounded, window, _on(yours ? 0 : order++, yours));
+        }
+        if (yalda && _pomegranateSills.contains((r, c))) {
+          _sillWith(canvas, pane);
+        }
       }
     }
     canvas.restore();
@@ -316,26 +348,35 @@ class _HousePainter extends CustomPainter {
             1 - 0.28 * (0.5 - 0.5 * math.cos(2 * math.pi * pulse.value));
         final a = on * breath;
         final tv = kind == WorkKind.series || kind == WorkKind.film;
+        final (glow, fill, outline) = tv
+            ? (_tvGlow, _tvGlow, _tvOutline)
+            : yalda
+            ? (YaldaPalette.lamp, YaldaPalette.me, _yaldaOutline)
+            : (Palette.lamp, Palette.me, _meOutline);
         canvas
           ..drawRect(
             pane.outerRect.inflate(5),
             Paint()
-              ..color = (tv ? _tvGlow : Palette.lamp).withValues(
-                alpha: 0.18 * a,
-              )
+              ..color = glow.withValues(alpha: (yalda ? 0.26 : 0.18) * a)
               ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3),
           )
-          ..drawRRect(
-            pane,
-            Paint()..color = (tv ? _tvGlow : Palette.me).withValues(alpha: a),
-          );
+          ..drawRRect(pane, Paint()..color = fill.withValues(alpha: a));
         if (kind case final kind?) _silhouette(canvas, pane.outerRect, kind, a);
+        // Half a pomegranate on the end side, clear of what they're on.
+        if (yalda) {
+          paintPomegranateHalf(
+            canvas,
+            Offset(pane.right - 4.3, pane.bottom - 4.4),
+            2.9,
+            opacity: on,
+          );
+        }
         canvas.drawRRect(
           pane,
           Paint()
             ..style = PaintingStyle.stroke
             ..strokeWidth = 2.5
-            ..color = (tv ? _tvOutline : _meOutline).withValues(alpha: a),
+            ..color = outline.withValues(alpha: a),
         );
       case HouseWindow.earlierTonight:
         canvas
@@ -345,14 +386,38 @@ class _HousePainter extends CustomPainter {
             Paint()
               ..style = PaintingStyle.stroke
               ..strokeWidth = 1.5
-              ..color = _earlierOutline.withValues(alpha: 0.6 * on),
+              ..color = (yalda ? _yaldaEarlierOutline : _earlierOutline)
+                  .withValues(alpha: 0.6 * on),
           );
       case HouseWindow.pastEvening:
+        if (yalda) {
+          // Candlelight carries: a faint warm halo round every lit Window.
+          canvas.drawRect(
+            pane.outerRect.inflate(3),
+            Paint()
+              ..color = YaldaPalette.lamp.withValues(alpha: 0.16 * on)
+              ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3),
+          );
+        }
         canvas.drawRRect(
           pane,
-          Paint()..color = _pastFill.withValues(alpha: on),
+          Paint()
+            ..color = (yalda ? _yaldaPastFill : _pastFill).withValues(
+              alpha: on,
+            ),
         );
     }
+  }
+
+  /// A windowsill under [pane] with a pomegranate on it, and a smaller one
+  /// beside it, sitting low against the glass.
+  void _sillWith(Canvas canvas, Rect pane) {
+    canvas.drawRect(
+      Rect.fromLTWH(pane.left - 2, pane.bottom, pane.width + 4, 1.6),
+      Paint()..color = _sill,
+    );
+    paintPomegranate(canvas, Offset(pane.left + 5.5, pane.bottom), 3);
+    paintPomegranate(canvas, Offset(pane.left + 10.8, pane.bottom), 2.2);
   }
 
   /// What the user is on, drawn small in their Window from the start side,
@@ -446,5 +511,8 @@ class _HousePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_HousePainter old) =>
-      old.rtl != rtl || old.kind != kind || !listEquals(old.windows, windows);
+      old.rtl != rtl ||
+      old.kind != kind ||
+      old.yalda != yalda ||
+      !listEquals(old.windows, windows);
 }
