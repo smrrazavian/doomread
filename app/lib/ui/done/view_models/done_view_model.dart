@@ -81,11 +81,18 @@ class DoneViewModel extends ChangeNotifier {
   /// Makes the Task undone again. Its Session stays stopped.
   late final Command0<void> undo;
 
-  /// Starts a Session on [next]; its result is the Session's id.
+  /// Starts a Session on [next], or goes back to one left open on it; its
+  /// result is the Session's id.
   late final Command0<String> startNext;
 
-  Future<Result<String>> _startNext() async =>
-      Result.ok(await _sessions.start(next!.id));
+  Future<Result<String>> _startNext() async {
+    final id = next!.id;
+    final now = _sessions.now();
+    for (final r in (await _sessions.all()).reversed) {
+      if (r.road.work.id == id && !r.at(now).stopped) return Result.ok(r.id);
+    }
+    return Result.ok(await _sessions.start(id));
+  }
 
   @override
   void dispose() {

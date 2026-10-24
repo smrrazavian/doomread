@@ -6,6 +6,7 @@ import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/domain/use_cases/task_done_use_case.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/number_format.dart';
+import 'package:doomread/ui/core/one_session.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/done/view_models/done_view_model.dart';
 import 'package:doomread/ui/settings/view_models/settings_view_model.dart';
@@ -78,6 +79,9 @@ class _DoneState extends State<_Done> with SingleTickerProviderStateMixin {
   void _toToday() => context.go('/tonight');
 
   Future<void> _next(DoneViewModel vm) async {
+    // One Session at a time: one synced in from another device may be on.
+    if (!await stopOtherSessionFirst(context, vm.next!.id)) return;
+    if (!mounted) return;
     await vm.startNext.execute();
     if (!mounted) return;
     if (vm.startNext.result case Ok(:final value)) {
