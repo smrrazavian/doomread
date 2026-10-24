@@ -13,44 +13,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
-/// The Finish poster as it will be shared, with the switch for the Note,
+/// Any share card as it will be shared, with optional [controls] under it,
 /// then Share. What's shared is exactly what's shown, drawn full size.
-class SharePreviewScreen extends StatelessWidget {
-  const SharePreviewScreen({
-    required this.finish,
-    required this.floors,
-    required this.floor,
+///
+/// [poster] is laid out on the fixed card canvas (see `PosterCanvas`).
+class SharePreview extends StatelessWidget {
+  const SharePreview({
+    required this.poster,
+    this.controls = const [],
     super.key,
   });
 
-  final Finish finish;
-
-  /// How many floors the Building has, and which one, from the top, is
-  /// this Finish.
-  final int floors;
-  final int floor;
+  final Widget poster;
+  final List<Widget> controls;
 
   @override
   Widget build(BuildContext context) => ChangeNotifierProvider(
     create: (c) => ShareViewModel(
-      c.read<SessionRepository>(),
       c.read<ShareSheet>(),
-      workId: finish.work.id,
+      now: c.read<SessionRepository>().now,
     ),
-    child: _Preview(finish: finish, floors: floors, floor: floor),
+    child: _Preview(poster: poster, controls: controls),
   );
 }
 
 class _Preview extends StatefulWidget {
-  const _Preview({
-    required this.finish,
-    required this.floors,
-    required this.floor,
-  });
+  const _Preview({required this.poster, required this.controls});
 
-  final Finish finish;
-  final int floors;
-  final int floor;
+  final Widget poster;
+  final List<Widget> controls;
 
   @override
   State<_Preview> createState() => _PreviewState();
@@ -121,13 +112,7 @@ class _PreviewState extends State<_Preview> {
                       child: FittedBox(
                         child: RepaintBoundary(
                           key: _poster,
-                          child: FinishPoster(
-                            finish: widget.finish,
-                            floors: widget.floors,
-                            floor: widget.floor,
-                            urgesLetPass: vm.extras.urgesLetPass,
-                            note: vm.note,
-                          ),
+                          child: widget.poster,
                         ),
                       ),
                     ),
@@ -135,15 +120,7 @@ class _PreviewState extends State<_Preview> {
                 ),
               ),
             ),
-            if (vm.extras.lastNote != null)
-              SwitchListTile(
-                key: const Key('showNote'),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-                title: Text(l10n.shareShowNote),
-                subtitle: Text(l10n.shareShowNoteHint),
-                value: vm.showNote,
-                onChanged: (on) => vm.showNote = on,
-              ),
+            ...widget.controls,
             Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(24, 8, 24, 16),
               child: ListenableBuilder(
@@ -161,4 +138,53 @@ class _PreviewState extends State<_Preview> {
       ),
     );
   }
+}
+
+/// The Finish poster's preview, with the switch for the Note.
+class SharePreviewScreen extends StatelessWidget {
+  const SharePreviewScreen({
+    required this.finish,
+    required this.floors,
+    required this.floor,
+    super.key,
+  });
+
+  final Finish finish;
+
+  /// How many floors the Building has, and which one, from the top, is
+  /// this Finish.
+  final int floors;
+  final int floor;
+
+  @override
+  Widget build(BuildContext context) => ChangeNotifierProvider(
+    create: (c) => FinishShareViewModel(
+      c.read<SessionRepository>(),
+      workId: finish.work.id,
+    ),
+    builder: (context, _) {
+      final l10n = AppLocalizations.of(context);
+      final vm = context.watch<FinishShareViewModel>();
+      return SharePreview(
+        poster: FinishPoster(
+          finish: finish,
+          floors: floors,
+          floor: floor,
+          urgesLetPass: vm.extras.urgesLetPass,
+          note: vm.note,
+        ),
+        controls: [
+          if (vm.extras.lastNote != null)
+            SwitchListTile(
+              key: const Key('showNote'),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+              title: Text(l10n.shareShowNote),
+              subtitle: Text(l10n.shareShowNoteHint),
+              value: vm.showNote,
+              onChanged: (on) => vm.showNote = on,
+            ),
+        ],
+      );
+    },
+  );
 }

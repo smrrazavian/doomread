@@ -10,23 +10,44 @@ import 'package:flutter/foundation.dart';
 /// A drawn poster, and the share sheet's title for it.
 typedef Poster = ({Uint8List png, String title});
 
-/// The Finish poster's preview: what goes on it beyond the Finish, whether
-/// the user's Note does, and sharing the drawn image.
+/// Sharing a drawn card, whichever it is.
 class ShareViewModel extends ChangeNotifier {
-  ShareViewModel(
-    SessionRepository sessions,
-    this._sheet, {
-    required this.workId,
-  }) : _now = sessions.now {
+  ShareViewModel(this._sheet, {required DateTime Function() now})
+    : _now = now {
+    share = Command1(_share);
+  }
+
+  final ShareSheet _sheet;
+  final DateTime Function() _now;
+
+  /// Shares a drawn poster. It ends with where the image was saved on
+  /// Linux, or null once Android's share sheet is up.
+  late final Command1<String?, Poster> share;
+
+  Future<Result<String?>> _share(Poster poster) async {
+    final t = _now();
+    String two(int n) => '$n'.padLeft(2, '0');
+    final name =
+        'doomread-${t.year}${two(t.month)}${two(t.day)}-'
+        '${two(t.hour)}${two(t.minute)}${two(t.second)}.png';
+    return Result.ok(
+      await _sheet.sharePng(poster.png, name: name, title: poster.title),
+    );
+  }
+}
+
+/// What the Finish poster says beyond the Finish, and whether the user's
+/// Note goes on it.
+class FinishShareViewModel extends ChangeNotifier {
+  FinishShareViewModel(SessionRepository sessions, {required this.workId})
+    : _now = sessions.now {
     _sub = sessions.watchAll().listen((all) {
       _extras = posterExtras(workId, all, _now());
       notifyListeners();
     });
-    share = Command1(_share);
   }
 
   final String workId;
-  final ShareSheet _sheet;
   final DateTime Function() _now;
   late final StreamSubscription<Object?> _sub;
 
@@ -45,21 +66,6 @@ class ShareViewModel extends ChangeNotifier {
 
   /// The Note on the poster right now; null when there's none or it's off.
   String? get note => _showNote ? _extras.lastNote : null;
-
-  /// Shares a drawn poster. It ends with where the image was saved on
-  /// Linux, or null once Android's share sheet is up.
-  late final Command1<String?, Poster> share;
-
-  Future<Result<String?>> _share(Poster poster) async {
-    final t = _now();
-    String two(int n) => '$n'.padLeft(2, '0');
-    final name =
-        'doomread-${t.year}${two(t.month)}${two(t.day)}-'
-        '${two(t.hour)}${two(t.minute)}${two(t.second)}.png';
-    return Result.ok(
-      await _sheet.sharePng(poster.png, name: name, title: poster.title),
-    );
-  }
 
   @override
   void dispose() {
