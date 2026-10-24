@@ -3,7 +3,7 @@ import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/road_view.dart';
-import 'package:doomread/ui/evening/widgets/odometer.dart';
+import 'package:doomread/ui/evening/widgets/rolling_field.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -127,7 +127,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 60));
       final odometer = find.byType(Odometer);
       final early = tester.widget<Odometer>(odometer);
-      expect(early.up, isTrue);
+      expect(early.roll.up, isTrue);
       await tester.pump(const Duration(milliseconds: 60));
       final later = tester.widget<Odometer>(odometer);
       expect(later.t, greaterThan(early.t), reason: 'it rolls on');
