@@ -108,6 +108,48 @@ void main() {
       );
     },
   );
+
+  group('isYalda', () {
+    test('is the evening of 30 Azar 1405: 21 December 2026', () {
+      expect(toSolarHijri(DateTime(2026, 12, 21)), (
+        year: 1405,
+        month: 9,
+        day: 30,
+      ));
+      expect(isYalda(DateTime(2026, 12, 21, 21)), isTrue);
+      expect(isYalda(DateTime(2026, 12, 20, 21)), isFalse);
+      expect(isYalda(DateTime(2026, 12, 22, 21)), isFalse);
+    });
+
+    test('lasts past midnight, until 4 in the morning', () {
+      expect(isYalda(DateTime(2026, 12, 22, 1, 30)), isTrue);
+      expect(isYalda(DateTime(2026, 12, 22, 5)), isFalse);
+      // Still the evening of the 20th.
+      expect(isYalda(DateTime(2026, 12, 21, 3)), isFalse);
+    });
+
+    test('is 21 December in 1404 too', () {
+      expect(isYalda(DateTime(2025, 12, 21, 22)), isTrue);
+      expect(isYalda(DateTime(2025, 12, 20, 22)), isFalse);
+    });
+
+    test('moves to 20 December after a leap February, as in 1403', () {
+      // Nowruz 1403 fell on 20 March 2024, so 30 Azar was 20 December.
+      expect(toSolarHijri(DateTime(2024, 12, 20)), (
+        year: 1403,
+        month: 9,
+        day: 30,
+      ));
+      expect(isYalda(DateTime(2024, 12, 20, 21)), isTrue);
+      expect(isYalda(DateTime(2024, 12, 21, 21)), isFalse);
+    });
+
+    test('moves with a Solar Hijri leap year: 1399 ended on 30 Esfand', () {
+      // 1399 is a leap year; its Yalda was 20 December 2020.
+      expect(isYalda(DateTime(2020, 12, 20, 21)), isTrue);
+      expect(isYalda(DateTime(2020, 12, 21, 21)), isFalse);
+    });
+  });
 }
 
 /// Finds 1 Farvardin of [year] by searching around 21 March.

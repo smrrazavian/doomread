@@ -36,6 +36,15 @@ int firstDayOfWeek(String languageCode) =>
       : (year: year, month: 7 + (k - 186) ~/ 30, day: (k - 186) % 30 + 1);
 }
 
+/// Whether [now] (the injected clock) falls on Shab-e Yalda, the longest
+/// night: the evening of 30 Azar, the last day of autumn in the Solar Hijri
+/// calendar. Evenings follow [eveningOf], so reading past midnight is still
+/// Yalda. It's tied to the date, never random.
+bool isYalda(DateTime now) {
+  final d = toSolarHijri(eveningOf(now));
+  return d.month == 9 && d.day == 30;
+}
+
 /// Years where the 33-year leap cycle of the Solar Hijri calendar shifts,
 /// so the arithmetic matches the astronomical calendar Iran uses. From
 /// Borkowski's algorithm, as in jalaali-js.
