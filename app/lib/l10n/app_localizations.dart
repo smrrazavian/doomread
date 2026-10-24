@@ -656,12 +656,6 @@ abstract class AppLocalizations {
   /// **'Break time. Finish the page you\'re on.'**
   String get breakDueAtPage;
 
-  /// No description provided for @takeBreak.
-  ///
-  /// In en, this message translates to:
-  /// **'I\'m there'**
-  String get takeBreak;
-
   /// No description provided for @nudgeBreak.
   ///
   /// In en, this message translates to:
@@ -715,12 +709,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{minutes, plural, =1{Start my minute} other{Start my {minutes} minutes}}'**
   String startMyBreak(int minutes);
-
-  /// No description provided for @keepReading.
-  ///
-  /// In en, this message translates to:
-  /// **'Keep reading instead'**
-  String get keepReading;
 
   /// No description provided for @onBreak.
   ///
@@ -1070,12 +1058,6 @@ abstract class AppLocalizations {
   /// **'Back to it at {time}.'**
   String backToWorkAt(String time);
 
-  /// No description provided for @keepGoing.
-  ///
-  /// In en, this message translates to:
-  /// **'Keep going instead'**
-  String get keepGoing;
-
   /// Under the Urge headline and the distance to the next Planned break.
   ///
   /// In en, this message translates to:
@@ -1285,6 +1267,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Whichever you pick, it roasts the urge, never you, and it\'s always kind after a slip.'**
   String get toneHint;
+
+  /// The due Planned break card: the one tap that starts the break, with its length.
+  ///
+  /// In en, this message translates to:
+  /// **'Start break ({minutes} min)'**
+  String breakCardStart(int minutes);
 }
 
 class _AppLocalizationsDelegate

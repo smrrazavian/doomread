@@ -52,7 +52,11 @@ void main() {
     // Page 154 after 12 minutes; chapter 5 ends at 156, two minutes on.
     await wait(tester, const Duration(minutes: 5));
     expect(find.text(l10n.nextBreakAtCheckpoint(5, 9)), findsOne);
-    expect(find.text(l10n.takeBreak), findsNothing, reason: 'not due yet');
+    expect(
+      find.text(l10n.breakCardStart(5)),
+      findsNothing,
+      reason: 'not due yet',
+    );
 
     await wait(tester, const Duration(minutes: 9));
     expect(find.text(l10n.breakDueAtCheckpoint(5)), findsOne);
@@ -60,16 +64,14 @@ void main() {
     // Nudged: 20 minutes in, chapter 6 is too far, so the end of the page.
     await tap(tester, l10n.nudgeBreak);
     expect(find.text(l10n.nextBreakAtPage(6)), findsOne);
-    expect(find.text(l10n.takeBreak), findsNothing);
+    expect(find.text(l10n.breakCardStart(5)), findsNothing);
 
     await wait(tester, const Duration(minutes: 6));
     expect(find.text(l10n.breakDueAtPage), findsOne);
-    await tap(tester, l10n.takeBreak);
-    expect(find.text(l10n.breakHere), findsOne);
-    expect(find.text(l10n.backToBookAt('21:25')), findsOne);
     expect(alarm.set, isNull, reason: 'nothing is set until it starts');
 
-    await tap(tester, l10n.startMyBreak(5));
+    // One tap on the card starts the break.
+    await tap(tester, l10n.breakCardStart(5));
     expect(find.text(l10n.onBreak), findsOne);
     expect(find.text('5:00'), findsOne);
     expect(alarm.set?.at, DateTime(2026, 10, 22, 21, 25));
@@ -86,8 +88,7 @@ void main() {
     await wait(tester, const Duration(minutes: 12));
     expect(find.text('12:00'), findsOne);
     expect(find.text(l10n.breakDueAtPage), findsOne);
-    await tap(tester, l10n.takeBreak);
-    await tap(tester, l10n.startMyBreak(3));
+    await tap(tester, l10n.breakCardStart(3));
     expect(alarm.set?.at, DateTime(2026, 10, 22, 21, 40));
 
     // Back early.
@@ -97,24 +98,21 @@ void main() {
     expect(find.text('1:00'), findsOne);
   });
 
-  testApp('Keep reading instead nudges the break later', (tester, db) async {
-    await open(tester, db);
+  testApp('One tap on the due card starts the break', (tester, db) async {
+    final alarm = await open(tester, db);
     await tap(tester, l10n.startReading);
     await wait(tester, const Duration(minutes: 14));
-    await tap(tester, l10n.takeBreak);
-    expect(find.text(l10n.chapterDone(5)), findsOne);
-    expect(find.text(l10n.backToChapterAt(6, '21:18')), findsOne);
-
-    await tap(tester, l10n.keepReading);
-    expect(find.text(l10n.nextBreakAtPage(6)), findsOne);
+    await tap(tester, l10n.breakCardStart(4));
+    expect(find.text(l10n.onBreak), findsOne);
+    expect(find.text(l10n.startMyBreak(4)), findsNothing);
+    expect(alarm.set, isNotNull);
   });
 
   testApp('Stop during a break unsets the alarm', (tester, db) async {
     final alarm = await open(tester, db);
     await tap(tester, l10n.startReading);
     await wait(tester, const Duration(minutes: 14));
-    await tap(tester, l10n.takeBreak);
-    await tap(tester, l10n.startMyBreak(4));
+    await tap(tester, l10n.breakCardStart(4));
     expect(alarm.set, isNotNull);
     expect(live.shown?.text, l10n.onBreak, reason: 'a break is no Pause');
     expect(live.shown?.runningSince, isNull);

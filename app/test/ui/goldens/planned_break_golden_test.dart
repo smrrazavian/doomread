@@ -69,19 +69,9 @@ void main() {
       );
     });
 
-    testApp('The Planned break, offered, in $lang', (tester, db) async {
-      await readTo14Minutes(tester, db, lang);
-      await tap(tester, l10n.takeBreak);
-      await expectLater(
-        find.byType(MaterialApp),
-        matchesGoldenFile('planned_break_$lang.png'),
-      );
-    });
-
     testApp('The Planned break, under way, in $lang', (tester, db) async {
       await readTo14Minutes(tester, db, lang);
-      await tap(tester, l10n.takeBreak);
-      await tap(tester, l10n.startMyBreak(4));
+      await tap(tester, l10n.breakCardStart(4));
       now = now.add(const Duration(minutes: 1, seconds: 30));
       await tester.pump(const Duration(seconds: 1));
       await expectLater(
@@ -92,8 +82,7 @@ void main() {
 
     testApp('The Planned break, over, in $lang', (tester, db) async {
       await readTo14Minutes(tester, db, lang);
-      await tap(tester, l10n.takeBreak);
-      await tap(tester, l10n.startMyBreak(4));
+      await tap(tester, l10n.breakCardStart(4));
       now = now.add(const Duration(minutes: 4, seconds: 20));
       await tester.pump(const Duration(seconds: 1));
       await expectLater(
@@ -118,8 +107,7 @@ void main() {
       db,
     ) async {
       await watchTo14Minutes(tester, db, lang);
-      await tap(tester, l10n.takeBreak);
-      await tap(tester, l10n.startMyBreak(4));
+      await tap(tester, l10n.breakCardStart(4));
       now = now.add(const Duration(minutes: 1, seconds: 30));
       await tester.pump(const Duration(seconds: 1));
       await expectLater(

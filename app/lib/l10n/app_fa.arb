@@ -114,7 +114,6 @@
   "nextBreakAtPage": "استراحتت: حدوداً {minutes} دقیقه‌ی دیگه، آخر همون صفحه‌ای که هستی.",
   "breakDueAtCheckpoint": "آخر فصل {chapter} وقت استراحته.",
   "breakDueAtPage": "وقت استراحته. این صفحه رو تموم کن.",
-  "takeBreak": "رسیدم",
   "nudgeBreak": "بعداً",
   "onBreakUntil": "تا {time} استراحتی.",
   "showBreak": "تایمر رو نشون بده",
@@ -124,7 +123,6 @@
   "backToBookAt": "ساعت {time} برمی‌گردیم سراغ کتاب.",
   "bestTonight": "{minutes, plural, =0{بهترین تمرکز امشبت هنوز زیر یه دقیقه‌ست.} other{بهترین تمرکز امشبت {minutes} دقیقه بوده.}}",
   "startMyBreak": "{minutes} دقیقه‌م رو شروع کن",
-  "keepReading": "نه، ادامه می‌دم",
   "onBreak": "داری استراحت می‌کنی.",
   "imBack": "برگشتم",
   "chapterWaiting": "فصل {chapter} منتظرته.",
@@ -186,7 +184,6 @@
   "episodeWaiting": "قسمت {episode} منتظرته.",
   "backToEpisodeAt": "ساعت {time} برمی‌گردیم سراغ قسمت {episode}.",
   "backToWorkAt": "ساعت {time} برمی‌گردیم سراغش.",
-  "keepGoing": "نه، ادامه می‌دم",
   "urgeBody": "خودت قرار این استراحت رو گذاشتی، یادته؟",
   "backToBook": "باشه، برمی‌گردم سر کتاب",
   "openAnyway": "نه، {app} رو باز کن",
@@ -227,5 +224,6 @@
   "toneSpicy": "تند و تیز",
   "toneMom": "مامان‌مود",
   "toneAsk": "باز گوشی؟! چطوری باهات حرف بزنه؟",
-  "toneHint": "هر کدوم رو انتخاب کنی، وسوسه رو مسخره می‌کنه نه خودتو، و وقتی کم آوردی همیشه مهربونه."
+  "toneHint": "هر کدوم رو انتخاب کنی، وسوسه رو مسخره می‌کنه نه خودتو، و وقتی کم آوردی همیشه مهربونه.",
+  "breakCardStart": "شروع استراحت ({minutes} دقیقه)"
 }

@@ -337,7 +337,6 @@
     }
   },
   "breakDueAtPage": "Break time. Finish the page you're on.",
-  "takeBreak": "I'm there",
   "nudgeBreak": "Later",
   "onBreakUntil": "On your break until {time}.",
   "@onBreakUntil": {
@@ -397,7 +396,6 @@
       }
     }
   },
-  "keepReading": "Keep reading instead",
   "onBreak": "On your break.",
   "imBack": "I'm back",
   "chapterWaiting": "Chapter {chapter} is waiting.",
@@ -763,7 +761,6 @@
       }
     }
   },
-  "keepGoing": "Keep going instead",
   "urgeBody": "You planned that break yourself, remember?",
   "@urgeBody": {
     "description": "Under the Urge headline and the distance to the next Planned break."
@@ -898,5 +895,15 @@
   "toneHint": "Whichever you pick, it roasts the urge, never you, and it's always kind after a slip.",
   "@toneHint": {
     "description": "Top of the Tone screen."
+  },
+  "breakCardStart": "Start break ({minutes} min)",
+  "@breakCardStart": {
+    "description": "The due Planned break card: the one tap that starts the break, with its length.",
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
   }
 }
