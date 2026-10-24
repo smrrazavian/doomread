@@ -141,7 +141,7 @@ void main() {
 
       await tap(tester, find.text(en.cardMonthAction));
       final card = tester.widget<MonthPoster>(find.byType(MonthPoster));
-      expect(card.month.month, (year: 2026, month: 10));
+      expect(card.month.calendarMonth, (year: 2026, month: 10));
       expect(card.month.count, 3);
       expect(card.month.readingOn(DateTime(2026, 10, 20)).inMinutes, 31);
       expect(card.firstDay, DateTime.monday);

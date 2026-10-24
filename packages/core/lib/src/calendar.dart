@@ -6,6 +6,13 @@ DateTime eveningOf(DateTime t) {
   return DateTime(shifted.year, shifted.month, shifted.day);
 }
 
+/// The nights Sessions started at [starts] light, as dates: each one's
+/// [eveningOf]. The Reading week and the Reading month both count nights
+/// this way.
+Set<DateTime> litEvenings(Iterable<DateTime> starts) => {
+  for (final s in starts) eveningOf(s),
+};
+
 /// The day a week starts on for [languageCode], as a [DateTime] weekday:
 /// Saturday in Persian, as in Iran, and Monday otherwise.
 int firstDayOfWeek(String languageCode) =>

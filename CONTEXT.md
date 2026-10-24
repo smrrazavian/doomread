@@ -108,6 +108,10 @@ _Avoid_: Follower, contact, buddy
 The count of nights in the current week with at least one **Session**. It restarts each week, never "breaks", and starts on Saturday in Persian.
 _Avoid_: Streak, chain
 
+**Reading month**:
+The nights of the current month, one **Window** each: lit if it had a **Session**, brighter the longer the user read, measured only against their own brightest night that month. It's a count that never breaks: a dark night is just dark. In Persian the month is Solar Hijri and its weeks start on Saturday.
+_Avoid_: Streak, chain, heatmap
+
 ### First run
 
 **Intro**:

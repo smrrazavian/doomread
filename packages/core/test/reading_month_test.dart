@@ -19,7 +19,7 @@ void main() {
     expect(m.nights, hasLength(31));
     expect(m.nights.first, DateTime(2026, 10));
     expect(m.nights.last, DateTime(2026, 10, 31));
-    expect(m.month, (year: 2026, month: 10));
+    expect(m.calendarMonth, (year: 2026, month: 10));
     // 1 October 2026 is a Thursday.
     expect(m.leadingDays(firstDayOfWeek('en')), 3);
   });
@@ -27,7 +27,7 @@ void main() {
   test('in Persian it is the Solar Hijri month, Saturday first', () {
     // 1 Aban 1405 is 23 October 2026, a Friday: the week's last day.
     final m = month(DateTime(2026, 10, 24, 21), solarHijri: true);
-    expect(m.month, (year: 1405, month: 8));
+    expect(m.calendarMonth, (year: 1405, month: 8));
     expect(m.nights, hasLength(30));
     expect(m.nights.first, DateTime(2026, 10, 23));
     expect(m.nights.last, DateTime(2026, 11, 21));
@@ -36,17 +36,17 @@ void main() {
 
   test('Mehr has 30 nights and Shahrivar 31', () {
     final mehr = month(DateTime(2026, 10, 22, 21), solarHijri: true);
-    expect(mehr.month, (year: 1405, month: 7));
+    expect(mehr.calendarMonth, (year: 1405, month: 7));
     expect(mehr.nights, hasLength(30));
     expect(mehr.nights.last, DateTime(2026, 10, 22));
     final shahrivar = month(DateTime(2026, 9, 1, 21), solarHijri: true);
-    expect(shahrivar.month, (year: 1405, month: 6));
+    expect(shahrivar.calendarMonth, (year: 1405, month: 6));
     expect(shahrivar.nights, hasLength(31));
   });
 
   test('Esfand ends the Solar Hijri year', () {
     final m = month(DateTime(2026, 3, 10, 21), solarHijri: true);
-    expect(m.month.month, 12);
+    expect(m.calendarMonth.month, 12);
     expect(m.nights.last.add(const Duration(days: 1)), DateTime(2026, 3, 21));
   });
 
@@ -66,7 +66,7 @@ void main() {
     expect(m.isLit(DateTime(2026, 10, 4)), isFalse);
     expect(m.readingOn(DateTime(2026, 10, 4)), Duration.zero);
     expect(m.count, 2);
-    expect(m.most, const Duration(minutes: 31));
+    expect(m.longestNight, const Duration(minutes: 31));
   });
 
   test('a Session at 1 a.m. lights the evening before', () {
@@ -75,7 +75,7 @@ void main() {
       sessions: [sat(DateTime(2026, 11, 1, 1), 20)],
     );
     expect(m.tonight, DateTime(2026, 10, 31));
-    expect(m.month.month, 10);
+    expect(m.calendarMonth.month, 10);
     expect(m.readingOn(DateTime(2026, 10, 31)), const Duration(minutes: 20));
   });
 
@@ -86,6 +86,6 @@ void main() {
     final m = month(DateTime(2026, 10, 22, 21), sessions: [open]);
     expect(m.isLit(DateTime(2026, 10, 5)), isTrue);
     expect(m.readingOn(DateTime(2026, 10, 5)), Duration.zero);
-    expect(m.most, Duration.zero);
+    expect(m.longestNight, Duration.zero);
   });
 }

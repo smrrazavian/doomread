@@ -34,16 +34,12 @@ class ReadingMonth {
       first = next(first, -1);
     }
     final nights = [for (var d = first; monthOf(d) == month; d = next(d, 1)) d];
-    final lit = <DateTime>{};
+    final lit = litEvenings([for (final s in sessions) ?s.startedAt]);
     final reading = <DateTime, Duration>{};
     for (final s in sessions) {
-      final start = s.startedAt;
-      if (start == null) continue;
-      final night = eveningOf(start);
-      lit.add(night);
-      if (s.stopped) {
-        reading[night] = (reading[night] ?? Duration.zero) + s.reading;
-      }
+      if (!s.stopped || s.startedAt == null) continue;
+      final night = eveningOf(s.startedAt!);
+      reading[night] = (reading[night] ?? Duration.zero) + s.reading;
     }
     return ReadingMonth._(nights, tonight, month, {
       for (final n in nights)
@@ -51,8 +47,12 @@ class ReadingMonth {
     });
   }
 
-  ReadingMonth._(List<DateTime> nights, this.tonight, this.month, this._reading)
-    : nights = List.unmodifiable(nights);
+  ReadingMonth._(
+    List<DateTime> nights,
+    this.tonight,
+    this.calendarMonth,
+    this._reading,
+  ) : nights = List.unmodifiable(nights);
 
   /// The month's nights in order, as dates.
   final List<DateTime> nights;
@@ -62,7 +62,7 @@ class ReadingMonth {
 
   /// Which month this is, in its own calendar: Aban (8) 1405, or October
   /// (10) 2026.
-  final ({int year, int month}) month;
+  final ({int year, int month}) calendarMonth;
 
   /// The reading on each lit night.
   final Map<DateTime, Duration> _reading;
@@ -75,8 +75,8 @@ class ReadingMonth {
 
   /// The month's longest night of reading, so a night can glow relative to
   /// the user's own month and nobody else's; zero before any.
-  Duration get most =>
-      _reading.values.fold(Duration.zero, (most, d) => d > most ? d : most);
+  Duration get longestNight =>
+      _reading.values.fold(Duration.zero, (top, d) => d > top ? d : top);
 
   /// How many nights this month had a Session.
   int get count => _reading.length;

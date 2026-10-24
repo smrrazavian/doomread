@@ -53,7 +53,9 @@ class MonthPoster extends StatelessWidget {
                 ),
                 const SizedBox(height: 28),
                 Text(
-                  l10n.cardMonthHeading(formatMonthYear(context, month.month)),
+                  l10n.cardMonthHeading(
+                    formatMonthYear(context, month.calendarMonth),
+                  ),
                   style: heading,
                 ),
                 const Spacer(),
@@ -136,7 +138,7 @@ class _Facade extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final most = month.most;
+    final most = month.longestNight;
     return DecoratedBox(
       decoration: const BoxDecoration(
         color: Palette.wall,

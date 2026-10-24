@@ -22,7 +22,7 @@ class ReadingWeek {
       for (var i = 0; i < 7; i++)
         DateTime(tonight.year, tonight.month, tonight.day - back + i),
     ];
-    final read = sessionStarts.map(eveningOf).toSet();
+    final read = litEvenings(sessionStarts);
     return ReadingWeek._(nights, tonight, {
       for (final n in nights)
         if (read.contains(n)) n,

@@ -93,6 +93,21 @@ void main() {
       }
     });
   });
+
+  test(
+    'lit evenings: one per night, past midnight counting the night before',
+    () {
+      expect(
+        litEvenings([
+          DateTime(2026, 10, 3, 21),
+          DateTime(2026, 10, 3, 23),
+          DateTime(2026, 10, 4, 1),
+          DateTime(2026, 10, 4, 21),
+        ]),
+        {DateTime(2026, 10, 3), DateTime(2026, 10, 4)},
+      );
+    },
+  );
 }
 
 /// Finds 1 Farvardin of [year] by searching around 21 March.
