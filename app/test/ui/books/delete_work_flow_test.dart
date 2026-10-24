@@ -74,9 +74,27 @@ void main() {
     await tester.pumpAndSettle();
     expect(await journal(db), [SessionEventKind.start]);
 
-    await tester.pump(const Duration(seconds: 10));
+    await tester.pump(const Duration(seconds: 15));
     await tester.pumpAndSettle();
     expect(find.text(en.undo), findsNothing);
+    await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+    expect(await journal(db), [SessionEventKind.start, SessionEventKind.stop]);
+  });
+
+  testApp('leaving the Library right after still stops the Session', (
+    tester,
+    db,
+  ) async {
+    await SessionRepository(db).start(await addDune(WorkRepository(db)));
+    await pumpApp(tester, db);
+    await openLibrary(tester);
+
+    await tester.drag(find.text('Dune'), const Offset(-600, 0));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(en.navTonight));
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 15));
+    await tester.pumpAndSettle();
     await tester.runAsync(() => Future<void>.delayed(Duration.zero));
     expect(await journal(db), [SessionEventKind.start, SessionEventKind.stop]);
   });

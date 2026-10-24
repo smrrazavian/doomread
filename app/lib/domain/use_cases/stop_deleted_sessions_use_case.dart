@@ -9,6 +9,7 @@ import 'package:doomread_core/doomread_core.dart';
 /// once its Work's delete can't be undone any more: `settled` names a Work
 /// whose Undo just went away, and any other Work deleted at least
 /// `undoWindow` ago counts as settled too, whichever device deleted it.
+/// A Work restored meanwhile isn't deleted, so nothing on it is stopped.
 class StopDeletedSessionsUseCase {
   StopDeletedSessionsUseCase(this._works, this._sessions);
 

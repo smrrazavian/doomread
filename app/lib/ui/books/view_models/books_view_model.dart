@@ -31,27 +31,39 @@ class BooksViewModel extends ChangeNotifier {
 
   Future<void> makeCurrent(String id) => _works.setCurrent(id);
 
-  /// Deletes [work]. A Session open on it runs on until [settle], so Undo
-  /// can bring both back.
+  /// Deletes [work]. A Session open on it runs on until Undo is gone,
+  /// so Undo can bring both back.
   Future<void> delete(Work work) {
     // Gone from the list at once: a swiped-away tile can't wait for the
     // database to say so.
     _all = [..._all.where((w) => w.id != work.id)];
     notifyListeners();
+    // A timer, not the snackbar closing: a snackbar on a tab left behind
+    // never finishes closing. After an Undo it finds nothing to stop.
+    _settling.add(
+      Timer(
+        StopDeletedSessionsUseCase.undoWindow,
+        () => unawaited(_stopDeleted(settled: work.id)),
+      ),
+    );
     return _works.delete(work.id);
   }
+
+  final _settling = <Timer>[];
 
   /// Undoes [delete], current again if it was.
   Future<void> restore(Work work, {required bool current}) =>
       _works.restore(work.id, current: current);
 
-  /// The chance to undo deleting [work] is gone: stops its open Sessions.
-  Future<void> settle(Work work) => _stopDeleted(settled: work.id);
-
   @override
   void dispose() {
     for (final s in _subs) {
       unawaited(s.cancel());
+    }
+    // ponytail: a pending stop is dropped with the Library; the next
+    // app start or sync stops it instead.
+    for (final t in _settling) {
+      t.cancel();
     }
     super.dispose();
   }
