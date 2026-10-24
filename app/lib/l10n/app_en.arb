@@ -2,13 +2,13 @@
   "@@locale": "en",
   "appTitle": "Doomread",
   "navTonight": "Tonight",
-  "navBooks": "Books",
+  "navBooks": "Library",
   "navBuilding": "Building",
   "navFriends": "Friends",
-  "tonightEmpty": "Add the book you are reading",
+  "tonightEmpty": "Add what you're reading, watching or listening to",
   "settings": "Settings",
   "language": "Language",
-  "tonightAddBook": "Add a book",
+  "tonightAddBook": "Add something",
   "pageOf": "Page {page} of {total}",
   "@pageOf": {
     "placeholders": {
@@ -40,9 +40,9 @@
       }
     }
   },
-  "booksEmpty": "No books yet",
+  "booksEmpty": "Nothing here yet",
   "readingNow": "Reading now",
-  "editBook": "Edit book",
+  "editBook": "Edit",
   "fieldTitle": "Title",
   "fieldAuthor": "Author",
   "fieldPages": "Total pages",
@@ -53,7 +53,7 @@
   "problemCheckpointPastEnd": "Chapter ends must be within the book's pages",
   "save": "Save",
   "account": "Account",
-  "accountSignedOutHint": "An account keeps your reading on all your devices. The app works fully without one.",
+  "accountSignedOutHint": "An account keeps your library on all your devices. The app works fully without one.",
   "accountUsername": "Username",
   "accountPassword": "Password",
   "accountSignIn": "Sign in",
@@ -77,7 +77,7 @@
   },
   "accountErrorRejected": "The server didn't accept that. Try again.",
   "accountErrorUnreachable": "Can't reach the server. Everything else still works; try again later.",
-  "changeBook": "Change book",
+  "changeBook": "Pick another",
   "startReading": "Start reading",
   "backToReading": "Back to reading",
   "aim": "{minutes, plural, =1{Aim: 1 minute in one go.} other{Aim: {minutes} minutes in one go.}}",
@@ -185,7 +185,7 @@
       }
     }
   },
-  "stretchTrendEmpty": "Read once and your longest stretch shows up here.",
+  "stretchTrendEmpty": "Start once and your longest stretch shows up here.",
   "stretchTrendDates": "From {from} to {to}.",
   "@stretchTrendDates": {
     "description": "The first and last evening on the Longest stretch trend, read out by screen readers.",
@@ -199,7 +199,7 @@
     }
   },
   "notificationAskTitle": "Keep the timer on your lock screen?",
-  "notificationAskBody": "While you read, Doomread shows one quiet notification with the timer and your book. It goes away when you stop, and that's all it's for.",
+  "notificationAskBody": "While you're at it, Doomread shows one quiet notification with the timer and what you're on. It goes away when you stop, and that's all it's for.",
   "notificationAskAllow": "Allow",
   "notificationAskNotNow": "Not now",
   "notificationPaused": "Paused at {time}",
@@ -212,8 +212,8 @@
     }
   },
   "buildingTitle": "Your building",
-  "buildingSub": "One floor for every book you finish.",
-  "buildingEmpty": "No floors yet. Finish a book and the first one lights up.",
+  "buildingSub": "One floor for everything you finish.",
+  "buildingEmpty": "No floors yet. Finish something and the first one lights up.",
   "floorDetails": "{pages, plural, =1{1 page} other{{pages} pages}}, {evenings, plural, =1{1 evening} other{{evenings} evenings}}",
   "@floorDetails": {
     "placeholders": {
@@ -285,11 +285,11 @@
       }
     }
   },
-  "houseEmpty": "Only your light is on for now. Each evening you read lights another.",
+  "houseEmpty": "Only your light is on for now. Each evening you show up lights another.",
   "@houseEmpty": {
     "description": "Under the House on the Reading screen when only the user's own Window is lit."
   },
-  "houseYours": "Every other light here is yours too, from an evening you read.",
+  "houseYours": "Every other light here is yours too, from an evening you showed up.",
   "@houseYours": {
     "description": "Under the House when it has other lit Windows; before Friends exist, they are all the user's own earlier Sessions."
   },

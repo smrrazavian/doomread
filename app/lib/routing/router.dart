@@ -120,7 +120,7 @@ class _NavShell extends StatelessWidget {
             label: l10n.navTonight,
           ),
           NavigationDestination(
-            icon: const Icon(Icons.menu_book_outlined),
+            icon: const Icon(Icons.video_library_outlined),
             label: l10n.navBooks,
           ),
           NavigationDestination(

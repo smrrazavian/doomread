@@ -16,7 +16,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get navTonight => 'امشب';
 
   @override
-  String get navBooks => 'کتاب‌ها';
+  String get navBooks => 'قفسه';
 
   @override
   String get navBuilding => 'ساختمون';
@@ -25,7 +25,8 @@ class AppLocalizationsFa extends AppLocalizations {
   String get navFriends => 'دوستا';
 
   @override
-  String get tonightEmpty => 'کتابی که داری می‌خونی رو اضافه کن';
+  String get tonightEmpty =>
+      'چیزی که داری می‌خونی، می‌بینی یا گوش می‌دی رو اضافه کن';
 
   @override
   String get settings => 'تنظیمات';
@@ -34,7 +35,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get language => 'زبان';
 
   @override
-  String get tonightAddBook => 'یه کتاب اضافه کن';
+  String get tonightAddBook => 'یه چیز اضافه کن';
 
   @override
   String pageOf(int page, int total) {
@@ -69,13 +70,13 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get booksEmpty => 'هنوز کتابی نداری';
+  String get booksEmpty => 'هنوز چیزی اضافه نکردی';
 
   @override
   String get readingNow => 'در حال خوندن';
 
   @override
-  String get editBook => 'ویرایش کتاب';
+  String get editBook => 'ویرایش';
 
   @override
   String get fieldTitle => 'عنوان';
@@ -110,7 +111,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get accountSignedOutHint =>
-      'با حساب کاربری، کتاب‌خوندنت روی همه‌ی دستگاه‌هات باهاته. بدون حساب هم برنامه کامل کار می‌کنه.';
+      'با حساب کاربری، قفسه‌ت روی همه‌ی دستگاه‌هات باهاته. بدون حساب هم برنامه کامل کار می‌کنه.';
 
   @override
   String get accountUsername => 'نام کاربری';
@@ -157,7 +158,7 @@ class AppLocalizationsFa extends AppLocalizations {
       'به سرور وصل نمی‌شه. بقیهٔ برنامه کار می‌کنه؛ بعداً دوباره امتحان کن.';
 
   @override
-  String get changeBook => 'عوض کردن کتاب';
+  String get changeBook => 'یه چیز دیگه';
 
   @override
   String get startReading => 'شروع خوندن';
@@ -312,7 +313,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get stretchTrendEmpty =>
-      'یه بار بخون، طولانی‌ترین تمرکزت اینجا نشون داده می‌شه.';
+      'یه بار بشین پاش، طولانی‌ترین تمرکزت اینجا نشون داده می‌شه.';
 
   @override
   String stretchTrendDates(String from, String to) {
@@ -324,7 +325,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get notificationAskBody =>
-      'وقتی داری می‌خونی، یه نوتیفیکیشن بی‌صدا تایمر و کتابت رو نشون می‌ده. وقتی تموم کنی خودش می‌ره، و کار دیگه‌ای هم باهاش نداریم.';
+      'وقتی مشغولی، یه نوتیفیکیشن بی‌صدا تایمر و چیزی که داری تمومش می‌کنی رو نشون می‌ده. وقتی تموم کنی خودش می‌ره، و کار دیگه‌ای هم باهاش نداریم.';
 
   @override
   String get notificationAskAllow => 'باشه';
@@ -341,11 +342,11 @@ class AppLocalizationsFa extends AppLocalizations {
   String get buildingTitle => 'ساختمون تو';
 
   @override
-  String get buildingSub => 'هر کتابی که تموم کنی، یه طبقه.';
+  String get buildingSub => 'هر چیزی که تموم کنی، یه طبقه.';
 
   @override
   String get buildingEmpty =>
-      'هنوز طبقه‌ای نداره. یه کتاب رو تموم کن تا اولین طبقه روشن شه.';
+      'هنوز طبقه‌ای نداره. یه چیزی رو تموم کن تا اولین طبقه روشن شه.';
 
   @override
   String floorDetails(int pages, int evenings) {
@@ -425,11 +426,11 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get houseEmpty =>
-      'فعلاً فقط چراغ تو روشنه. هر شب که بخونی، یه چراغ دیگه هم روشن می‌شه.';
+      'فعلاً فقط چراغ تو روشنه. هر شب که بشینی پاش، یه چراغ دیگه هم روشن می‌شه.';
 
   @override
   String get houseYours =>
-      'بقیه‌ی چراغ‌های اینجا هم مال خودتن، از شب‌هایی که خوندی.';
+      'بقیه‌ی چراغ‌های اینجا هم مال خودتن، از شب‌هایی که نشستی پاش.';
 
   @override
   String nextBreakAtCheckpoint(int chapter, int minutes) {

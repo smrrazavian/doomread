@@ -113,7 +113,7 @@ abstract class AppLocalizations {
   /// No description provided for @navBooks.
   ///
   /// In en, this message translates to:
-  /// **'Books'**
+  /// **'Library'**
   String get navBooks;
 
   /// No description provided for @navBuilding.
@@ -131,7 +131,7 @@ abstract class AppLocalizations {
   /// No description provided for @tonightEmpty.
   ///
   /// In en, this message translates to:
-  /// **'Add the book you are reading'**
+  /// **'Add what you\'re reading, watching or listening to'**
   String get tonightEmpty;
 
   /// No description provided for @settings.
@@ -149,7 +149,7 @@ abstract class AppLocalizations {
   /// No description provided for @tonightAddBook.
   ///
   /// In en, this message translates to:
-  /// **'Add a book'**
+  /// **'Add something'**
   String get tonightAddBook;
 
   /// No description provided for @pageOf.
@@ -173,7 +173,7 @@ abstract class AppLocalizations {
   /// No description provided for @booksEmpty.
   ///
   /// In en, this message translates to:
-  /// **'No books yet'**
+  /// **'Nothing here yet'**
   String get booksEmpty;
 
   /// No description provided for @readingNow.
@@ -185,7 +185,7 @@ abstract class AppLocalizations {
   /// No description provided for @editBook.
   ///
   /// In en, this message translates to:
-  /// **'Edit book'**
+  /// **'Edit'**
   String get editBook;
 
   /// No description provided for @fieldTitle.
@@ -251,7 +251,7 @@ abstract class AppLocalizations {
   /// No description provided for @accountSignedOutHint.
   ///
   /// In en, this message translates to:
-  /// **'An account keeps your reading on all your devices. The app works fully without one.'**
+  /// **'An account keeps your library on all your devices. The app works fully without one.'**
   String get accountSignedOutHint;
 
   /// No description provided for @accountUsername.
@@ -335,7 +335,7 @@ abstract class AppLocalizations {
   /// No description provided for @changeBook.
   ///
   /// In en, this message translates to:
-  /// **'Change book'**
+  /// **'Pick another'**
   String get changeBook;
 
   /// No description provided for @startReading.
@@ -473,7 +473,7 @@ abstract class AppLocalizations {
   /// No description provided for @stretchTrendEmpty.
   ///
   /// In en, this message translates to:
-  /// **'Read once and your longest stretch shows up here.'**
+  /// **'Start once and your longest stretch shows up here.'**
   String get stretchTrendEmpty;
 
   /// The first and last evening on the Longest stretch trend, read out by screen readers.
@@ -491,7 +491,7 @@ abstract class AppLocalizations {
   /// No description provided for @notificationAskBody.
   ///
   /// In en, this message translates to:
-  /// **'While you read, Doomread shows one quiet notification with the timer and your book. It goes away when you stop, and that\'s all it\'s for.'**
+  /// **'While you\'re at it, Doomread shows one quiet notification with the timer and what you\'re on. It goes away when you stop, and that\'s all it\'s for.'**
   String get notificationAskBody;
 
   /// No description provided for @notificationAskAllow.
@@ -521,13 +521,13 @@ abstract class AppLocalizations {
   /// No description provided for @buildingSub.
   ///
   /// In en, this message translates to:
-  /// **'One floor for every book you finish.'**
+  /// **'One floor for everything you finish.'**
   String get buildingSub;
 
   /// No description provided for @buildingEmpty.
   ///
   /// In en, this message translates to:
-  /// **'No floors yet. Finish a book and the first one lights up.'**
+  /// **'No floors yet. Finish something and the first one lights up.'**
   String get buildingEmpty;
 
   /// No description provided for @floorDetails.
@@ -605,13 +605,13 @@ abstract class AppLocalizations {
   /// Under the House on the Reading screen when only the user's own Window is lit.
   ///
   /// In en, this message translates to:
-  /// **'Only your light is on for now. Each evening you read lights another.'**
+  /// **'Only your light is on for now. Each evening you show up lights another.'**
   String get houseEmpty;
 
   /// Under the House when it has other lit Windows; before Friends exist, they are all the user's own earlier Sessions.
   ///
   /// In en, this message translates to:
-  /// **'Every other light here is yours too, from an evening you read.'**
+  /// **'Every other light here is yours too, from an evening you showed up.'**
   String get houseYours;
 
   /// On Reading: how far away the next Planned break is, in minutes of reading, when it is at a chapter end.

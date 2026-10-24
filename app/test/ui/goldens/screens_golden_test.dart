@@ -271,7 +271,7 @@ void main() {
         checkpoints: const [],
       );
       await openIn(tester, db, lang);
-      await tester.tap(find.byIcon(Icons.menu_book_outlined).first);
+      await tester.tap(find.byIcon(Icons.video_library_outlined));
       await tester.pumpAndSettle();
       await expectLater(
         find.byType(MaterialApp),

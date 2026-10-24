@@ -16,7 +16,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navTonight => 'Tonight';
 
   @override
-  String get navBooks => 'Books';
+  String get navBooks => 'Library';
 
   @override
   String get navBuilding => 'Building';
@@ -25,7 +25,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navFriends => 'Friends';
 
   @override
-  String get tonightEmpty => 'Add the book you are reading';
+  String get tonightEmpty =>
+      'Add what you\'re reading, watching or listening to';
 
   @override
   String get settings => 'Settings';
@@ -34,7 +35,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get language => 'Language';
 
   @override
-  String get tonightAddBook => 'Add a book';
+  String get tonightAddBook => 'Add something';
 
   @override
   String pageOf(int page, int total) {
@@ -75,13 +76,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get booksEmpty => 'No books yet';
+  String get booksEmpty => 'Nothing here yet';
 
   @override
   String get readingNow => 'Reading now';
 
   @override
-  String get editBook => 'Edit book';
+  String get editBook => 'Edit';
 
   @override
   String get fieldTitle => 'Title';
@@ -116,7 +117,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountSignedOutHint =>
-      'An account keeps your reading on all your devices. The app works fully without one.';
+      'An account keeps your library on all your devices. The app works fully without one.';
 
   @override
   String get accountUsername => 'Username';
@@ -164,7 +165,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Can\'t reach the server. Everything else still works; try again later.';
 
   @override
-  String get changeBook => 'Change book';
+  String get changeBook => 'Pick another';
 
   @override
   String get startReading => 'Start reading';
@@ -340,7 +341,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stretchTrendEmpty =>
-      'Read once and your longest stretch shows up here.';
+      'Start once and your longest stretch shows up here.';
 
   @override
   String stretchTrendDates(String from, String to) {
@@ -352,7 +353,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notificationAskBody =>
-      'While you read, Doomread shows one quiet notification with the timer and your book. It goes away when you stop, and that\'s all it\'s for.';
+      'While you\'re at it, Doomread shows one quiet notification with the timer and what you\'re on. It goes away when you stop, and that\'s all it\'s for.';
 
   @override
   String get notificationAskAllow => 'Allow';
@@ -369,11 +370,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buildingTitle => 'Your building';
 
   @override
-  String get buildingSub => 'One floor for every book you finish.';
+  String get buildingSub => 'One floor for everything you finish.';
 
   @override
   String get buildingEmpty =>
-      'No floors yet. Finish a book and the first one lights up.';
+      'No floors yet. Finish something and the first one lights up.';
 
   @override
   String floorDetails(int pages, int evenings) {
@@ -483,11 +484,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get houseEmpty =>
-      'Only your light is on for now. Each evening you read lights another.';
+      'Only your light is on for now. Each evening you show up lights another.';
 
   @override
   String get houseYours =>
-      'Every other light here is yours too, from an evening you read.';
+      'Every other light here is yours too, from an evening you showed up.';
 
   @override
   String nextBreakAtCheckpoint(int chapter, int minutes) {
