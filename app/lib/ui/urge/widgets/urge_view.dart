@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/number_format.dart';
@@ -7,6 +9,7 @@ import 'package:doomread/ui/planned_break/view_models/planned_break_view_model.d
 import 'package:doomread/ui/reading/widgets/house_view.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 /// The "not yet" screen over a Watched app: the House, how far the next
@@ -34,11 +37,17 @@ class UrgeView extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final work = record.road.work;
+    // Letting it pass is a small win: a light tap to say so.
+    void back() {
+      unawaited(HapticFeedback.lightImpact());
+      onBack();
+    }
+
     // System back is "Back to the book" too.
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) onBack();
+        if (!didPop) back();
       },
       child: _Moment(
         house: house,
@@ -55,7 +64,7 @@ class UrgeView extends StatelessWidget {
         go: work.kind.unit == WorkUnit.page
             ? l10n.backToBook
             : l10n.backToWork(work.kind.name),
-        onGo: onBack,
+        onGo: back,
         quiet: app == null ? l10n.openItAnyway : l10n.openAnyway(app!),
         onQuiet: onOpen,
       ),
