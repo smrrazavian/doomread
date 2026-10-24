@@ -170,12 +170,6 @@ abstract class AppLocalizations {
   /// **'Next chapter ends on page {page}'**
   String nextCheckpoint(int page);
 
-  /// No description provided for @booksEmpty.
-  ///
-  /// In en, this message translates to:
-  /// **'Nothing here yet'**
-  String get booksEmpty;
-
   /// No description provided for @readingNow.
   ///
   /// In en, this message translates to:
@@ -595,12 +589,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The story so far, in your words'**
   String get storySoFar;
-
-  /// No description provided for @storyEmpty.
-  ///
-  /// In en, this message translates to:
-  /// **'After each evening, the sentence you write about it lands here.'**
-  String get storyEmpty;
 
   /// No description provided for @bookFinished.
   ///
@@ -1315,6 +1303,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search apps'**
   String get whereIsSearch;
+
+  /// Tonight before any Work, under the painted House with every Window dark: the line above tonightEmpty and the Add button.
+  ///
+  /// In en, this message translates to:
+  /// **'Every window\'s dark tonight. Be the first light.'**
+  String get emptyTonight;
+
+  /// The Library with no Works, under a painted empty shelf. The Add button is below it.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty shelf, good lamp. Add that book, show or podcast you keep saying you\'ll finish.'**
+  String get emptyLibrary;
+
+  /// A Work's page with no Notes yet, under a painted open book with blank pages.
+  ///
+  /// In en, this message translates to:
+  /// **'Blank page for now. Write a line after each evening and the story fills in here.'**
+  String get emptyStory;
 }
 
 class _AppLocalizationsDelegate

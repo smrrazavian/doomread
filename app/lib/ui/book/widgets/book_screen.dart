@@ -2,6 +2,7 @@ import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/book/view_models/book_view_model.dart';
+import 'package:doomread/ui/core/empty_scenes.dart';
 import 'package:doomread/ui/core/road_view.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/work_text.dart';
@@ -71,14 +72,15 @@ class _Book extends StatelessWidget {
           const SizedBox(height: 32),
           Text(l10n.storySoFar, style: text.titleMedium),
           const SizedBox(height: 4),
-          if (vm.notes.isEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Text(
-                l10n.storyEmpty,
-                style: text.bodyMedium?.copyWith(color: Palette.mute),
-              ),
+          if (vm.notes.isEmpty) ...[
+            const SizedBox(height: 16),
+            const EmptySceneView(EmptyScene.blankPage, maxWidth: 240),
+            const SizedBox(height: 12),
+            Text(
+              l10n.emptyStory,
+              style: text.bodyMedium?.copyWith(color: Palette.mute),
             ),
+          ],
           for (final note in vm.notes)
             Container(
               padding: const EdgeInsets.symmetric(vertical: 12),

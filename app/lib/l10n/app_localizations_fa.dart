@@ -70,9 +70,6 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get booksEmpty => 'هنوز چیزی اضافه نکردی';
-
-  @override
   String get readingNow => 'در حال خوندن';
 
   @override
@@ -400,10 +397,6 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get storySoFar => 'داستان تا اینجا، به زبون خودت';
-
-  @override
-  String get storyEmpty =>
-      'بعد از هر شب، جمله‌ای که درباره‌ش می‌نویسی اینجا میاد.';
 
   @override
   String get bookFinished => 'تمومش کردی، تا صفحه‌ی آخر.';
@@ -1059,4 +1052,16 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get whereIsSearch => 'دنبال اپ بگرد';
+
+  @override
+  String get emptyTonight =>
+      'امشب هنوز همه‌ی پنجره‌ها خاموشن. تو اولین چراغو روشن کن.';
+
+  @override
+  String get emptyLibrary =>
+      'قفسه خالیه، ولی چراغش روشنه. اون کتاب یا سریال یا پادکستی که هی می‌گی تمومش می‌کنم رو اضافه کن.';
+
+  @override
+  String get emptyStory =>
+      'فعلاً صفحه سفیده. بعد هر شب یه خط بنویس، داستانت همین‌جا کم‌کم نوشته می‌شه.';
 }

@@ -40,7 +40,6 @@
       }
     }
   },
-  "booksEmpty": "Nothing here yet",
   "readingNow": "Reading now",
   "editBook": "Edit",
   "deleteWork": "Delete",
@@ -268,7 +267,6 @@
   "readTheStory": "Read the story in your words",
   "seeYourBuilding": "See your building",
   "storySoFar": "The story so far, in your words",
-  "storyEmpty": "After each evening, the sentence you write about it lands here.",
   "bookFinished": "Finished, every last page.",
   "pageRange": "p. {from}–{to}",
   "@pageRange": {
@@ -927,5 +925,17 @@
   "whereIsSearch": "Search apps",
   "@whereIsSearch": {
     "description": "Hint in the search field of the Work app picker."
+  },
+  "emptyTonight": "Every window's dark tonight. Be the first light.",
+  "@emptyTonight": {
+    "description": "Tonight before any Work, under the painted House with every Window dark: the line above tonightEmpty and the Add button."
+  },
+  "emptyLibrary": "Empty shelf, good lamp. Add that book, show or podcast you keep saying you'll finish.",
+  "@emptyLibrary": {
+    "description": "The Library with no Works, under a painted empty shelf. The Add button is below it."
+  },
+  "emptyStory": "Blank page for now. Write a line after each evening and the story fills in here.",
+  "@emptyStory": {
+    "description": "A Work's page with no Notes yet, under a painted open book with blank pages."
   }
 }

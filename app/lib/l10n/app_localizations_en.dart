@@ -76,9 +76,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get booksEmpty => 'Nothing here yet';
-
-  @override
   String get readingNow => 'Reading now';
 
   @override
@@ -458,10 +455,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get storySoFar => 'The story so far, in your words';
-
-  @override
-  String get storyEmpty =>
-      'After each evening, the sentence you write about it lands here.';
 
   @override
   String get bookFinished => 'Finished, every last page.';
@@ -1173,4 +1166,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get whereIsSearch => 'Search apps';
+
+  @override
+  String get emptyTonight =>
+      'Every window\'s dark tonight. Be the first light.';
+
+  @override
+  String get emptyLibrary =>
+      'Empty shelf, good lamp. Add that book, show or podcast you keep saying you\'ll finish.';
+
+  @override
+  String get emptyStory =>
+      'Blank page for now. Write a line after each evening and the story fills in here.';
 }

@@ -6,6 +6,7 @@ import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/data/services/app_watch.dart';
 import 'package:doomread/data/services/session_notification.dart';
 import 'package:doomread/l10n/app_localizations.dart';
+import 'package:doomread/ui/core/empty_scenes.dart';
 import 'package:doomread/ui/core/road_view.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/work_text.dart';
@@ -94,6 +95,10 @@ class _Tonight extends StatelessWidget {
                       ),
                     ),
                   ] else if (vm.loaded) ...[
+                    const EmptySceneView(EmptyScene.darkWindow),
+                    const SizedBox(height: 16),
+                    Text(l10n.emptyTonight, style: text.titleMedium),
+                    const SizedBox(height: 4),
                     Text(l10n.tonightEmpty, style: text.bodyMedium),
                     const SizedBox(height: 16),
                     Align(

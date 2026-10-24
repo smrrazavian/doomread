@@ -52,7 +52,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Dune'), findsNothing);
-    expect(find.text(en.booksEmpty), findsOne);
+    expect(find.text(en.emptyLibrary), findsOne);
     expect(find.text(en.workDeleted('Dune')), findsOne);
   });
 

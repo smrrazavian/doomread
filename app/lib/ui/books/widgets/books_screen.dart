@@ -4,6 +4,7 @@ import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/domain/use_cases/stop_deleted_sessions_use_case.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/books/view_models/books_view_model.dart';
+import 'package:doomread/ui/core/empty_scenes.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/work_text.dart';
 import 'package:doomread_core/doomread_core.dart';
@@ -41,7 +42,23 @@ class _Books extends StatelessWidget {
         label: Text(l10n.tonightAddBook),
       ),
       body: vm.works.isEmpty
-          ? Center(child: Text(l10n.booksEmpty))
+          ? Center(
+              child: SingleChildScrollView(
+                // Clear of the Add button.
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 96),
+                child: Column(
+                  children: [
+                    const EmptySceneView(EmptyScene.emptyShelf),
+                    const SizedBox(height: 16),
+                    Text(
+                      l10n.emptyLibrary,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+            )
           : ListView(
               padding: const EdgeInsets.only(bottom: 96),
               children: [
