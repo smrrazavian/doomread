@@ -245,6 +245,13 @@ void main() {
             'updated_at INTEGER NOT NULL, synced_at INTEGER NULL, '
             'PRIMARY KEY (id))',
           )
+          // Schema 3 added the journal, so later migrations change it too.
+          ..execute(
+            'CREATE TABLE session_events (id TEXT NOT NULL PRIMARY KEY, '
+            'session_id TEXT NOT NULL, work_id TEXT NOT NULL, '
+            'kind TEXT NOT NULL, at INTEGER NOT NULL, '
+            'synced INTEGER NOT NULL DEFAULT 0)',
+          )
           ..execute(
             "INSERT INTO works VALUES ('w1', 'Dune', 'Frank Herbert', 412, "
             "'100,200', 142, 0, 0)",

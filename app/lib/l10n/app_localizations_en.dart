@@ -508,11 +508,17 @@ class AppLocalizationsEn extends AppLocalizations {
         intl.NumberFormat.decimalPattern(localeName);
     final String chapterString = chapterNumberFormat.format(chapter);
 
-    return 'Break time at the end of chapter $chapterString.';
+    return 'Chapter $chapterString done. Break time.';
   }
 
   @override
-  String get breakDueAtPage => 'Break time. Finish the page you\'re on.';
+  String breakDueAfterReading(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'You\'ve read $minutesString min. Good place to stop?';
+  }
 
   @override
   String get nudgeBreak => 'Later';
@@ -919,7 +925,7 @@ class AppLocalizationsEn extends AppLocalizations {
         intl.NumberFormat.decimalPattern(localeName);
     final String episodeString = episodeNumberFormat.format(episode);
 
-    return 'Break time at the end of episode $episodeString.';
+    return 'Episode $episodeString done. Break time.';
   }
 
   @override
@@ -946,7 +952,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get breakDueWatching => 'Break time. Pause when this segment ends.';
+  String breakDueAfterWatching(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'You\'re $minutesString min in. Good place to pause?';
+  }
 
   @override
   String episodeDone(int episode) {

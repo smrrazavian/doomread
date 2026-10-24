@@ -24,6 +24,10 @@ class PlannedBreakViewModel extends ChangeNotifier {
     take = Command0(() => _add(SessionEventKind.breakStart));
     nudge = Command0(() => _add(SessionEventKind.nudge));
     back = Command0(() => _add(SessionEventKind.breakEnd));
+    markDone = Command0(() async {
+      await _sessions.markCheckpoint(record!);
+      return const Result.ok(null);
+    });
     _sub = _sessions.watchAll().listen((all) {
       _all = all;
       notifyListeners();
@@ -46,6 +50,10 @@ class PlannedBreakViewModel extends ChangeNotifier {
   late final Command0<void> nudge;
   late final Command0<void> back;
 
+  /// The user reached the next Checkpoint: the break is due there, and the
+  /// Position moves to it.
+  late final Command0<void> markDone;
+
   DateTime get now => _sessions.now();
 
   /// Null until the journal has loaded.
@@ -58,6 +66,20 @@ class PlannedBreakViewModel extends ChangeNotifier {
   PlannedBreak? get offer {
     final r = record;
     return r == null ? null : plannedBreakOfRecord(r, _all, now);
+  }
+
+  /// The Checkpoint the user can mark done next, while reading or paused:
+  /// the next one on the Road, short of the end, which is the Finish. Null
+  /// while the break on offer is already at a marked one, and for a
+  /// timestamp, which the player shows.
+  int? get markable {
+    final r = record;
+    final s = session;
+    if (r == null || s == null || s.stopped || s.onBreak) return null;
+    if (offer?.reached ?? false) return null;
+    if (r.road.work.kind.unit == WorkUnit.second) return null;
+    final next = r.road.next;
+    return next != null && next < r.road.work.totalPages ? next : null;
   }
 
   /// Whether the offer can be taken: its reading has been done.

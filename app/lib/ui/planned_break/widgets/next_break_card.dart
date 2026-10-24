@@ -54,14 +54,22 @@ class _Card extends StatelessWidget {
         ),
       ];
     } else {
+      final work = record.road.work;
       line = breakLine(
         l10n,
         locale,
-        record.road.work,
-        offer.checkpoint,
-        minutes,
+        work,
+        offer,
+        minutes: minutes,
+        read: session.readingSinceBreak.inMinutes,
       );
       actions = [
+        // "Chapter done": the break comes due at the Checkpoint itself.
+        if (checkpointDone(l10n, work, vm.markable) case final label?)
+          TextButton(
+            onPressed: vm.markDone.running ? null : vm.markDone.execute,
+            child: Text(label),
+          ),
         if (vm.due) ...[
           TextButton(onPressed: vm.nudge.execute, child: Text(l10n.nudgeBreak)),
           FilledButton(
@@ -94,7 +102,12 @@ class _Card extends StatelessWidget {
               ],
             ),
             if (actions.isNotEmpty)
-              Row(mainAxisAlignment: MainAxisAlignment.end, children: actions)
+              // "Chapter done" makes three; they wrap rather than overflow.
+              Wrap(
+                alignment: WrapAlignment.end,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: actions,
+              )
             else
               const SizedBox(height: 8),
           ],

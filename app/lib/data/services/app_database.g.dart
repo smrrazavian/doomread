@@ -999,6 +999,15 @@ class $SessionEventsTable extends SessionEvents
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _pageMeta = const VerificationMeta('page');
+  @override
+  late final GeneratedColumn<int> page = GeneratedColumn<int>(
+    'page',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _syncedMeta = const VerificationMeta('synced');
   @override
   late final GeneratedColumn<bool> synced = GeneratedColumn<bool>(
@@ -1019,6 +1028,7 @@ class $SessionEventsTable extends SessionEvents
     workId,
     kind,
     at,
+    page,
     synced,
   ];
   @override
@@ -1059,6 +1069,12 @@ class $SessionEventsTable extends SessionEvents
     } else if (isInserting) {
       context.missing(_atMeta);
     }
+    if (data.containsKey('page')) {
+      context.handle(
+        _pageMeta,
+        page.isAcceptableOrUnknown(data['page']!, _pageMeta),
+      );
+    }
     if (data.containsKey('synced')) {
       context.handle(
         _syncedMeta,
@@ -1096,6 +1112,10 @@ class $SessionEventsTable extends SessionEvents
         DriftSqlType.dateTime,
         data['${effectivePrefix}at'],
       )!,
+      page: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}page'],
+      ),
       synced: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}synced'],
@@ -1119,6 +1139,10 @@ class SessionEventRow extends DataClass implements Insertable<SessionEventRow> {
   final SessionEventKind kind;
   final DateTime at;
 
+  /// The page a Start began at, or the Checkpoint a Checkpoint event
+  /// reached, in the Work's unit; null for every other event.
+  final int? page;
+
   /// Whether the sync server has it.
   final bool synced;
   const SessionEventRow({
@@ -1127,6 +1151,7 @@ class SessionEventRow extends DataClass implements Insertable<SessionEventRow> {
     required this.workId,
     required this.kind,
     required this.at,
+    this.page,
     required this.synced,
   });
   @override
@@ -1141,6 +1166,9 @@ class SessionEventRow extends DataClass implements Insertable<SessionEventRow> {
       );
     }
     map['at'] = Variable<DateTime>(at);
+    if (!nullToAbsent || page != null) {
+      map['page'] = Variable<int>(page);
+    }
     map['synced'] = Variable<bool>(synced);
     return map;
   }
@@ -1152,6 +1180,7 @@ class SessionEventRow extends DataClass implements Insertable<SessionEventRow> {
       workId: Value(workId),
       kind: Value(kind),
       at: Value(at),
+      page: page == null && nullToAbsent ? const Value.absent() : Value(page),
       synced: Value(synced),
     );
   }
@@ -1169,6 +1198,7 @@ class SessionEventRow extends DataClass implements Insertable<SessionEventRow> {
         serializer.fromJson<String>(json['kind']),
       ),
       at: serializer.fromJson<DateTime>(json['at']),
+      page: serializer.fromJson<int?>(json['page']),
       synced: serializer.fromJson<bool>(json['synced']),
     );
   }
@@ -1183,6 +1213,7 @@ class SessionEventRow extends DataClass implements Insertable<SessionEventRow> {
         $SessionEventsTable.$converterkind.toJson(kind),
       ),
       'at': serializer.toJson<DateTime>(at),
+      'page': serializer.toJson<int?>(page),
       'synced': serializer.toJson<bool>(synced),
     };
   }
@@ -1193,6 +1224,7 @@ class SessionEventRow extends DataClass implements Insertable<SessionEventRow> {
     String? workId,
     SessionEventKind? kind,
     DateTime? at,
+    Value<int?> page = const Value.absent(),
     bool? synced,
   }) => SessionEventRow(
     id: id ?? this.id,
@@ -1200,6 +1232,7 @@ class SessionEventRow extends DataClass implements Insertable<SessionEventRow> {
     workId: workId ?? this.workId,
     kind: kind ?? this.kind,
     at: at ?? this.at,
+    page: page.present ? page.value : this.page,
     synced: synced ?? this.synced,
   );
   SessionEventRow copyWithCompanion(SessionEventsCompanion data) {
@@ -1209,6 +1242,7 @@ class SessionEventRow extends DataClass implements Insertable<SessionEventRow> {
       workId: data.workId.present ? data.workId.value : this.workId,
       kind: data.kind.present ? data.kind.value : this.kind,
       at: data.at.present ? data.at.value : this.at,
+      page: data.page.present ? data.page.value : this.page,
       synced: data.synced.present ? data.synced.value : this.synced,
     );
   }
@@ -1221,13 +1255,15 @@ class SessionEventRow extends DataClass implements Insertable<SessionEventRow> {
           ..write('workId: $workId, ')
           ..write('kind: $kind, ')
           ..write('at: $at, ')
+          ..write('page: $page, ')
           ..write('synced: $synced')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, sessionId, workId, kind, at, synced);
+  int get hashCode =>
+      Object.hash(id, sessionId, workId, kind, at, page, synced);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1237,6 +1273,7 @@ class SessionEventRow extends DataClass implements Insertable<SessionEventRow> {
           other.workId == this.workId &&
           other.kind == this.kind &&
           other.at == this.at &&
+          other.page == this.page &&
           other.synced == this.synced);
 }
 
@@ -1246,6 +1283,7 @@ class SessionEventsCompanion extends UpdateCompanion<SessionEventRow> {
   final Value<String> workId;
   final Value<SessionEventKind> kind;
   final Value<DateTime> at;
+  final Value<int?> page;
   final Value<bool> synced;
   final Value<int> rowid;
   const SessionEventsCompanion({
@@ -1254,6 +1292,7 @@ class SessionEventsCompanion extends UpdateCompanion<SessionEventRow> {
     this.workId = const Value.absent(),
     this.kind = const Value.absent(),
     this.at = const Value.absent(),
+    this.page = const Value.absent(),
     this.synced = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -1263,6 +1302,7 @@ class SessionEventsCompanion extends UpdateCompanion<SessionEventRow> {
     required String workId,
     required SessionEventKind kind,
     required DateTime at,
+    this.page = const Value.absent(),
     this.synced = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -1276,6 +1316,7 @@ class SessionEventsCompanion extends UpdateCompanion<SessionEventRow> {
     Expression<String>? workId,
     Expression<String>? kind,
     Expression<DateTime>? at,
+    Expression<int>? page,
     Expression<bool>? synced,
     Expression<int>? rowid,
   }) {
@@ -1285,6 +1326,7 @@ class SessionEventsCompanion extends UpdateCompanion<SessionEventRow> {
       if (workId != null) 'work_id': workId,
       if (kind != null) 'kind': kind,
       if (at != null) 'at': at,
+      if (page != null) 'page': page,
       if (synced != null) 'synced': synced,
       if (rowid != null) 'rowid': rowid,
     });
@@ -1296,6 +1338,7 @@ class SessionEventsCompanion extends UpdateCompanion<SessionEventRow> {
     Value<String>? workId,
     Value<SessionEventKind>? kind,
     Value<DateTime>? at,
+    Value<int?>? page,
     Value<bool>? synced,
     Value<int>? rowid,
   }) {
@@ -1305,6 +1348,7 @@ class SessionEventsCompanion extends UpdateCompanion<SessionEventRow> {
       workId: workId ?? this.workId,
       kind: kind ?? this.kind,
       at: at ?? this.at,
+      page: page ?? this.page,
       synced: synced ?? this.synced,
       rowid: rowid ?? this.rowid,
     );
@@ -1330,6 +1374,9 @@ class SessionEventsCompanion extends UpdateCompanion<SessionEventRow> {
     if (at.present) {
       map['at'] = Variable<DateTime>(at.value);
     }
+    if (page.present) {
+      map['page'] = Variable<int>(page.value);
+    }
     if (synced.present) {
       map['synced'] = Variable<bool>(synced.value);
     }
@@ -1347,6 +1394,7 @@ class SessionEventsCompanion extends UpdateCompanion<SessionEventRow> {
           ..write('workId: $workId, ')
           ..write('kind: $kind, ')
           ..write('at: $at, ')
+          ..write('page: $page, ')
           ..write('synced: $synced, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -2365,6 +2413,7 @@ typedef $$SessionEventsTableCreateCompanionBuilder =
       required String workId,
       required SessionEventKind kind,
       required DateTime at,
+      Value<int?> page,
       Value<bool> synced,
       Value<int> rowid,
     });
@@ -2375,6 +2424,7 @@ typedef $$SessionEventsTableUpdateCompanionBuilder =
       Value<String> workId,
       Value<SessionEventKind> kind,
       Value<DateTime> at,
+      Value<int?> page,
       Value<bool> synced,
       Value<int> rowid,
     });
@@ -2411,6 +2461,11 @@ class $$SessionEventsTableFilterComposer
 
   ColumnFilters<DateTime> get at => $composableBuilder(
     column: $table.at,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get page => $composableBuilder(
+    column: $table.page,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2454,6 +2509,11 @@ class $$SessionEventsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get page => $composableBuilder(
+    column: $table.page,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<bool> get synced => $composableBuilder(
     column: $table.synced,
     builder: (column) => ColumnOrderings(column),
@@ -2483,6 +2543,9 @@ class $$SessionEventsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get at =>
       $composableBuilder(column: $table.at, builder: (column) => column);
+
+  GeneratedColumn<int> get page =>
+      $composableBuilder(column: $table.page, builder: (column) => column);
 
   GeneratedColumn<bool> get synced =>
       $composableBuilder(column: $table.synced, builder: (column) => column);
@@ -2524,6 +2587,7 @@ class $$SessionEventsTableTableManager
                 Value<String> workId = const Value.absent(),
                 Value<SessionEventKind> kind = const Value.absent(),
                 Value<DateTime> at = const Value.absent(),
+                Value<int?> page = const Value.absent(),
                 Value<bool> synced = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SessionEventsCompanion(
@@ -2532,6 +2596,7 @@ class $$SessionEventsTableTableManager
                 workId: workId,
                 kind: kind,
                 at: at,
+                page: page,
                 synced: synced,
                 rowid: rowid,
               ),
@@ -2542,6 +2607,7 @@ class $$SessionEventsTableTableManager
                 required String workId,
                 required SessionEventKind kind,
                 required DateTime at,
+                Value<int?> page = const Value.absent(),
                 Value<bool> synced = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SessionEventsCompanion.insert(
@@ -2550,6 +2616,7 @@ class $$SessionEventsTableTableManager
                 workId: workId,
                 kind: kind,
                 at: at,
+                page: page,
                 synced: synced,
                 rowid: rowid,
               ),

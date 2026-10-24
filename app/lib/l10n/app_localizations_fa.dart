@@ -450,11 +450,17 @@ class AppLocalizationsFa extends AppLocalizations {
         intl.NumberFormat.decimalPattern(localeName);
     final String chapterString = chapterNumberFormat.format(chapter);
 
-    return 'آخر فصل $chapterString وقت استراحته.';
+    return 'فصل $chapterString تموم شد. وقت استراحته.';
   }
 
   @override
-  String get breakDueAtPage => 'وقت استراحته. این صفحه رو تموم کن.';
+  String breakDueAfterReading(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '$minutesString دقیقه خوندی. جای خوبیه برای استراحت؟';
+  }
 
   @override
   String get nudgeBreak => 'بعداً';
@@ -805,7 +811,7 @@ class AppLocalizationsFa extends AppLocalizations {
         intl.NumberFormat.decimalPattern(localeName);
     final String episodeString = episodeNumberFormat.format(episode);
 
-    return 'آخر قسمت $episodeString وقت استراحته.';
+    return 'قسمت $episodeString تموم شد. وقت استراحته.';
   }
 
   @override
@@ -832,7 +838,13 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get breakDueWatching => 'وقت استراحته. این تیکه که تموم شد، نگهش دار.';
+  String breakDueAfterWatching(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '$minutesString دقیقه گذشت. جای خوبیه برای استراحت؟';
+  }
 
   @override
   String episodeDone(int episode) {

@@ -133,15 +133,19 @@ class _BreakDistance extends StatelessWidget {
   Widget build(BuildContext context) {
     final vm = context.watch<PlannedBreakViewModel>();
     final record = vm.record;
+    final session = vm.session;
     final offer = vm.offer;
-    if (record == null || offer == null) return const SizedBox.shrink();
+    if (record == null || session == null || offer == null) {
+      return const SizedBox.shrink();
+    }
     return Text(
       breakLine(
         AppLocalizations.of(context),
         Localizations.localeOf(context),
         record.road.work,
-        offer.checkpoint,
-        minutesUp(vm.toGo),
+        offer,
+        minutes: minutesUp(vm.toGo),
+        read: session.readingSinceBreak.inMinutes,
       ),
     );
   }

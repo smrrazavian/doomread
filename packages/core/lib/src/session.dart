@@ -5,6 +5,7 @@ import 'package:doomread_core/src/calendar.dart';
 /// A Planned break starts with [breakStart] and ends with [breakEnd] (or a
 /// Resume, or Stop). A [nudge] moves the offered Planned break later. An
 /// [urge] is the "not yet" screen coming up; it ends as [letPass] or [slip].
+/// A [checkpoint] is the user saying they reached the next Checkpoint.
 enum SessionEventKind {
   start,
   pause,
@@ -16,15 +17,21 @@ enum SessionEventKind {
   urge,
   letPass,
   slip,
+  checkpoint,
 }
 
 /// One timestamped entry in a Session's journal. Entries are only ever
 /// appended; everything else is derived from them by [Session.fromEvents].
 class SessionEvent {
-  const SessionEvent(this.kind, this.at);
+  const SessionEvent(this.kind, this.at, {this.page});
 
   final SessionEventKind kind;
   final DateTime at;
+
+  /// The Position it put on record: where a [SessionEventKind.start] began,
+  /// or the Checkpoint a [SessionEventKind.checkpoint] reached. Null for
+  /// every other kind, and for a Start from before pages were kept.
+  final int? page;
 }
 
 /// What ended a Stretch.
@@ -33,6 +40,9 @@ enum StretchEnd { pause, stop, plannedBreak, slip }
 /// A Planned break the user took: when it started and, once they're back,
 /// when it ended.
 typedef BreakTaken = ({DateTime start, DateTime? end});
+
+/// A Checkpoint the user said they reached, and when.
+typedef CheckpointReached = ({DateTime at, int page});
 
 /// Unbroken Session time with the timer running.
 class Stretch {
@@ -74,6 +84,7 @@ class Session {
       });
 
     DateTime? startedAt;
+    int? startPage;
     DateTime? runningSince;
     var stopped = false;
     var urgeOpen = false;
@@ -82,6 +93,7 @@ class Session {
     final stretches = <Stretch>[];
     final breaks = <BreakTaken>[];
     final nudges = <DateTime>[];
+    final checkpoints = <CheckpointReached>[];
     bool onBreak() => breaks.isNotEmpty && breaks.last.end == null;
     void close(DateTime at, StretchEnd by) {
       if (runningSince == null) return;
@@ -101,6 +113,7 @@ class Session {
         case SessionEventKind.start:
           if (startedAt != null) continue;
           startedAt = e.at;
+          startPage = e.page;
           runningSince = e.at;
         case _ when startedAt == null:
           continue;
@@ -134,6 +147,10 @@ class Session {
           slipped = true;
         case SessionEventKind.nudge:
           if (!onBreak()) nudges.add(e.at);
+        case SessionEventKind.checkpoint:
+          if (e.page case final page? when !onBreak()) {
+            checkpoints.add((at: e.at, page: page));
+          }
         case SessionEventKind.stop:
           close(e.at, StretchEnd.stop);
           endBreak(e.at);
@@ -146,9 +163,11 @@ class Session {
     if (runningSince != null) stretches.add(Stretch(runningSince!, now, null));
     return Session._(
       startedAt,
+      startPage,
       stretches,
       breaks,
       nudges,
+      checkpoints,
       stopped: stopped,
       urgeOpen: urgeOpen,
       slipped: slipped,
@@ -158,19 +177,25 @@ class Session {
 
   Session._(
     this.startedAt,
+    this.startPage,
     List<Stretch> stretches,
     List<BreakTaken> breaks,
-    List<DateTime> nudges, {
+    List<DateTime> nudges,
+    List<CheckpointReached> checkpoints, {
     required this.stopped,
     required this.urgeOpen,
     required this.slipped,
     required this.urgesLetPass,
   }) : stretches = List.unmodifiable(stretches),
        breaks = List.unmodifiable(breaks),
-       nudges = List.unmodifiable(nudges);
+       nudges = List.unmodifiable(nudges),
+       checkpoints = List.unmodifiable(checkpoints);
 
   /// When the Session started; null if the journal has no Start.
   final DateTime? startedAt;
+
+  /// The Position the Session started at; null if its Start didn't say.
+  final int? startPage;
 
   /// In order, the last one possibly still running.
   final List<Stretch> stretches;
@@ -181,6 +206,10 @@ class Session {
   /// When the user nudged the offered Planned break later, in order. Only
   /// those while reading or paused count.
   final List<DateTime> nudges;
+
+  /// The Checkpoints the user marked done, in order. Only those while
+  /// reading or paused count, as for [nudges].
+  final List<CheckpointReached> checkpoints;
 
   final bool stopped;
 
@@ -220,6 +249,19 @@ class Session {
             (to == null || s.start.isBefore(to)),
       )
       .fold(Duration.zero, (sum, s) => sum + s.length);
+
+  /// The time in Stretches between [from] and [to], each cut to fit, so a
+  /// Stretch still running at [to] counts only up to it.
+  Duration readingIn(DateTime? from, DateTime to) {
+    if (from == null) return Duration.zero;
+    var sum = Duration.zero;
+    for (final s in stretches) {
+      final start = s.start.isAfter(from) ? s.start : from;
+      final end = s.end.isBefore(to) ? s.end : to;
+      if (end.isAfter(start)) sum += end.difference(start);
+    }
+    return sum;
+  }
 
   /// All the time in Stretches: the Session's reading, without its
   /// Pauses or Planned breaks.

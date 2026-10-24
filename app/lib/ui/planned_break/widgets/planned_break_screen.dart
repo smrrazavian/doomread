@@ -61,7 +61,8 @@ class _PlannedBreak extends StatelessWidget {
     }
 
     final work = record.road.work;
-    final checkpoint = offer.checkpoint;
+    // Only a Checkpoint the user marked done is named as reached.
+    final checkpoint = offer.reached ? offer.checkpoint : null;
     final done = checkpointDone(l10n, work, checkpoint);
     final minutes = offer.length.inMinutes;
     final on = session.onBreak;

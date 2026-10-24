@@ -80,6 +80,21 @@ void main() {
       );
     });
 
+    testApp('The Planned break at a chapter marked done, in $lang', (
+      tester,
+      db,
+    ) async {
+      await readTo14Minutes(tester, db, lang);
+      await tap(tester, l10n.chapterDone(5));
+      await tap(tester, l10n.breakCardStart(4));
+      now = now.add(const Duration(minutes: 1, seconds: 30));
+      await tester.pump(const Duration(seconds: 1));
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('planned_break_marked_on_$lang.png'),
+      );
+    });
+
     testApp('The Planned break, over, in $lang', (tester, db) async {
       await readTo14Minutes(tester, db, lang);
       await tap(tester, l10n.breakCardStart(4));

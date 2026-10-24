@@ -629,14 +629,14 @@ abstract class AppLocalizations {
   /// No description provided for @breakDueAtCheckpoint.
   ///
   /// In en, this message translates to:
-  /// **'Break time at the end of chapter {chapter}.'**
+  /// **'Chapter {chapter} done. Break time.'**
   String breakDueAtCheckpoint(int chapter);
 
-  /// No description provided for @breakDueAtPage.
+  /// On Reading, when the Planned break is due on reading time alone: it never claims a Checkpoint the reader hasn't said they reached.
   ///
   /// In en, this message translates to:
-  /// **'Break time. Finish the page you\'re on.'**
-  String get breakDueAtPage;
+  /// **'You\'ve read {minutes} min. Good place to stop?'**
+  String breakDueAfterReading(int minutes);
 
   /// No description provided for @nudgeBreak.
   ///
@@ -977,7 +977,7 @@ abstract class AppLocalizations {
   /// No description provided for @breakDueAtEpisode.
   ///
   /// In en, this message translates to:
-  /// **'Break time at the end of episode {episode}.'**
+  /// **'Episode {episode} done. Break time.'**
   String breakDueAtEpisode(int episode);
 
   /// No description provided for @nextBreakAtTimestamp.
@@ -998,11 +998,11 @@ abstract class AppLocalizations {
   /// **'Your break: in about {minutes} min, when this segment ends.'**
   String nextBreakWatching(int minutes);
 
-  /// No description provided for @breakDueWatching.
+  /// The same for a series, film or podcast.
   ///
   /// In en, this message translates to:
-  /// **'Break time. Pause when this segment ends.'**
-  String get breakDueWatching;
+  /// **'You\'re {minutes} min in. Good place to pause?'**
+  String breakDueAfterWatching(int minutes);
 
   /// No description provided for @episodeDone.
   ///

@@ -14,6 +14,8 @@ void main() {
   SessionEvent breakStart(num m) => ev(SessionEventKind.breakStart, m);
   SessionEvent breakEnd(num m) => ev(SessionEventKind.breakEnd, m);
   SessionEvent nudge(num m) => ev(SessionEventKind.nudge, m);
+  SessionEvent done(num m, int page) =>
+      SessionEvent(SessionEventKind.checkpoint, t(m), page: page);
   Session reduce(List<SessionEvent> events, {num now = 120}) =>
       Session.fromEvents(events, now: t(now));
 
@@ -304,6 +306,94 @@ void main() {
 
     test('no break is offered when the Finish comes first', () {
       expect(breakOf([start(0)], now: 1, startPage: 230), isNull);
+    });
+
+    test('a break due on reading time alone has reached no Checkpoint', () {
+      final b = breakOf([start(0)], now: 13)!;
+      expect(b.checkpoint, 145);
+      expect(b.reached, isFalse);
+    });
+
+    test('a Checkpoint marked done makes the break due right there', () {
+      // Faster than the pace: chapter 145 is done 9 minutes in, not 15.
+      final b = breakOf([start(0), done(9, 145)], now: 10)!;
+      expect(b.checkpoint, 145);
+      expect(b.reached, isTrue);
+      expect(b.from, min(9));
+      expect(b.at, min(9));
+      expect(b.length, min(3));
+    });
+
+    test('a Checkpoint marked without a pace still makes the break due', () {
+      final b = breakOf([start(0), done(4, 115)], now: 5, perPage: null)!;
+      expect(b.checkpoint, 115);
+      expect(b.reached, isTrue);
+      expect(b.from, min(4));
+    });
+
+    test('after a break at a marked Checkpoint, the next counts from it', () {
+      // Back at page 145 after 9 minutes; page 181 after 12 more.
+      final b = breakOf(
+        [start(0), done(9, 145), breakStart(9), breakEnd(12)],
+        now: 13,
+        checkpoints: const [145, 190],
+      )!;
+      expect(b.from, min(12));
+      expect(b.checkpoint, 190);
+      expect(b.at, min(15));
+      expect(b.reached, isFalse);
+    });
+
+    test('a break taken on time alone counts on from the pace, not the '
+        'Checkpoint it was aimed at', () {
+      // Taken at 12 minutes, page 136, three minutes short of 145.
+      final b = breakOf(
+        [start(0), breakStart(12), breakEnd(15)],
+        now: 16,
+        checkpoints: const [145, 172],
+      )!;
+      // 12 more minutes from page 136 is page 172.
+      expect(b.checkpoint, 172);
+      expect(b.at, min(12));
+    });
+
+    test('a nudge after a marked Checkpoint moves the break on from it', () {
+      // Later, from page 145 at 9 minutes: 6 minutes on is page 163, and
+      // the Checkpoint at 175 is 4 minutes further.
+      final b = breakOf([start(0), done(9, 145), nudge(9)], now: 10)!;
+      expect(b.from, min(15));
+      expect(b.checkpoint, 175);
+      expect(b.at, min(19));
+      expect(b.reached, isFalse);
+    });
+
+    test('a Checkpoint marked on a break is ignored', () {
+      final s = reduce([start(0), breakStart(12), done(13, 145)], now: 14);
+      expect(s.checkpoints, isEmpty);
+    });
+  });
+
+  group('the reducer and Checkpoints', () {
+    test('the page the Session started at comes from its Start', () {
+      final s = reduce([
+        SessionEvent(SessionEventKind.start, t(0), page: 100),
+      ], now: 1);
+      expect(s.startPage, 100);
+    });
+
+    test('a Session from before pages were kept has no start page', () {
+      expect(reduce([start(0)], now: 1).startPage, isNull);
+    });
+
+    test('each Checkpoint marked done is kept, in order', () {
+      final s = reduce([start(0), done(5, 115), done(14, 145)], now: 15);
+      expect(s.checkpoints.map((c) => c.page), [115, 145]);
+      expect(s.checkpoints.last.at, t(14));
+    });
+
+    test('a Checkpoint before the Start or after Stop is ignored', () {
+      final s = reduce([done(0, 115), start(1), stop(5), done(6, 145)]);
+      expect(s.checkpoints, isEmpty);
     });
   });
 }

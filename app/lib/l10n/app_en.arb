@@ -312,7 +312,7 @@
       }
     }
   },
-  "breakDueAtCheckpoint": "Break time at the end of chapter {chapter}.",
+  "breakDueAtCheckpoint": "Chapter {chapter} done. Break time.",
   "@breakDueAtCheckpoint": {
     "placeholders": {
       "chapter": {
@@ -321,7 +321,16 @@
       }
     }
   },
-  "breakDueAtPage": "Break time. Finish the page you're on.",
+  "breakDueAfterReading": "You've read {minutes} min. Good place to stop?",
+  "@breakDueAfterReading": {
+    "description": "On Reading, when the Planned break is due on reading time alone: it never claims a Checkpoint the reader hasn't said they reached.",
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "nudgeBreak": "Later",
   "onBreakUntil": "On your break until {time}.",
   "@onBreakUntil": {
@@ -645,7 +654,7 @@
       }
     }
   },
-  "breakDueAtEpisode": "Break time at the end of episode {episode}.",
+  "breakDueAtEpisode": "Episode {episode} done. Break time.",
   "@breakDueAtEpisode": {
     "placeholders": {
       "episode": {
@@ -683,7 +692,16 @@
       }
     }
   },
-  "breakDueWatching": "Break time. Pause when this segment ends.",
+  "breakDueAfterWatching": "You're {minutes} min in. Good place to pause?",
+  "@breakDueAfterWatching": {
+    "description": "The same for a series, film or podcast.",
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "episodeDone": "Episode {episode} done",
   "@episodeDone": {
     "placeholders": {

@@ -50,7 +50,12 @@ class BreakOverAlarm {
     final at = onBreak.at(now).breaks.last.start.add(offer.length);
     final l10n = lookupAppLocalizations(_settings.locale);
     final work = onBreak.road.work;
-    final text = waitingAfter(l10n, work, offer.checkpoint);
+    // Only a Checkpoint the user marked done is named as reached.
+    final text = waitingAfter(
+      l10n,
+      work,
+      offer.reached ? offer.checkpoint : null,
+    );
     final title = voice(
       Moment.breakOver,
       _settings.tone,

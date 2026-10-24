@@ -194,6 +194,21 @@ void main() {
     },
   );
 
+  test('a Checkpoint marked done reaches the other device with its page, '
+      'and the Session its start page', () async {
+    final id = await addDune(a);
+    await a.sessions.start(id);
+    a.now = a.now.add(const Duration(minutes: 9));
+    await a.sessions.markCheckpoint(await a.last());
+    await syncAll([a, b]);
+
+    b.now = a.now;
+    final session = (await b.last()).at(b.now);
+    expect(session.startPage, 0);
+    expect(session.checkpoints.single.page, 40);
+    expect((await b.works.watchCurrent().first)!.position, 40);
+  });
+
   test('Sessions recorded on both devices meet on both', () async {
     final workId = await addDune(a);
     await a.sync();

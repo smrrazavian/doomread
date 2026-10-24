@@ -25,6 +25,13 @@ class SessionRecord {
   /// The Note written then; empty when there's none.
   final String note;
 
+  /// The Position the Session started at. The Position itself moves on as
+  /// Checkpoints are marked done; a Session from before Starts kept the
+  /// page started where the Position still is.
+  int get startPage =>
+      events.where((e) => e.kind == SessionEventKind.start).firstOrNull?.page ??
+      road.position;
+
   /// The Session derived from its journal, measured at [now].
   Session at(DateTime now) => Session.fromEvents(events, now: now);
 
@@ -48,29 +55,73 @@ class SessionRepository {
   /// The clock every Session event is stamped with.
   final DateTime Function() now;
 
-  /// Starts a Session with [workId] and returns its id.
-  Future<String> start(String workId) async {
+  /// Starts a Session with [workId] and returns its id. The Start keeps
+  /// the Position it began at, since marking a Checkpoint moves the
+  /// Position before the Session ends.
+  Future<String> start(String workId) => _db.transaction(() async {
     final id = newId();
-    await _append(id, workId, SessionEventKind.start);
+    await _append(
+      id,
+      workId,
+      SessionEventKind.start,
+      page: (await _work(workId)).position,
+    );
     return id;
-  }
+  });
 
   /// Adds a Pause, Resume or Stop to [session]'s journal.
   Future<void> add(SessionRecord session, SessionEventKind kind) =>
       _append(session.id, session.road.work.id, kind);
 
-  Future<void> _append(String sessionId, String workId, SessionEventKind k) =>
-      _db
-          .into(_db.sessionEvents)
-          .insert(
-            SessionEventsCompanion.insert(
-              id: newId(),
-              sessionId: sessionId,
-              workId: workId,
-              kind: k,
-              at: now(),
-            ),
-          );
+  /// The user says they reached the next Checkpoint: it goes in the journal,
+  /// where it makes the Planned break due, and the Position moves to it
+  /// now. Nothing happens when no Checkpoint is ahead short of the end; the
+  /// end is the Finish, which End of the evening saves.
+  Future<void> markCheckpoint(SessionRecord session) =>
+      _db.transaction(() async {
+        final workId = session.road.work.id;
+        final work = await _work(workId);
+        final next = Road(
+          WorkRepository.toWork(work),
+          position: work.position,
+        ).next;
+        if (next == null || next >= work.totalPages) return;
+        await _append(
+          session.id,
+          workId,
+          SessionEventKind.checkpoint,
+          page: next,
+        );
+        final at = now();
+        await (_db.update(_db.works)..where((w) => w.id.equals(workId))).write(
+          WorksCompanion(
+            position: Value(next),
+            positionAt: Value(at),
+            updatedAt: Value(at),
+          ),
+        );
+      });
+
+  Future<WorkRow> _work(String id) =>
+      (_db.select(_db.works)..where((w) => w.id.equals(id))).getSingle();
+
+  Future<void> _append(
+    String sessionId,
+    String workId,
+    SessionEventKind k, {
+    int? page,
+  }) => _db
+      .into(_db.sessionEvents)
+      .insert(
+        SessionEventsCompanion.insert(
+          id: newId(),
+          sessionId: sessionId,
+          workId: workId,
+          kind: k,
+          at: now(),
+          page: Value(page),
+        ),
+      );
 
   /// Every Session, oldest first.
   Stream<List<SessionRecord>> watchAll() => _all().watch().map(_records);
@@ -115,6 +166,7 @@ class SessionRepository {
           SessionEvent(
             r.readTable(_db.sessionEvents).kind,
             r.readTable(_db.sessionEvents).at,
+            page: r.readTable(_db.sessionEvents).page,
           ),
       ],
       pages: note == null ? null : (from: note.fromPage, to: note.toPage),
@@ -140,16 +192,23 @@ class SessionRepository {
   });
 
   /// Ends [session] at [page]: moves the Work's Position there and saves the
-  /// Note against the pages it covered.
+  /// Note against the pages it covered, from where the Session started.
   Future<void> end(
     SessionRecord session, {
     required int page,
     String note = '',
   }) => _db.transaction(() async {
     final workId = session.road.work.id;
-    final work = await (_db.select(
-      _db.works,
-    )..where((w) => w.id.equals(workId))).getSingle();
+    // From the journal itself, so a record read before the Start can't
+    // move the range.
+    final start =
+        await (_db.select(_db.sessionEvents)..where(
+              (e) =>
+                  e.sessionId.equals(session.id) &
+                  e.kind.equalsValue(SessionEventKind.start),
+            ))
+            .get();
+    final from = start.firstOrNull?.page ?? (await _work(workId)).position;
     final at = now();
     await _db
         .into(_db.notes)
@@ -158,7 +217,7 @@ class SessionRepository {
             id: newId(),
             sessionId: session.id,
             workId: workId,
-            fromPage: work.position,
+            fromPage: from,
             toPage: page,
             body: note.trim(),
             updatedAt: at,

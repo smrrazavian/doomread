@@ -58,8 +58,10 @@ void main() {
       reason: 'not due yet',
     );
 
+    // Due on reading time alone, it never claims chapter 5 is done.
     await wait(tester, const Duration(minutes: 9));
-    expect(find.text(l10n.breakDueAtCheckpoint(5)), findsOne);
+    expect(find.text(l10n.breakDueAfterReading(14)), findsOne);
+    expect(find.text(l10n.breakDueAtCheckpoint(5)), findsNothing);
 
     // Nudged: 20 minutes in, chapter 6 is too far, so the end of the page.
     await tap(tester, l10n.nudgeBreak);
@@ -67,13 +69,14 @@ void main() {
     expect(find.text(l10n.breakCardStart(5)), findsNothing);
 
     await wait(tester, const Duration(minutes: 6));
-    expect(find.text(l10n.breakDueAtPage), findsOne);
+    expect(find.text(l10n.breakDueAfterReading(20)), findsOne);
     expect(alarm.set, isNull, reason: 'nothing is set until it starts');
 
     // One tap on the card starts the break.
     await tap(tester, l10n.breakCardStart(5));
     expect(find.text(l10n.onBreak), findsOne);
     expect(find.text('5:00'), findsOne);
+    expect(find.text(l10n.chapterDone(5)), findsNothing, reason: 'unclaimed');
     expect(alarm.set?.at, DateTime(2026, 10, 22, 21, 25));
     expect(alarm.set?.title, voice(Moment.breakOver, Tone.spicy, 'en'));
     expect(alarm.set?.text, l10n.workWaiting('The Remains of the Day'));
@@ -87,7 +90,7 @@ void main() {
     expect(find.text('0:00'), findsOne);
     await wait(tester, const Duration(minutes: 12));
     expect(find.text('12:00'), findsOne);
-    expect(find.text(l10n.breakDueAtPage), findsOne);
+    expect(find.text(l10n.breakDueAfterReading(12)), findsOne);
     await tap(tester, l10n.breakCardStart(3));
     expect(alarm.set?.at, DateTime(2026, 10, 22, 21, 40));
 
@@ -96,6 +99,34 @@ void main() {
     expect(alarm.set, isNull);
     await wait(tester, const Duration(minutes: 1));
     expect(find.text('1:00'), findsOne);
+  });
+
+  testApp('Chapter done makes the break due there and moves the '
+      'Position', (tester, db) async {
+    final alarm = await open(tester, db);
+    await tap(tester, l10n.startReading);
+
+    // Faster than last night: chapter 5 ends at 156, done 5 minutes in.
+    await wait(tester, const Duration(minutes: 5));
+    await tap(tester, l10n.chapterDone(5));
+    expect(find.text(l10n.breakDueAtCheckpoint(5)), findsOne);
+    expect(
+      find.text(l10n.chapterDone(6)),
+      findsNothing,
+      reason: 'the break comes first',
+    );
+
+    await tap(tester, l10n.breakCardStart(2));
+    expect(find.text(l10n.chapterDone(5)), findsOne, reason: 'the chip');
+    expect(find.text(l10n.backToChapterAt(6, '21:07')), findsOne);
+    expect(alarm.set?.text, l10n.chapterWaiting(6));
+
+    // The Position is already there, on Tonight's Road.
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.text(l10n.pageOf(156, 245)), findsOne);
   });
 
   testApp('One tap on the due card starts the break', (tester, db) async {

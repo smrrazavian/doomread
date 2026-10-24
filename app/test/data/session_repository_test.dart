@@ -81,6 +81,50 @@ void main() {
     expect((await WorkRepository(db).watchCurrent().first)!.position, 156);
   });
 
+  test('a Start keeps the page it started at', () async {
+    await sessions.start(workId);
+    final record = await only();
+    expect(record.events.single.page, 142);
+    expect(record.at(now).startPage, 142);
+  });
+
+  test('a Checkpoint marked done moves the Position to it at once, and '
+      'ending still counts the range from the start', () async {
+    await (db.update(db.works)..where((w) => w.id.equals(workId))).write(
+      const WorksCompanion(checkpoints: Value('120,150,170')),
+    );
+    await sessions.start(workId);
+    now = now.add(const Duration(minutes: 9));
+    await sessions.markCheckpoint(await only());
+
+    var record = await only();
+    expect(record.road.position, 150);
+    expect(record.events.last.kind, SessionEventKind.checkpoint);
+    expect(record.events.last.page, 150);
+    expect(record.at(now).checkpoints.single.page, 150);
+
+    // The next one counts on from there.
+    await sessions.markCheckpoint(record);
+    record = await only();
+    expect(record.road.position, 170);
+
+    await sessions.add(record, SessionEventKind.stop);
+    await sessions.end(await only(), page: 172);
+    expect((await only()).pages, (from: 142, to: 172));
+  });
+
+  test('with no Checkpoint ahead short of the end, marking does '
+      'nothing', () async {
+    await (db.update(db.works)..where((w) => w.id.equals(workId))).write(
+      const WorksCompanion(checkpoints: Value('120,245')),
+    );
+    await sessions.start(workId);
+    await sessions.markCheckpoint(await only());
+    final record = await only();
+    expect(record.events, hasLength(1));
+    expect(record.road.position, 142);
+  });
+
   test('a v2 install gains the journal and keeps its Works', () async {
     final old = AppDatabase(
       NativeDatabase.memory(

@@ -66,21 +66,23 @@ class EveningViewModel extends ChangeNotifier {
     return isNewBest(record.at(now), before);
   }
 
-  /// Where the user most likely stopped, to prefill the page: the Position
-  /// plus tonight's reading at their pace for this Work. Without a pace it's
-  /// the Position itself. It stays short of the end, since the Finish is its
+  /// Where the user most likely stopped, to prefill the page: where the
+  /// Session started plus tonight's reading at their pace for this Work,
+  /// and at least the Checkpoint they marked done. Without a pace it's the
+  /// Position itself. It stays short of the end, since the Finish is its
   /// own action.
   int get suggested {
     final record = this.record!;
-    final from = record.road.position;
+    final from = record.startPage;
+    final marked = record.road.position;
     final session = record.at(_sessions.now());
     final perPage = timePerPage(
       sittingsOf(record.road.work, measured(_before, _sessions.now())),
     );
-    if (perPage == null || perPage <= Duration.zero) return from;
+    if (perPage == null || perPage <= Duration.zero) return marked;
     final tonight = session.readingBetween(session.startedAt, null);
     final guess = from + tonight.inMicroseconds ~/ perPage.inMicroseconds;
-    return max(from, min(guess, record.road.work.totalPages - 1));
+    return max(marked, min(guess, record.road.work.totalPages - 1));
   }
 
   /// [value] moved one step by the −/+ buttons ([by] is -1 or 1), kept
@@ -90,14 +92,14 @@ class EveningViewModel extends ChangeNotifier {
     final road = record!.road;
     final unit = road.work.kind.unit == WorkUnit.second ? 60 : 1;
     final next = (value ?? suggested) + by * unit;
-    return next.clamp(road.position, road.work.totalPages);
+    return next.clamp(record!.startPage, road.work.totalPages);
   }
 
   Future<Result<void>> _save(({int? page, String note}) input) async {
     final record = this.record!;
     _problems = SessionEndDraft(
       page: input.page,
-      fromPage: record.road.position,
+      fromPage: record.startPage,
       totalPages: record.road.work.totalPages,
     ).problems;
     notifyListeners();

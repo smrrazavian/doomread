@@ -137,7 +137,7 @@ class _EveningState extends State<_Evening>
     if (record == null) return const Scaffold();
     final work = record.road.work;
     final unit = work.kind.unit;
-    final from = record.road.position;
+    final from = record.startPage;
     final total = work.totalPages;
     final (fromText, totalText) = (
       formatAmount(context, work, from),

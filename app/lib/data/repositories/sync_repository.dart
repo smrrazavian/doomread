@@ -377,7 +377,12 @@ class SyncRepository {
     kind: SyncKind.event,
     id: e.id,
     updatedAt: e.at,
-    data: {'sessionId': e.sessionId, 'workId': e.workId, 'kind': e.kind.name},
+    data: {
+      'sessionId': e.sessionId,
+      'workId': e.workId,
+      'kind': e.kind.name,
+      'page': ?e.page,
+    },
   );
 
   static SessionEventsCompanion? _eventRow(SyncItem i) {
@@ -389,6 +394,8 @@ class SyncRepository {
       workId: i.data['workId']! as String,
       kind: kind,
       at: i.updatedAt,
+      // Devices from before pages were kept never send one.
+      page: Value(i.data['page'] as int?),
       synced: const Value(true),
     );
   }

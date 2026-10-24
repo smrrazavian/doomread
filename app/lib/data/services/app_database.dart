@@ -64,6 +64,10 @@ class SessionEvents extends Table {
   TextColumn get kind => textEnum<SessionEventKind>()();
   DateTimeColumn get at => dateTime()();
 
+  /// The page a Start began at, or the Checkpoint a Checkpoint event
+  /// reached, in the Work's unit; null for every other event.
+  IntColumn get page => integer().nullable()();
+
   /// Whether the sync server has it.
   BoolColumn get synced => boolean().withDefault(const Constant(false))();
 
@@ -104,7 +108,7 @@ class AppDatabase extends _$AppDatabase {
   )..where((s) => s.key.equals(key))).getSingleOrNull())?.value;
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -128,6 +132,9 @@ class AppDatabase extends _$AppDatabase {
       if (from >= 2 && from < 7) {
         await m.addColumn(works, works.deleted);
         await m.addColumn(works, works.deletedChangedAt);
+      }
+      if (from >= 3 && from < 8) {
+        await m.addColumn(sessionEvents, sessionEvents.page);
       }
     },
   );

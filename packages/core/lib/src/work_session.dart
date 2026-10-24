@@ -55,7 +55,12 @@ PlannedBreak? plannedBreakOf(
   return plannedBreak(
     tonight.session,
     longestStretch: longestStretch(alike(before, watched: work.kind.watched)),
-    startPage: tonight.pages?.from ?? tonight.road.position,
+    // The Position moves as Checkpoints are marked done, so it's the start
+    // only for a Session from before its Start kept the page.
+    startPage:
+        tonight.session.startPage ??
+        tonight.pages?.from ??
+        tonight.road.position,
     totalPages: work.totalPages,
     checkpoints: work.checkpoints,
     perPage: timePerPage(sittingsOf(work, before)),
