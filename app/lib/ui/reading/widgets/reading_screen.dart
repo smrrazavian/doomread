@@ -3,6 +3,7 @@ import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/number_format.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/voice_text.dart';
+import 'package:doomread/ui/evening/widgets/evening_screen.dart';
 import 'package:doomread/ui/planned_break/widgets/next_break_card.dart';
 import 'package:doomread/ui/reading/view_models/reading_view_model.dart';
 import 'package:doomread/ui/reading/widgets/house_view.dart';
@@ -32,18 +33,16 @@ class ReadingScreen extends StatelessWidget {
 class _Reading extends StatelessWidget {
   const _Reading();
 
-  Future<void> _stop(BuildContext context, ReadingViewModel vm) async {
+  /// Stops the Session for End of the evening; [finishing] when the user
+  /// said "I finished it!", so the page there starts at the end.
+  Future<void> _stop(
+    BuildContext context,
+    ReadingViewModel vm, {
+    bool finishing = false,
+  }) async {
     await vm.stop.execute();
     if (context.mounted && vm.stop.completed) {
-      context.pushReplacement('/evening/${vm.id}');
-    }
-  }
-
-  Future<void> _finish(BuildContext context, ReadingViewModel vm) async {
-    final work = vm.record!.road.work;
-    await vm.finish.execute();
-    if (context.mounted && vm.finish.completed) {
-      context.go('/building/finish/${work.id}');
+      context.pushReplacement(eveningPath(vm.id, finishing: finishing));
     }
   }
 
@@ -131,15 +130,15 @@ class _Reading extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              // Near the end, the Finish is one tap, as on End of the
-              // evening.
+              // Near the end, "I finished it!" goes to End of the evening
+              // with the page at the end, for the Note and then the Finish.
               if (record.road.nearEnd)
                 Align(
                   alignment: AlignmentDirectional.centerStart,
                   child: TextButton(
-                    onPressed: vm.finish.running
+                    onPressed: vm.stop.running
                         ? null
-                        : () => _finish(context, vm),
+                        : () => _stop(context, vm, finishing: true),
                     child: Text(l10n.eveningFinished),
                   ),
                 ),

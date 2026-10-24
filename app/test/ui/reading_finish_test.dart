@@ -43,7 +43,7 @@ void main() {
     expect(find.text(en.eveningFinished), findsNothing);
   });
 
-  testApp('past the last Checkpoint, "I finished it!" Finishes from Reading', (
+  testApp('past the last Checkpoint, "I finished it!" Finishes with a Note', (
     tester,
     db,
   ) async {
@@ -51,10 +51,21 @@ void main() {
     await tester.tap(find.text(en.eveningFinished));
     await tester.pumpAndSettle();
 
+    // End of the evening, the page already at the end, for the last Note.
+    final page = tester.widget<TextField>(find.byKey(const Key('page')));
+    expect(page.controller!.text, '245');
+    await tester.enterText(
+      find.byKey(const Key('note')),
+      'Stevens finally bantering.',
+    );
+    await tester.tap(find.text(en.saveAndLightsOut));
+    await tester.pumpAndSettle();
+
     expect(find.text(en.finishedTitle(title)), findsOne);
     final work = await db.select(db.works).getSingle();
     expect(work.position, 245);
     final note = await db.select(db.notes).getSingle();
     expect((note.fromPage, note.toPage), (230, 245));
+    expect(note.body, 'Stevens finally bantering.');
   });
 }

@@ -25,12 +25,25 @@ class EveningScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ChangeNotifierProvider(
     create: (c) => EveningViewModel(c.read<SessionRepository>(), sessionId),
-    child: const _Evening(),
+    child: _Evening(
+      finishing: GoRouterState.of(context).uri.queryParameters
+          .containsKey(_finishing),
+    ),
   );
 }
 
+/// Where End of the evening is for [sessionId]. When [finishing], the user
+/// said "I finished it!" already, so the page starts at the Work's end and
+/// what's left is the Note; saving is then the Finish.
+String eveningPath(String sessionId, {bool finishing = false}) =>
+    '/evening/$sessionId${finishing ? '?$_finishing' : ''}';
+
+const _finishing = 'finishing';
+
 class _Evening extends StatefulWidget {
-  const _Evening();
+  const _Evening({required this.finishing});
+
+  final bool finishing;
 
   @override
   State<_Evening> createState() => _EveningState();
@@ -141,7 +154,11 @@ class _EveningState extends State<_Evening> with TickerProviderStateMixin {
       formatAmount(context, work, total),
     );
     final page = _page ??= TextEditingController(
-      text: formatAmount(context, work, vm.suggested),
+      text: formatAmount(
+        context,
+        work,
+        widget.finishing ? total : vm.suggested,
+      ),
     );
     final String? pageProblem;
     if (vm.problems.contains(SessionEndProblem.noPage)) {
