@@ -202,6 +202,17 @@ Bottom navigation: **Tonight, Books, Building, Friends**.
   - **English:** heading 26/1.2, title 19, body 16/1.5, small 15, caption 13, clock 72.
   - **Persian:** heading 23/1.55, body 16/1.8, book text 15/1.85, clock 68.
 - **Spacing:** a 4-point grid (4, 8, 12, 16, 24, 32, 48). The screen gutter is 24, card padding 16, list rows 12 and gaps between buttons 8. Touch targets are at least 48dp. The primary action is always at the bottom, in reach of the thumb.
+- **Shab-e Yalda** (the evening of 30 Azar, found on the Solar Hijri calendar, never at random) gets its own light. The tokens live together in `YaldaPalette` (`app/lib/ui/core/yalda.dart`), and the House picks one light once per paint:
+
+  | Token | Hex | Token | Hex |
+  |---|---|---|---|
+  | lamp | `#F5A25A` | ember (halo) | `#EC6A3E` |
+  | me | `#FFCF94` | past window | `#D8853F` → `#A83A3A` |
+  | outline | `#FFEBD2` | earlier outline | `#F08A5A` |
+  | rind | `#C4384A` | seed | `#E8566A` |
+  | sill | `#3A4672` | watermelon | `#E5485C`, rind `#3F7B4C` |
+
+  Pomegranates, watermelon and the Divan of Hafez are painted, never emoji, and mirror with the scene. Nothing on Yalda moves. Yalda's copy is deliberately tone-free: it's one warm line in every Tone, since the night is company, not a roast (so it's ARB copy, not a Voice line; see ADR-0017).
 - **Motion:** one orchestrated moment per screen at most (windows lighting up in sequence, the new floor on finishing) and a slow pulse on the user's window. Respect reduced motion.
 - **Banned "AI template" tells:** small uppercase eyebrow labels, "A · B · C" middle-dot strings, an accent on one word of a headline, identical card grids, emoji icons, and arrows appended to buttons.
 - **Icons:** one stroke family, 1.7px, rounded.
