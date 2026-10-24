@@ -296,5 +296,7 @@
   "cardMonthHeading": "{month}، هر شب یه پنجره",
   "cardMonthLit": "{count, plural, =0{این ماه هنوز چراغی روشن نشده} other{{count} شب چراغم روشن بود}}",
   "cardMonthLegend": "هر چی روشن‌تر، بیشتر",
-  "cardNoteAction": "این یادداشتو نشون بده"
+  "cardNoteAction": "این یادداشتو نشون بده",
+  "cardMonthDark": "چراغ خاموش",
+  "cardMonthAhead": "هنوز نرسیده"
 }

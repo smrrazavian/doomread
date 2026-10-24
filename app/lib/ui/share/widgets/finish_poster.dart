@@ -13,7 +13,7 @@ import 'package:intl/intl.dart' show Bidi;
 /// The Finish as a story-sized poster: the user's Building on a night sky
 /// with the new floor lit, what it took, and maybe their last Note.
 ///
-/// It's laid out on a fixed [size] canvas, whatever the device, and drawn
+/// It's laid out on the fixed [PosterCanvas], whatever the device, and drawn
 /// at three times that for a 1080×1920 image. Persian gets its own layout:
 /// right to left, Persian digits, and Naskh for the title and the Note.
 class FinishPoster extends StatelessWidget {
@@ -25,9 +25,6 @@ class FinishPoster extends StatelessWidget {
     this.note,
     super.key,
   });
-
-  /// The canvas, in logical pixels; the image is three times this.
-  static const Size size = PosterCanvas.size;
 
   final Finish finish;
 

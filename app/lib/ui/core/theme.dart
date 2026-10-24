@@ -23,6 +23,9 @@ abstract final class Palette {
   static const paper = Color(0xFFEDE6D6);
   static const soft = Color(0xFFC9C3B6);
   static const mute = Color(0xFF9AA3BD);
+
+  /// Secondary ink on a paper card, like faded thermal print.
+  static const inkFaded = Color(0xFF5A6382);
 }
 
 /// The dark evening theme. Persian gets its own faces and taller lines,

@@ -1,6 +1,9 @@
 import 'dart:math' as math;
 
+import 'package:doomread/l10n/app_localizations.dart';
+import 'package:doomread/ui/core/date_format.dart';
 import 'package:doomread/ui/core/theme.dart';
+import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
 
 /// The fixed canvas every share card is laid out on, whatever the device:
@@ -31,10 +34,6 @@ class PosterCanvas extends StatelessWidget {
     ),
   );
 }
-
-/// Whether [context] is in Persian, which gets its own layout on a card.
-bool isPersian(BuildContext context) =>
-    Localizations.localeOf(context).languageCode == 'fa';
 
 /// The cards' type, set apart from the app theme so it can't drift with
 /// it. Persian has its own faces and taller lines, and no letter spacing.
@@ -218,4 +217,133 @@ class LampGlow extends CustomPainter {
 
   @override
   bool shouldRepaint(LampGlow old) => old.at != at || old.reach != reach;
+}
+
+/// A card's frame: the night [sky], an optional lamp [glow], and the
+/// wordmark at the top, with [child] in the room left under it.
+class PosterFrame extends StatelessWidget {
+  const PosterFrame({
+    required this.child,
+    this.sky = const PosterSky(),
+    this.glow,
+    super.key,
+  });
+
+  final Widget child;
+  final CustomPainter sky;
+  final CustomPainter? glow;
+
+  @override
+  Widget build(BuildContext context) {
+    final type = PosterType(fa: isPersian(context));
+    return PosterCanvas(
+      child: Stack(
+        children: [
+          Positioned.fill(child: CustomPaint(painter: sky)),
+          if (glow case final glow?)
+            Positioned.fill(child: CustomPaint(painter: glow)),
+          Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(24, 26, 24, 28),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: Wordmark(
+                    AppLocalizations.of(context).appTitle,
+                    type.mark,
+                  ),
+                ),
+                Expanded(child: child),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Paper put down a little askew, as by hand: [degrees] anticlockwise, or
+/// clockwise in Persian, so the tilt mirrors with the layout.
+class Tilt extends StatelessWidget {
+  const Tilt({required this.child, this.degrees = 1.5, super.key});
+
+  final double degrees;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Transform.rotate(
+    angle:
+        (Directionality.of(context) == TextDirection.rtl ? 1 : -1) *
+        degrees *
+        math.pi /
+        180,
+    child: child,
+  );
+}
+
+/// The soft shadow paper casts on the night, under the [outline] of the
+/// paper (a plain rectangle when null).
+class PaperShadow extends CustomPainter {
+  const PaperShadow({this.outline});
+
+  final Path Function(Size size)? outline;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final shape = outline?.call(size) ?? (Path()..addRect(Offset.zero & size));
+    canvas.drawPath(
+      shape.shift(const Offset(0, 10)),
+      Paint()
+        ..color = Colors.black.withValues(alpha: 0.45)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 15),
+    );
+  }
+
+  @override
+  bool shouldRepaint(PaperShadow old) => old.outline != outline;
+}
+
+/// A Work's «title» and its author, as a card prints them: the title
+/// isolated, so a Latin title can't pull Persian guillemets around.
+class WorkByline extends StatelessWidget {
+  const WorkByline({
+    required this.work,
+    required this.title,
+    required this.author,
+    this.align = TextAlign.start,
+    super.key,
+  });
+
+  final Work work;
+  final TextStyle title;
+  final TextStyle author;
+  final TextAlign align;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Text(
+        AppLocalizations.of(context)
+            .sharePosterTitle('\u2068${work.title}\u2069'),
+        style: title,
+        textAlign: align,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+      if (work.author.trim().isNotEmpty) ...[
+        const SizedBox(height: 2),
+        Text(
+          work.author,
+          style: author,
+          textAlign: align,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    ],
+  );
 }

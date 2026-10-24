@@ -1699,6 +1699,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Share this Note'**
   String get cardNoteAction;
+
+  /// In the month card's key: a past night without a Session. Plain, never a reproach.
+  ///
+  /// In en, this message translates to:
+  /// **'Lamp off'**
+  String get cardMonthDark;
+
+  /// In the month card's key: nights of the month that haven't come yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Still to come'**
+  String get cardMonthAhead;
 }
 
 class _AppLocalizationsDelegate

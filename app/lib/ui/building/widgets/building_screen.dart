@@ -1,9 +1,9 @@
 import 'package:doomread/data/repositories/session_repository.dart';
-import 'package:doomread/data/services/share_sheet.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/building/view_models/building_view_model.dart';
 import 'package:doomread/ui/building/widgets/building_view.dart';
 import 'package:doomread/ui/building/widgets/longest_stretch_trend.dart';
+import 'package:doomread/ui/core/date_format.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/work_text.dart';
 import 'package:doomread/ui/share/widgets/glow_up_poster.dart';
@@ -34,15 +34,17 @@ class _Building extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     final vm = context.watch<BuildingViewModel>();
     final floors = vm.floors;
-    final canShare = context.read<ShareSheet>().available;
-    final locale = Localizations.localeOf(context);
+    final sharing = canShare(context);
     // Until the Calendar has it, the month of windows is shared from here.
-    final month = vm.month(solarHijri: locale.languageCode == 'fa');
+    final month = vm.month(solarHijri: calendarOf(context).solarHijri);
     VoidCallback? shareGlowUp(
       List<StretchRise> rises, {
       required bool watched,
-    }) => canShare
-        ? () => _share(context, GlowUpPoster(rises: rises, watched: watched))
+    }) => sharing
+        ? () => openSharePreview(
+            context,
+            GlowUpPoster(rises: rises, watched: watched),
+          )
         : null;
     return Scaffold(
       body: SafeArea(
@@ -75,17 +77,12 @@ class _Building extends StatelessWidget {
                 onShare: shareGlowUp(vm.watchingRises, watched: true),
               ),
             ],
-            if (canShare && month.count > 0)
+            if (sharing && month.count > 0)
               Align(
                 alignment: AlignmentDirectional.centerStart,
                 child: TextButton.icon(
-                  onPressed: () => _share(
-                    context,
-                    MonthPoster(
-                      month: month,
-                      firstDay: firstDayOfWeek(locale.languageCode),
-                    ),
-                  ),
+                  onPressed: () =>
+                      openSharePreview(context, MonthPoster(month: month)),
                   icon: const Icon(Icons.calendar_view_month_outlined),
                   label: Text(l10n.cardMonthAction),
                 ),
@@ -103,11 +100,6 @@ class _Building extends StatelessWidget {
     );
   }
 }
-
-/// Opens [poster] in the share preview.
-void _share(BuildContext context, Widget poster) => Navigator.of(
-  context,
-).push(MaterialPageRoute<void>(builder: (_) => SharePreview(poster: poster)));
 
 /// One finished Work in the list under the tower.
 class _FloorRow extends StatelessWidget {

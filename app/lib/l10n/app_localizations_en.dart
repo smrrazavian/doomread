@@ -1491,4 +1491,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cardNoteAction => 'Share this Note';
+
+  @override
+  String get cardMonthDark => 'Lamp off';
+
+  @override
+  String get cardMonthAhead => 'Still to come';
 }

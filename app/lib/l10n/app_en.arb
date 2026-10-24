@@ -1168,5 +1168,13 @@
   "cardNoteAction": "Share this Note",
   "@cardNoteAction": {
     "description": "On a Note on the Book page: opens just that Note as a card to share. Notes are private unless shared this way, one at a time."
+  },
+  "cardMonthDark": "Lamp off",
+  "@cardMonthDark": {
+    "description": "In the month card's key: a past night without a Session. Plain, never a reproach."
+  },
+  "cardMonthAhead": "Still to come",
+  "@cardMonthAhead": {
+    "description": "In the month card's key: nights of the month that haven't come yet."
   }
 }

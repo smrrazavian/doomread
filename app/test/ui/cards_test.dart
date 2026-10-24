@@ -144,7 +144,6 @@ void main() {
       expect(card.month.calendarMonth, (year: 2026, month: 10));
       expect(card.month.count, 3);
       expect(card.month.readingOn(DateTime(2026, 10, 20)).inMinutes, 31);
-      expect(card.firstDay, DateTime.monday);
       expect(find.text(en.cardMonthLit(3)), findsOne);
     });
 

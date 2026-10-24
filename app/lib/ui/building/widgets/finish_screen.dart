@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:doomread/data/repositories/session_repository.dart';
-import 'package:doomread/data/services/share_sheet.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/building/view_models/building_view_model.dart';
 import 'package:doomread/ui/building/widgets/building_view.dart';
@@ -97,17 +96,14 @@ class _Finish extends StatelessWidget {
                     onPressed: () => context.push('/book/$workId'),
                     child: Text(l10n.readTheStory),
                   ),
-                  if (context.read<ShareSheet>().available) ...[
+                  if (canShare(context)) ...[
                     const SizedBox(height: 8),
                     OutlinedButton(
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) => SharePreviewScreen(
-                            finish: finish,
-                            floors: floors.length,
-                            floor: floor,
-                          ),
-                        ),
+                      onPressed: () => openFinishPreview(
+                        context,
+                        finish: finish,
+                        floors: floors.length,
+                        floor: floor,
                       ),
                       child: Text(l10n.shareAction),
                     ),

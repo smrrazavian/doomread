@@ -3,6 +3,18 @@ import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' show DateFormat, NumberFormat;
 
+/// Whether [context] is in Persian, which gets its own layout and
+/// calendar.
+bool isPersian(BuildContext context) =>
+    Localizations.localeOf(context).languageCode == 'fa';
+
+/// The user's calendar, from the locale: Solar Hijri with weeks from
+/// Saturday in Persian, Gregorian with weeks from Monday otherwise.
+({bool solarHijri, int firstDay}) calendarOf(BuildContext context) => (
+  solarHijri: isPersian(context),
+  firstDay: firstDayOfWeek(Localizations.localeOf(context).languageCode),
+);
+
 /// [date] as a day and month: "۱۷ مهر" in Persian, on the Solar Hijri
 /// calendar, and "Oct 9" in English.
 String formatDayMonth(BuildContext context, DateTime date) {

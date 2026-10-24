@@ -138,15 +138,59 @@ class _PreviewState extends State<_Preview> {
   }
 }
 
-/// The Finish poster's preview, with the switch for the Note.
-class SharePreviewScreen extends StatelessWidget {
-  const SharePreviewScreen({
+/// Whether this platform can share a card at all: an action that opens
+/// one is only offered when it can.
+bool canShare(BuildContext context) => context.read<ShareSheet>().available;
+
+/// Opens [poster] in the share preview, with [controls] under it, if this
+/// platform can share. It ends when the preview is closed.
+Future<void> openSharePreview(
+  BuildContext context,
+  Widget poster, {
+  List<Widget> controls = const [],
+}) async {
+  if (!canShare(context)) return;
+  await Navigator.of(context).push(
+    MaterialPageRoute<void>(
+      builder: (_) => SharePreview(poster: poster, controls: controls),
+    ),
+  );
+}
+
+/// Opens the Finish poster to share, with the switch for the Note. Its
+/// extras are watched only while the preview is open.
+Future<void> openFinishPreview(
+  BuildContext context, {
+  required Finish finish,
+  required int floors,
+  required int floor,
+}) async {
+  final vm = FinishShareViewModel(
+    context.read<SessionRepository>(),
+    workId: finish.work.id,
+  );
+  try {
+    await openSharePreview(
+      context,
+      FinishShareCard(vm: vm, finish: finish, floors: floors, floor: floor),
+      controls: [FinishNoteSwitch(vm: vm)],
+    );
+  } finally {
+    vm.dispose();
+  }
+}
+
+/// The Finish poster with what [vm] has found to go on it.
+class FinishShareCard extends StatelessWidget {
+  const FinishShareCard({
+    required this.vm,
     required this.finish,
     required this.floors,
     required this.floor,
     super.key,
   });
 
+  final FinishShareViewModel vm;
   final Finish finish;
 
   /// How many floors the Building has, and which one, from the top, is
@@ -155,25 +199,33 @@ class SharePreviewScreen extends StatelessWidget {
   final int floor;
 
   @override
-  Widget build(BuildContext context) => ChangeNotifierProvider(
-    create: (c) => FinishShareViewModel(
-      c.read<SessionRepository>(),
-      workId: finish.work.id,
+  Widget build(BuildContext context) => ListenableBuilder(
+    listenable: vm,
+    builder: (context, _) => FinishPoster(
+      finish: finish,
+      floors: floors,
+      floor: floor,
+      urgesLetPass: vm.extras.urgesLetPass,
+      note: vm.note,
     ),
-    builder: (context, _) {
-      final l10n = AppLocalizations.of(context);
-      final vm = context.watch<FinishShareViewModel>();
-      return SharePreview(
-        poster: FinishPoster(
-          finish: finish,
-          floors: floors,
-          floor: floor,
-          urgesLetPass: vm.extras.urgesLetPass,
-          note: vm.note,
-        ),
-        controls: [
-          if (vm.extras.lastNote != null)
-            SwitchListTile(
+  );
+}
+
+/// The switch for whether the Finish poster carries the user's last Note;
+/// shown only when there is one.
+class FinishNoteSwitch extends StatelessWidget {
+  const FinishNoteSwitch({required this.vm, super.key});
+
+  final FinishShareViewModel vm;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return ListenableBuilder(
+      listenable: vm,
+      builder: (context, _) => vm.extras.lastNote == null
+          ? const SizedBox.shrink()
+          : SwitchListTile(
               key: const Key('showNote'),
               contentPadding: const EdgeInsets.symmetric(horizontal: 24),
               title: Text(l10n.shareShowNote),
@@ -181,8 +233,6 @@ class SharePreviewScreen extends StatelessWidget {
               value: vm.showNote,
               onChanged: (on) => vm.showNote = on,
             ),
-        ],
-      );
-    },
-  );
+    );
+  }
 }

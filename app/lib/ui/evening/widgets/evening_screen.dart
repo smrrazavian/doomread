@@ -1,5 +1,4 @@
 import 'package:doomread/data/repositories/session_repository.dart';
-import 'package:doomread/data/services/share_sheet.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/number_format.dart';
 import 'package:doomread/ui/core/theme.dart';
@@ -7,7 +6,9 @@ import 'package:doomread/ui/core/voice_text.dart';
 import 'package:doomread/ui/core/work_text.dart';
 import 'package:doomread/ui/evening/view_models/evening_view_model.dart';
 import 'package:doomread/ui/evening/widgets/rolling_field.dart';
-import 'package:doomread/ui/share/widgets/receipt_share_screen.dart';
+import 'package:doomread/ui/settings/view_models/settings_view_model.dart';
+import 'package:doomread/ui/share/widgets/receipt_poster.dart';
+import 'package:doomread/ui/share/widgets/share_preview_screen.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -89,12 +90,24 @@ class _EveningState extends State<_Evening>
     ));
     if (!mounted || !vm.save.completed) return;
     if (share) {
-      await Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (_) => ReceiptShareScreen(sessionId: vm.id),
-        ),
-      );
+      final saved = await vm.saved();
       if (!mounted) return;
+      if (saved case (final record, final session)) {
+        await openSharePreview(
+          context,
+          ReceiptPoster(
+            work: record.road.work,
+            session: session,
+            pages: record.pages,
+            signOff: receiptSignOff(
+              session,
+              context.read<SettingsViewModel>().tone,
+              Localizations.localeOf(context).languageCode,
+            ),
+          ),
+        );
+        if (!mounted) return;
+      }
     }
     // The Finish has its own moment; otherwise the light goes off first.
     if (!vm.finished && !MediaQuery.disableAnimationsOf(context)) {
@@ -154,7 +167,7 @@ class _EveningState extends State<_Evening>
       pageProblem = null;
     }
 
-    final canShare = context.read<ShareSheet>().available;
+    final sharing = canShare(context);
     final screen = Scaffold(
       appBar: AppBar(),
       body: SafeArea(
@@ -290,7 +303,7 @@ class _EveningState extends State<_Evening>
                     ),
                   ),
                   // Quiet and opt-in: saving never shares by itself.
-                  if (canShare) ...[
+                  if (sharing) ...[
                     const SizedBox(width: 8),
                     IconButton.outlined(
                       key: const Key('shareTonight'),

@@ -15,18 +15,17 @@ import 'package:flutter/material.dart';
 /// and Persian digits. How bright a night is depends only on the user's own
 /// brightest night this month.
 class MonthPoster extends StatelessWidget {
-  const MonthPoster({required this.month, required this.firstDay, super.key});
+  const MonthPoster({required this.month, super.key});
 
+  /// Built in the calendar of the card's locale (see [calendarOf]).
   final ReadingMonth month;
-
-  /// The weekday the week starts on, see [firstDayOfWeek].
-  final int firstDay;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final fa = isPersian(context);
     final type = PosterType(fa: fa);
+    final firstDay = calendarOf(context).firstDay;
     final narrow = MaterialLocalizations.of(context).narrowWeekdays;
     final lead = month.leadingDays(firstDay);
     final cells = <DateTime?>[
@@ -36,73 +35,73 @@ class MonthPoster extends StatelessWidget {
     final weeks = (cells.length / 7).ceil();
     final heading = type.title.copyWith(fontSize: fa ? 27 : 29);
 
-    return PosterCanvas(
-      child: Stack(
+    return PosterFrame(
+      sky: const PosterSky(stars: 34, starDepth: 0.2),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Positioned.fill(
-            child: CustomPaint(painter: PosterSky(stars: 34, starDepth: 0.2)),
+          const SizedBox(height: 22),
+          Text(
+            l10n.cardMonthHeading(
+              formatMonthYear(context, month.calendarMonth),
+            ),
+            style: heading,
           ),
+          const Spacer(),
+          // The weekdays, over the facade's columns.
           Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(24, 26, 24, 28),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+            padding: const EdgeInsets.symmetric(horizontal: _Facade.side),
+            child: Row(
               children: [
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: Wordmark(l10n.appTitle, type.mark),
-                ),
-                const SizedBox(height: 28),
-                Text(
-                  l10n.cardMonthHeading(
-                    formatMonthYear(context, month.calendarMonth),
+                for (var i = 0; i < 7; i++) ...[
+                  if (i > 0) const SizedBox(width: _Facade.gap),
+                  SizedBox(
+                    width: _Facade.window,
+                    child: Text(
+                      narrow[(firstDay + i) % 7],
+                      textAlign: TextAlign.center,
+                      style: type.label,
+                    ),
                   ),
-                  style: heading,
-                ),
-                const Spacer(),
-                // The weekdays, over the facade's columns.
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: _Facade.side),
-                  child: Row(
-                    children: [
-                      for (var i = 0; i < 7; i++) ...[
-                        if (i > 0) const SizedBox(width: _Facade.gap),
-                        SizedBox(
-                          width: _Facade.window,
-                          child: Text(
-                            narrow[(firstDay + i) % 7],
-                            textAlign: TextAlign.center,
-                            style: type.label,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 6),
-                _Facade(month: month, cells: cells, weeks: weeks),
-                // The street the building stands on.
-                const Divider(height: 1.5, thickness: 1.5, color: Palette.line),
-                const SizedBox(height: 20),
-                Text(
-                  l10n.cardMonthLit(month.count),
-                  style: type.body.copyWith(
-                    color: Palette.paper,
-                    fontSize: fa ? 17 : 18,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    for (final t in const [0.15, 0.55, 1.0]) ...[
-                      _Glass(color: _lit(t), size: const Size(10, 12)),
-                      const SizedBox(width: 4),
-                    ],
-                    const SizedBox(width: 4),
-                    Text(l10n.cardMonthLegend, style: type.label),
-                  ],
-                ),
+                ],
               ],
             ),
+          ),
+          const SizedBox(height: 6),
+          _Facade(month: month, cells: cells, weeks: weeks),
+          // The street the building stands on.
+          const Divider(height: 1.5, thickness: 1.5, color: Palette.line),
+          const SizedBox(height: 20),
+          Text(
+            l10n.cardMonthLit(month.count),
+            style: type.body.copyWith(
+              color: Palette.paper,
+              fontSize: fa ? 17 : 18,
+            ),
+          ),
+          const SizedBox(height: 6),
+          _Key(
+            chips: [
+              for (final t in const [0.15, 0.55, 1.0]) _lit(t),
+            ],
+            label: l10n.cardMonthLegend,
+            style: type.label,
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              _Key(
+                chips: const [Palette.unlit],
+                label: l10n.cardMonthDark,
+                style: type.label,
+              ),
+              const SizedBox(width: 16),
+              _Key(
+                chips: const [Palette.newFloor],
+                label: l10n.cardMonthAhead,
+                style: type.label,
+              ),
+            ],
           ),
         ],
       ),
@@ -114,7 +113,45 @@ class MonthPoster extends StatelessWidget {
 /// brightest: a low amber at the dimmest, the user's own warm light at the
 /// brightest.
 Color _lit(double t) =>
-    Color.lerp(const Color(0xFF9A6B24), Palette.me, math.sqrt(t.clamp(0, 1)))!;
+    Color.lerp(_dimmestLit, Palette.me, math.sqrt(t.clamp(0, 1)))!;
+
+/// A Window lit for the shortest night of the month: a low amber lamp.
+const _dimmestLit = Color(0xFF9A6B24);
+
+/// A few panes of glass and what they mean, for the card's key.
+class _Key extends StatelessWidget {
+  const _Key({required this.chips, required this.label, required this.style});
+
+  final List<Color> chips;
+  final String label;
+  final TextStyle style;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      // On a strip of wall, as in the building, so an unlit pane shows.
+      Container(
+        padding: const EdgeInsets.all(3),
+        decoration: BoxDecoration(
+          color: Palette.wall,
+          borderRadius: BorderRadius.circular(2),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final (i, c) in chips.indexed) ...[
+              if (i > 0) const SizedBox(width: 3),
+              _Glass(color: c, size: const Size(10, 12)),
+            ],
+          ],
+        ),
+      ),
+      const SizedBox(width: 8),
+      Text(label, style: style),
+    ],
+  );
+}
 
 /// The building: a wall with a floor per week, a Window per night.
 class _Facade extends StatelessWidget {
@@ -133,12 +170,14 @@ class _Facade extends StatelessWidget {
   static const window = 30.0;
   static const gap = 11.5;
   static const side = 16.0;
-  static const floor = 40.0;
   static const floorGap = 12.0;
+
+  /// A month over six weeks gets lower floors, so it still fits the card.
+  double get _floor => weeks > 5 ? 33 : 40;
 
   @override
   Widget build(BuildContext context) {
-    final most = month.longestNight;
+    final brightest = month.longestNight;
     return DecoratedBox(
       decoration: const BoxDecoration(
         color: Palette.wall,
@@ -157,7 +196,7 @@ class _Facade extends StatelessWidget {
                     if (d > 0) const SizedBox(width: gap),
                     _night(
                       w * 7 + d < cells.length ? cells[w * 7 + d] : null,
-                      most,
+                      brightest,
                     ),
                   ],
                 ],
@@ -169,18 +208,18 @@ class _Facade extends StatelessWidget {
     );
   }
 
-  Widget _night(DateTime? night, Duration most) {
-    const size = Size(window, floor);
-    if (night == null) return const SizedBox(width: window, height: floor);
+  Widget _night(DateTime? night, Duration brightest) {
+    final size = Size(window, _floor);
+    if (night == null) return SizedBox.fromSize(size: size);
     if (night.isAfter(month.tonight)) {
-      return const _Glass(color: Palette.newFloor, size: size);
+      return _Glass(color: Palette.newFloor, size: size);
     }
     if (!month.isLit(night)) {
-      return const _Glass(color: Palette.unlit, size: size);
+      return _Glass(color: Palette.unlit, size: size);
     }
-    final t = most == Duration.zero
+    final t = brightest == Duration.zero
         ? 0.3
-        : month.readingOn(night).inSeconds / most.inSeconds;
+        : month.readingOn(night).inSeconds / brightest.inSeconds;
     return _Glass(color: _lit(t), size: size, glow: 0.15 + 0.45 * t);
   }
 }

@@ -1339,4 +1339,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get cardNoteAction => 'این یادداشتو نشون بده';
+
+  @override
+  String get cardMonthDark => 'چراغ خاموش';
+
+  @override
+  String get cardMonthAhead => 'هنوز نرسیده';
 }

@@ -110,10 +110,21 @@ void main() {
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             theme: buildTheme(const Locale('en')),
-            home: SharePreviewScreen(finish: finish, floors: 1, floor: 0),
+            home: Builder(
+              builder: (context) => TextButton(
+                onPressed: () => openFinishPreview(
+                  context,
+                  finish: finish,
+                  floors: 1,
+                  floor: 0,
+                ),
+                child: const Text('open'),
+              ),
+            ),
           ),
         ),
       );
+      await tester.tap(find.text('open'));
       await tester.pumpAndSettle();
       return sheet;
     }

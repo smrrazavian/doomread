@@ -39,8 +39,7 @@ class ReceiptPoster extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context);
-    final fa = isPersian(context);
-    final type = PosterType(fa: fa);
+    final type = PosterType(fa: isPersian(context));
     final ink = _Ink(type);
     final minutes = session.reading.inMinutes;
     final longest = session.longestStretch.inMinutes;
@@ -50,125 +49,91 @@ class ReceiptPoster extends StatelessWidget {
     final end = session.stretches.lastOrNull?.end;
     final pages = this.pages;
 
-    return PosterCanvas(
-      child: Stack(
-        children: [
-          const Positioned.fill(
-            child: CustomPaint(painter: PosterSky(stars: 60, starDepth: 0.9)),
-          ),
-          const Positioned.fill(
-            child: CustomPaint(
-              painter: LampGlow(at: Offset(0.5, 0.42), reach: 300),
-            ),
-          ),
-          PositionedDirectional(
-            top: 26,
-            start: 24,
-            child: Wordmark(l10n.appTitle, type.mark),
-          ),
-          Positioned.fill(
-            top: 56,
-            child: Center(
-              child: Transform.rotate(
-                // A receipt dropped on the desk, never quite straight.
-                angle: (fa ? 1 : -1) * 1.4 * math.pi / 180,
-                child: _Paper(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const Center(child: _LitWindow()),
-                      const SizedBox(height: 6),
-                      Text(
-                        l10n.cardReceiptHeading,
-                        style: ink.heading,
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 4),
-                      if (start != null && end != null)
-                        Text(
-                          l10n.cardReceiptWhen(
-                            formatDayMonth(context, eveningOf(start)),
-                            formatTime(start, locale),
-                            formatTime(end, locale),
-                          ),
-                          style: ink.small,
-                          textAlign: TextAlign.center,
-                        ),
-                      const _Dashes(),
-                      Text(
-                        l10n.sharePosterTitle('\u2068${work.title}\u2069'),
-                        style: ink.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (work.author.trim().isNotEmpty)
-                        Text(
-                          work.author,
-                          style: ink.small,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      const _Dashes(),
-                      if (pages != null)
-                        _Line(
-                          ink: ink,
-                          label: switch (work.kind.unit) {
-                            WorkUnit.page => l10n.cardReceiptPages,
-                            WorkUnit.episode => l10n.cardReceiptEpisodes,
-                            WorkUnit.second => l10n.cardReceiptTime,
-                          },
-                          value: rangeOf(context, work, pages.from, pages.to),
-                        ),
-                      _Line(
-                        ink: ink,
-                        label: l10n.cardReceiptLongest,
-                        value: l10n.minutesShort(longest),
-                      ),
-                      // A zero next to a Slip would read as a score.
-                      if (session.urgesLetPass > 0)
-                        _Line(
-                          ink: ink,
-                          label: l10n.cardReceiptUrges,
-                          value: formatNumber(session.urgesLetPass, locale),
-                        ),
-                      if (breaks > 0)
-                        _Line(
-                          ink: ink,
-                          icon: const _TeaGlass(),
-                          label: l10n.cardReceiptBreaks,
-                          value: formatNumber(breaks, locale),
-                        ),
-                      if (slips > 0) ...[
-                        const SizedBox(height: 2),
-                        Text(l10n.cardReceiptSlips(slips), style: ink.kind),
-                      ],
-                      const _Dashes(),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.alphabetic,
-                        children: [
-                          Text(l10n.cardReceiptTotal, style: ink.total),
-                          const Spacer(),
-                          Text(l10n.minutesShort(minutes), style: ink.total),
-                        ],
-                      ),
-                      const _Dashes(),
-                      const SizedBox(height: 2),
-                      Text(
-                        signOff,
-                        style: ink.signOff,
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 14),
-                      _Barcode(seed: start?.millisecondsSinceEpoch ?? 0),
-                    ],
-                  ),
+    return PosterFrame(
+      sky: const PosterSky(stars: 60, starDepth: 0.9),
+      glow: const LampGlow(at: Offset(0.5, 0.42), reach: 300),
+      child: Center(
+        // A receipt dropped on the desk, never quite straight.
+        child: Tilt(
+          degrees: 1.4,
+          child: _Paper(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Center(child: _LitWindow()),
+                const SizedBox(height: 6),
+                Text(
+                  l10n.cardReceiptHeading,
+                  style: ink.heading,
+                  textAlign: TextAlign.center,
                 ),
-              ),
+                const SizedBox(height: 4),
+                if (start != null && end != null)
+                  Text(
+                    l10n.cardReceiptWhen(
+                      formatDayMonth(context, eveningOf(start)),
+                      formatTime(start, locale),
+                      formatTime(end, locale),
+                    ),
+                    style: ink.small,
+                    textAlign: TextAlign.center,
+                  ),
+                const _Dashes(),
+                WorkByline(work: work, title: ink.title, author: ink.small),
+                const _Dashes(),
+                if (pages != null)
+                  _Line(
+                    ink: ink,
+                    label: switch (work.kind.unit) {
+                      WorkUnit.page => l10n.cardReceiptPages,
+                      WorkUnit.episode => l10n.cardReceiptEpisodes,
+                      WorkUnit.second => l10n.cardReceiptTime,
+                    },
+                    value: rangeOf(context, work, pages.from, pages.to),
+                  ),
+                _Line(
+                  ink: ink,
+                  label: l10n.cardReceiptLongest,
+                  value: l10n.minutesShort(longest),
+                ),
+                // A zero next to a Slip would read as a score.
+                if (session.urgesLetPass > 0)
+                  _Line(
+                    ink: ink,
+                    label: l10n.cardReceiptUrges,
+                    value: formatNumber(session.urgesLetPass, locale),
+                  ),
+                if (breaks > 0)
+                  _Line(
+                    ink: ink,
+                    icon: const _TeaGlass(),
+                    label: l10n.cardReceiptBreaks,
+                    value: formatNumber(breaks, locale),
+                  ),
+                if (slips > 0) ...[
+                  const SizedBox(height: 2),
+                  Text(l10n.cardReceiptSlips(slips), style: ink.kind),
+                ],
+                const _Dashes(),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Text(l10n.cardReceiptTotal, style: ink.total),
+                    const Spacer(),
+                    Text(l10n.minutesShort(minutes), style: ink.total),
+                  ],
+                ),
+                const _Dashes(),
+                const SizedBox(height: 2),
+                Text(signOff, style: ink.signOff, textAlign: TextAlign.center),
+                const SizedBox(height: 14),
+                _Barcode(seed: start?.millisecondsSinceEpoch ?? 0),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -183,17 +148,14 @@ class _Ink {
       title = t
           .book(17, Palette.night, FontWeight.w600)
           .copyWith(height: t.fa ? 1.7 : 1.3),
-      small = _tab(t.ui(12, _faded)),
+      small = _tab(t.ui(12, Palette.inkFaded)),
       line = _tab(t.ui(14, Palette.night)),
       value = _tab(t.ui(14, Palette.night, FontWeight.w500)),
-      kind = t.ui(13, _faded),
+      kind = t.ui(13, Palette.inkFaded),
       total = _tab(t.ui(20, Palette.night, FontWeight.w700)),
       signOff = t
           .ui(15, Palette.night, FontWeight.w500)
           .copyWith(height: t.fa ? 1.75 : 1.4);
-
-  /// Thermal print that has faded a little: secondary lines.
-  static const _faded = Color(0xFF5A6382);
 
   final TextStyle heading;
   final TextStyle title;
@@ -256,7 +218,7 @@ class _Paper extends StatelessWidget {
   Widget build(BuildContext context) => SizedBox(
     width: width,
     child: CustomPaint(
-      painter: const _PaperShadow(),
+      painter: const PaperShadow(outline: _Torn.torn),
       child: ClipPath(
         clipper: const _Torn(),
         child: ColoredBox(
@@ -301,23 +263,6 @@ class _Torn extends CustomClipper<Path> {
 
   @override
   bool shouldReclip(_Torn oldClipper) => false;
-}
-
-class _PaperShadow extends CustomPainter {
-  const _PaperShadow();
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    canvas.drawPath(
-      _Torn.torn(size).shift(const Offset(0, 10)),
-      Paint()
-        ..color = Colors.black.withValues(alpha: 0.45)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 14),
-    );
-  }
-
-  @override
-  bool shouldRepaint(_PaperShadow oldDelegate) => false;
 }
 
 /// A dashed rule across the receipt, the way a till prints one.
@@ -396,6 +341,9 @@ class _TeaGlass extends StatelessWidget {
 class _TeaGlassPainter extends CustomPainter {
   const _TeaGlassPainter();
 
+  /// Strong black tea in the glass, the colour Iranian tea is poured.
+  static const _tea = Color(0xFFB4622F);
+
   @override
   void paint(Canvas canvas, Size size) {
     final w = size.width;
@@ -419,7 +367,7 @@ class _TeaGlassPainter extends CustomPainter {
       ..cubicTo(w * 0.60, h * 0.64, w * 0.72, h * 0.62, w * 0.75, h * 0.52)
       ..close();
     canvas
-      ..drawPath(tea, Paint()..color = const Color(0xFFB4622F))
+      ..drawPath(tea, Paint()..color = _tea)
       ..drawPath(glass, stroke)
       // The saucer.
       ..drawLine(

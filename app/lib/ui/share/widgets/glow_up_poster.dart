@@ -38,74 +38,65 @@ class GlowUpPoster extends StatelessWidget {
           ],
         );
 
-    return PosterCanvas(
-      child: Stack(
-        children: [
-          const Positioned.fill(child: CustomPaint(painter: PosterSky())),
-          Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(24, 26, 24, 32),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+    return PosterFrame(
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SizedBox(height: 40),
+            Text(
+              l10n.cardGlowUpHeading,
+              style: type.title.copyWith(fontSize: fa ? 28 : 30),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              l10n.cardGlowUpWhat(watched ? 'watching' : 'reading'),
+              style: type.body.copyWith(color: Palette.mute),
+            ),
+            const Spacer(),
+            SizedBox(
+              height: 220,
+              child: CustomPaint(
+                painter: TrendLinePainter(
+                  rises,
+                  Directionality.of(context),
+                  stroke: 3.5,
+                  dot: 4,
+                  now: 8,
+                  glow: true,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: Wordmark(l10n.appTitle, type.mark),
-                ),
-                const SizedBox(height: 40),
-                Text(
-                  l10n.cardGlowUpHeading,
-                  style: type.title.copyWith(fontSize: fa ? 28 : 30),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  l10n.cardGlowUpWhat(watched ? 'watching' : 'reading'),
-                  style: type.body.copyWith(color: Palette.mute),
+                _End(
+                  label: l10n.cardGlowUpFirst,
+                  minutes: l10n.minutesShort(first.longest.inMinutes),
+                  date: formatDayMonth(context, first.evening),
+                  number: then,
+                  type: type,
                 ),
                 const Spacer(),
-                SizedBox(
-                  height: 220,
-                  child: CustomPaint(
-                    painter: TrendLinePainter(
-                      rises,
-                      Directionality.of(context),
-                      stroke: 3.5,
-                      dot: 4,
-                      now: 8,
-                      glow: true,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    _End(
-                      label: l10n.cardGlowUpFirst,
-                      minutes: l10n.minutesShort(first.longest.inMinutes),
-                      date: formatDayMonth(context, first.evening),
-                      number: then,
-                      type: type,
-                    ),
-                    const Spacer(),
-                    _End(
-                      label: l10n.cardGlowUpNow,
-                      minutes: l10n.minutesShort(last.longest.inMinutes),
-                      date: formatDayMonth(context, last.evening),
-                      number: now,
-                      type: type,
-                      end: true,
-                    ),
-                  ],
-                ),
-                const Spacer(),
-                Text(
-                  l10n.cardGlowUpSelf,
-                  style: type.body.copyWith(color: Palette.paper),
+                _End(
+                  label: l10n.cardGlowUpNow,
+                  minutes: l10n.minutesShort(last.longest.inMinutes),
+                  date: formatDayMonth(context, last.evening),
+                  number: now,
+                  type: type,
+                  end: true,
                 ),
               ],
             ),
-          ),
-        ],
+            const Spacer(),
+            Text(
+              l10n.cardGlowUpSelf,
+              style: type.body.copyWith(color: Palette.paper),
+            ),
+          ],
+        ),
       ),
     );
   }

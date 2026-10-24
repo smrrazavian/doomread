@@ -1,6 +1,5 @@
 import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
-import 'package:doomread/data/services/share_sheet.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/book/view_models/book_view_model.dart';
 import 'package:doomread/ui/core/empty_scenes.dart';
@@ -41,7 +40,7 @@ class _Book extends StatelessWidget {
     if (road == null) return Scaffold(appBar: AppBar());
     final work = road.work;
     final persian = Localizations.localeOf(context).languageCode == 'fa';
-    final canShare = context.read<ShareSheet>().available;
+    final sharing = canShare(context);
     final noteStyle = text.bodyMedium?.copyWith(
       fontFamily: bookFamily(context),
       color: Palette.paper,
@@ -108,16 +107,13 @@ class _Book extends StatelessWidget {
                     ),
                   ),
                   // Notes are private: only this one, and only when asked.
-                  if (canShare)
+                  if (sharing)
                     IconButton(
                       tooltip: l10n.cardNoteAction,
                       color: Palette.mute,
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) => SharePreview(
-                            poster: NotePoster(note: note.text, work: work),
-                          ),
-                        ),
+                      onPressed: () => openSharePreview(
+                        context,
+                        NotePoster(note: note.text, work: work),
                       ),
                       icon: const Icon(Icons.share_outlined, size: 20),
                     ),

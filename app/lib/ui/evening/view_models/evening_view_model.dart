@@ -30,6 +30,13 @@ class EveningViewModel extends ChangeNotifier {
   SessionRecord? get record => _record;
   SessionRecord? _record;
 
+  /// This Session as saved, with the pages it covered, measured now: what
+  /// tonight's receipt shows. Null if it isn't in the journal.
+  Future<(SessionRecord, Session)?> saved() async {
+    final record = (await _sessions.all()).where((r) => r.id == id).firstOrNull;
+    return record == null ? null : (record, record.at(_sessions.now()));
+  }
+
   /// Saves the page and the Note.
   late final Command1<void, ({int? page, String note})> save;
 
