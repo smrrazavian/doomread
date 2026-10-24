@@ -1711,6 +1711,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Still to come'**
   String get cardMonthAhead;
+
+  /// Tonight, only on Shab-e Yalda (the evening of 30 Azar), next to a painted pomegranate. English explains Yalda in one breath; Persian doesn't need to. kind is a WorkKind name: paperBook, ebook, series, film or podcast.
+  ///
+  /// In en, this message translates to:
+  /// **'{kind, select, series{It\'s Yalda, the longest night of the year, when Iranians stay up late together. Watch a little longer.} film{It\'s Yalda, the longest night of the year, when Iranians stay up late together. Watch a little longer.} podcast{It\'s Yalda, the longest night of the year, when Iranians stay up late together. Listen a little longer.} other{It\'s Yalda, the longest night of the year, when Iranians stay up late together. Read a little longer.}}'**
+  String yaldaTonight(String kind);
+
+  /// Tonight on Shab-e Yalda, once something was read tonight: opens a preview of the Yalda poster.
+  ///
+  /// In en, this message translates to:
+  /// **'Show off your Yalda'**
+  String get yaldaShare;
+
+  /// The Yalda poster: the quiet line above the Work's title. kind is a WorkKind name: paperBook, ebook, series, film or podcast.
+  ///
+  /// In en, this message translates to:
+  /// **'{kind, select, series{I watched on the longest night} film{I watched on the longest night} podcast{I listened on the longest night} other{I read on the longest night}}'**
+  String yaldaPosterHeading(String kind);
+
+  /// The Yalda poster: the caption under tonight's minutes; the number is shown above it.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes, plural, =1{minute on Yalda} other{minutes on Yalda}}'**
+  String yaldaPosterMinutes(int minutes);
+
+  /// The Yalda poster's date line. year comes formatted: the Gregorian year in English, the Solar Hijri year in Persian digits in Persian.
+  ///
+  /// In en, this message translates to:
+  /// **'Yalda night, {year}'**
+  String yaldaPosterNight(String year);
 }
 
 class _AppLocalizationsDelegate

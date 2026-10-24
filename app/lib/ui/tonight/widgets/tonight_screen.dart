@@ -13,6 +13,7 @@ import 'package:doomread/ui/core/work_text.dart';
 import 'package:doomread/ui/reading/widgets/work_app_card.dart';
 import 'package:doomread/ui/settings/view_models/settings_view_model.dart';
 import 'package:doomread/ui/tonight/view_models/tonight_view_model.dart';
+import 'package:doomread/ui/tonight/widgets/yalda_tonight.dart';
 import 'package:doomread/ui/tour/view_models/tour_view_model.dart';
 import 'package:doomread/ui/watch/view_models/watch_ask_view_model.dart';
 import 'package:doomread/ui/watch/widgets/watch_disclosure.dart';
@@ -82,6 +83,8 @@ class _Tonight extends StatelessWidget {
                     _WorkCard(road: road, evenings: vm.evenings),
                     const SizedBox(height: 16),
                     Text(l10n.aim(vm.aim.inMinutes), style: text.bodyMedium),
+                    // Only on Shab-e Yalda; nothing otherwise.
+                    YaldaTonight(kind: road.work.kind),
                     const Spacer(),
                     _ReadingWeekStrip(
                       week: vm.readingWeek(

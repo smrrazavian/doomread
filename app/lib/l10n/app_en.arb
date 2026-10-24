@@ -1176,5 +1176,45 @@
   "cardMonthAhead": "Still to come",
   "@cardMonthAhead": {
     "description": "In the month card's key: nights of the month that haven't come yet."
+  },
+  "yaldaTonight": "{kind, select, series{It's Yalda, the longest night of the year, when Iranians stay up late together. Watch a little longer.} film{It's Yalda, the longest night of the year, when Iranians stay up late together. Watch a little longer.} podcast{It's Yalda, the longest night of the year, when Iranians stay up late together. Listen a little longer.} other{It's Yalda, the longest night of the year, when Iranians stay up late together. Read a little longer.}}",
+  "@yaldaTonight": {
+    "description": "Tonight, only on Shab-e Yalda (the evening of 30 Azar), next to a painted pomegranate. English explains Yalda in one breath; Persian doesn't need to. kind is a WorkKind name: paperBook, ebook, series, film or podcast.",
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "yaldaShare": "Show off your Yalda",
+  "@yaldaShare": {
+    "description": "Tonight on Shab-e Yalda, once something was read tonight: opens a preview of the Yalda poster."
+  },
+  "yaldaPosterHeading": "{kind, select, series{I watched on the longest night} film{I watched on the longest night} podcast{I listened on the longest night} other{I read on the longest night}}",
+  "@yaldaPosterHeading": {
+    "description": "The Yalda poster: the quiet line above the Work's title. kind is a WorkKind name: paperBook, ebook, series, film or podcast.",
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "yaldaPosterMinutes": "{minutes, plural, =1{minute on Yalda} other{minutes on Yalda}}",
+  "@yaldaPosterMinutes": {
+    "description": "The Yalda poster: the caption under tonight's minutes; the number is shown above it.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "yaldaPosterNight": "Yalda night, {year}",
+  "@yaldaPosterNight": {
+    "description": "The Yalda poster's date line. year comes formatted: the Gregorian year in English, the Solar Hijri year in Persian digits in Persian.",
+    "placeholders": {
+      "year": {
+        "type": "String"
+      }
+    }
   }
 }

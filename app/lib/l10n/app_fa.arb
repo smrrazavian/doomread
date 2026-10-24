@@ -298,5 +298,10 @@
   "cardMonthLegend": "هر چی روشن‌تر، بیشتر",
   "cardNoteAction": "این یادداشتو نشون بده",
   "cardMonthDark": "چراغ خاموش",
-  "cardMonthAhead": "هنوز نرسیده"
+  "cardMonthAhead": "هنوز نرسیده",
+  "yaldaTonight": "{kind, select, series{شب یلداست، بلندترین شب سال. یه کم بیشتر ببین.} film{شب یلداست، بلندترین شب سال. یه کم بیشتر ببین.} podcast{شب یلداست، بلندترین شب سال. یه کم بیشتر گوش بده.} other{شب یلداست، بلندترین شب سال. یه کم بیشتر بخون.}}",
+  "yaldaShare": "یلداتو نشون بده",
+  "yaldaPosterHeading": "{kind, select, series{بلندترین شب سال اینو دیدم} film{بلندترین شب سال اینو دیدم} podcast{بلندترین شب سال اینو گوش دادم} other{بلندترین شب سال اینو خوندم}}",
+  "yaldaPosterMinutes": "{minutes, plural, other{دقیقه توی شب یلدا}}",
+  "yaldaPosterNight": "شب یلدای {year}"
 }

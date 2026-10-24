@@ -1497,4 +1497,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cardMonthAhead => 'Still to come';
+
+  @override
+  String yaldaTonight(String kind) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'series': 'It\'s Yalda, the longest night of the year, when Iranians stay up late together. Watch a little longer.',
+      'film': 'It\'s Yalda, the longest night of the year, when Iranians stay up late together. Watch a little longer.',
+      'podcast': 'It\'s Yalda, the longest night of the year, when Iranians stay up late together. Listen a little longer.',
+      'other': 'It\'s Yalda, the longest night of the year, when Iranians stay up late together. Read a little longer.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get yaldaShare => 'Show off your Yalda';
+
+  @override
+  String yaldaPosterHeading(String kind) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'series': 'I watched on the longest night',
+      'film': 'I watched on the longest night',
+      'podcast': 'I listened on the longest night',
+      'other': 'I read on the longest night',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String yaldaPosterMinutes(int minutes) {
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: 'minutes on Yalda',
+      one: 'minute on Yalda',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String yaldaPosterNight(String year) {
+    return 'Yalda night, $year';
+  }
 }

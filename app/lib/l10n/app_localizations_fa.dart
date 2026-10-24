@@ -1345,4 +1345,44 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get cardMonthAhead => 'هنوز نرسیده';
+
+  @override
+  String yaldaTonight(String kind) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'series': 'شب یلداست، بلندترین شب سال. یه کم بیشتر ببین.',
+      'film': 'شب یلداست، بلندترین شب سال. یه کم بیشتر ببین.',
+      'podcast': 'شب یلداست، بلندترین شب سال. یه کم بیشتر گوش بده.',
+      'other': 'شب یلداست، بلندترین شب سال. یه کم بیشتر بخون.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get yaldaShare => 'یلداتو نشون بده';
+
+  @override
+  String yaldaPosterHeading(String kind) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'series': 'بلندترین شب سال اینو دیدم',
+      'film': 'بلندترین شب سال اینو دیدم',
+      'podcast': 'بلندترین شب سال اینو گوش دادم',
+      'other': 'بلندترین شب سال اینو خوندم',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String yaldaPosterMinutes(int minutes) {
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: 'دقیقه توی شب یلدا',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String yaldaPosterNight(String year) {
+    return 'شب یلدای $year';
+  }
 }
