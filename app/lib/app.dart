@@ -11,6 +11,7 @@ import 'package:doomread/data/services/auto_sync.dart';
 import 'package:doomread/data/services/break_over_notification.dart';
 import 'package:doomread/data/services/home_widget.dart';
 import 'package:doomread/data/services/session_notification.dart';
+import 'package:doomread/data/services/share_sheet.dart';
 import 'package:doomread/domain/use_cases/stop_deleted_sessions_use_case.dart';
 import 'package:doomread/domain/use_cases/sync_use_case.dart';
 import 'package:doomread/l10n/app_localizations.dart';
@@ -35,6 +36,7 @@ class DoomreadApp extends StatefulWidget {
     this.breakOver,
     this.homeWidget,
     this.watch,
+    this.share,
     super.key,
   });
 
@@ -68,6 +70,10 @@ class DoomreadApp extends StatefulWidget {
   /// Android one, which does nothing on other platforms.
   final AppWatch? watch;
 
+  /// Where a shared poster goes. Tests pass a fake; the app uses the
+  /// Android share sheet, or the Pictures folder on Linux.
+  final ShareSheet? share;
+
   @override
   State<DoomreadApp> createState() => _DoomreadAppState();
 }
@@ -98,6 +104,7 @@ class _DoomreadAppState extends State<DoomreadApp> {
   late final LiveHomeWidget _liveWidget;
   late final AppWatch _watch = widget.watch ?? AppWatch();
   late final UrgeWatch _urges;
+  late final ShareSheet _share = widget.share ?? ShareSheet();
   final GoRouter _router = buildRouter();
 
   @override
@@ -181,6 +188,7 @@ class _DoomreadAppState extends State<DoomreadApp> {
       Provider.value(value: _notification),
       Provider.value(value: _watch),
       Provider.value(value: _urges),
+      Provider.value(value: _share),
       ChangeNotifierProvider.value(value: _settings),
       if (widget.auth case final auth?) Provider.value(value: auth),
     ],

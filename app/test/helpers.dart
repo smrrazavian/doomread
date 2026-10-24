@@ -1,9 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:doomread/app.dart';
 import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread/data/services/app_watch.dart';
 import 'package:doomread/data/services/break_over_notification.dart';
 import 'package:doomread/data/services/home_widget.dart';
 import 'package:doomread/data/services/session_notification.dart';
+import 'package:doomread/data/services/share_sheet.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -41,6 +44,7 @@ Future<void> pumpApp(
   BreakOverNotification? breakOver,
   HomeWidget? homeWidget,
   AppWatch? watch,
+  ShareSheet? share,
 }) async {
   if (reduceMotion) {
     tester.platformDispatcher.accessibilityFeaturesTestValue =
@@ -55,6 +59,7 @@ Future<void> pumpApp(
       breakOver: breakOver,
       homeWidget: homeWidget,
       watch: watch ?? FakeAppWatch(),
+      share: share ?? FakeShareSheet(),
     ),
   );
   await tester.pumpAndSettle();
@@ -241,5 +246,24 @@ class FakeAppWatch implements AppWatch {
   Future<void> open(String package) async {
     opened = package;
     onForeground?.call(package, package, const {});
+  }
+}
+
+/// Stands in for the share sheet: records what it was given and "saves" it
+/// to a made-up Pictures folder.
+class FakeShareSheet implements ShareSheet {
+  final List<({Uint8List png, String name, String title})> shared = [];
+
+  @override
+  bool get available => true;
+
+  @override
+  Future<String?> sharePng(
+    Uint8List png, {
+    required String name,
+    required String title,
+  }) async {
+    shared.add((png: png, name: name, title: title));
+    return '/home/me/Pictures/$name';
   }
 }

@@ -19,7 +19,7 @@ class ShareViewModel extends ChangeNotifier {
     required this.workId,
   }) : _now = sessions.now {
     _sub = sessions.watchAll().listen((all) {
-      _extras = posterExtras(workId, all);
+      _extras = posterExtras(workId, all, _now());
       notifyListeners();
     });
     share = Command1(_share);

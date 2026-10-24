@@ -78,6 +78,7 @@ class Session {
     var stopped = false;
     var urgeOpen = false;
     var slipped = false;
+    var letPass = 0;
     final stretches = <Stretch>[];
     final breaks = <BreakTaken>[];
     final nudges = <DateTime>[];
@@ -124,6 +125,7 @@ class Session {
         // Letting it pass leaves the Stretch running: riding out the Urge is
         // the point.
         case SessionEventKind.letPass:
+          if (urgeOpen) letPass++;
           urgeOpen = false;
         case SessionEventKind.slip:
           if (!urgeOpen) continue;
@@ -150,6 +152,7 @@ class Session {
       stopped: stopped,
       urgeOpen: urgeOpen,
       slipped: slipped,
+      urgesLetPass: letPass,
     );
   }
 
@@ -161,6 +164,7 @@ class Session {
     required this.stopped,
     required this.urgeOpen,
     required this.slipped,
+    required this.urgesLetPass,
   }) : stretches = List.unmodifiable(stretches),
        breaks = List.unmodifiable(breaks),
        nudges = List.unmodifiable(nudges);
@@ -186,6 +190,10 @@ class Session {
   /// The user went on into a Watched app and hasn't resumed since. Coming
   /// back, they see the kind After-a-slip screen.
   final bool slipped;
+
+  /// How many Urges ended as Let pass. Only one that was open counts, so a
+  /// double tap, or a Let pass with no Urge before it, can't add another.
+  final int urgesLetPass;
 
   /// Started, not stopped, no Stretch running, and not on a Planned break.
   bool get paused =>

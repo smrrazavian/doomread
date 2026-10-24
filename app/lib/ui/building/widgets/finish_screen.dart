@@ -16,25 +16,21 @@ import 'package:provider/provider.dart';
 
 /// The last page: a new floor lights up on the Building, with what it took.
 class FinishScreen extends StatelessWidget {
-  const FinishScreen({required this.workId, this.sheet, super.key});
+  const FinishScreen({required this.workId, super.key});
 
   final String workId;
-
-  /// Where a shared poster goes; tests pass a fake.
-  final ShareSheet? sheet;
 
   @override
   Widget build(BuildContext context) => ChangeNotifierProvider(
     create: (c) => BuildingViewModel(c.read<SessionRepository>()),
-    child: _Finish(workId, sheet ?? ShareSheet()),
+    child: _Finish(workId),
   );
 }
 
 class _Finish extends StatelessWidget {
-  const _Finish(this.workId, this.sheet);
+  const _Finish(this.workId);
 
   final String workId;
-  final ShareSheet sheet;
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +97,7 @@ class _Finish extends StatelessWidget {
                     onPressed: () => context.push('/book/$workId'),
                     child: Text(l10n.readTheStory),
                   ),
-                  if (sheet.available) ...[
+                  if (context.read<ShareSheet>().available) ...[
                     const SizedBox(height: 8),
                     OutlinedButton(
                       onPressed: () => Navigator.of(context).push(
@@ -110,7 +106,6 @@ class _Finish extends StatelessWidget {
                             finish: finish,
                             floors: floors.length,
                             floor: floor,
-                            sheet: sheet,
                           ),
                         ),
                       ),

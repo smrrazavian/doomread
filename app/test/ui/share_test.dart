@@ -7,7 +7,6 @@ import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread/data/services/share_sheet.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/theme.dart';
-import 'package:doomread/ui/share/poster_extras.dart';
 import 'package:doomread/ui/share/widgets/finish_poster.dart';
 import 'package:doomread/ui/share/widgets/share_preview_screen.dart';
 import 'package:doomread_core/doomread_core.dart';
@@ -21,64 +20,6 @@ import '../helpers.dart';
 void main() {
   final en = lookupAppLocalizations(const Locale('en'));
   final fa = lookupAppLocalizations(const Locale('fa'));
-
-  group('Urges let pass', () {
-    final t = DateTime(2026, 10, 22, 21);
-    SessionEvent at(SessionEventKind kind, int minute) =>
-        SessionEvent(kind, t.add(Duration(minutes: minute)));
-
-    test('count each Urge that ended in going back', () {
-      expect(
-        lettingPass([
-          at(SessionEventKind.start, 0),
-          at(SessionEventKind.urge, 3),
-          at(SessionEventKind.letPass, 3),
-          at(SessionEventKind.urge, 9),
-          at(SessionEventKind.slip, 9),
-          at(SessionEventKind.resume, 12),
-          at(SessionEventKind.urge, 15),
-          at(SessionEventKind.letPass, 15),
-          at(SessionEventKind.stop, 20),
-        ]),
-        2,
-      );
-    });
-
-    test('a double tap, or a Let pass with no Urge, is not another', () {
-      expect(
-        lettingPass([
-          at(SessionEventKind.start, 0),
-          at(SessionEventKind.letPass, 1),
-          at(SessionEventKind.urge, 3),
-          at(SessionEventKind.letPass, 3),
-          at(SessionEventKind.letPass, 3),
-          at(SessionEventKind.stop, 20),
-          at(SessionEventKind.urge, 21),
-          at(SessionEventKind.letPass, 21),
-        ]),
-        1,
-      );
-    });
-
-    test('nothing opens an Urge on a Pause or the Planned break', () {
-      expect(
-        lettingPass([
-          at(SessionEventKind.start, 0),
-          at(SessionEventKind.pause, 2),
-          at(SessionEventKind.urge, 3),
-          at(SessionEventKind.letPass, 3),
-          at(SessionEventKind.resume, 4),
-          at(SessionEventKind.breakStart, 10),
-          at(SessionEventKind.urge, 11),
-          at(SessionEventKind.letPass, 11),
-          at(SessionEventKind.breakEnd, 15),
-          at(SessionEventKind.urge, 16),
-          at(SessionEventKind.letPass, 16),
-        ]),
-        1,
-      );
-    });
-  });
 
   group('the Pictures folder on Linux', () {
     const env = {'HOME': '/home/sara'};
@@ -157,19 +98,19 @@ void main() {
         tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
       );
       await tester.pumpWidget(
-        Provider.value(
-          value: SessionRepository(db, clock: () => DateTime(2026, 10, 22)),
+        MultiProvider(
+          providers: [
+            Provider.value(
+              value: SessionRepository(db, clock: () => DateTime(2026, 10, 22)),
+            ),
+            Provider<ShareSheet>.value(value: sheet),
+          ],
           child: MaterialApp(
             locale: const Locale('en'),
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             theme: buildTheme(const Locale('en')),
-            home: SharePreviewScreen(
-              finish: finish,
-              floors: 1,
-              floor: 0,
-              sheet: sheet,
-            ),
+            home: SharePreviewScreen(finish: finish, floors: 1, floor: 0),
           ),
         ),
       );
@@ -284,23 +225,4 @@ void main() {
     expect(fa.sharePosterPages(245, 3), '۲۴۵ صفحه توی ۳ شب');
     expect(fa.sharePosterTitle('بوف کور'), '«بوف کور»');
   });
-}
-
-/// Stands in for the share sheet: records what it was given and "saves" it
-/// to a made-up Pictures folder.
-class FakeShareSheet implements ShareSheet {
-  final List<({Uint8List png, String name, String title})> shared = [];
-
-  @override
-  bool get available => true;
-
-  @override
-  Future<String?> sharePng(
-    Uint8List png, {
-    required String name,
-    required String title,
-  }) async {
-    shared.add((png: png, name: name, title: title));
-    return '/home/me/Pictures/$name';
-  }
 }

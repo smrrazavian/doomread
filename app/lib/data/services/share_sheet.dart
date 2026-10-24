@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 
 /// Hands an image to the rest of the system. On Android a small native edge
-/// (`ShareSheet.kt`, ADR 0009's pattern) writes it to the app's cache and
+/// (`ShareSheet.kt`, ADR 0018) writes it to the app's cache and
 /// opens the share sheet with a plain ACTION_SEND through a FileProvider, so
 /// no plugin and no Google services. On Linux it's saved to the user's
 /// Pictures folder instead.

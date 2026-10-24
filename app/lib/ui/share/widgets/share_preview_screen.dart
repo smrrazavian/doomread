@@ -20,7 +20,6 @@ class SharePreviewScreen extends StatelessWidget {
     required this.finish,
     required this.floors,
     required this.floor,
-    this.sheet,
     super.key,
   });
 
@@ -31,14 +30,11 @@ class SharePreviewScreen extends StatelessWidget {
   final int floors;
   final int floor;
 
-  /// Where the image goes; tests pass a fake.
-  final ShareSheet? sheet;
-
   @override
   Widget build(BuildContext context) => ChangeNotifierProvider(
     create: (c) => ShareViewModel(
       c.read<SessionRepository>(),
-      sheet ?? ShareSheet(),
+      c.read<ShareSheet>(),
       workId: finish.work.id,
     ),
     child: _Preview(finish: finish, floors: floors, floor: floor),

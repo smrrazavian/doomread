@@ -182,4 +182,54 @@ void main() {
       expect(isNewBest(split, [nine]), isFalse);
     });
   });
+
+  group('Urges let pass', () {
+    SessionEvent at(SessionEventKind kind, int m) => SessionEvent(kind, t(m));
+
+    test('count each Urge that ended in going back', () {
+      final s = reduce([
+        start(0),
+        at(SessionEventKind.urge, 3),
+        at(SessionEventKind.letPass, 3),
+        at(SessionEventKind.urge, 9),
+        at(SessionEventKind.slip, 9),
+        resume(12),
+        at(SessionEventKind.urge, 15),
+        at(SessionEventKind.letPass, 15),
+        stop(20),
+      ]);
+      expect(s.urgesLetPass, 2);
+    });
+
+    test('a double tap, or a Let pass with no Urge, is not another', () {
+      final s = reduce([
+        start(0),
+        at(SessionEventKind.letPass, 1),
+        at(SessionEventKind.urge, 3),
+        at(SessionEventKind.letPass, 3),
+        at(SessionEventKind.letPass, 3),
+        stop(20),
+        at(SessionEventKind.urge, 21),
+        at(SessionEventKind.letPass, 21),
+      ]);
+      expect(s.urgesLetPass, 1);
+    });
+
+    test('nothing opens an Urge on a Pause or the Planned break', () {
+      final s = reduce([
+        start(0),
+        pause(2),
+        at(SessionEventKind.urge, 3),
+        at(SessionEventKind.letPass, 3),
+        resume(4),
+        at(SessionEventKind.breakStart, 10),
+        at(SessionEventKind.urge, 11),
+        at(SessionEventKind.letPass, 11),
+        at(SessionEventKind.breakEnd, 15),
+        at(SessionEventKind.urge, 16),
+        at(SessionEventKind.letPass, 16),
+      ]);
+      expect(s.urgesLetPass, 1);
+    });
+  });
 }
