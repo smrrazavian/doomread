@@ -96,6 +96,15 @@ class _WorkFormState extends State<_WorkForm> {
         title: Text(
           widget.editing == null ? l10n.tonightAddBook : l10n.editBook,
         ),
+        actions: [
+          // The Library deletes it, so Undo shows there.
+          if (widget.editing != null)
+            IconButton(
+              tooltip: l10n.deleteWork,
+              icon: const Icon(Icons.delete_outline),
+              onPressed: () => context.pop(true),
+            ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(24),

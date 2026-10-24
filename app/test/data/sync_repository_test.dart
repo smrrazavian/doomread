@@ -366,6 +366,33 @@ void main() {
     expect((await b.works.watchCurrent().first)!.work.title, 'Dune');
   });
 
+  test('a Work deleted on one device leaves the other too', () async {
+    final id = await addDune(a);
+    await syncAll([a, b]);
+    a.now = evening.add(const Duration(minutes: 1));
+    await a.works.delete(id);
+    await syncAll([a, b]);
+    expect(await b.works.watchAll().first, isEmpty);
+    expect(await b.works.watchCurrent().first, isNull);
+  });
+
+  test('a deleted current Work hands current to another on sync', () async {
+    final dune = await addDune(a);
+    b.now = evening.add(const Duration(minutes: 1));
+    await b.works.add(
+      title: 'Piranesi',
+      author: 'Susanna Clarke',
+      totalPages: 272,
+      checkpoints: const [],
+    );
+    await syncAll([a, b, a]);
+    expect((await a.works.watchCurrent().first)!.work.id, dune);
+    b.now = evening.add(const Duration(minutes: 2));
+    await b.works.delete(dune);
+    await syncAll([b, a]);
+    expect((await a.works.watchCurrent().first)!.work.title, 'Piranesi');
+  });
+
   test('pulls a long journal in pages', () async {
     final workId = await addDune(a);
     // More than one request's worth each way.

@@ -85,6 +85,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editBook => 'Edit';
 
   @override
+  String get deleteWork => 'Delete';
+
+  @override
+  String workDeleted(String title) {
+    return 'Deleted “$title”';
+  }
+
+  @override
+  String get undo => 'Undo';
+
+  @override
   String get fieldTitle => 'Title';
 
   @override

@@ -321,6 +321,7 @@ class SyncRepository {
       ],
       'position': w.position,
       'positionAt': (w.positionAt ?? w.updatedAt).microsecondsSinceEpoch,
+      'deleted': w.deleted,
     },
   );
 
@@ -340,6 +341,8 @@ class SyncRepository {
       final int us => DateTime.fromMicrosecondsSinceEpoch(us, isUtc: true),
       _ => i.updatedAt,
     }),
+    // Devices from before deleting never send it.
+    deleted: Value(i.data['deleted'] == true),
     updatedAt: i.updatedAt,
     syncedAt: Value(i.updatedAt),
   );

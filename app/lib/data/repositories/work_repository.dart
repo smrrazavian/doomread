@@ -15,25 +15,31 @@ class WorkRepository {
   static const _currentKey = 'currentWork';
 
   Stream<List<Work>> watchAll() =>
-      (_db.select(_db.works)..orderBy([(w) => OrderingTerm.desc(w.updatedAt)]))
+      (_db.select(_db.works)
+            ..where((w) => w.deleted.not())
+            ..orderBy([
+              (w) => OrderingTerm.desc(w.updatedAt),
+              // Same-second rows: the one added last first.
+              (_) => OrderingTerm.desc(const CustomExpression<int>('rowid')),
+            ]))
           .watch()
           .map((rows) => rows.map(toWork).toList());
 
   /// The current Work on its Road, or null before any Work exists.
-  Stream<Road?> watchCurrent() {
-    final query = _db.select(_db.works).join([
-      innerJoin(
-        _db.settings,
-        _db.settings.value.equalsExp(_db.works.id) &
-            _db.settings.key.equals(_currentKey),
-      ),
-    ]);
-    return query.watchSingleOrNull().map((row) {
-      if (row == null) return null;
-      final w = row.readTable(_db.works);
-      return Road(toWork(w), position: w.position);
-    });
-  }
+  Stream<Road?> watchCurrent() => _current().watchSingleOrNull().map((row) {
+    if (row == null) return null;
+    final w = row.readTable(_db.works);
+    return Road(toWork(w), position: w.position);
+  });
+
+  JoinedSelectStatement<HasResultSet, dynamic> _current() =>
+      _db.select(_db.works).join([
+        innerJoin(
+          _db.settings,
+          _db.settings.value.equalsExp(_db.works.id) &
+              _db.settings.key.equals(_currentKey),
+        ),
+      ])..where(_db.works.deleted.not());
 
   /// The Work with [id] on its Road, or null if there's no such Work.
   Stream<Road?> watchRoad(String id) =>
@@ -94,16 +100,41 @@ class WorkRepository {
         SettingsCompanion.insert(key: _currentKey, value: id),
       );
 
-  /// Makes the most recently changed Work current when none is, as when
-  /// sync brings the first Works to a new device.
+  /// Deletes a Work, leaving a tombstone for sync. If it was current, the
+  /// most recently changed other Work becomes current.
+  Future<void> delete(String id) => _db.transaction(() async {
+    await _setDeleted(id, true);
+    await keepOneCurrent();
+  });
+
+  /// Undoes [delete]. The Work becomes current again if none is.
+  Future<void> restore(String id) => _db.transaction(() async {
+    await _setDeleted(id, false);
+    if (await _db.setting(_currentKey) == null) await setCurrent(id);
+  });
+
+  Future<void> _setDeleted(String id, bool deleted) =>
+      (_db.update(_db.works)..where((w) => w.id.equals(id))).write(
+        WorksCompanion(deleted: Value(deleted), updatedAt: Value(_now())),
+      );
+
+  /// Makes the most recently changed Work current when none is, or the
+  /// current one was deleted, here or by sync. With no Works left, none is.
   Future<void> keepOneCurrent() => _db.transaction(() async {
-    if (await _db.setting(_currentKey) != null) return;
+    if (await _current().getSingleOrNull() != null) return;
     final latest =
         await (_db.select(_db.works)
+              ..where((w) => w.deleted.not())
               ..orderBy([(w) => OrderingTerm.desc(w.updatedAt)])
               ..limit(1))
             .getSingleOrNull();
-    if (latest != null) await setCurrent(latest.id);
+    if (latest != null) {
+      await setCurrent(latest.id);
+      return;
+    }
+    await (_db.delete(
+      _db.settings,
+    )..where((s) => s.key.equals(_currentKey))).go();
   });
 
   static Work toWork(WorkRow w) => Work(

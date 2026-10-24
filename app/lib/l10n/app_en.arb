@@ -43,6 +43,17 @@
   "booksEmpty": "Nothing here yet",
   "readingNow": "Reading now",
   "editBook": "Edit",
+  "deleteWork": "Delete",
+  "workDeleted": "Deleted \u201c{title}\u201d",
+  "@workDeleted": {
+    "description": "The Library's snackbar after a Work is deleted, with Undo.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "undo": "Undo",
   "fieldTitle": "Title",
   "fieldAuthor": "Author",
   "fieldPages": "Total pages",

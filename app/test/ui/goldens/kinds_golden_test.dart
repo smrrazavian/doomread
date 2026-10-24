@@ -138,7 +138,8 @@ void main() {
     });
 
     testApp('Books with every kind of Work in $lang', (tester, db) async {
-      final works = WorkRepository(db);
+      // One clock, so the order doesn't hang on a second ticking over.
+      final works = WorkRepository(db, clock: () => DateTime(2026, 10, 22, 21));
       for (final (kind, en, persian) in [
         (WorkKind.paperBook, 'Piranesi', 'بوف کور'),
         (WorkKind.ebook, 'Atomic Habits', 'عادت‌های اتمی'),

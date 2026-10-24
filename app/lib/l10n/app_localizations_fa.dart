@@ -79,6 +79,17 @@ class AppLocalizationsFa extends AppLocalizations {
   String get editBook => 'ویرایش';
 
   @override
+  String get deleteWork => 'حذف';
+
+  @override
+  String workDeleted(String title) {
+    return '«$title» حذف شد';
+  }
+
+  @override
+  String get undo => 'برگردون';
+
+  @override
   String get fieldTitle => 'عنوان';
 
   @override

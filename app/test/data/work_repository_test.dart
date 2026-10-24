@@ -90,6 +90,56 @@ void main() {
     expect((await works.watchCurrent().first)!.work.title, 'Dune');
   });
 
+  group('deleting a Work', () {
+    Future<String> addDune() => works.add(
+      title: 'Dune',
+      author: 'Frank Herbert',
+      totalPages: 412,
+      checkpoints: const [],
+    );
+
+    test('takes it off the list', () async {
+      final id = await addRemains();
+      await addDune();
+      await works.delete(id);
+      final all = await works.watchAll().first;
+      expect(all.map((w) => w.title), ['Dune']);
+    });
+
+    test('of the current Work makes the latest other one current', () async {
+      final remains = await addRemains();
+      now = now.add(const Duration(minutes: 1));
+      await addDune();
+      await works.delete(remains);
+      expect((await works.watchCurrent().first)!.work.title, 'Dune');
+    });
+
+    test('of the last Work leaves none current, until one is added', () async {
+      await works.delete(await addRemains());
+      expect(await works.watchCurrent().first, isNull);
+      await addDune();
+      expect((await works.watchCurrent().first)!.work.title, 'Dune');
+    });
+
+    test('can be undone', () async {
+      final id = await addRemains();
+      await works.delete(id);
+      await works.restore(id);
+      expect((await works.watchAll().first).single.id, id);
+      expect((await works.watchCurrent().first)!.work.id, id);
+    });
+
+    test('stamps updatedAt, so sync sends it', () async {
+      final id = await addRemains();
+      now = DateTime(2026, 10, 23, 8);
+      await works.delete(id);
+      final row = await (db.select(
+        db.works,
+      )..where((w) => w.id.equals(id))).getSingle();
+      expect(row.updatedAt, DateTime(2026, 10, 23, 8));
+    });
+  });
+
   test('the current Work survives the app restarting', () async {
     final dir = await Directory.systemTemp.createTemp('doomread');
     final file = File('${dir.path}/db.sqlite');

@@ -188,6 +188,24 @@ abstract class AppLocalizations {
   /// **'Edit'**
   String get editBook;
 
+  /// No description provided for @deleteWork.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get deleteWork;
+
+  /// The Library's snackbar after a Work is deleted, with Undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted “{title}”'**
+  String workDeleted(String title);
+
+  /// No description provided for @undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get undo;
+
   /// No description provided for @fieldTitle.
   ///
   /// In en, this message translates to:

@@ -37,6 +37,10 @@ class Works extends Table {
   /// the migration fills it in, and null reads as [updatedAt].
   DateTimeColumn get positionAt => dateTime().nullable()();
 
+  /// A deleted Work stays as a tombstone, so the delete syncs like any
+  /// other last write. Its Sessions and Notes stay too.
+  BoolColumn get deleted => boolean().withDefault(const Constant(false))();
+
   /// The [updatedAt] last sent to or taken from the sync server. Null or
   /// different when there's a change to send.
   DateTimeColumn get syncedAt => dateTime().nullable()();
@@ -95,7 +99,7 @@ class AppDatabase extends _$AppDatabase {
   )..where((s) => s.key.equals(key))).getSingleOrNull())?.value;
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -116,6 +120,7 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(works, works.positionAt);
         await customStatement('UPDATE works SET position_at = updated_at');
       }
+      if (from >= 2 && from < 7) await m.addColumn(works, works.deleted);
     },
   );
 }

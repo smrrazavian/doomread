@@ -257,7 +257,7 @@ void main() {
     });
 
     testApp('Books in $lang', (tester, db) async {
-      final works = WorkRepository(db);
+      final works = WorkRepository(db, clock: () => now);
       await works.add(
         title: lang == 'fa' ? 'بوف کور' : 'Dune',
         author: lang == 'fa' ? 'صادق هدایت' : 'Frank Herbert',
@@ -276,6 +276,35 @@ void main() {
       await expectLater(
         find.byType(MaterialApp),
         matchesGoldenFile('books_$lang.png'),
+      );
+    });
+
+    testApp('Editing a Work in $lang', (tester, db) async {
+      await addRemains(db, lang);
+      await openIn(tester, db, lang);
+      await tester.tap(find.byIcon(Icons.video_library_outlined));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(Icons.edit_outlined));
+      await tester.pumpAndSettle();
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('edit_book_$lang.png'),
+      );
+    });
+
+    testApp('A Work just deleted from the Library in $lang', (
+      tester,
+      db,
+    ) async {
+      await addRemains(db, lang);
+      await openIn(tester, db, lang);
+      await tester.tap(find.byIcon(Icons.video_library_outlined));
+      await tester.pumpAndSettle();
+      await tester.drag(find.byType(ListTile), const Offset(-600, 0));
+      await tester.pumpAndSettle();
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('books_deleted_$lang.png'),
       );
     });
   }
