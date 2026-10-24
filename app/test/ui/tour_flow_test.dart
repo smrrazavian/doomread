@@ -22,6 +22,20 @@ void main() {
   Future<void> next(WidgetTester tester) =>
       tap(tester, find.byKey(const Key('introNext')));
 
+  /// The user leaves for the system settings and comes back.
+  Future<void> comeBack(WidgetTester tester) async {
+    [
+      AppLifecycleState.resumed,
+      AppLifecycleState.inactive,
+      AppLifecycleState.hidden,
+      AppLifecycleState.paused,
+      AppLifecycleState.hidden,
+      AppLifecycleState.inactive,
+      AppLifecycleState.resumed,
+    ].forEach(tester.binding.handleAppLifecycleStateChanged);
+    await tester.pumpAndSettle();
+  }
+
   Future<List<SessionEventKind>> journal(AppDatabase db) async => [
     for (final e in await db.select(db.sessionEvents).get()) e.kind,
   ];
@@ -52,6 +66,19 @@ void main() {
     await tester.enterText(find.byKey(const Key('pages')), '245');
     await next(tester);
   }
+
+  /// Hints and asks on screen now, by their text.
+  List<String> explainers(WidgetTester tester) => [
+    for (final t in [
+      en.notificationAskTitle,
+      en.watchAskTitle,
+      en.tourDemoAsk,
+      en.tourUrgeHint,
+      en.tourWatchAsk,
+    ])
+      if (find.text(t).evaluate().isNotEmpty) t,
+    if (find.textContaining('Your best + 1').evaluate().isNotEmpty) 'aim',
+  ];
 
   testApp('a first launch opens the intro, its Tone is heard and picked, '
       'and its Start is the first Session', (tester, db) async {
@@ -147,8 +174,9 @@ void main() {
     expect(find.byKey(const Key('language_en')), findsNothing);
   });
 
-  testApp('the demo Urge records nothing', (tester, db) async {
-    final w = FakeAppWatch();
+  testApp('the demo Urge records nothing, then asks for the "not yet" '
+      'screen', (tester, db) async {
+    final w = FakeAppWatch(isEnabled: false);
     await throughIntro(tester, db, watch: w);
     await tap(tester, find.byKey(const Key('hintGotIt')));
     await tap(tester, find.byKey(const Key('demoShow')));
@@ -157,6 +185,8 @@ void main() {
 
     await tap(tester, find.text(en.backToBook));
     expect(find.text(demoTitle), findsNothing);
+    expect(find.text(en.watchAskTitle), findsOne);
+    await tap(tester, find.byKey(const Key('watchNotNow')));
     expect(await journal(db), [SessionEventKind.start]);
     expect(w.fronts, 0);
     expect(w.opened, isNull);
@@ -175,8 +205,92 @@ void main() {
     await tap(tester, find.text(en.openAnyway('Instagram')));
     expect(find.text(demoTitle), findsNothing);
     expect(find.text(en.stopForTonight), findsOne);
+    expect(find.text(en.watchAskTitle), findsNothing, reason: 'already on');
     expect(await journal(db), [SessionEventKind.start]);
     expect(w.opened, isNull);
+  });
+
+  testApp('no tap brings up more than one explainer', (tester, db) async {
+    final w = FakeAppWatch(isEnabled: false);
+    await throughIntro(
+      tester,
+      db,
+      watch: w,
+      notification: FakeSessionNotification(askable: true),
+    );
+    expect(explainers(tester), [en.notificationAskTitle]);
+    await tap(tester, find.byKey(const Key('notificationAllow')));
+    expect(explainers(tester), ['aim']);
+    await tap(tester, find.byKey(const Key('hintGotIt')));
+    expect(explainers(tester), [en.tourDemoAsk]);
+    await tap(tester, find.byKey(const Key('demoShow')));
+    expect(explainers(tester), [en.tourUrgeHint]);
+    await tap(tester, find.text(en.backToBook));
+    expect(explainers(tester), [en.watchAskTitle]);
+    await tap(tester, find.byKey(const Key('watchNotNow')));
+    expect(explainers(tester), isEmpty);
+  });
+
+  testApp('back from Accessibility settings, it says the "not yet" screen '
+      'is on', (tester, db) async {
+    final w = FakeAppWatch(isEnabled: false);
+    await throughIntro(tester, db, watch: w);
+    await tap(tester, find.byKey(const Key('hintGotIt')));
+    await tap(tester, find.byKey(const Key('demoShow')));
+    await tap(tester, find.text(en.backToBook));
+    await tap(tester, find.byKey(const Key('watchAgree')));
+    expect(w.settingsOpened, 1);
+    w.isEnabled = true;
+    await comeBack(tester);
+    expect(find.text(en.tourWatchOn), findsOne);
+  });
+
+  testApp('back with it still off, it says so kindly and can try again', (
+    tester,
+    db,
+  ) async {
+    final w = FakeAppWatch(isEnabled: false);
+    await throughIntro(tester, db, watch: w);
+    await tap(tester, find.byKey(const Key('hintGotIt')));
+    await tap(tester, find.byKey(const Key('demoShow')));
+    await tap(tester, find.text(en.backToBook));
+    await tap(tester, find.byKey(const Key('watchAgree')));
+    await comeBack(tester);
+    expect(find.text(en.tourWatchOff), findsOne);
+    await tap(tester, find.text(en.tourWatchRetry));
+    expect(w.settingsOpened, 2);
+    w.isEnabled = true;
+    await comeBack(tester);
+    expect(find.text(en.tourWatchOn), findsOne);
+  });
+
+  testApp('without the tour, the first Start asks about notifications, and '
+      'Reading offers the "not yet" screen as its own step', (
+    tester,
+    db,
+  ) async {
+    await WorkRepository(db).add(
+      title: 'Piranesi',
+      author: 'Susanna Clarke',
+      totalPages: 245,
+      checkpoints: const [],
+    );
+    final w = FakeAppWatch(isEnabled: false);
+    await pumpApp(
+      tester,
+      db,
+      watch: w,
+      notification: FakeSessionNotification(askable: true),
+    );
+    await tap(tester, find.text(en.startReading));
+    expect(explainers(tester), [en.notificationAskTitle]);
+    await tap(tester, find.byKey(const Key('notificationNotNow')));
+    expect(explainers(tester), [en.tourWatchAsk]);
+    await tap(tester, find.byKey(const Key('watchCardTurnOn')));
+    expect(explainers(tester), [en.watchAskTitle]);
+    await tap(tester, find.byKey(const Key('watchAgree')));
+    expect(w.settingsOpened, 1);
+    expect(explainers(tester), isEmpty);
   });
 
   testApp('Replay the intro from Settings runs the cards and comes back', (

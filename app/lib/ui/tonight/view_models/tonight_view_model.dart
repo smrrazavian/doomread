@@ -97,19 +97,18 @@ class TonightViewModel extends ChangeNotifier {
     if (allow) await _notification.ask();
   }
 
-  /// Whether to offer the "not yet" screen before this Start: once, and
-  /// only where it can be turned on and no way to watch is on yet.
+  /// Whether to offer the "not yet" screen before this Start: once, only
+  /// where it can be turned on and no way to watch is on yet, and not while
+  /// the tour's demo Urge is still to come, since it's asked right after.
   Future<bool> shouldOfferWatch() async =>
       _watch.available &&
       !await _settings.watchAsked() &&
+      (await _settings.hintsSeen()).contains(Hint.demoUrge) &&
       await _watch.method() == null;
 
-  /// Remembers the offer was answered, and on yes opens the system's
-  /// Accessibility settings. Either way the Session starts.
-  Future<void> answerWatch({required bool agree}) async {
-    await _settings.setWatchAsked();
-    if (agree) await _watch.openSettings();
-  }
+  /// Remembers the offer was answered, whatever the answer; on yes the
+  /// screen opens the system's Accessibility settings.
+  Future<void> answerWatch() => _settings.setWatchAsked();
 
   Future<Result<String>> _start() async =>
       Result.ok(openSession ?? await _sessions.start(road!.work.id));

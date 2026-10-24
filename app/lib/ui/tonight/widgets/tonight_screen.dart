@@ -14,6 +14,7 @@ import 'package:doomread/ui/reading/widgets/work_app_card.dart';
 import 'package:doomread/ui/settings/view_models/settings_view_model.dart';
 import 'package:doomread/ui/tonight/view_models/tonight_view_model.dart';
 import 'package:doomread/ui/tour/view_models/tour_view_model.dart';
+import 'package:doomread/ui/watch/watch_return.dart';
 import 'package:doomread/ui/watch/widgets/watch_disclosure.dart';
 import 'package:doomread/utils/result.dart';
 import 'package:doomread_core/doomread_core.dart';
@@ -128,7 +129,9 @@ class _Tonight extends StatelessWidget {
 
 Future<void> _start(BuildContext context, TonightViewModel vm) async {
   // Asked here, the moment the timer is about to matter, and never in the
-  // way: the Session starts whatever the answer.
+  // way: the Session starts whatever the answer. One ask per tap at most;
+  // the "not yet" screen waits for Reading or the next Start when the
+  // notification took this one.
   if (await vm.shouldExplainNotification()) {
     if (!context.mounted) return;
     final allow = await showDialog<bool>(
@@ -137,10 +140,12 @@ Future<void> _start(BuildContext context, TonightViewModel vm) async {
     );
     await vm.answerNotification(allow: allow ?? false);
     if (!context.mounted) return;
-  }
-  if (await vm.shouldOfferWatch()) {
+  } else if (await vm.shouldOfferWatch()) {
     if (!context.mounted) return;
-    await vm.answerWatch(agree: await askToWatch(context));
+    final agree = await askToWatch(context);
+    await vm.answerWatch();
+    if (!context.mounted) return;
+    if (agree) await openWatchSettings(context);
     if (!context.mounted) return;
   }
   await vm.start.execute();

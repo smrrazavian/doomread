@@ -16,6 +16,9 @@ import 'package:doomread/ui/tour/view_models/tour_view_model.dart';
 import 'package:doomread/ui/tour/widgets/hint_card.dart';
 import 'package:doomread/ui/urge/urge_watch.dart';
 import 'package:doomread/ui/urge/widgets/urge_view.dart';
+import 'package:doomread/ui/watch/view_models/watch_ask_view_model.dart';
+import 'package:doomread/ui/watch/watch_return.dart';
+import 'package:doomread/ui/watch/widgets/watch_disclosure.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -30,8 +33,16 @@ class ReadingScreen extends StatelessWidget {
   final String sessionId;
 
   @override
-  Widget build(BuildContext context) => ChangeNotifierProvider(
-    create: (c) => ReadingViewModel(c.read<SessionRepository>(), sessionId),
+  Widget build(BuildContext context) => MultiProvider(
+    providers: [
+      ChangeNotifierProvider(
+        create: (c) => ReadingViewModel(c.read<SessionRepository>(), sessionId),
+      ),
+      ChangeNotifierProvider(
+        create: (c) =>
+            WatchAskViewModel(c.read<SettingsRepository>(), c.read<AppWatch>()),
+      ),
+    ],
     child: const _Reading(),
   );
 }
@@ -192,11 +203,22 @@ class _Reading extends StatelessWidget {
   }
 }
 
-/// Out of the demo Urge, which leaves nothing behind.
-void _endDemo(BuildContext context, ReadingViewModel vm) => vm.endDemo();
+/// Out of the demo Urge, and then, the one ask of this tap, the "not yet"
+/// screen for real, now that the user has seen what it's for.
+Future<void> _endDemo(BuildContext context, ReadingViewModel vm) async {
+  vm.endDemo();
+  final ask = context.read<WatchAskViewModel>();
+  if (!ask.due) return;
+  // Answered before it shows, so Reading's own card for it never shows too.
+  await ask.answered();
+  if (!context.mounted) return;
+  final agree = await askToWatch(context);
+  if (agree && context.mounted) await openWatchSettings(context);
+}
 
 /// The first Session's guide under the Aim, one line at a time: the Aim,
-/// then the offer of a demo Urge. Each waits for the last one's answer.
+/// then the offer of a demo Urge, then the "not yet" screen if it's still
+/// to be asked. Each waits for the last one's answer.
 class _Guide extends StatelessWidget {
   const _Guide({required this.aim});
 
@@ -206,6 +228,7 @@ class _Guide extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final tour = context.watch<TourViewModel>();
+    final ask = context.watch<WatchAskViewModel>();
     final Widget card;
     if (tour.shows(Hint.aim)) {
       card = HintCard(
@@ -229,6 +252,28 @@ class _Guide extends StatelessWidget {
               context.read<ReadingViewModel>().showDemo();
             },
             child: Text(l10n.tourDemoShow),
+          ),
+        ],
+      );
+    } else if (tour.loaded && ask.due) {
+      card = HintCard(
+        text: l10n.tourWatchAsk,
+        actions: [
+          TextButton(
+            key: const Key('watchCardNotNow'),
+            onPressed: ask.answered,
+            child: Text(l10n.tourNotNow),
+          ),
+          TextButton(
+            key: const Key('watchCardTurnOn'),
+            // The card gives way to the disclosure, so only one shows.
+            onPressed: () async {
+              await ask.answered();
+              if (!context.mounted) return;
+              final agree = await askToWatch(context);
+              if (agree && context.mounted) await openWatchSettings(context);
+            },
+            child: Text(l10n.tourWatchTurnOn),
           ),
         ],
       );
