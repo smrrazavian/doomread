@@ -122,4 +122,6 @@ class TasksViewModel extends ChangeNotifier {
   }
 }
 
+/// Why a Task as typed can't be saved: no name, or an estimate that isn't
+/// a number.
 enum TaskProblem { noName, estimateUnreadable }

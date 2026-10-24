@@ -26,7 +26,7 @@ const CopyPack en = {
     Moment.receipt: ['Calm and steady. Same time tomorrow?'],
     Moment.receiptAfterSlip: ['You came back. Same time tomorrow?'],
     Moment.taskDone: ['Done. {minutes} calm minutes, nicely done.'],
-    Moment.taskDoneAfterSlip: ['Done. You came back to it, and finished.'],
+    Moment.taskDoneAfterSlip: ['Done. You came back to it, and got it done.'],
   },
   Tone.spicy: {
     Moment.urge: [

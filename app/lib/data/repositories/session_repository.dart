@@ -196,7 +196,7 @@ class SessionRepository {
     final now = this.now();
     final byWork = <String, List<SessionRecord>>{};
     // A Task's Done is no Finish: it adds no floor to the Building.
-    for (final r in all.where((r) => r.road.work.kind != WorkKind.task)) {
+    for (final r in withoutTasks(all)) {
       byWork.putIfAbsent(r.road.work.id, () => []).add(r);
     }
     return newestFirst([
