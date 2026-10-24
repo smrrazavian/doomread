@@ -1501,10 +1501,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String yaldaTonight(String kind) {
     String _temp0 = intl.Intl.selectLogic(kind, {
-      'series': 'It\'s Yalda, the longest night of the year, when Iranians stay up late together. Watch a little longer.',
-      'film': 'It\'s Yalda, the longest night of the year, when Iranians stay up late together. Watch a little longer.',
-      'podcast': 'It\'s Yalda, the longest night of the year, when Iranians stay up late together. Listen a little longer.',
-      'other': 'It\'s Yalda, the longest night of the year, when Iranians stay up late together. Read a little longer.',
+      'series': 'It\'s Yalda, the longest night. Iranians stay up together. Watch a little longer.',
+      'film': 'It\'s Yalda, the longest night. Iranians stay up together. Watch a little longer.',
+      'podcast': 'It\'s Yalda, the longest night. Iranians stay up together. Listen a little longer.',
+      'other': 'It\'s Yalda, the longest night. Iranians stay up together. Read a little longer.',
     });
     return '$_temp0';
   }

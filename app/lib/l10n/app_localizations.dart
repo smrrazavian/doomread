@@ -1715,7 +1715,7 @@ abstract class AppLocalizations {
   /// Tonight, only on Shab-e Yalda (the evening of 30 Azar), next to a painted pomegranate. English explains Yalda in one breath; Persian doesn't need to. kind is a WorkKind name: paperBook, ebook, series, film or podcast.
   ///
   /// In en, this message translates to:
-  /// **'{kind, select, series{It\'s Yalda, the longest night of the year, when Iranians stay up late together. Watch a little longer.} film{It\'s Yalda, the longest night of the year, when Iranians stay up late together. Watch a little longer.} podcast{It\'s Yalda, the longest night of the year, when Iranians stay up late together. Listen a little longer.} other{It\'s Yalda, the longest night of the year, when Iranians stay up late together. Read a little longer.}}'**
+  /// **'{kind, select, series{It\'s Yalda, the longest night. Iranians stay up together. Watch a little longer.} film{It\'s Yalda, the longest night. Iranians stay up together. Watch a little longer.} podcast{It\'s Yalda, the longest night. Iranians stay up together. Listen a little longer.} other{It\'s Yalda, the longest night. Iranians stay up together. Read a little longer.}}'**
   String yaldaTonight(String kind);
 
   /// Tonight on Shab-e Yalda, once something was read tonight: opens a preview of the Yalda poster.

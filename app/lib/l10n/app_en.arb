@@ -1177,7 +1177,7 @@
   "@cardMonthAhead": {
     "description": "In the month card's key: nights of the month that haven't come yet."
   },
-  "yaldaTonight": "{kind, select, series{It's Yalda, the longest night of the year, when Iranians stay up late together. Watch a little longer.} film{It's Yalda, the longest night of the year, when Iranians stay up late together. Watch a little longer.} podcast{It's Yalda, the longest night of the year, when Iranians stay up late together. Listen a little longer.} other{It's Yalda, the longest night of the year, when Iranians stay up late together. Read a little longer.}}",
+  "yaldaTonight": "{kind, select, series{It's Yalda, the longest night. Iranians stay up together. Watch a little longer.} film{It's Yalda, the longest night. Iranians stay up together. Watch a little longer.} podcast{It's Yalda, the longest night. Iranians stay up together. Listen a little longer.} other{It's Yalda, the longest night. Iranians stay up together. Read a little longer.}}",
   "@yaldaTonight": {
     "description": "Tonight, only on Shab-e Yalda (the evening of 30 Azar), next to a painted pomegranate. English explains Yalda in one breath; Persian doesn't need to. kind is a WorkKind name: paperBook, ebook, series, film or podcast.",
     "placeholders": {

@@ -216,15 +216,51 @@ const _tvOutline = Color(0xFFE4EEFF);
 /// The things in the user's Window, in shadow against its light.
 final Color _shadow = Palette.deep.withValues(alpha: 0.8);
 
-/// Yalda: the same Windows in warmer light.
-const _yaldaOutline = Color(0xFFFFEBD2);
-const _yaldaEarlierOutline = Color(0xFFEFA066);
-final Color _yaldaPastFill = Color.lerp(Palette.unlit, YaldaPalette.lamp, 0.4)!;
+/// How the House is lit tonight, chosen once per paint: an ordinary night,
+/// or Shab-e Yalda.
+typedef _Light = ({
+  /// The user's Window: its halo, its pane and its outline.
+  Color glow,
+  double glowAlpha,
+  Color fill,
+  Color outline,
+  Color earlierOutline,
 
-/// The windowsills with pomegranates on them, by row and column. Fixed, so
-/// every Yalda looks the same: it's the night that brings them, not luck.
-const _pomegranateSills = [(0, 1), (1, 5), (2, 2), (0, 6)];
-const _sill = Color(0xFF34406A);
+  /// A past evening's pane, top to bottom, and its halo (none when null).
+  Color pastTop,
+  Color pastBottom,
+  Color? pastHalo,
+
+  /// The windowsills with a pomegranate on them, by row and column.
+  List<(int, int)> pomegranates,
+});
+
+final _Light _usual = (
+  glow: Palette.lamp,
+  glowAlpha: 0.18,
+  fill: Palette.me,
+  outline: _meOutline,
+  earlierOutline: _earlierOutline,
+  pastTop: _pastFill,
+  pastBottom: _pastFill,
+  pastHalo: null,
+  pomegranates: const [],
+);
+
+/// Yalda: warmer light, a crimson-amber glow round every lit Window, and a
+/// pomegranate on three sills. Fixed sills, so every Yalda looks the same:
+/// it's the night that brings them, not luck.
+const _Light _yalda = (
+  glow: YaldaPalette.ember,
+  glowAlpha: 0.34,
+  fill: YaldaPalette.me,
+  outline: YaldaPalette.outline,
+  earlierOutline: YaldaPalette.earlierOutline,
+  pastTop: YaldaPalette.pastTop,
+  pastBottom: YaldaPalette.pastBottom,
+  pastHalo: YaldaPalette.ember,
+  pomegranates: [(0, 1), (1, 5), (2, 2)],
+);
 
 class _HousePainter extends CustomPainter {
   _HousePainter({
@@ -305,6 +341,7 @@ class _HousePainter extends CustomPainter {
         Paint()..color = Palette.newFloor,
       );
 
+    final look = yalda ? _yalda : _usual;
     final lit = {for (final (i, w) in windows.indexed) _slots[i]: w};
     // The user's own comes on first, the others in reading order after it.
     var order = 1;
@@ -319,11 +356,10 @@ class _HousePainter extends CustomPainter {
         final window = lit[(r, c)];
         if (window != null) {
           final yours = window == HouseWindow.yours;
-          _window(canvas, rounded, window, _on(yours ? 0 : order++, yours));
+          final on = _on(yours ? 0 : order++, yours);
+          _window(canvas, rounded, window, on, look);
         }
-        if (yalda && _pomegranateSills.contains((r, c))) {
-          _sillWith(canvas, pane);
-        }
+        if (look.pomegranates.contains((r, c))) _sillWith(canvas, pane);
       }
     }
     canvas.restore();
@@ -339,7 +375,13 @@ class _HousePainter extends CustomPainter {
     return yours ? _brightnessAt(_lamp, on) : on;
   }
 
-  void _window(Canvas canvas, RRect pane, HouseWindow window, double on) {
+  void _window(
+    Canvas canvas,
+    RRect pane,
+    HouseWindow window,
+    double on,
+    _Light look,
+  ) {
     if (on == 0) return;
     switch (window) {
       case HouseWindow.yours:
@@ -350,20 +392,18 @@ class _HousePainter extends CustomPainter {
         final tv = kind == WorkKind.series || kind == WorkKind.film;
         final (glow, fill, outline) = tv
             ? (_tvGlow, _tvGlow, _tvOutline)
-            : yalda
-            ? (YaldaPalette.lamp, YaldaPalette.me, _yaldaOutline)
-            : (Palette.lamp, Palette.me, _meOutline);
+            : (look.glow, look.fill, look.outline);
         canvas
           ..drawRect(
             pane.outerRect.inflate(5),
             Paint()
-              ..color = glow.withValues(alpha: (yalda ? 0.26 : 0.18) * a)
+              ..color = glow.withValues(alpha: look.glowAlpha * a)
               ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3),
           )
           ..drawRRect(pane, Paint()..color = fill.withValues(alpha: a));
         if (kind case final kind?) _silhouette(canvas, pane.outerRect, kind, a);
         // Half a pomegranate on the end side, clear of what they're on.
-        if (yalda) {
+        if (look.pomegranates.isNotEmpty) {
           paintPomegranateHalf(
             canvas,
             Offset(pane.right - 4.3, pane.bottom - 4.4),
@@ -386,38 +426,42 @@ class _HousePainter extends CustomPainter {
             Paint()
               ..style = PaintingStyle.stroke
               ..strokeWidth = 1.5
-              ..color = (yalda ? _yaldaEarlierOutline : _earlierOutline)
-                  .withValues(alpha: 0.6 * on),
+              ..color = look.earlierOutline.withValues(alpha: 0.6 * on),
           );
       case HouseWindow.pastEvening:
-        if (yalda) {
-          // Candlelight carries: a faint warm halo round every lit Window.
+        if (look.pastHalo case final halo?) {
           canvas.drawRect(
-            pane.outerRect.inflate(3),
+            pane.outerRect.inflate(4),
             Paint()
-              ..color = YaldaPalette.lamp.withValues(alpha: 0.16 * on)
-              ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3),
+              ..color = halo.withValues(alpha: 0.3 * on)
+              ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),
           );
         }
-        canvas.drawRRect(
-          pane,
-          Paint()
-            ..color = (yalda ? _yaldaPastFill : _pastFill).withValues(
-              alpha: on,
-            ),
-        );
+        final paint = Paint();
+        if (look.pastTop == look.pastBottom) {
+          paint.color = look.pastTop.withValues(alpha: on);
+        } else {
+          paint.shader = LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              look.pastTop.withValues(alpha: on),
+              look.pastBottom.withValues(alpha: on),
+            ],
+          ).createShader(pane.outerRect);
+        }
+        canvas.drawRRect(pane, paint);
     }
   }
 
-  /// A windowsill under [pane] with a pomegranate on it, and a smaller one
-  /// beside it, sitting low against the glass.
+  /// A windowsill under [pane] with a pomegranate on it, big enough to
+  /// read as one even small, sitting low against the glass.
   void _sillWith(Canvas canvas, Rect pane) {
     canvas.drawRect(
-      Rect.fromLTWH(pane.left - 2, pane.bottom, pane.width + 4, 1.6),
-      Paint()..color = _sill,
+      Rect.fromLTWH(pane.left - 3, pane.bottom, pane.width + 6, 2),
+      Paint()..color = YaldaPalette.sill,
     );
-    paintPomegranate(canvas, Offset(pane.left + 5.5, pane.bottom), 3);
-    paintPomegranate(canvas, Offset(pane.left + 10.8, pane.bottom), 2.2);
+    paintPomegranate(canvas, Offset(pane.center.dx, pane.bottom), 4.4);
   }
 
   /// What the user is on, drawn small in their Window from the start side,

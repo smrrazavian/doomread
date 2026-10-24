@@ -83,8 +83,9 @@ class _Tonight extends StatelessWidget {
                     _WorkCard(road: road, evenings: vm.evenings),
                     const SizedBox(height: 16),
                     Text(l10n.aim(vm.aim.inMinutes), style: text.bodyMedium),
-                    // Only on Shab-e Yalda; nothing otherwise.
-                    YaldaTonight(kind: road.work.kind),
+                    // Only on Shab-e Yalda.
+                    if (vm.yalda case final night?)
+                      YaldaTonight(night: night, kind: road.work.kind),
                     const Spacer(),
                     _ReadingWeekStrip(
                       week: vm.readingWeek(
@@ -110,6 +111,8 @@ class _Tonight extends StatelessWidget {
                     Text(l10n.emptyTonight, style: text.titleMedium),
                     const SizedBox(height: 4),
                     Text(l10n.tonightEmpty, style: text.bodyMedium),
+                    // A Work finished on Yalda still has its night.
+                    if (vm.yalda case final night?) YaldaTonight(night: night),
                     const SizedBox(height: 16),
                     Align(
                       alignment: AlignmentDirectional.centerStart,

@@ -4,6 +4,7 @@ import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/data/services/session_notification.dart';
+import 'package:doomread/ui/share/yalda_night.dart';
 import 'package:doomread/utils/command.dart';
 import 'package:doomread/utils/result.dart';
 import 'package:doomread_core/doomread_core.dart';
@@ -71,6 +72,9 @@ class TonightViewModel extends ChangeNotifier {
       sessionStarts: [for (final r in _history) ?r.at(now).startedAt],
     );
   }
+
+  /// Shab-e Yalda so far, from the same journal; null on other nights.
+  YaldaNight? get yalda => yaldaNight(_history, _sessions.now());
 
   /// A Session with the current Work that was never stopped, say because the
   /// app was closed during it. Tonight offers to go back to it.

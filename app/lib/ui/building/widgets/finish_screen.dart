@@ -8,6 +8,7 @@ import 'package:doomread/ui/core/number_format.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/work_text.dart';
 import 'package:doomread/ui/share/widgets/share_preview_screen.dart';
+import 'package:doomread/ui/share/widgets/yalda_poster.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -36,7 +37,9 @@ class _Finish extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final text = Theme.of(context).textTheme;
     final locale = Localizations.localeOf(context);
-    final floors = context.watch<BuildingViewModel>().floors;
+    final vm = context.watch<BuildingViewModel>();
+    final floors = vm.floors;
+    final yalda = vm.yalda;
     final floor = floors.indexWhere((f) => f.work.id == workId);
     if (floor < 0) return const Scaffold();
     final finish = floors[floor];
@@ -106,6 +109,14 @@ class _Finish extends StatelessWidget {
                         floor: floor,
                       ),
                       child: Text(l10n.shareAction),
+                    ),
+                  ],
+                  // Finished on Shab-e Yalda: its poster too.
+                  if (yalda != null && canShareYalda(context, yalda)) ...[
+                    const SizedBox(height: 8),
+                    OutlinedButton(
+                      onPressed: () => showYaldaPoster(context, yalda),
+                      child: Text(l10n.yaldaShare),
                     ),
                   ],
                   const SizedBox(height: 8),

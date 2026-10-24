@@ -10,6 +10,7 @@ import 'package:doomread/ui/share/widgets/yalda_poster.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 import '../helpers.dart';
 
@@ -18,8 +19,14 @@ void main() {
   final yaldaLine = en.yaldaTonight('paperBook');
 
   /// The Remains of the Day as the current Work, read for [minutes] from
-  /// 21:00 on [day] December 2026 if [minutes] isn't null.
-  Future<void> setUp(AppDatabase db, int day, {int? minutes}) async {
+  /// 21:00 on [day] December 2026 if [minutes] isn't null, up to [page].
+  /// Returns its id.
+  Future<String> setUp(
+    AppDatabase db,
+    int day, {
+    int? minutes,
+    int page = 20,
+  }) async {
     var now = DateTime(2026, 12, day, 21);
     final id = await WorkRepository(db).add(
       title: 'The Remains of the Day',
@@ -28,7 +35,7 @@ void main() {
       checkpoints: const [],
     );
     await SettingsRepository(db).setLocale(const Locale('en'));
-    if (minutes == null) return;
+    if (minutes == null) return id;
     final sessions = SessionRepository(db, clock: () => now);
     final record = SessionRecord(
       id: await sessions.start(id),
@@ -40,7 +47,8 @@ void main() {
     );
     now = now.add(Duration(minutes: minutes));
     await sessions.add(record, SessionEventKind.stop);
-    await sessions.end(record, page: 20);
+    await sessions.end(record, page: page);
+    return id;
   }
 
   testApp('Tonight says nothing of Yalda the night before', (tester, db) async {
@@ -91,5 +99,47 @@ void main() {
     await tester.pumpAndSettle();
     final header = ByteData.sublistView(sheet.shared.single.png);
     expect((header.getUint32(16), header.getUint32(20)), (1080, 1920));
+  });
+
+  testApp('a Work finished on Yalda keeps its night on Tonight', (
+    tester,
+    db,
+  ) async {
+    await setUp(db, 21, minutes: 52, page: 245);
+    // Finished, and no longer the current Work.
+    await (db.delete(
+      db.settings,
+    )..where((s) => s.key.equals('currentWork'))).go();
+    await pumpApp(tester, db, clock: () => DateTime(2026, 12, 21, 23));
+    expect(find.text(yaldaLine), findsOne);
+    expect(find.text(en.yaldaShare), findsOne);
+  });
+
+  testApp('the Finish on Yalda offers the Yalda poster too', (
+    tester,
+    db,
+  ) async {
+    final id = await setUp(db, 21, minutes: 52, page: 245);
+    await pumpApp(tester, db, clock: () => DateTime(2026, 12, 21, 23));
+    GoRouter.of(tester.element(find.byType(Scaffold).first))
+        .go('/building/finish/$id');
+    await tester.pumpAndSettle();
+    expect(find.text(en.shareAction), findsOne);
+    await tester.tap(find.text(en.yaldaShare));
+    await tester.pumpAndSettle();
+    expect(tester.widget<YaldaPoster>(find.byType(YaldaPoster)).minutes, 52);
+  });
+
+  testApp('the Finish on another night has no Yalda poster', (
+    tester,
+    db,
+  ) async {
+    final id = await setUp(db, 22, minutes: 52, page: 245);
+    await pumpApp(tester, db, clock: () => DateTime(2026, 12, 22, 23));
+    GoRouter.of(tester.element(find.byType(Scaffold).first))
+        .go('/building/finish/$id');
+    await tester.pumpAndSettle();
+    expect(find.text(en.shareAction), findsOne);
+    expect(find.text(en.yaldaShare), findsNothing);
   });
 }

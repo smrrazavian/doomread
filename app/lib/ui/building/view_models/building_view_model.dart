@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:doomread/data/repositories/session_repository.dart';
+import 'package:doomread/ui/share/yalda_night.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/foundation.dart';
 
@@ -15,6 +16,7 @@ class BuildingViewModel extends ChangeNotifier {
         notifyListeners();
       }),
       sessions.watchAll().listen((all) {
+        _history = all;
         final measuredAll = measured(all, sessions.now());
         _sessions = [for (final s in measuredAll) s.session];
         List<StretchRise> trend({required bool watched}) =>
@@ -29,6 +31,11 @@ class BuildingViewModel extends ChangeNotifier {
   late final List<StreamSubscription<Object?>> _subs;
   final DateTime Function() _now;
   List<Session> _sessions = const [];
+  List<SessionRecord> _history = const [];
+
+  /// Shab-e Yalda so far, for its poster beside the Finish's; null on
+  /// other nights.
+  YaldaNight? get yalda => yaldaNight(_history, _now());
 
   /// Every Finish, the most recent first: the top floor.
   List<Finish> get floors => _floors;
