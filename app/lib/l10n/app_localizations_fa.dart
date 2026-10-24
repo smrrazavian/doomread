@@ -982,9 +982,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get toneMom => 'مامان‌مود';
 
   @override
-  String get toneAsk => 'باز گوشی؟! چطوری باهات حرف بزنه؟';
-
-  @override
   String get toneHint =>
       'هر کدوم رو انتخاب کنی، وسوسه رو مسخره می‌کنه نه خودتو، و وقتی کم آوردی همیشه مهربونه.';
 

@@ -849,10 +849,6 @@
   "toneChill": "Chill",
   "toneSpicy": "Spicy",
   "toneMom": "Mom mode",
-  "toneAsk": "How should Doomread talk to you?",
-  "@toneAsk": {
-    "description": "Tonight before the first Work: offers the Tone."
-  },
   "toneHint": "Whichever you pick, it roasts the urge, never you, and it's always kind after a slip.",
   "@toneHint": {
     "description": "Top of the Tone screen."

@@ -11,13 +11,12 @@ String toneName(AppLocalizations l10n, Tone tone) => switch (tone) {
   Tone.mom => l10n.toneMom,
 };
 
-/// A real line in [tone]: what the Urge says when Instagram opens.
-String toneSample(BuildContext context, Tone tone) => voice(
-  Moment.urge,
-  tone,
-  Localizations.localeOf(context).languageCode,
-  const {'app': 'Instagram'},
-);
+/// A real line in [tone]: what the Urge says when Instagram opens, with
+/// Instagram named as this language writes it.
+String toneSample(BuildContext context, Tone tone) {
+  final lang = Localizations.localeOf(context).languageCode;
+  return voice(Moment.urge, tone, lang, {'app': sampleApp(lang)});
+}
 
 /// Chill, Spicy or Mom mode, each with what it sounds like.
 class ToneScreen extends StatelessWidget {

@@ -1,5 +1,9 @@
 import 'package:doomread_core/src/voice.dart';
 
+/// The Watched app English lines name when no real one has opened yet:
+/// the Tone picker and the demo Urge.
+const String enSampleApp = 'Instagram';
+
 /// English Tone lines. Roast the Urge, never the person; no insults, no
 /// swearing, no guilt about the Planned break. After a Slip only Chill's
 /// line is ever said (see voice).

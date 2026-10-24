@@ -1226,12 +1226,6 @@ abstract class AppLocalizations {
   /// **'Mom mode'**
   String get toneMom;
 
-  /// Tonight before the first Work: offers the Tone.
-  ///
-  /// In en, this message translates to:
-  /// **'How should Doomread talk to you?'**
-  String get toneAsk;
-
   /// Top of the Tone screen.
   ///
   /// In en, this message translates to:

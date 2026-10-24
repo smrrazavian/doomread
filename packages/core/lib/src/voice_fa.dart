@@ -1,5 +1,9 @@
 import 'package:doomread_core/src/voice.dart';
 
+/// The Watched app Persian lines name when no real one has opened yet,
+/// in Persian letters, as the copy around it writes it.
+const String faSampleApp = 'اینستاگرام';
+
 /// Persian Tone lines, in everyday spoken Persian (محاوره). Roast the
 /// Urge, never the person; no insults, no swearing, no guilt about the
 /// Planned break. After a Slip only Chill's line is ever said (see voice).

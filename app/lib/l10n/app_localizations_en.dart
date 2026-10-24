@@ -1096,9 +1096,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get toneMom => 'Mom mode';
 
   @override
-  String get toneAsk => 'How should Doomread talk to you?';
-
-  @override
   String get toneHint =>
       'Whichever you pick, it roasts the urge, never you, and it\'s always kind after a slip.';
 

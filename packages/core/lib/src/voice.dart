@@ -43,6 +43,13 @@ typedef CopyPack = Map<Tone, Map<Moment, List<String>>>;
 /// doesn't change.
 const Map<String, CopyPack> copyPacks = {'en': en, 'fa': fa};
 
+/// The app the Tone picker and the demo Urge name, by locale, before any
+/// real Watched app has opened.
+const Map<String, String> sampleApps = {'en': enSampleApp, 'fa': faSampleApp};
+
+/// [sampleApps]' name in [locale], English for an unknown one.
+String sampleApp(String locale) => sampleApps[locale] ?? sampleApps['en']!;
+
 final _placeholder = RegExp(r'\{(\w+)\}');
 
 /// The line for [moment] in [tone] and [locale], with [facts] filled in:
