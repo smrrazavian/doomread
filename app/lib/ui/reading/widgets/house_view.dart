@@ -11,10 +11,14 @@ import 'package:flutter/material.dart';
 /// lit, each from the journal, and the user's own one pulses slowly. A line
 /// under it says whose lights they are, or kindly that it's still empty.
 class HouseView extends StatefulWidget {
-  const HouseView({required this.windows, super.key});
+  const HouseView({required this.windows, this.kind, super.key});
 
   /// From [houseWindows]; more than the House has room for are left dark.
   final List<HouseWindow> windows;
+
+  /// What the user is on, shown in their own Window: a lamp for a book, a
+  /// TV for a film or series, headphones for a podcast. Plain when null.
+  final WorkKind? kind;
 
   @override
   State<HouseView> createState() => _HouseViewState();
@@ -71,6 +75,7 @@ class _HouseViewState extends State<HouseView> with TickerProviderStateMixin {
                     windows: widget.windows.take(_slots.length).toList(),
                     light: _light,
                     pulse: _pulse,
+                    kind: widget.kind,
                     rtl: Directionality.of(context) == TextDirection.rtl,
                   ),
                 ),
@@ -126,17 +131,26 @@ const _earlierOutline = Color(0xFFE2B65A);
 final Color _pastFill = Color.lerp(Palette.unlit, Palette.lamp, 0.22)!;
 const _meOutline = Color(0xFFFFF6DD);
 
+/// A film or series: the user's Window glows TV blue instead of lamplight.
+const _tvGlow = Color(0xFFA9C4F5);
+const _tvOutline = Color(0xFFE4EEFF);
+
+/// The things in the user's Window, in shadow against its light.
+final Color _shadow = Palette.deep.withValues(alpha: 0.8);
+
 class _HousePainter extends CustomPainter {
   _HousePainter({
     required this.windows,
     required this.light,
     required this.pulse,
+    required this.kind,
     required this.rtl,
   }) : super(repaint: Listenable.merge([light, pulse]));
 
   final List<HouseWindow> windows;
   final AnimationController light;
   final AnimationController pulse;
+  final WorkKind? kind;
   final bool rtl;
 
   @override
@@ -209,9 +223,9 @@ class _HousePainter extends CustomPainter {
           const Radius.circular(1.5),
         );
         canvas.drawRRect(rounded, Paint()..color = Palette.unlit);
-        final kind = lit[(r, c)];
-        if (kind == null) continue;
-        _window(canvas, rounded, kind, _on(order++));
+        final window = lit[(r, c)];
+        if (window == null) continue;
+        _window(canvas, rounded, window, _on(order++));
       }
     }
     canvas.restore();
@@ -224,29 +238,36 @@ class _HousePainter extends CustomPainter {
     return ((t - _firstOn - i * _between) / _fade).clamp(0, 1);
   }
 
-  void _window(Canvas canvas, RRect pane, HouseWindow kind, double on) {
+  void _window(Canvas canvas, RRect pane, HouseWindow window, double on) {
     if (on == 0) return;
-    switch (kind) {
+    switch (window) {
       case HouseWindow.yours:
         // Down to 72% and back every 3.2 seconds.
         final breath =
             1 - 0.28 * (0.5 - 0.5 * math.cos(2 * math.pi * pulse.value));
         final a = on * breath;
+        final tv = kind == WorkKind.series || kind == WorkKind.film;
         canvas
           ..drawRect(
             pane.outerRect.inflate(5),
             Paint()
-              ..color = Palette.lamp.withValues(alpha: 0.18 * a)
+              ..color = (tv ? _tvGlow : Palette.lamp).withValues(
+                alpha: 0.18 * a,
+              )
               ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3),
           )
-          ..drawRRect(pane, Paint()..color = Palette.me.withValues(alpha: a))
           ..drawRRect(
             pane,
-            Paint()
-              ..style = PaintingStyle.stroke
-              ..strokeWidth = 2.5
-              ..color = _meOutline.withValues(alpha: a),
+            Paint()..color = (tv ? _tvGlow : Palette.me).withValues(alpha: a),
           );
+        if (kind case final kind?) _silhouette(canvas, pane.outerRect, kind, a);
+        canvas.drawRRect(
+          pane,
+          Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 2.5
+            ..color = (tv ? _tvOutline : _meOutline).withValues(alpha: a),
+        );
       case HouseWindow.earlierTonight:
         canvas
           ..drawRRect(pane, Paint()..color = _earlierFill.withValues(alpha: on))
@@ -265,7 +286,96 @@ class _HousePainter extends CustomPainter {
     }
   }
 
+  /// What the user is on, drawn small in their Window from the start side,
+  /// so it mirrors with the scene in Persian.
+  void _silhouette(Canvas canvas, Rect pane, WorkKind kind, double a) {
+    final ink = Paint()..color = _shadow.withValues(alpha: _shadow.a * a);
+    final x = pane.left;
+    final y = pane.top;
+    switch (kind) {
+      case WorkKind.paperBook || WorkKind.ebook:
+        // A reading lamp: shade, stem and foot, and its pool of light.
+        canvas
+          ..drawCircle(
+            Offset(x + 6, y + 10),
+            4,
+            Paint()
+              ..color = Palette.paper.withValues(alpha: 0.7 * a)
+              ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1.5),
+          )
+          ..drawPath(
+            Path()
+              ..moveTo(x + 4.5, y + 4)
+              ..lineTo(x + 7.5, y + 4)
+              ..lineTo(x + 9.5, y + 8.5)
+              ..lineTo(x + 2.5, y + 8.5)
+              ..close(),
+            ink,
+          )
+          ..drawRect(Rect.fromLTWH(x + 5.5, y + 8.5, 1, 6), ink)
+          ..drawRect(Rect.fromLTWH(x + 3.5, y + 14.5, 5, 1.5), ink);
+      case WorkKind.series || WorkKind.film:
+        // An old TV with rabbit ears, its screen a brighter blue.
+        final ears = Paint()
+          ..color = ink.color
+          ..strokeWidth = 0.8
+          ..strokeCap = StrokeCap.round;
+        canvas
+          ..drawLine(Offset(x + 6, y + 8), Offset(x + 4, y + 4), ears)
+          ..drawLine(Offset(x + 6, y + 8), Offset(x + 9, y + 4.5), ears)
+          ..drawRRect(
+            RRect.fromLTRBR(
+              x + 2,
+              y + 8,
+              x + 11,
+              y + 15,
+              const Radius.circular(1),
+            ),
+            ink,
+          )
+          ..drawRect(
+            Rect.fromLTRB(x + 3.2, y + 9.2, x + 9.8, y + 13.8),
+            Paint()..color = _tvOutline.withValues(alpha: a),
+          )
+          ..drawRect(Rect.fromLTWH(x + 3, y + 15, 1.2, 1.5), ink)
+          ..drawRect(Rect.fromLTWH(x + 8.8, y + 15, 1.2, 1.5), ink);
+      case WorkKind.podcast:
+        // Headphones: the band over the top and a cup on each side.
+        canvas
+          ..drawArc(
+            Rect.fromLTRB(x + 3.5, y + 4, x + 12.5, y + 13),
+            math.pi,
+            math.pi,
+            false,
+            Paint()
+              ..color = ink.color
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = 1.2,
+          )
+          ..drawRRect(
+            RRect.fromLTRBR(
+              x + 2.5,
+              y + 8,
+              x + 5.5,
+              y + 13,
+              const Radius.circular(1),
+            ),
+            ink,
+          )
+          ..drawRRect(
+            RRect.fromLTRBR(
+              x + 10.5,
+              y + 8,
+              x + 13.5,
+              y + 13,
+              const Radius.circular(1),
+            ),
+            ink,
+          );
+    }
+  }
+
   @override
   bool shouldRepaint(_HousePainter old) =>
-      old.rtl != rtl || !listEquals(old.windows, windows);
+      old.rtl != rtl || old.kind != kind || !listEquals(old.windows, windows);
 }

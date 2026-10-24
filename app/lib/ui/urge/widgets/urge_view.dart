@@ -42,6 +42,7 @@ class UrgeView extends StatelessWidget {
       },
       child: _Moment(
         house: house,
+        kind: work.kind,
         title: say(context, Moment.urge, {'app': ?app}),
         body: [
           ChangeNotifierProvider(
@@ -127,9 +128,11 @@ class _Moment extends StatelessWidget {
     required this.onGo,
     required this.quiet,
     required this.onQuiet,
+    this.kind,
   });
 
   final List<HouseWindow> house;
+  final WorkKind? kind;
   final String title;
 
   /// Lines of text, or widgets.
@@ -153,7 +156,7 @@ class _Moment extends StatelessWidget {
               Expanded(
                 child: Align(
                   alignment: Alignment.bottomCenter,
-                  child: HouseView(windows: house),
+                  child: HouseView(windows: house, kind: kind),
                 ),
               ),
               const SizedBox(height: 32),
