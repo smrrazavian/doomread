@@ -5,6 +5,7 @@ import 'package:doomread/domain/use_cases/stop_deleted_sessions_use_case.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/books/view_models/books_view_model.dart';
 import 'package:doomread/ui/core/empty_scenes.dart';
+import 'package:doomread/ui/core/settings_button.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/work_text.dart';
 import 'package:doomread_core/doomread_core.dart';
@@ -35,7 +36,10 @@ class _Books extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final vm = context.watch<BooksViewModel>();
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.navBooks)),
+      appBar: AppBar(
+        title: Text(l10n.navBooks),
+        actions: const [SettingsButton()],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/work/new'),
         icon: const Icon(Icons.add),
@@ -87,7 +91,11 @@ class _Books extends StatelessWidget {
                             ? Palette.lamp
                             : Palette.mute,
                       ),
-                      onTap: () => vm.makeCurrent(work.id),
+                      // Picked: back to Today, ready to Start it.
+                      onTap: () async {
+                        await vm.makeCurrent(work.id);
+                        if (context.mounted) context.go('/tonight');
+                      },
                       trailing: IconButton(
                         tooltip: l10n.editBook,
                         icon: const Icon(Icons.edit_outlined),

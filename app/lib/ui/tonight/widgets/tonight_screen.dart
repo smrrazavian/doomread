@@ -9,6 +9,7 @@ import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/empty_scenes.dart';
 import 'package:doomread/ui/core/one_session.dart';
 import 'package:doomread/ui/core/road_view.dart';
+import 'package:doomread/ui/core/settings_button.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/work_text.dart';
 import 'package:doomread/ui/reading/widgets/work_app_card.dart';
@@ -62,15 +63,7 @@ class _Tonight extends StatelessWidget {
       });
     }
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            tooltip: l10n.settings,
-            icon: const Icon(Icons.tune),
-            onPressed: () => context.push('/settings'),
-          ),
-        ],
-      ),
+      appBar: AppBar(actions: const [SettingsButton()]),
       // Scrolls only when the screen is too short to fit it all; otherwise
       // the Spacer keeps the week and the button down by the thumb.
       body: CustomScrollView(
@@ -126,13 +119,11 @@ class _Tonight extends StatelessWidget {
                     Text(l10n.tonightEmpty, style: text.bodyMedium),
                     // A Work finished on Yalda still has its night.
                     if (vm.yalda case final night?) YaldaTonight(night: night),
-                    const SizedBox(height: 16),
-                    Align(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: FilledButton(
-                        onPressed: () => context.push('/work/new'),
-                        child: Text(l10n.tonightAddBook),
-                      ),
+                    const Spacer(),
+                    const SizedBox(height: 24),
+                    FilledButton(
+                      onPressed: () => context.push('/work/new'),
+                      child: Text(l10n.tonightAddBook),
                     ),
                   ],
                 ],

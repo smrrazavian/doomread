@@ -65,6 +65,9 @@ void main() {
     expect(find.text(en.finishedSub(245, 1)), findsOne);
     expect(find.text(en.minutesShort(9)), findsOne);
     expect(find.text(en.notesWritten(1)), findsOne);
+    // The Building is the way on; the story is there to look back at.
+    expect(find.widgetWithText(FilledButton, en.seeYourBuilding), findsOne);
+    expect(find.widgetWithText(OutlinedButton, en.readTheStory), findsOne);
 
     await tap(tester, find.text(en.readTheStory));
     expect(find.text(en.bookFinished), findsOne);

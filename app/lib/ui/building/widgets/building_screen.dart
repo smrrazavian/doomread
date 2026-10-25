@@ -4,6 +4,7 @@ import 'package:doomread/ui/building/view_models/building_view_model.dart';
 import 'package:doomread/ui/building/widgets/building_view.dart';
 import 'package:doomread/ui/building/widgets/longest_stretch_trend.dart';
 import 'package:doomread/ui/core/date_format.dart';
+import 'package:doomread/ui/core/settings_button.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/work_text.dart';
 import 'package:doomread/ui/share/widgets/glow_up_poster.dart';
@@ -47,9 +48,10 @@ class _Building extends StatelessWidget {
           )
         : null;
     return Scaffold(
+      appBar: AppBar(actions: const [SettingsButton()]),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsetsDirectional.fromSTEB(24, 16, 24, 24),
+          padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 24),
           children: [
             Text(l10n.buildingTitle, style: text.headlineSmall),
             const SizedBox(height: 4),

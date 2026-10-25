@@ -5,6 +5,7 @@ import 'package:doomread/ui/calendar/view_models/calendar_view_model.dart';
 import 'package:doomread/ui/calendar/widgets/day_sheet.dart';
 import 'package:doomread/ui/core/date_format.dart';
 import 'package:doomread/ui/core/number_format.dart';
+import 'package:doomread/ui/core/settings_button.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
@@ -52,6 +53,7 @@ class _CalendarState extends State<_Calendar> {
     final vm = context.watch<CalendarViewModel>();
     final solarHijri = calendarOf(context).solarHijri;
     return Scaffold(
+      appBar: AppBar(actions: const [SettingsButton()]),
       body: SafeArea(
         child: PageView.builder(
           controller: _pages,
@@ -99,7 +101,7 @@ class _MonthPage extends StatelessWidget {
       if (view.finishes > 0) l10n.calendarFinishes(view.finishes),
     ];
     return ListView(
-      padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 24),
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 24),
       children: [
         Padding(
           padding: const EdgeInsetsDirectional.only(start: 8),

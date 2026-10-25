@@ -83,11 +83,11 @@ void main() {
     await session(tester, en.startWork('paperBook'), 6, '30');
     expect(find.text(en.aim(7)), findsOne);
 
-    // A film, added and made current in Books; its Aim starts from nothing.
+    // A film, added and picked in Books, which goes back to Today; its Aim
+    // starts from nothing.
     await tap(tester, find.text(en.navBooks));
     await add(tester, 'film', 'Paris, Texas', '2:25:00');
     await tap(tester, find.text('Paris, Texas'));
-    await tap(tester, find.text(en.navToday));
     expect(find.text(en.aim(1)), findsOne);
   });
 }

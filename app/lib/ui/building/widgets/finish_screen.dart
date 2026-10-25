@@ -96,6 +96,11 @@ class _Finish extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   FilledButton(
+                    onPressed: () => context.go('/building'),
+                    child: Text(l10n.seeYourBuilding),
+                  ),
+                  const SizedBox(height: 8),
+                  OutlinedButton(
                     onPressed: () => context.push('/book/$workId'),
                     child: Text(l10n.readTheStory),
                   ),
@@ -119,11 +124,6 @@ class _Finish extends StatelessWidget {
                       child: Text(l10n.yaldaShare),
                     ),
                   ],
-                  const SizedBox(height: 8),
-                  TextButton(
-                    onPressed: () => context.go('/building'),
-                    child: Text(l10n.seeYourBuilding),
-                  ),
                 ],
               ),
             ),
