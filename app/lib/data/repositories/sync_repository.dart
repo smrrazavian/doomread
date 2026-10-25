@@ -353,6 +353,7 @@ class SyncRepository {
         for (final c in w.checkpoints.split(','))
           if (c.isNotEmpty) int.parse(c),
       ],
+      'estimated': w.estimated,
       'position': w.position,
       'positionAt': (w.positionAt ?? w.updatedAt).microsecondsSinceEpoch,
       'deleted': w.deleted,
@@ -385,6 +386,8 @@ class SyncRepository {
     ),
     totalPages: i.data['totalPages']! as int,
     checkpoints: (i.data['checkpoints']! as List<Object?>).join(','),
+    // Devices from before chapter counts only had known Checkpoints.
+    estimated: Value(i.data['estimated'] as int? ?? 0),
     position: Value(i.data['position']! as int),
     // Devices from before positionAt moved the Position with every write.
     positionAt: Value(switch (i.data['positionAt']) {

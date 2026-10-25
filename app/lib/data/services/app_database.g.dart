@@ -272,6 +272,18 @@ class $WorksTable extends Works with TableInfo<$WorksTable, WorkRow> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _estimatedMeta = const VerificationMeta(
+    'estimated',
+  );
+  @override
+  late final GeneratedColumn<int> estimated = GeneratedColumn<int>(
+    'estimated',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   static const VerificationMeta _positionMeta = const VerificationMeta(
     'position',
   );
@@ -393,6 +405,7 @@ class $WorksTable extends Works with TableInfo<$WorksTable, WorkRow> {
     kind,
     totalPages,
     checkpoints,
+    estimated,
     position,
     updatedAt,
     positionAt,
@@ -455,6 +468,12 @@ class $WorksTable extends Works with TableInfo<$WorksTable, WorkRow> {
       );
     } else if (isInserting) {
       context.missing(_checkpointsMeta);
+    }
+    if (data.containsKey('estimated')) {
+      context.handle(
+        _estimatedMeta,
+        estimated.isAcceptableOrUnknown(data['estimated']!, _estimatedMeta),
+      );
     }
     if (data.containsKey('position')) {
       context.handle(
@@ -559,6 +578,10 @@ class $WorksTable extends Works with TableInfo<$WorksTable, WorkRow> {
         DriftSqlType.string,
         data['${effectivePrefix}checkpoints'],
       )!,
+      estimated: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}estimated'],
+      )!,
       position: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}position'],
@@ -618,6 +641,10 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
   final WorkKind kind;
   final int totalPages;
   final String checkpoints;
+
+  /// How many of the last [checkpoints] are estimates, spread from a
+  /// chapter count; 0 when every one is known.
+  final int estimated;
   final int position;
   final DateTime updatedAt;
 
@@ -659,6 +686,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
     required this.kind,
     required this.totalPages,
     required this.checkpoints,
+    required this.estimated,
     required this.position,
     required this.updatedAt,
     this.positionAt,
@@ -681,6 +709,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
     }
     map['total_pages'] = Variable<int>(totalPages);
     map['checkpoints'] = Variable<String>(checkpoints);
+    map['estimated'] = Variable<int>(estimated);
     map['position'] = Variable<int>(position);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     if (!nullToAbsent || positionAt != null) {
@@ -716,6 +745,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
       kind: Value(kind),
       totalPages: Value(totalPages),
       checkpoints: Value(checkpoints),
+      estimated: Value(estimated),
       position: Value(position),
       updatedAt: Value(updatedAt),
       positionAt: positionAt == null && nullToAbsent
@@ -755,6 +785,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
       ),
       totalPages: serializer.fromJson<int>(json['totalPages']),
       checkpoints: serializer.fromJson<String>(json['checkpoints']),
+      estimated: serializer.fromJson<int>(json['estimated']),
       position: serializer.fromJson<int>(json['position']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       positionAt: serializer.fromJson<DateTime?>(json['positionAt']),
@@ -781,6 +812,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
       ),
       'totalPages': serializer.toJson<int>(totalPages),
       'checkpoints': serializer.toJson<String>(checkpoints),
+      'estimated': serializer.toJson<int>(estimated),
       'position': serializer.toJson<int>(position),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'positionAt': serializer.toJson<DateTime?>(positionAt),
@@ -801,6 +833,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
     WorkKind? kind,
     int? totalPages,
     String? checkpoints,
+    int? estimated,
     int? position,
     DateTime? updatedAt,
     Value<DateTime?> positionAt = const Value.absent(),
@@ -818,6 +851,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
     kind: kind ?? this.kind,
     totalPages: totalPages ?? this.totalPages,
     checkpoints: checkpoints ?? this.checkpoints,
+    estimated: estimated ?? this.estimated,
     position: position ?? this.position,
     updatedAt: updatedAt ?? this.updatedAt,
     positionAt: positionAt.present ? positionAt.value : this.positionAt,
@@ -845,6 +879,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
       checkpoints: data.checkpoints.present
           ? data.checkpoints.value
           : this.checkpoints,
+      estimated: data.estimated.present ? data.estimated.value : this.estimated,
       position: data.position.present ? data.position.value : this.position,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       positionAt: data.positionAt.present
@@ -873,6 +908,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
           ..write('kind: $kind, ')
           ..write('totalPages: $totalPages, ')
           ..write('checkpoints: $checkpoints, ')
+          ..write('estimated: $estimated, ')
           ..write('position: $position, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('positionAt: $positionAt, ')
@@ -895,6 +931,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
     kind,
     totalPages,
     checkpoints,
+    estimated,
     position,
     updatedAt,
     positionAt,
@@ -916,6 +953,7 @@ class WorkRow extends DataClass implements Insertable<WorkRow> {
           other.kind == this.kind &&
           other.totalPages == this.totalPages &&
           other.checkpoints == this.checkpoints &&
+          other.estimated == this.estimated &&
           other.position == this.position &&
           other.updatedAt == this.updatedAt &&
           other.positionAt == this.positionAt &&
@@ -935,6 +973,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
   final Value<WorkKind> kind;
   final Value<int> totalPages;
   final Value<String> checkpoints;
+  final Value<int> estimated;
   final Value<int> position;
   final Value<DateTime> updatedAt;
   final Value<DateTime?> positionAt;
@@ -953,6 +992,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
     this.kind = const Value.absent(),
     this.totalPages = const Value.absent(),
     this.checkpoints = const Value.absent(),
+    this.estimated = const Value.absent(),
     this.position = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.positionAt = const Value.absent(),
@@ -972,6 +1012,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
     this.kind = const Value.absent(),
     required int totalPages,
     required String checkpoints,
+    this.estimated = const Value.absent(),
     this.position = const Value.absent(),
     required DateTime updatedAt,
     this.positionAt = const Value.absent(),
@@ -996,6 +1037,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
     Expression<String>? kind,
     Expression<int>? totalPages,
     Expression<String>? checkpoints,
+    Expression<int>? estimated,
     Expression<int>? position,
     Expression<DateTime>? updatedAt,
     Expression<DateTime>? positionAt,
@@ -1015,6 +1057,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
       if (kind != null) 'kind': kind,
       if (totalPages != null) 'total_pages': totalPages,
       if (checkpoints != null) 'checkpoints': checkpoints,
+      if (estimated != null) 'estimated': estimated,
       if (position != null) 'position': position,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (positionAt != null) 'position_at': positionAt,
@@ -1036,6 +1079,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
     Value<WorkKind>? kind,
     Value<int>? totalPages,
     Value<String>? checkpoints,
+    Value<int>? estimated,
     Value<int>? position,
     Value<DateTime>? updatedAt,
     Value<DateTime?>? positionAt,
@@ -1055,6 +1099,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
       kind: kind ?? this.kind,
       totalPages: totalPages ?? this.totalPages,
       checkpoints: checkpoints ?? this.checkpoints,
+      estimated: estimated ?? this.estimated,
       position: position ?? this.position,
       updatedAt: updatedAt ?? this.updatedAt,
       positionAt: positionAt ?? this.positionAt,
@@ -1091,6 +1136,9 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
     }
     if (checkpoints.present) {
       map['checkpoints'] = Variable<String>(checkpoints.value);
+    }
+    if (estimated.present) {
+      map['estimated'] = Variable<int>(estimated.value);
     }
     if (position.present) {
       map['position'] = Variable<int>(position.value);
@@ -1137,6 +1185,7 @@ class WorksCompanion extends UpdateCompanion<WorkRow> {
           ..write('kind: $kind, ')
           ..write('totalPages: $totalPages, ')
           ..write('checkpoints: $checkpoints, ')
+          ..write('estimated: $estimated, ')
           ..write('position: $position, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('positionAt: $positionAt, ')
@@ -2278,6 +2327,7 @@ typedef $$WorksTableCreateCompanionBuilder = WorksCompanion Function({
   Value<WorkKind> kind,
   required int totalPages,
   required String checkpoints,
+  Value<int> estimated,
   Value<int> position,
   required DateTime updatedAt,
   Value<DateTime?> positionAt,
@@ -2297,6 +2347,7 @@ typedef $$WorksTableUpdateCompanionBuilder = WorksCompanion Function({
   Value<WorkKind> kind,
   Value<int> totalPages,
   Value<String> checkpoints,
+  Value<int> estimated,
   Value<int> position,
   Value<DateTime> updatedAt,
   Value<DateTime?> positionAt,
@@ -2346,6 +2397,11 @@ class $$WorksTableFilterComposer extends Composer<_$AppDatabase, $WorksTable> {
 
   ColumnFilters<String> get checkpoints => $composableBuilder(
     column: $table.checkpoints,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get estimated => $composableBuilder(
+    column: $table.estimated,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2439,6 +2495,11 @@ class $$WorksTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get estimated => $composableBuilder(
+    column: $table.estimated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get position => $composableBuilder(
     column: $table.position,
     builder: (column) => ColumnOrderings(column),
@@ -2521,6 +2582,9 @@ class $$WorksTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<int> get estimated =>
+      $composableBuilder(column: $table.estimated, builder: (column) => column);
+
   GeneratedColumn<int> get position =>
       $composableBuilder(column: $table.position, builder: (column) => column);
 
@@ -2592,6 +2656,7 @@ class $$WorksTableTableManager
                 Value<WorkKind> kind = const Value.absent(),
                 Value<int> totalPages = const Value.absent(),
                 Value<String> checkpoints = const Value.absent(),
+                Value<int> estimated = const Value.absent(),
                 Value<int> position = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<DateTime?> positionAt = const Value.absent(),
@@ -2610,6 +2675,7 @@ class $$WorksTableTableManager
                 kind: kind,
                 totalPages: totalPages,
                 checkpoints: checkpoints,
+                estimated: estimated,
                 position: position,
                 updatedAt: updatedAt,
                 positionAt: positionAt,
@@ -2630,6 +2696,7 @@ class $$WorksTableTableManager
                 Value<WorkKind> kind = const Value.absent(),
                 required int totalPages,
                 required String checkpoints,
+                Value<int> estimated = const Value.absent(),
                 Value<int> position = const Value.absent(),
                 required DateTime updatedAt,
                 Value<DateTime?> positionAt = const Value.absent(),
@@ -2648,6 +2715,7 @@ class $$WorksTableTableManager
                 kind: kind,
                 totalPages: totalPages,
                 checkpoints: checkpoints,
+                estimated: estimated,
                 position: position,
                 updatedAt: updatedAt,
                 positionAt: positionAt,

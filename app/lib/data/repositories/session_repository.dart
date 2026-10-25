@@ -81,29 +81,39 @@ class SessionRepository {
 
   /// The user says they reached the next Checkpoint: it goes in the journal,
   /// where it makes the Planned break due, and the Position moves to it
-  /// now. Nothing happens when no Checkpoint is ahead short of the end; the
-  /// end is the Finish, which End of the evening saves.
-  Future<void> markCheckpoint(SessionRecord session) =>
+  /// now. When it was an estimate, it moves to the [page] the chapter really
+  /// ended on, if given, and the estimates after it spread on from there
+  /// (see [reachCheckpoint]). Nothing happens when no Checkpoint is ahead
+  /// short of the end; the end is the Finish, which End of the evening saves.
+  Future<void> markCheckpoint(SessionRecord session, {int? page}) =>
       _db.transaction(() async {
         final workId = session.road.work.id;
-        final work = await _work(workId);
-        final next = Road(
-          WorkRepository.toWork(work),
-          position: work.position,
-        ).next;
+        final row = await _work(workId);
+        final work = WorkRepository.toWork(row);
+        final next = Road(work, position: row.position).next;
         if (next == null || next >= work.totalPages) return;
+        final reached = work.isEstimate(next)
+            ? reachCheckpoint(work, position: row.position, page: page ?? next)
+            : null;
+        final at = reached == null ? next : page ?? next;
         await _append(
           session.id,
           workId,
           SessionEventKind.checkpoint,
-          page: next,
+          page: at,
         );
-        final at = now();
+        final now = this.now();
         await (_db.update(_db.works)..where((w) => w.id.equals(workId))).write(
           WorksCompanion(
-            position: Value(next),
-            positionAt: Value(at),
-            updatedAt: Value(at),
+            position: Value(at),
+            positionAt: Value(now),
+            updatedAt: Value(now),
+            checkpoints: reached == null
+                ? const Value.absent()
+                : Value(reached.checkpoints.join(',')),
+            estimated: reached == null
+                ? const Value.absent()
+                : Value(reached.estimated),
           ),
         );
       });

@@ -68,4 +68,37 @@ void main() {
     );
     expect(vm.problems, {WorkProblem.noTitle});
   });
+
+  test('a chapter count alone spreads the Checkpoints as estimates', () async {
+    await vm.saveTyped(
+      title: 'Dune',
+      length: '400',
+      kind: WorkKind.paperBook,
+      chapters: 4,
+    );
+    final dune = (await works.watchAll().first).single;
+    expect(dune.checkpoints, [100, 200, 300]);
+    expect(dune.estimated, 3);
+  });
+
+  test('a new count keeps the chapters already marked', () async {
+    final id = await works.add(
+      title: 'Dune',
+      author: '',
+      totalPages: 400,
+      checkpoints: [120, 260, 330],
+      estimated: 2,
+    );
+    final editing = (await works.watchAll().first).single;
+    final edit = WorkFormViewModel(works, editing: editing);
+    await edit.saveTyped(
+      title: 'Dune',
+      length: '400',
+      kind: WorkKind.paperBook,
+      chapters: 3,
+    );
+    final dune = (await works.watchRoad(id).first)!.work;
+    expect(dune.checkpoints, [120, 260]);
+    expect(dune.estimated, 1);
+  });
 }

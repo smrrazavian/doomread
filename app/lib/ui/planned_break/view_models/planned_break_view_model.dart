@@ -24,8 +24,8 @@ class PlannedBreakViewModel extends ChangeNotifier {
     take = Command0(() => _add(SessionEventKind.breakStart));
     nudge = Command0(() => _add(SessionEventKind.nudge));
     back = Command0(() => _add(SessionEventKind.breakEnd));
-    markDone = Command0(() async {
-      await _sessions.markCheckpoint(record!);
+    markDone = Command1((page) async {
+      await _sessions.markCheckpoint(record!, page: page);
       return const Result.ok(null);
     });
     _sub = _sessions.watchAll().listen((all) {
@@ -51,8 +51,9 @@ class PlannedBreakViewModel extends ChangeNotifier {
   late final Command0<void> back;
 
   /// The user reached the next Checkpoint: the break is due there, and the
-  /// Position moves to it.
-  late final Command0<void> markDone;
+  /// Position moves to it. When it's an estimate, the page given is where
+  /// the chapter really ended (see [SessionRepository.markCheckpoint]).
+  late final Command1<void, int?> markDone;
 
   DateTime get now => _sessions.now();
 
@@ -80,6 +81,13 @@ class PlannedBreakViewModel extends ChangeNotifier {
     if (r.road.work.kind.unit == WorkUnit.second) return null;
     final next = r.road.next;
     return next != null && next < r.road.work.totalPages ? next : null;
+  }
+
+  /// Whether [markable] is only an estimate, so marking it asks the page
+  /// the chapter really ended on.
+  bool get markableEstimated {
+    final m = markable;
+    return m != null && record!.road.work.isEstimate(m);
   }
 
   /// Whether the offer can be taken: its reading has been done.

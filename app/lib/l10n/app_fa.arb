@@ -367,5 +367,15 @@
   "calendarDayWork": "«{title}»",
   "calendarPages": "{count} صفحه",
   "calendarEpisodes": "{count} قسمت",
-  "calendarDayQuiet": "یه روز آروم."
+  "calendarDayQuiet": "یه روز آروم.",
+  "fieldChapters": "حدوداً چند تا فصل داره؟",
+  "fieldChaptersHint": "فعلاً مساوی پخششون می‌کنیم. موقع خوندن «فصل تموم شد» رو بزن تا جای واقعیشون بیاد.",
+  "fewerChapters": "یه فصل کمتر",
+  "moreChapters": "یه فصل بیشتر",
+  "editChapterPages": "صفحه‌ها رو خودم می‌گم",
+  "useChapterCount": "فقط تعدادشون",
+  "nextCheckpointAbout": "فصل بعدی حدود صفحه‌ی {page} تموم می‌شه",
+  "chapterEndedOn": "فصل {chapter} صفحه‌ی چند تموم شد؟",
+  "chapterEndNotYet": "هنوز نه",
+  "problemChapterEnd": "یه صفحه بعد از {from} و قبل از {to}"
 }

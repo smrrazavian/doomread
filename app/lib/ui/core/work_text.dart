@@ -36,12 +36,16 @@ String amountLeft(BuildContext context, Road road) {
   };
 }
 
-/// Where the next Checkpoint is; null when there's none ahead.
+/// Where the next Checkpoint is, only "around" there when it's an estimate;
+/// null when there's none ahead.
 String? nextCheckpoint(BuildContext context, Road road) {
   final l10n = AppLocalizations.of(context);
   final next = road.next;
   if (next == null) return null;
   return switch (road.work.kind.unit) {
+    WorkUnit.page when road.work.isEstimate(next) => l10n.nextCheckpointAbout(
+      next,
+    ),
     WorkUnit.page => l10n.nextCheckpoint(next),
     WorkUnit.episode => l10n.nextEpisode(next),
     WorkUnit.second => l10n.nextTimestamp(

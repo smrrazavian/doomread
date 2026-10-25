@@ -1588,5 +1588,67 @@
   "calendarDayQuiet": "A quiet day.",
   "@calendarDayQuiet": {
     "description": "In the sheet of a day with nothing in it. Plain, never a reproach."
+  },
+  "fieldChapters": "About how many chapters?",
+  "@fieldChapters": {
+    "description": "Adding a book: the chapter count asked instead of the pages chapters end on."
+  },
+  "fieldChaptersHint": "Spread evenly for now. Tap Chapter done as you read and the real ends replace them.",
+  "@fieldChaptersHint": {
+    "description": "Under the chapter count: the Checkpoints are estimates until the reader marks each chapter done."
+  },
+  "fewerChapters": "One chapter fewer",
+  "@fewerChapters": {
+    "description": "Tooltip on the chapter count's minus button."
+  },
+  "moreChapters": "One chapter more",
+  "@moreChapters": {
+    "description": "Tooltip on the chapter count's plus button."
+  },
+  "editChapterPages": "Edit pages",
+  "@editChapterPages": {
+    "description": "Adding a book: shows the exact list of pages chapters end on, instead of the count."
+  },
+  "useChapterCount": "Just a count",
+  "@useChapterCount": {
+    "description": "Adding a book: back from the exact list of pages to the chapter count."
+  },
+  "nextCheckpointAbout": "Next chapter ends around page {page}",
+  "@nextCheckpointAbout": {
+    "description": "Tonight: where the next chapter ends when it's only an estimate from the chapter count.",
+    "placeholders": {
+      "page": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "chapterEndedOn": "Which page did chapter {chapter} end on?",
+  "@chapterEndedOn": {
+    "description": "Chapter done on an estimated Checkpoint: asks the real page, prefilled with the estimate.",
+    "placeholders": {
+      "chapter": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "chapterEndNotYet": "Not yet",
+  "@chapterEndNotYet": {
+    "description": "Closes the chapter-end question without marking anything."
+  },
+  "problemChapterEnd": "A page after {from} and before {to}",
+  "@problemChapterEnd": {
+    "description": "The chapter-end page is outside what's possible: after the Position and before the end.",
+    "placeholders": {
+      "from": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "to": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
   }
 }

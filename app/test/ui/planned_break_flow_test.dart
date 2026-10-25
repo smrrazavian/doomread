@@ -2,6 +2,7 @@ import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread_core/doomread_core.dart';
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -14,11 +15,16 @@ void main() {
 
   final live = FakeSessionNotification();
 
+  /// The last [estimated] Checkpoints are estimates from a chapter count.
   Future<FakeBreakOverNotification> open(
     WidgetTester tester,
-    AppDatabase db,
-  ) async {
+    AppDatabase db, {
+    int estimated = 0,
+  }) async {
     await addRemainsReadLastNight(db, 'en', (t) => now = t);
+    await db
+        .update(db.works)
+        .write(WorksCompanion(estimated: Value(estimated)));
     await SettingsRepository(db).setLocale(const Locale('en'));
     final breakOver = FakeBreakOverNotification();
     await pumpApp(
@@ -152,5 +158,37 @@ void main() {
     expect(find.text(l10n.onBreakUntil('21:18')), findsOne);
     await tap(tester, l10n.stopForTonight);
     expect(alarm.set, isNull);
+  });
+
+  testApp('Chapter done on an estimate asks the real page, which replaces '
+      'it', (tester, db) async {
+    await open(tester, db, estimated: 3);
+    await tap(tester, l10n.startReading);
+    await wait(tester, const Duration(minutes: 5));
+
+    // Not now: nothing is marked.
+    await tap(tester, l10n.chapterDone(5));
+    expect(find.text(l10n.chapterEndedOn(5)), findsOne);
+    expect(find.text('156'), findsOne, reason: 'the estimate to start from');
+    await tap(tester, l10n.chapterEndNotYet);
+    expect(find.text(l10n.breakDueAtCheckpoint(5)), findsNothing);
+
+    // Past the end is refused, with what's possible.
+    await tap(tester, l10n.chapterDone(5));
+    await tester.enterText(find.byKey(const Key('chapterEnd')), '245');
+    await tap(tester, l10n.save);
+    expect(find.text(l10n.problemChapterEnd(142, 245)), findsOne);
+
+    await tester.enterText(find.byKey(const Key('chapterEnd')), '150');
+    await tester.tap(find.byKey(const Key('chapterEndUp')));
+    await tester.tap(find.byKey(const Key('chapterEndUp')));
+    await tap(tester, l10n.save);
+    expect(find.text(l10n.breakDueAtCheckpoint(5)), findsOne);
+
+    // The Position is at the real end; the rest are spread on from there.
+    final row = await tester.runAsync(() => db.select(db.works).getSingle());
+    expect(row!.position, 152);
+    expect(row.checkpoints, '34,66,98,128,152,183,214');
+    expect(row.estimated, 2);
   });
 }

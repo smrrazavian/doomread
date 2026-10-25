@@ -113,6 +113,49 @@ void main() {
     expect((await only()).pages, (from: 142, to: 172));
   });
 
+  test('a chapter marked done on an estimate keeps the real page, and '
+      'the estimates after it spread on from there', () async {
+    await (db.update(db.works)..where((w) => w.id.equals(workId))).write(
+      const WorksCompanion(
+        checkpoints: Value('100,160,220'),
+        estimated: Value(2),
+      ),
+    );
+    await sessions.start(workId);
+    now = now.add(const Duration(minutes: 9));
+    await sessions.markCheckpoint(await only(), page: 170);
+
+    final record = await only();
+    expect(record.road.position, 170);
+    expect(record.events.last.page, 170);
+    expect(record.road.work.checkpoints, [100, 170, 208]);
+    expect(record.road.work.estimated, 1);
+    expect(chapterEndingAt(record.road.work, 170), 2);
+  });
+
+  test('an estimate marked without a page is taken as it is', () async {
+    await (db.update(db.works)..where((w) => w.id.equals(workId))).write(
+      const WorksCompanion(checkpoints: Value('160,220'), estimated: Value(2)),
+    );
+    await sessions.start(workId);
+    await sessions.markCheckpoint(await only());
+    final record = await only();
+    expect(record.road.position, 160);
+    expect(record.road.work.checkpoints, [160, 203]);
+    expect(record.road.work.estimated, 1);
+  });
+
+  test('a known Checkpoint ignores a page given with it', () async {
+    await (db.update(db.works)..where((w) => w.id.equals(workId))).write(
+      const WorksCompanion(checkpoints: Value('160,220')),
+    );
+    await sessions.start(workId);
+    await sessions.markCheckpoint(await only(), page: 170);
+    final record = await only();
+    expect(record.road.position, 160);
+    expect(record.road.work.checkpoints, [160, 220]);
+  });
+
   test('with no Checkpoint ahead short of the end, marking does '
       'nothing', () async {
     await (db.update(db.works)..where((w) => w.id.equals(workId))).write(

@@ -1,6 +1,11 @@
 import 'package:doomread_core/doomread_core.dart';
 import 'package:test/test.dart';
 
+Matcher isCheckpoints(List<int> checkpoints, int estimated) =>
+    isA<Checkpoints>()
+        .having((c) => c.checkpoints, 'checkpoints', checkpoints)
+        .having((c) => c.estimated, 'estimated', estimated);
+
 void main() {
   WorkDraft draft({
     String title = 'Dune',
@@ -50,5 +55,47 @@ void main() {
   test('a film timestamp past its length is a problem', () {
     final film = draft(kind: WorkKind.film, pages: 9660, cp: [9661]);
     expect(film.problems, {WorkProblem.checkpointPastEnd});
+  });
+
+  group('with a chapter count', () {
+    WorkDraft counted(
+      int chapters, {
+      int pages = 412,
+      List<int> cp = const [],
+    }) => WorkDraft(
+      title: 'Dune',
+      author: '',
+      totalPages: pages,
+      checkpoints: cp,
+      chapters: chapters,
+    );
+
+    test('the Checkpoints are spread evenly, all estimates', () {
+      final d = counted(4, pages: 400);
+      expect(d.problems, isEmpty);
+      expect(d.toSave, isCheckpoints([100, 200, 300], 3));
+    });
+
+    test('Checkpoints already known stay, and are never a problem', () {
+      final d = counted(3, pages: 150, cp: [100, 200]);
+      expect(d.problems, isEmpty);
+      expect(d.toSave, isCheckpoints([100, 125], 1));
+    });
+
+    test('a typed list is all real', () {
+      expect(draft(cp: [34, 66]).toSave, isCheckpoints([34, 66], 0));
+    });
+
+    test('timestamps and a series never take a count', () {
+      final film = WorkDraft(
+        title: 'Dune',
+        author: '',
+        totalPages: 9660,
+        checkpoints: const [2550],
+        kind: WorkKind.film,
+        chapters: 4,
+      );
+      expect(film.toSave, isCheckpoints([2550], 0));
+    });
   });
 }

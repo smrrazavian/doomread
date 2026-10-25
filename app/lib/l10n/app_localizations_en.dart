@@ -1905,4 +1905,59 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get calendarDayQuiet => 'A quiet day.';
+
+  @override
+  String get fieldChapters => 'About how many chapters?';
+
+  @override
+  String get fieldChaptersHint =>
+      'Spread evenly for now. Tap Chapter done as you read and the real ends replace them.';
+
+  @override
+  String get fewerChapters => 'One chapter fewer';
+
+  @override
+  String get moreChapters => 'One chapter more';
+
+  @override
+  String get editChapterPages => 'Edit pages';
+
+  @override
+  String get useChapterCount => 'Just a count';
+
+  @override
+  String nextCheckpointAbout(int page) {
+    final intl.NumberFormat pageNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String pageString = pageNumberFormat.format(page);
+
+    return 'Next chapter ends around page $pageString';
+  }
+
+  @override
+  String chapterEndedOn(int chapter) {
+    final intl.NumberFormat chapterNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String chapterString = chapterNumberFormat.format(chapter);
+
+    return 'Which page did chapter $chapterString end on?';
+  }
+
+  @override
+  String get chapterEndNotYet => 'Not yet';
+
+  @override
+  String problemChapterEnd(int from, int to) {
+    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String fromString = fromNumberFormat.format(from);
+    final intl.NumberFormat toNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String toString = toNumberFormat.format(to);
+
+    return 'A page after $fromString and before $toString';
+  }
 }

@@ -1710,4 +1710,59 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get calendarDayQuiet => 'یه روز آروم.';
+
+  @override
+  String get fieldChapters => 'حدوداً چند تا فصل داره؟';
+
+  @override
+  String get fieldChaptersHint =>
+      'فعلاً مساوی پخششون می‌کنیم. موقع خوندن «فصل تموم شد» رو بزن تا جای واقعیشون بیاد.';
+
+  @override
+  String get fewerChapters => 'یه فصل کمتر';
+
+  @override
+  String get moreChapters => 'یه فصل بیشتر';
+
+  @override
+  String get editChapterPages => 'صفحه‌ها رو خودم می‌گم';
+
+  @override
+  String get useChapterCount => 'فقط تعدادشون';
+
+  @override
+  String nextCheckpointAbout(int page) {
+    final intl.NumberFormat pageNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String pageString = pageNumberFormat.format(page);
+
+    return 'فصل بعدی حدود صفحه‌ی $pageString تموم می‌شه';
+  }
+
+  @override
+  String chapterEndedOn(int chapter) {
+    final intl.NumberFormat chapterNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String chapterString = chapterNumberFormat.format(chapter);
+
+    return 'فصل $chapterString صفحه‌ی چند تموم شد؟';
+  }
+
+  @override
+  String get chapterEndNotYet => 'هنوز نه';
+
+  @override
+  String problemChapterEnd(int from, int to) {
+    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String fromString = fromNumberFormat.format(from);
+    final intl.NumberFormat toNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String toString = toNumberFormat.format(to);
+
+    return 'یه صفحه بعد از $fromString و قبل از $toString';
+  }
 }

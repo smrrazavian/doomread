@@ -209,6 +209,26 @@ void main() {
     expect((await b.works.watchCurrent().first)!.position, 40);
   });
 
+  test('a chapter marked on an estimate reaches the other device with the '
+      'estimates spread on from it', () async {
+    final id = await a.works.add(
+      title: 'Dune',
+      author: 'Frank Herbert',
+      totalPages: 300,
+      checkpoints: const [60, 120, 180, 240],
+      estimated: 4,
+    );
+    await a.sessions.start(id);
+    a.now = a.now.add(const Duration(minutes: 9));
+    await a.sessions.markCheckpoint(await a.last(), page: 75);
+    await syncAll([a, b]);
+
+    final there = (await b.works.watchCurrent().first)!;
+    expect(there.work.checkpoints, [75, 131, 188, 244]);
+    expect(there.work.estimated, 3);
+    expect(there.position, 75);
+  });
+
   test('Sessions recorded on both devices meet on both', () async {
     final workId = await addDune(a);
     await a.sync();

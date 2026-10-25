@@ -19,15 +19,20 @@ class WorkFormViewModel extends ChangeNotifier {
 
   /// Saves what the user typed: the length and Checkpoints in the [kind]'s
   /// unit (timestamps for a film or podcast), in either language's digits.
+  /// With [chapters], a count stands in for the Checkpoints: they're spread
+  /// evenly, after the ones already marked on the Work being edited.
   Future<void> saveTyped({
     required String title,
     required String length,
     required WorkKind kind,
     String author = '',
     String checkpoints = '',
+    int? chapters,
   }) {
     final timed = kind.unit == WorkUnit.second;
-    final marks = (timed ? parseClocks : parseNumbers)(checkpoints);
+    final marks = chapters != null
+        ? known(editing)
+        : (timed ? parseClocks : parseNumbers)(checkpoints);
     return save.execute(
       WorkDraft(
         title: title,
@@ -36,9 +41,17 @@ class WorkFormViewModel extends ChangeNotifier {
         checkpoints: marks ?? const [],
         checkpointsUnreadable: marks == null,
         kind: kind,
+        chapters: chapters,
       ),
     );
   }
+
+  /// [work]'s Checkpoints that aren't estimates.
+  static List<int> known(Work? work) => work == null
+      ? const []
+      : work.checkpoints
+            .take(work.checkpoints.length - work.estimated)
+            .toList();
 
   /// What's wrong with the last draft the user tried to save.
   Set<WorkProblem> get problems => _problems;
@@ -49,6 +62,7 @@ class WorkFormViewModel extends ChangeNotifier {
     notifyListeners();
     if (_problems.isNotEmpty) return Result.error(InvalidWork(_problems));
     final title = draft.title.trim();
+    final (:checkpoints, :estimated) = draft.toSave;
     final author = draft.author.trim();
     final editing = this.editing;
     if (editing == null) {
@@ -57,8 +71,9 @@ class WorkFormViewModel extends ChangeNotifier {
           title: title,
           author: author,
           totalPages: draft.totalPages,
-          checkpoints: draft.checkpoints,
+          checkpoints: checkpoints,
           kind: draft.kind,
+          estimated: estimated,
         ),
       );
     }
@@ -67,7 +82,8 @@ class WorkFormViewModel extends ChangeNotifier {
       title: title,
       author: author,
       totalPages: draft.totalPages,
-      checkpoints: draft.checkpoints,
+      checkpoints: checkpoints,
+      estimated: estimated,
     );
     return Result.ok(editing.id);
   }

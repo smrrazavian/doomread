@@ -7,6 +7,8 @@ import 'package:doomread/ui/core/number_format.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/planned_break/break_text.dart';
 import 'package:doomread/ui/planned_break/view_models/planned_break_view_model.dart';
+import 'package:doomread/ui/planned_break/widgets/chapter_end_dialog.dart';
+import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -28,6 +30,24 @@ class NextBreakCard extends StatelessWidget {
 
 class _Card extends StatelessWidget {
   const _Card();
+
+  Future<void> _markDone(BuildContext context, PlannedBreakViewModel vm) async {
+    final next = vm.markable;
+    if (next == null) return;
+    int? page;
+    if (vm.markableEstimated) {
+      final road = vm.record!.road;
+      page = await askChapterEnd(
+        context,
+        chapter: chapterEndingAt(road.work, next),
+        estimate: next,
+        after: road.position,
+        before: road.work.totalPages,
+      );
+      if (page == null) return;
+    }
+    await vm.markDone.execute(page);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,10 +84,13 @@ class _Card extends StatelessWidget {
         read: session.readingSinceBreak.inMinutes,
       );
       actions = [
-        // "Chapter done": the break comes due at the Checkpoint itself.
+        // "Chapter done": the break comes due at the Checkpoint itself. An
+        // estimate asks first where the chapter really ended.
         if (checkpointDone(l10n, work, vm.markable) case final label?)
           TextButton(
-            onPressed: vm.markDone.running ? null : vm.markDone.execute,
+            onPressed: vm.markDone.running
+                ? null
+                : () => _markDone(context, vm),
             child: Text(label),
           ),
         if (vm.due) ...[

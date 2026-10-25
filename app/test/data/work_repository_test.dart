@@ -131,6 +131,29 @@ void main() {
     expect(work.checkpoints, [34, 66, 98]);
   });
 
+  test('a Work keeps how many of its Checkpoints are estimates', () async {
+    final id = await works.add(
+      title: 'Dune',
+      author: '',
+      totalPages: 400,
+      checkpoints: [100, 200, 300],
+      estimated: 3,
+    );
+    expect((await works.watchAll().first).single.estimated, 3);
+    await works.edit(
+      id,
+      title: 'Dune',
+      author: '',
+      totalPages: 400,
+      checkpoints: [100, 200, 300],
+    );
+    expect(
+      (await works.watchAll().first).single.estimated,
+      0,
+      reason: 'a typed list is all known',
+    );
+  });
+
   test('adding and editing stamp updatedAt with the injected clock', () async {
     final id = await addRemains();
     Future<DateTime> updatedAt() async => (await (db.select(

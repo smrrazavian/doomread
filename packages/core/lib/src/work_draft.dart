@@ -10,6 +10,7 @@ class WorkDraft {
     required this.checkpoints,
     this.kind = WorkKind.paperBook,
     this.checkpointsUnreadable = false,
+    this.chapters,
   });
 
   final String title;
@@ -17,8 +18,21 @@ class WorkDraft {
   final WorkKind kind;
   final int totalPages;
 
-  /// Ignored for a series, whose Checkpoints are its episodes.
+  /// Ignored for a series, whose Checkpoints are its episodes. With
+  /// [chapters], only the ones already known, kept as they are.
   final List<int> checkpoints;
+
+  /// About how many chapters, when the user gave a count instead of the
+  /// pages. Only a Work in pages takes one.
+  final int? chapters;
+
+  bool get _counted => chapters != null && kind.unit == WorkUnit.page;
+
+  /// The Checkpoints to save: with a chapter count, the rest spread evenly
+  /// as estimates; otherwise the typed list, all known.
+  Checkpoints get toSave => _counted
+      ? spreadCheckpoints(totalPages, chapters!, known: checkpoints)
+      : (checkpoints: checkpoints, estimated: 0);
 
   /// The user typed Checkpoints that couldn't be read; [checkpoints] is moot.
   final bool checkpointsUnreadable;
@@ -27,21 +41,17 @@ class WorkDraft {
   Set<WorkProblem> get problems => {
     if (title.trim().isEmpty) WorkProblem.noTitle,
     if (totalPages < 1) WorkProblem.noPages,
-    if (checkpointsUnreadable && kind != WorkKind.series)
+    if (checkpointsUnreadable && kind != WorkKind.series && !_counted)
       WorkProblem.checkpointsUnreadable,
     // Only once the length is valid; otherwise one mistake shows twice.
     if (totalPages >= 1 &&
         !checkpointsUnreadable &&
         kind != WorkKind.series &&
+        !_counted &&
         checkpoints.any((c) => c < 1 || c > totalPages))
       WorkProblem.checkpointPastEnd,
   };
 }
 
 /// [noPages] means no length, in whatever unit the Work counts.
-enum WorkProblem {
-  noTitle,
-  noPages,
-  checkpointsUnreadable,
-  checkpointPastEnd,
-}
+enum WorkProblem { noTitle, noPages, checkpointsUnreadable, checkpointPastEnd }

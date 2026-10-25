@@ -56,13 +56,15 @@ class WorkRepository {
           .map((w) => w == null ? null : Road(toWork(w), position: w.position));
 
   /// Adds a Work and returns its id. The first Work becomes the current one.
-  /// The numbers are in the [kind]'s unit.
+  /// The numbers are in the [kind]'s unit; the last [estimated] Checkpoints
+  /// are estimates.
   Future<String> add({
     required String title,
     required String author,
     required int totalPages,
     required List<int> checkpoints,
     WorkKind kind = WorkKind.paperBook,
+    int estimated = 0,
   }) => _db.transaction(() async {
     final id = newId();
     final at = _now();
@@ -76,6 +78,7 @@ class WorkRepository {
             kind: Value(kind),
             totalPages: totalPages,
             checkpoints: checkpoints.join(','),
+            estimated: Value(estimated),
             updatedAt: at,
             positionAt: Value(at),
           ),
@@ -92,12 +95,14 @@ class WorkRepository {
     required String author,
     required int totalPages,
     required List<int> checkpoints,
+    int estimated = 0,
   }) => (_db.update(_db.works)..where((w) => w.id.equals(id))).write(
     WorksCompanion(
       title: Value(title),
       author: Value(author),
       totalPages: Value(totalPages),
       checkpoints: Value(checkpoints.join(',')),
+      estimated: Value(estimated),
       updatedAt: Value(_now()),
     ),
   );
@@ -252,5 +257,6 @@ class WorkRepository {
       for (final c in w.checkpoints.split(','))
         if (c.isNotEmpty) int.parse(c),
     ],
+    estimated: w.estimated,
   );
 }

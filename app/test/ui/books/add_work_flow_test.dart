@@ -30,6 +30,8 @@ void main() {
     await tester.enterText(find.byKey(const Key('title')), 'Dune');
     await tester.enterText(find.byKey(const Key('author')), 'Frank Herbert');
     await tester.enterText(find.byKey(const Key('pages')), '412');
+    await tester.tap(find.text(en.editChapterPages));
+    await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('checkpoints')), '100, 200');
     await tester.tap(find.text(en.save));
     await tester.pumpAndSettle();
@@ -65,6 +67,8 @@ void main() {
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('title')), 'Dune');
     await tester.enterText(find.byKey(const Key('pages')), '412');
+    await tester.tap(find.text(en.editChapterPages));
+    await tester.pumpAndSettle();
     for (final bad in ['34, 66,, 98', 'abc']) {
       await tester.enterText(find.byKey(const Key('checkpoints')), bad);
       await tester.tap(find.text(en.save));
@@ -83,6 +87,8 @@ void main() {
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('title')), 'Dune');
     await tester.enterText(find.byKey(const Key('pages')), '412');
+    await tester.tap(find.text(en.editChapterPages));
+    await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('checkpoints')), '34, 500');
     await tester.tap(find.text(en.save));
     await tester.pumpAndSettle();
@@ -99,6 +105,8 @@ void main() {
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('title')), 'بوف کور');
     await tester.enterText(find.byKey(const Key('pages')), '۱۲۰');
+    await tester.tap(find.text(fa.editChapterPages));
+    await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('checkpoints')), '۳۰، ۶۰');
     await tester.tap(find.text(fa.save));
     await tester.pumpAndSettle();
@@ -106,5 +114,49 @@ void main() {
     // Typed in Persian digits, read back as 120 and shown as ۱۲۰.
     expect(fa.pageOf(0, 120), contains('۱۲۰'));
     expect(find.text(fa.pageOf(0, 120)), findsOne);
+  });
+
+  testApp('a book added with a chapter count alone has its chapters '
+      'spread evenly, as estimates', (tester, db) async {
+    await openApp(tester, db);
+    await tester.tap(find.text(en.tonightAddBook));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('title')), 'Dune');
+    await tester.enterText(find.byKey(const Key('pages')), '400');
+    expect(find.text(en.fieldChapters), findsOne);
+    expect(find.byKey(const Key('checkpoints')), findsNothing);
+    for (var i = 0; i < 6; i++) {
+      await tester.tap(find.byKey(const Key('fewerChapters')));
+    }
+    await tester.pump();
+    expect(find.text('4'), findsOne);
+    await tester.tap(find.text(en.save));
+    await tester.pumpAndSettle();
+
+    expect(find.text(en.pageOf(0, 400)), findsOne);
+    expect(find.text(en.nextCheckpointAbout(100)), findsOne);
+  });
+
+  testApp('Edit pages shows where the count puts chapters, to change', (
+    tester,
+    db,
+  ) async {
+    await openApp(tester, db);
+    await tester.tap(find.text(en.tonightAddBook));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('title')), 'Dune');
+    await tester.enterText(find.byKey(const Key('pages')), '400');
+    for (var i = 0; i < 6; i++) {
+      await tester.tap(find.byKey(const Key('fewerChapters')));
+    }
+    await tester.tap(find.text(en.editChapterPages));
+    await tester.pumpAndSettle();
+    expect(find.text('100, 200, 300'), findsOne);
+    await tester.enterText(find.byKey(const Key('checkpoints')), '90, 200');
+    await tester.tap(find.text(en.save));
+    await tester.pumpAndSettle();
+
+    // Typed, so known: no "around".
+    expect(find.text(en.nextCheckpoint(90)), findsOne);
   });
 }

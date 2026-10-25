@@ -55,12 +55,16 @@ class Work {
     required this.totalPages,
     required List<int> checkpoints,
     this.kind = WorkKind.paperBook,
+    int estimated = 0,
   }) : checkpoints = List.unmodifiable(
          // A series stops naturally at the end of every episode.
          kind == WorkKind.series
              ? [for (var e = 1; e < totalPages; e++) e]
              : ([...checkpoints]..sort()),
-       );
+       ),
+       estimated = kind == WorkKind.series
+           ? 0
+           : estimated.clamp(0, checkpoints.length);
 
   final String id;
   final String title;
@@ -73,6 +77,62 @@ class Work {
   /// Where natural stopping places fall, ascending: chapter ends, episode
   /// ends or timestamps.
   final List<int> checkpoints;
+
+  /// How many of the last [checkpoints] are estimates: spread evenly from a
+  /// chapter count, not known. Marking one done makes it real.
+  final int estimated;
+
+  /// Whether [checkpoint] is one of the estimates.
+  bool isEstimate(int checkpoint) {
+    final i = checkpoints.indexOf(checkpoint);
+    return i >= 0 && i >= checkpoints.length - estimated;
+  }
+}
+
+/// Checkpoints, with how many of the last are estimates.
+typedef Checkpoints = ({List<int> checkpoints, int estimated});
+
+/// Where [chapters] chapters end in a Work [length] long: the [known]
+/// Checkpoints as they are, then the rest spread evenly from the last of
+/// them to the end, as estimates. The last chapter ends at the end, which
+/// is the Finish, not a Checkpoint; no two end on one page.
+Checkpoints spreadCheckpoints(
+  int length,
+  int chapters, {
+  List<int> known = const [],
+}) {
+  final kept = [...known.where((c) => c > 0 && c < length)]..sort();
+  final from = kept.lastOrNull ?? 0;
+  final rest = chapters - 1 - kept.length;
+  final spread = <int>[];
+  for (var i = 1; i <= rest; i++) {
+    final c = from + ((length - from) * i / (rest + 1)).round();
+    if (c > (spread.lastOrNull ?? from) && c < length) spread.add(c);
+  }
+  return (checkpoints: [...kept, ...spread], estimated: spread.length);
+}
+
+/// [work]'s Checkpoints once the user says the next one after [position]
+/// really ended on [page]: that estimate becomes [page], and the estimates
+/// after it spread again from there to the end, so the chapter count stays.
+/// Null when the next one isn't an estimate, or [page] isn't after
+/// [position] and short of the end.
+Checkpoints? reachCheckpoint(
+  Work work, {
+  required int position,
+  required int page,
+}) {
+  if (page <= position || page >= work.totalPages) return null;
+  final cs = work.checkpoints;
+  final i = cs.indexWhere((c) => c > position);
+  if (i < 0 || cs[i] >= work.totalPages || !work.isEstimate(cs[i])) {
+    return null;
+  }
+  return spreadCheckpoints(
+    work.totalPages,
+    cs.length + 1,
+    known: [...cs.take(i), page],
+  );
 }
 
 /// The chapter [checkpoint] ends in [work], counting from 1.

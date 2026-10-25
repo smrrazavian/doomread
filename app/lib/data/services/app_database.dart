@@ -33,6 +33,10 @@ class Works extends Table {
       textEnum<WorkKind>().withDefault(Constant(WorkKind.paperBook.name))();
   IntColumn get totalPages => integer()();
   TextColumn get checkpoints => text()();
+
+  /// How many of the last [checkpoints] are estimates, spread from a
+  /// chapter count; 0 when every one is known.
+  IntColumn get estimated => integer().withDefault(const Constant(0))();
   IntColumn get position => integer().withDefault(const Constant(0))();
   DateTimeColumn get updatedAt => dateTime()();
 
@@ -126,7 +130,7 @@ class AppDatabase extends _$AppDatabase {
   )..where((s) => s.key.equals(key))).getSingleOrNull())?.value;
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -160,6 +164,8 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(works, works.doneAt);
         await m.addColumn(works, works.doneChangedAt);
       }
+      // Every Checkpoint from before was typed, so known.
+      if (from >= 2 && from < 10) await m.addColumn(works, works.estimated);
     },
   );
 }

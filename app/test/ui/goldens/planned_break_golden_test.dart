@@ -1,6 +1,7 @@
 import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread/l10n/app_localizations.dart';
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -12,12 +13,17 @@ void main() {
   var now = DateTime(2026, 10, 22, 21);
 
   /// Reading for 14 minutes: the break at the end of chapter 5 is due.
+  /// The last [estimated] Checkpoints are estimates from a chapter count.
   Future<void> readTo14Minutes(
     WidgetTester tester,
     AppDatabase db,
-    String lang,
-  ) async {
+    String lang, {
+    int estimated = 0,
+  }) async {
     await addRemainsReadLastNight(db, lang, (t) => now = t);
+    await db
+        .update(db.works)
+        .write(WorksCompanion(estimated: Value(estimated)));
     tester.view
       ..physicalSize = const Size(720, 1560)
       ..devicePixelRatio = 2;
@@ -92,6 +98,18 @@ void main() {
       await expectLater(
         find.byType(MaterialApp),
         matchesGoldenFile('planned_break_marked_on_$lang.png'),
+      );
+    });
+
+    testApp('Chapter done on an estimate, asking the page, in $lang', (
+      tester,
+      db,
+    ) async {
+      await readTo14Minutes(tester, db, lang, estimated: 3);
+      await tap(tester, l10n.chapterDone(5));
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('chapter_end_$lang.png'),
       );
     });
 

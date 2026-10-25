@@ -2125,6 +2125,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A quiet day.'**
   String get calendarDayQuiet;
+
+  /// Adding a book: the chapter count asked instead of the pages chapters end on.
+  ///
+  /// In en, this message translates to:
+  /// **'About how many chapters?'**
+  String get fieldChapters;
+
+  /// Under the chapter count: the Checkpoints are estimates until the reader marks each chapter done.
+  ///
+  /// In en, this message translates to:
+  /// **'Spread evenly for now. Tap Chapter done as you read and the real ends replace them.'**
+  String get fieldChaptersHint;
+
+  /// Tooltip on the chapter count's minus button.
+  ///
+  /// In en, this message translates to:
+  /// **'One chapter fewer'**
+  String get fewerChapters;
+
+  /// Tooltip on the chapter count's plus button.
+  ///
+  /// In en, this message translates to:
+  /// **'One chapter more'**
+  String get moreChapters;
+
+  /// Adding a book: shows the exact list of pages chapters end on, instead of the count.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit pages'**
+  String get editChapterPages;
+
+  /// Adding a book: back from the exact list of pages to the chapter count.
+  ///
+  /// In en, this message translates to:
+  /// **'Just a count'**
+  String get useChapterCount;
+
+  /// Tonight: where the next chapter ends when it's only an estimate from the chapter count.
+  ///
+  /// In en, this message translates to:
+  /// **'Next chapter ends around page {page}'**
+  String nextCheckpointAbout(int page);
+
+  /// Chapter done on an estimated Checkpoint: asks the real page, prefilled with the estimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Which page did chapter {chapter} end on?'**
+  String chapterEndedOn(int chapter);
+
+  /// Closes the chapter-end question without marking anything.
+  ///
+  /// In en, this message translates to:
+  /// **'Not yet'**
+  String get chapterEndNotYet;
+
+  /// The chapter-end page is outside what's possible: after the Position and before the end.
+  ///
+  /// In en, this message translates to:
+  /// **'A page after {from} and before {to}'**
+  String problemChapterEnd(int from, int to);
 }
 
 class _AppLocalizationsDelegate
