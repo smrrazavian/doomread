@@ -1765,4 +1765,60 @@ class AppLocalizationsFa extends AppLocalizations {
 
     return 'یه صفحه بعد از $fromString و قبل از $toString';
   }
+
+  @override
+  String todayGreeting(String weekday, String part) {
+    String _temp0 = intl.Intl.selectLogic(part, {
+      'morning': 'صبح',
+      'afternoon': 'عصر',
+      'evening': 'غروب',
+      'other': 'شب',
+    });
+    return '$weekday $_temp0';
+  }
+
+  @override
+  String todaySkyTasks(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'امروز $countString تا کار داری',
+      one: 'امروز یه کار داری',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String todaySkyThen(String kind) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'series': 'بعدش سریالت',
+      'film': 'بعدش فیلمت',
+      'podcast': 'بعدش پادکستت',
+      'other': 'بعدش کتابت',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String todaySkyBoth(String tasks, String then) {
+    return '$tasks، $then';
+  }
+
+  @override
+  String todaySkyOnlyWork(String kind) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'series': 'امشب فقط سریالت',
+      'film': 'امشب فقط فیلمت',
+      'podcast': 'امشب فقط پادکستت',
+      'other': 'امشب فقط کتابت',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get todaySkyFree => 'امروز برنامه‌ای نداری';
 }

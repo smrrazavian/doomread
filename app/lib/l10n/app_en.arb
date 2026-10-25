@@ -1650,5 +1650,61 @@
         "format": "decimalPattern"
       }
     }
+  },
+  "todayGreeting": "{weekday} {part, select, morning{morning} afternoon{afternoon} evening{evening} other{night}}",
+  "@todayGreeting": {
+    "description": "The greeting over Today's sky, e.g. \"Saturday afternoon\". weekday is the day's name; part is morning, afternoon, evening or night.",
+    "placeholders": {
+      "weekday": {
+        "type": "String"
+      },
+      "part": {
+        "type": "String"
+      }
+    }
+  },
+  "todaySkyTasks": "{count, plural, =1{One thing today} other{{count} things today}}",
+  "@todaySkyTasks": {
+    "description": "Under the greeting: the Tasks on Today not yet Done.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "todaySkyThen": "{kind, select, series{then your show} film{then your film} podcast{then your podcast} other{then your book}}",
+  "@todaySkyThen": {
+    "description": "After todaySkyTasks: the current Work comes after the Tasks. kind is a WorkKind name.",
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "todaySkyBoth": "{tasks}, {then}",
+  "@todaySkyBoth": {
+    "description": "Joins todaySkyTasks and todaySkyThen: \"3 things today, then your book\".",
+    "placeholders": {
+      "tasks": {
+        "type": "String"
+      },
+      "then": {
+        "type": "String"
+      }
+    }
+  },
+  "todaySkyOnlyWork": "{kind, select, series{Just your show tonight} film{Just your film tonight} podcast{Just your podcast tonight} other{Just your book tonight}}",
+  "@todaySkyOnlyWork": {
+    "description": "Under the greeting when every Task is Done or there are none, with a current Work. kind is a WorkKind name.",
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "todaySkyFree": "Nothing planned today",
+  "@todaySkyFree": {
+    "description": "Under the greeting with no Tasks left and no current Work."
   }
 }

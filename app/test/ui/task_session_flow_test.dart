@@ -154,7 +154,8 @@ void main() {
     await tap(tester, find.text(en.taskStop));
 
     expect(find.text(en.readingWeekCount(0)), findsOne);
-    await tester.scrollUntilVisible(find.text(en.startReading), 200);
+    await tester.ensureVisible(find.text(en.startReading));
+    await tester.pumpAndSettle();
     await tap(tester, find.text(en.startReading));
     expect(tester.widget<HouseView>(find.byType(HouseView)).windows, [
       HouseWindow.yours,
@@ -225,7 +226,8 @@ void main() {
     await addBook(db);
     await addReport(db);
     await open(tester, db);
-    await tester.scrollUntilVisible(find.text(en.startReading), 200);
+    await tester.ensureVisible(find.text(en.startReading));
+    await tester.pumpAndSettle();
     await tap(tester, find.text(en.startReading));
     await tester.pageBack();
     await tester.pumpAndSettle();

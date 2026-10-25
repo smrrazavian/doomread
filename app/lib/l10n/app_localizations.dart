@@ -2185,6 +2185,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A page after {from} and before {to}'**
   String problemChapterEnd(int from, int to);
+
+  /// The greeting over Today's sky, e.g. "Saturday afternoon". weekday is the day's name; part is morning, afternoon, evening or night.
+  ///
+  /// In en, this message translates to:
+  /// **'{weekday} {part, select, morning{morning} afternoon{afternoon} evening{evening} other{night}}'**
+  String todayGreeting(String weekday, String part);
+
+  /// Under the greeting: the Tasks on Today not yet Done.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{One thing today} other{{count} things today}}'**
+  String todaySkyTasks(int count);
+
+  /// After todaySkyTasks: the current Work comes after the Tasks. kind is a WorkKind name.
+  ///
+  /// In en, this message translates to:
+  /// **'{kind, select, series{then your show} film{then your film} podcast{then your podcast} other{then your book}}'**
+  String todaySkyThen(String kind);
+
+  /// Joins todaySkyTasks and todaySkyThen: "3 things today, then your book".
+  ///
+  /// In en, this message translates to:
+  /// **'{tasks}, {then}'**
+  String todaySkyBoth(String tasks, String then);
+
+  /// Under the greeting when every Task is Done or there are none, with a current Work. kind is a WorkKind name.
+  ///
+  /// In en, this message translates to:
+  /// **'{kind, select, series{Just your show tonight} film{Just your film tonight} podcast{Just your podcast tonight} other{Just your book tonight}}'**
+  String todaySkyOnlyWork(String kind);
+
+  /// Under the greeting with no Tasks left and no current Work.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing planned today'**
+  String get todaySkyFree;
 }
 
 class _AppLocalizationsDelegate

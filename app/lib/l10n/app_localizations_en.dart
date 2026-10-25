@@ -1960,4 +1960,60 @@ class AppLocalizationsEn extends AppLocalizations {
 
     return 'A page after $fromString and before $toString';
   }
+
+  @override
+  String todayGreeting(String weekday, String part) {
+    String _temp0 = intl.Intl.selectLogic(part, {
+      'morning': 'morning',
+      'afternoon': 'afternoon',
+      'evening': 'evening',
+      'other': 'night',
+    });
+    return '$weekday $_temp0';
+  }
+
+  @override
+  String todaySkyTasks(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString things today',
+      one: 'One thing today',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String todaySkyThen(String kind) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'series': 'then your show',
+      'film': 'then your film',
+      'podcast': 'then your podcast',
+      'other': 'then your book',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String todaySkyBoth(String tasks, String then) {
+    return '$tasks, $then';
+  }
+
+  @override
+  String todaySkyOnlyWork(String kind) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'series': 'Just your show tonight',
+      'film': 'Just your film tonight',
+      'podcast': 'Just your podcast tonight',
+      'other': 'Just your book tonight',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get todaySkyFree => 'Nothing planned today';
 }

@@ -377,5 +377,11 @@
   "nextCheckpointAbout": "فصل بعدی حدود صفحه‌ی {page} تموم می‌شه",
   "chapterEndedOn": "فصل {chapter} صفحه‌ی چند تموم شد؟",
   "chapterEndNotYet": "هنوز نه",
-  "problemChapterEnd": "یه صفحه بعد از {from} و قبل از {to}"
+  "problemChapterEnd": "یه صفحه بعد از {from} و قبل از {to}",
+  "todayGreeting": "{weekday} {part, select, morning{صبح} afternoon{عصر} evening{غروب} other{شب}}",
+  "todaySkyTasks": "{count, plural, =1{امروز یه کار داری} other{امروز {count} تا کار داری}}",
+  "todaySkyThen": "{kind, select, series{بعدش سریالت} film{بعدش فیلمت} podcast{بعدش پادکستت} other{بعدش کتابت}}",
+  "todaySkyBoth": "{tasks}، {then}",
+  "todaySkyOnlyWork": "{kind, select, series{امشب فقط سریالت} film{امشب فقط فیلمت} podcast{امشب فقط پادکستت} other{امشب فقط کتابت}}",
+  "todaySkyFree": "امروز برنامه‌ای نداری"
 }

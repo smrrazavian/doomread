@@ -16,6 +16,7 @@ import 'package:doomread/ui/reading/widgets/work_app_card.dart';
 import 'package:doomread/ui/settings/view_models/settings_view_model.dart';
 import 'package:doomread/ui/tasks/widgets/task_list.dart';
 import 'package:doomread/ui/tonight/view_models/tonight_view_model.dart';
+import 'package:doomread/ui/tonight/widgets/today_sky.dart';
 import 'package:doomread/ui/tonight/widgets/yalda_tonight.dart';
 import 'package:doomread/ui/tour/view_models/tour_view_model.dart';
 import 'package:doomread/ui/watch/view_models/watch_ask_view_model.dart';
@@ -63,11 +64,17 @@ class _Tonight extends StatelessWidget {
       });
     }
     return Scaffold(
-      appBar: AppBar(actions: const [SettingsButton()]),
+      // The sky is the top of Today, under the bar's actions.
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+        actions: const [SettingsButton()],
+      ),
       // Scrolls only when the screen is too short to fit it all; otherwise
       // the Spacer keeps the week and the button down by the thumb.
       body: CustomScrollView(
         slivers: [
+          const SliverToBoxAdapter(child: TodaySky()),
           SliverFillRemaining(
             hasScrollBody: false,
             child: Padding(
@@ -76,8 +83,7 @@ class _Tonight extends StatelessWidget {
                 // stretch so text hugs the start edge in both directions
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(l10n.navToday, style: text.headlineSmall),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
                   const TaskList(),
                   const SizedBox(height: 24),
                   if (road != null) ...[
