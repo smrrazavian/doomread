@@ -11,6 +11,7 @@ class WorkDraft {
     this.kind = WorkKind.paperBook,
     this.checkpointsUnreadable = false,
     this.chapters,
+    this.estimates = const [],
   });
 
   final String title;
@@ -26,13 +27,21 @@ class WorkDraft {
   /// pages. Only a Work in pages takes one.
   final int? chapters;
 
+  /// The pages shown as estimates in a typed list: those still at the end
+  /// of [checkpoints] stay estimates, so Chapter done still asks for them.
+  final List<int> estimates;
+
   bool get _counted => chapters != null && kind.unit == WorkUnit.page;
 
   /// The Checkpoints to save: with a chapter count, the rest spread evenly
-  /// as estimates; otherwise the typed list, all known.
+  /// as estimates; otherwise the typed list, known but for [estimates]
+  /// left unchanged at its end.
   Checkpoints get toSave => _counted
       ? spreadCheckpoints(totalPages, chapters!, known: checkpoints)
-      : (checkpoints: checkpoints, estimated: 0);
+      : (
+          checkpoints: checkpoints,
+          estimated: checkpoints.reversed.takeWhile(estimates.contains).length,
+        );
 
   /// The user typed Checkpoints that couldn't be read; [checkpoints] is moot.
   final bool checkpointsUnreadable;

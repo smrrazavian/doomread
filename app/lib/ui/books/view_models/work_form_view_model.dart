@@ -21,6 +21,7 @@ class WorkFormViewModel extends ChangeNotifier {
   /// unit (timestamps for a film or podcast), in either language's digits.
   /// With [chapters], a count stands in for the Checkpoints: they're spread
   /// evenly, after the ones already marked on the Work being edited.
+  /// Without, [estimates] are the pages the list was shown as estimates.
   Future<void> saveTyped({
     required String title,
     required String length,
@@ -28,6 +29,7 @@ class WorkFormViewModel extends ChangeNotifier {
     String author = '',
     String checkpoints = '',
     int? chapters,
+    List<int> estimates = const [],
   }) {
     final timed = kind.unit == WorkUnit.second;
     final marks = chapters != null
@@ -42,6 +44,7 @@ class WorkFormViewModel extends ChangeNotifier {
         checkpointsUnreadable: marks == null,
         kind: kind,
         chapters: chapters,
+        estimates: estimates,
       ),
     );
   }

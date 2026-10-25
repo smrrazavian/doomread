@@ -86,6 +86,24 @@ void main() {
       expect(draft(cp: [34, 66]).toSave, isCheckpoints([34, 66], 0));
     });
 
+    test('in a typed list, the estimates it was shown stay estimates '
+        'until changed', () {
+      WorkDraft typed(List<int> cp) => WorkDraft(
+        title: 'Dune',
+        author: '',
+        totalPages: 400,
+        checkpoints: cp,
+        estimates: const [200, 300],
+      );
+      expect(typed([100, 200, 300]).toSave, isCheckpoints([100, 200, 300], 2));
+      expect(
+        typed([100, 200, 310]).toSave,
+        isCheckpoints([100, 200, 310], 0),
+        reason: 'only the last ones can be estimates',
+      );
+      expect(typed([100, 250, 300]).toSave, isCheckpoints([100, 250, 300], 1));
+    });
+
     test('timestamps and a series never take a count', () {
       final film = WorkDraft(
         title: 'Dune',

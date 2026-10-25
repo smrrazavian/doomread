@@ -59,6 +59,16 @@ class _WorkFormState extends State<_WorkForm> {
       widget.editing!.estimated == 0 &&
       widget.editing!.checkpoints.isNotEmpty;
 
+  /// The pages shown as estimates in the exact list: the Work's own, or
+  /// those "Edit pages" spread. Left as they are, they stay estimates.
+  late List<int> _estimates = widget.editing == null
+      ? const []
+      : widget.editing!.checkpoints
+            .skip(
+              widget.editing!.checkpoints.length - widget.editing!.estimated,
+            )
+            .toList();
+
   /// Only a book's chapters are counted; a timestamp is on the player, and
   /// a series' Checkpoints are its episodes.
   bool get _counting => _kind.unit == WorkUnit.page && !_exact;
@@ -66,7 +76,7 @@ class _WorkFormState extends State<_WorkForm> {
   /// Shows the pages the count would put chapters on, to change.
   void _editPages() {
     if (_checkpoints.text.trim().isEmpty) {
-      final (:checkpoints, estimated: _) = spreadCheckpoints(
+      final (:checkpoints, :estimated) = spreadCheckpoints(
         parseNumber(_pages.text) ?? 0,
         _chapters,
         known: WorkFormViewModel.known(widget.editing),
@@ -75,6 +85,7 @@ class _WorkFormState extends State<_WorkForm> {
         checkpoints,
         Localizations.localeOf(context),
       );
+      _estimates = checkpoints.skip(checkpoints.length - estimated).toList();
     }
     setState(() => _exact = true);
   }
@@ -112,6 +123,7 @@ class _WorkFormState extends State<_WorkForm> {
       checkpoints: _checkpoints.text,
       kind: _kind,
       chapters: _counting ? _chapters : null,
+      estimates: _estimates,
     );
     if (mounted && vm.save.result is Ok) context.pop();
   }
