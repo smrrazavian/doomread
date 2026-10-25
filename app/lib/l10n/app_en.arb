@@ -1426,5 +1426,167 @@
         "type": "String"
       }
     }
+  },
+  "navCalendar": "Calendar",
+  "@navCalendar": {
+    "description": "The Calendar tab in the bottom bar: the month, each day glowing with its focus time."
+  },
+  "calendarNightsLit": "{count, plural, =1{1 night lit} other{{count} nights lit}}",
+  "@calendarNightsLit": {
+    "description": "Under the Calendar's month: how many nights of the month had a Session on a book or media (Reading-week nights). A count, never a streak.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "calendarTasksDone": "{count, plural, =1{1 task done} other{{count} tasks done}}",
+  "@calendarTasksDone": {
+    "description": "Under the Calendar's month: how many Tasks were Done in it.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "calendarFinishes": "{count, plural, =1{one Finish} other{{count} Finishes}}",
+  "@calendarFinishes": {
+    "description": "Under the Calendar's month: how many books, series, films or podcasts were Finished in it.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "calendarSeparator": ", ",
+  "@calendarSeparator": {
+    "description": "Between the parts of the Calendar's summary, and between a Work and how far it went in the day sheet."
+  },
+  "calendarQuiet": "A quiet month",
+  "@calendarQuiet": {
+    "description": "Under the Calendar's month when nothing in it was lit, Done or Finished. Plain, never a reproach."
+  },
+  "calendarLegendTitle": "What the marks mean",
+  "@calendarLegendTitle": {
+    "description": "Heading of the legend card under the Calendar's month."
+  },
+  "calendarLegendFocus": "Focus time",
+  "@calendarLegendFocus": {
+    "description": "In the legend: the label of the glow scale. Focus time adds up reading, watching and working."
+  },
+  "calendarLegendNone": "none",
+  "@calendarLegendNone": {
+    "description": "In the legend: the dark end of the glow scale."
+  },
+  "calendarLegendMost": "2h+",
+  "@calendarLegendMost": {
+    "description": "In the legend: the bright end of the glow scale, two hours of focus or more."
+  },
+  "calendarTick30m": "30m",
+  "@calendarTick30m": {
+    "description": "In the legend, shown on tap: the tick under the glow scale at 30 minutes."
+  },
+  "calendarTick1h": "1h",
+  "@calendarTick1h": {
+    "description": "In the legend, shown on tap: the tick under the glow scale at 1 hour."
+  },
+  "calendarTick2h": "2h",
+  "@calendarTick2h": {
+    "description": "In the legend, shown on tap: the tick under the glow scale at 2 hours."
+  },
+  "calendarLegendDot": "Task done",
+  "@calendarLegendDot": {
+    "description": "In the legend: what a small lamp-coloured dot on a day means."
+  },
+  "calendarLegendSpine": "Read that night",
+  "@calendarLegendSpine": {
+    "description": "In the legend: what the small red book spine on a day means: a Session on a book or media that night."
+  },
+  "calendarLegendFlag": "Finished something",
+  "@calendarLegendFlag": {
+    "description": "In the legend: what the small flag on a day means: a Finish."
+  },
+  "calendarFocusMinutes": "{minutes}m focused",
+  "@calendarFocusMinutes": {
+    "description": "In a day's sheet: its focus time, under an hour.",
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "calendarFocusHours": "{hours}h {minutes}m focused",
+  "@calendarFocusHours": {
+    "description": "In a day's sheet: its focus time, an hour or more.",
+    "placeholders": {
+      "hours": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "calendarDayTasksDone": "{count, plural, =1{1 task done} other{{count} tasks done}}",
+  "@calendarDayTasksDone": {
+    "description": "In a day's sheet: how many Tasks were Done that day.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "calendarDayPlanned": "{count, plural, =1{1 task planned} other{{count} tasks planned}}",
+  "@calendarDayPlanned": {
+    "description": "In the sheet of a day still to come: how many Tasks are planned for it.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "calendarDayWork": "{kind, select, series{Watched {title}} film{Watched {title}} podcast{Listened to {title}} other{Read {title}}}",
+  "@calendarDayWork": {
+    "description": "In a day's sheet: a Work read or watched that day; how far may follow it. kind is a WorkKind name: paperBook, ebook, series, film or podcast.",
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "calendarPages": "{count, plural, =1{1 page} other{{count} pages}}",
+  "@calendarPages": {
+    "description": "In a day's sheet, after a book: how many pages that day covered.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "calendarEpisodes": "{count, plural, =1{1 episode} other{{count} episodes}}",
+  "@calendarEpisodes": {
+    "description": "In a day's sheet, after a series: how many episodes that day covered.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "calendarDayQuiet": "A quiet day.",
+  "@calendarDayQuiet": {
+    "description": "In the sheet of a day with nothing in it. Plain, never a reproach."
   }
 }

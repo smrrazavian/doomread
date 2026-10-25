@@ -1573,4 +1573,141 @@ class AppLocalizationsFa extends AppLocalizations {
   String yaldaPosterNight(String year) {
     return 'شب یلدای $year';
   }
+
+  @override
+  String get navCalendar => 'تقویم';
+
+  @override
+  String calendarNightsLit(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString شب روشن';
+  }
+
+  @override
+  String calendarTasksDone(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString تا کار';
+  }
+
+  @override
+  String calendarFinishes(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString تا تموم',
+      one: 'یه کتاب تموم',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get calendarSeparator => '، ';
+
+  @override
+  String get calendarQuiet => 'یه ماه آروم';
+
+  @override
+  String get calendarLegendTitle => 'نشونه‌ها یعنی چی';
+
+  @override
+  String get calendarLegendFocus => 'زمان تمرکز';
+
+  @override
+  String get calendarLegendNone => 'هیچی';
+
+  @override
+  String get calendarLegendMost => '۲ ساعت به بالا';
+
+  @override
+  String get calendarTick30m => '۳۰ دقیقه';
+
+  @override
+  String get calendarTick1h => '۱ ساعت';
+
+  @override
+  String get calendarTick2h => '۲ ساعت';
+
+  @override
+  String get calendarLegendDot => 'یه کار تموم شد';
+
+  @override
+  String get calendarLegendSpine => 'اون شب کتاب خوندی';
+
+  @override
+  String get calendarLegendFlag => 'یه چیزی رو تموم کردی';
+
+  @override
+  String calendarFocusMinutes(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '$minutesString دقیقه تمرکز';
+  }
+
+  @override
+  String calendarFocusHours(int hours, int minutes) {
+    final intl.NumberFormat hoursNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String hoursString = hoursNumberFormat.format(hours);
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '$hoursString ساعت و $minutesString دقیقه تمرکز';
+  }
+
+  @override
+  String calendarDayTasksDone(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString تا کار تموم شد';
+  }
+
+  @override
+  String calendarDayPlanned(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString تا کار برنامه داری';
+  }
+
+  @override
+  String calendarDayWork(String kind, String title) {
+    return '«$title»';
+  }
+
+  @override
+  String calendarPages(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString صفحه';
+  }
+
+  @override
+  String calendarEpisodes(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString قسمت';
+  }
+
+  @override
+  String get calendarDayQuiet => 'یه روز آروم.';
 }

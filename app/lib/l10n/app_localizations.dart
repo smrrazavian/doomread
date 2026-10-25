@@ -1981,6 +1981,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Yalda night, {year}'**
   String yaldaPosterNight(String year);
+
+  /// The Calendar tab in the bottom bar: the month, each day glowing with its focus time.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get navCalendar;
+
+  /// Under the Calendar's month: how many nights of the month had a Session on a book or media (Reading-week nights). A count, never a streak.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 night lit} other{{count} nights lit}}'**
+  String calendarNightsLit(int count);
+
+  /// Under the Calendar's month: how many Tasks were Done in it.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 task done} other{{count} tasks done}}'**
+  String calendarTasksDone(int count);
+
+  /// Under the Calendar's month: how many books, series, films or podcasts were Finished in it.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{one Finish} other{{count} Finishes}}'**
+  String calendarFinishes(int count);
+
+  /// Between the parts of the Calendar's summary, and between a Work and how far it went in the day sheet.
+  ///
+  /// In en, this message translates to:
+  /// **', '**
+  String get calendarSeparator;
+
+  /// Under the Calendar's month when nothing in it was lit, Done or Finished. Plain, never a reproach.
+  ///
+  /// In en, this message translates to:
+  /// **'A quiet month'**
+  String get calendarQuiet;
+
+  /// Heading of the legend card under the Calendar's month.
+  ///
+  /// In en, this message translates to:
+  /// **'What the marks mean'**
+  String get calendarLegendTitle;
+
+  /// In the legend: the label of the glow scale. Focus time adds up reading, watching and working.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus time'**
+  String get calendarLegendFocus;
+
+  /// In the legend: the dark end of the glow scale.
+  ///
+  /// In en, this message translates to:
+  /// **'none'**
+  String get calendarLegendNone;
+
+  /// In the legend: the bright end of the glow scale, two hours of focus or more.
+  ///
+  /// In en, this message translates to:
+  /// **'2h+'**
+  String get calendarLegendMost;
+
+  /// In the legend, shown on tap: the tick under the glow scale at 30 minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'30m'**
+  String get calendarTick30m;
+
+  /// In the legend, shown on tap: the tick under the glow scale at 1 hour.
+  ///
+  /// In en, this message translates to:
+  /// **'1h'**
+  String get calendarTick1h;
+
+  /// In the legend, shown on tap: the tick under the glow scale at 2 hours.
+  ///
+  /// In en, this message translates to:
+  /// **'2h'**
+  String get calendarTick2h;
+
+  /// In the legend: what a small lamp-coloured dot on a day means.
+  ///
+  /// In en, this message translates to:
+  /// **'Task done'**
+  String get calendarLegendDot;
+
+  /// In the legend: what the small red book spine on a day means: a Session on a book or media that night.
+  ///
+  /// In en, this message translates to:
+  /// **'Read that night'**
+  String get calendarLegendSpine;
+
+  /// In the legend: what the small flag on a day means: a Finish.
+  ///
+  /// In en, this message translates to:
+  /// **'Finished something'**
+  String get calendarLegendFlag;
+
+  /// In a day's sheet: its focus time, under an hour.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes}m focused'**
+  String calendarFocusMinutes(int minutes);
+
+  /// In a day's sheet: its focus time, an hour or more.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h {minutes}m focused'**
+  String calendarFocusHours(int hours, int minutes);
+
+  /// In a day's sheet: how many Tasks were Done that day.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 task done} other{{count} tasks done}}'**
+  String calendarDayTasksDone(int count);
+
+  /// In the sheet of a day still to come: how many Tasks are planned for it.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 task planned} other{{count} tasks planned}}'**
+  String calendarDayPlanned(int count);
+
+  /// In a day's sheet: a Work read or watched that day; how far may follow it. kind is a WorkKind name: paperBook, ebook, series, film or podcast.
+  ///
+  /// In en, this message translates to:
+  /// **'{kind, select, series{Watched {title}} film{Watched {title}} podcast{Listened to {title}} other{Read {title}}}'**
+  String calendarDayWork(String kind, String title);
+
+  /// In a day's sheet, after a book: how many pages that day covered.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 page} other{{count} pages}}'**
+  String calendarPages(int count);
+
+  /// In a day's sheet, after a series: how many episodes that day covered.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 episode} other{{count} episodes}}'**
+  String calendarEpisodes(int count);
+
+  /// In the sheet of a day with nothing in it. Plain, never a reproach.
+  ///
+  /// In en, this message translates to:
+  /// **'A quiet day.'**
+  String get calendarDayQuiet;
 }
 
 class _AppLocalizationsDelegate

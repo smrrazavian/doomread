@@ -4,6 +4,7 @@
 library;
 
 export 'src/calendar.dart';
+export 'src/calendar_days.dart';
 export 'src/finish.dart';
 export 'src/house.dart';
 export 'src/pace.dart';

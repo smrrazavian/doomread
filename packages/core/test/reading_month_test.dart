@@ -88,4 +88,30 @@ void main() {
     expect(m.readingOn(DateTime(2026, 10, 5)), Duration.zero);
     expect(m.longestNight, Duration.zero);
   });
+
+  test('it can show another month, with tonight still tonight', () {
+    final m = ReadingMonth(
+      now: DateTime(2026, 10, 22, 21),
+      solarHijri: false,
+      sessions: [sat(DateTime(2026, 9, 12, 21), 15)],
+      showing: DateTime(2026, 9, 30),
+    );
+    expect(m.calendarMonth, (year: 2026, month: 9));
+    expect(m.nights, hasLength(30));
+    expect(m.tonight, DateTime(2026, 10, 22));
+    expect(m.isLit(DateTime(2026, 9, 12)), isTrue);
+  });
+
+  test('in Persian, the night before 1 Aban is still Mehr', () {
+    DateTime d(int day) => DateTime(2026, 10, day);
+    final now = DateTime(2026, 10, 22, 21);
+    ReadingMonth at(DateTime showing) => ReadingMonth(
+      now: now,
+      solarHijri: true,
+      sessions: const [],
+      showing: showing,
+    );
+    expect(at(d(22)).calendarMonth, (year: 1405, month: 7));
+    expect(at(d(23)).calendarMonth, (year: 1405, month: 8));
+  });
 }

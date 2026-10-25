@@ -11,6 +11,9 @@ class ReadingMonth {
   /// the Solar Hijri calendar when [solarHijri] (Persian) and the Gregorian
   /// one otherwise.
   ///
+  /// With [showing], it's the month holding that date instead, and tonight
+  /// stays tonight.
+  ///
   /// Nights follow [eveningOf], so a Session past midnight lights the
   /// evening before. Any Session lights its night; only stopped ones add
   /// time, so a Session left open can't make a night glow by itself.
@@ -18,8 +21,12 @@ class ReadingMonth {
     required DateTime now,
     required bool solarHijri,
     required Iterable<Session> sessions,
+    DateTime? showing,
   }) {
     final tonight = eveningOf(now);
+    final shown = showing == null
+        ? tonight
+        : DateTime(showing.year, showing.month, showing.day);
     ({int year, int month}) monthOf(DateTime d) {
       if (!solarHijri) return (year: d.year, month: d.month);
       final s = toSolarHijri(d);
@@ -28,8 +35,8 @@ class ReadingMonth {
 
     DateTime next(DateTime d, int by) => DateTime(d.year, d.month, d.day + by);
 
-    final month = monthOf(tonight);
-    var first = tonight;
+    final month = monthOf(shown);
+    var first = shown;
     while (monthOf(next(first, -1)) == month) {
       first = next(first, -1);
     }

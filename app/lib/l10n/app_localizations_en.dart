@@ -1726,4 +1726,183 @@ class AppLocalizationsEn extends AppLocalizations {
   String yaldaPosterNight(String year) {
     return 'Yalda night, $year';
   }
+
+  @override
+  String get navCalendar => 'Calendar';
+
+  @override
+  String calendarNightsLit(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString nights lit',
+      one: '1 night lit',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String calendarTasksDone(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString tasks done',
+      one: '1 task done',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String calendarFinishes(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString Finishes',
+      one: 'one Finish',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get calendarSeparator => ', ';
+
+  @override
+  String get calendarQuiet => 'A quiet month';
+
+  @override
+  String get calendarLegendTitle => 'What the marks mean';
+
+  @override
+  String get calendarLegendFocus => 'Focus time';
+
+  @override
+  String get calendarLegendNone => 'none';
+
+  @override
+  String get calendarLegendMost => '2h+';
+
+  @override
+  String get calendarTick30m => '30m';
+
+  @override
+  String get calendarTick1h => '1h';
+
+  @override
+  String get calendarTick2h => '2h';
+
+  @override
+  String get calendarLegendDot => 'Task done';
+
+  @override
+  String get calendarLegendSpine => 'Read that night';
+
+  @override
+  String get calendarLegendFlag => 'Finished something';
+
+  @override
+  String calendarFocusMinutes(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '${minutesString}m focused';
+  }
+
+  @override
+  String calendarFocusHours(int hours, int minutes) {
+    final intl.NumberFormat hoursNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String hoursString = hoursNumberFormat.format(hours);
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '${hoursString}h ${minutesString}m focused';
+  }
+
+  @override
+  String calendarDayTasksDone(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString tasks done',
+      one: '1 task done',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String calendarDayPlanned(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString tasks planned',
+      one: '1 task planned',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String calendarDayWork(String kind, String title) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'series': 'Watched $title',
+      'film': 'Watched $title',
+      'podcast': 'Listened to $title',
+      'other': 'Read $title',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String calendarPages(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString pages',
+      one: '1 page',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String calendarEpisodes(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString episodes',
+      one: '1 episode',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get calendarDayQuiet => 'A quiet day.';
 }

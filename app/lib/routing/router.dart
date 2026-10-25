@@ -6,7 +6,7 @@ import 'package:doomread/ui/books/widgets/books_screen.dart';
 import 'package:doomread/ui/books/widgets/work_form_screen.dart';
 import 'package:doomread/ui/building/widgets/building_screen.dart';
 import 'package:doomread/ui/building/widgets/finish_screen.dart';
-import 'package:doomread/ui/core/section_placeholder.dart';
+import 'package:doomread/ui/calendar/widgets/calendar_screen.dart';
 import 'package:doomread/ui/done/widgets/done_screen.dart';
 import 'package:doomread/ui/evening/widgets/evening_screen.dart';
 import 'package:doomread/ui/planned_break/widgets/planned_break_screen.dart';
@@ -42,6 +42,8 @@ List<RouteBase> _routes(GlobalKey<NavigatorState> root) => [
     branches: [
       _branch('/tonight', (_) => const TonightScreen()),
       _branch('/books', (_) => const BooksScreen()),
+      // Friends comes back here with phase 2.
+      _branch('/calendar', (_) => const CalendarScreen()),
       StatefulShellBranch(
         routes: [
           GoRoute(
@@ -59,10 +61,6 @@ List<RouteBase> _routes(GlobalKey<NavigatorState> root) => [
             ],
           ),
         ],
-      ),
-      _branch(
-        '/friends',
-        (c) => SectionPlaceholder(title: AppLocalizations.of(c).navFriends),
       ),
     ],
   ),
@@ -142,12 +140,12 @@ class _NavShell extends StatelessWidget {
             label: l10n.navBooks,
           ),
           NavigationDestination(
-            icon: const Icon(Icons.apartment_outlined),
-            label: l10n.navBuilding,
+            icon: const Icon(Icons.calendar_month_outlined),
+            label: l10n.navCalendar,
           ),
           NavigationDestination(
-            icon: const Icon(Icons.people_outline),
-            label: l10n.navFriends,
+            icon: const Icon(Icons.apartment_outlined),
+            label: l10n.navBuilding,
           ),
         ],
       ),

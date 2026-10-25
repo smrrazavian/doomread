@@ -19,11 +19,13 @@ void main() {
     for (final label in [
       en.navToday,
       en.navBooks,
+      en.navCalendar,
       en.navBuilding,
-      en.navFriends,
     ]) {
       expect(find.descendant(of: nav, matching: find.text(label)), findsOne);
     }
+    // Friends comes back with phase 2.
+    expect(find.text(en.navFriends), findsNothing);
     expect(find.text(en.tonightEmpty), findsOne);
   });
 
