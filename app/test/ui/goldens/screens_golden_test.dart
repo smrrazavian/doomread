@@ -125,10 +125,7 @@ void main() {
       );
     });
 
-    testApp("Today with Tasks and tonight's book in $lang", (
-      tester,
-      db,
-    ) async {
+    testApp("Today with Tasks and tonight's book in $lang", (tester, db) async {
       await addEarlierEvenings(tester, db, await addRemains(db, lang));
       final works = WorkRepository(db, clock: () => now);
       final sessions = SessionRepository(db, clock: () => now);

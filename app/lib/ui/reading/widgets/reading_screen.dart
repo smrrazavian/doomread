@@ -6,6 +6,7 @@ import 'package:doomread/data/services/app_watch.dart';
 import 'package:doomread/domain/use_cases/task_done_use_case.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/number_format.dart';
+import 'package:doomread/ui/core/one_session.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/voice_text.dart';
 import 'package:doomread/ui/done/widgets/done_screen.dart';
@@ -41,7 +42,19 @@ class ReadingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ChangeNotifierProvider(
     create: (c) => ReadingViewModel(c.read<SessionRepository>(), sessionId),
-    child: const _Reading(),
+    child: Builder(
+      builder: (context) => PopScope(
+        // Back leaves the Session running; Stop and Done replace this
+        // screen instead, so they never get here.
+        onPopInvokedWithResult: (didPop, _) {
+          final session = context.read<ReadingViewModel>().session;
+          if (didPop && session != null && !session.stopped) {
+            sayKeepsRunning(context);
+          }
+        },
+        child: const _Reading(),
+      ),
+    ),
   );
 }
 

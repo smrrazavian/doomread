@@ -155,6 +155,23 @@ void main() {
     expect(find.text(en.stoppedByMistake), findsOne);
   });
 
+  testApp('back says the Session keeps running however it opened', (
+    tester,
+    db,
+  ) async {
+    final id = await addReport(db);
+    final session = await SessionRepository(db, clock: () => now).start(id);
+    final notification = FakeSessionNotification(opened: session);
+    await pumpApp(tester, db, clock: () => now, notification: notification);
+    await tester.pumpAndSettle();
+    expect(find.text(en.taskWorkingOn), findsOne);
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text(en.sessionKeepsRunning), findsOne);
+  });
+
   testApp('a clock past an hour still fits', (tester, db) async {
     await addReport(db);
     await open(tester, db);

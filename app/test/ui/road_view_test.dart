@@ -12,17 +12,16 @@ void main() {
     checkpoints: const [50, 150],
   );
 
-  Future<void> pumpRoad(WidgetTester tester, int position) =>
-      tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              child: RoadView(road: Road(work, position: position)),
-            ),
-          ),
+  Future<void> pumpRoad(WidgetTester tester, int position) => tester.pumpWidget(
+    MaterialApp(
+      home: Scaffold(
+        body: SizedBox(
+          width: 200,
+          child: RoadView(road: Road(work, position: position)),
         ),
-      );
+      ),
+    ),
+  );
 
   /// Where "you are here" is, from the start of the Road.
   double dot(WidgetTester tester) => tester

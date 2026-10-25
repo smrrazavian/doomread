@@ -131,10 +131,7 @@ void main() {
     );
   });
 
-  testApp('"I finished it!" records the Finish at the end', (
-    tester,
-    db,
-  ) async {
+  testApp('"I finished it!" records the Finish at the end', (tester, db) async {
     await openAt(tester, db, 230);
     await readFor(tester, 9);
     await tap(tester, find.text(en.eveningFinished));

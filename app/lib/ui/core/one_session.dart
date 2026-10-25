@@ -51,23 +51,20 @@ Future<bool> stopOtherSessionFirst(BuildContext context, String workId) async {
   return false;
 }
 
-/// Opens the Session [sessionId], and the first time the user leaves one
-/// running with back, says it keeps running.
-Future<void> openSession(BuildContext context, String sessionId) async {
-  await context.push<void>('/reading/$sessionId');
-  if (!context.mounted) return;
-  final sessions = context.read<SessionRepository>();
-  final record = await sessions.byId(sessionId);
-  if (record == null || record.at(sessions.now()).stopped) return;
-  if (!context.mounted) return;
+/// The first time the user leaves a running Session with back, says it
+/// keeps running. Called as Reading closes, so it holds however that
+/// Reading was opened.
+void sayKeepsRunning(BuildContext context) {
   final settings = context.read<SettingsRepository>();
-  if (await settings.keepsRunningSaid() || !context.mounted) return;
-  unawaited(settings.setKeepsRunningSaid());
-  ScaffoldMessenger.of(context)
-    ..hideCurrentSnackBar()
-    ..showSnackBar(
-      _overTheButton(Text(AppLocalizations.of(context).sessionKeepsRunning)),
-    );
+  final messenger = ScaffoldMessenger.of(context);
+  final text = AppLocalizations.of(context).sessionKeepsRunning;
+  unawaited(() async {
+    if (await settings.keepsRunningSaid()) return;
+    unawaited(settings.setKeepsRunningSaid());
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(_overTheButton(Text(text)));
+  }());
 }
 
 /// Right after a Stop: "Stopped by mistake? Resume", where Resume is

@@ -95,7 +95,7 @@ class _OfferReopenState extends State<_OfferReopen> {
       if (record == null || !mounted) return;
       offerReopen(context, id, () async {
         await sessions.add(record, SessionEventKind.reopen);
-        if (mounted) await openSession(context, id);
+        if (mounted) unawaited(context.push('/reading/$id'));
       });
     });
   }
@@ -227,7 +227,7 @@ Future<void> _start(BuildContext context, TonightViewModel vm) async {
   if (vm.start.result case Ok(:final value)) {
     // The click of the lamp: Reading opens with the user's Window coming on.
     unawaited(HapticFeedback.lightImpact());
-    await openSession(context, value);
+    await context.push<void>('/reading/$value');
   }
 }
 

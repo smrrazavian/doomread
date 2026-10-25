@@ -13,6 +13,7 @@ import 'package:doomread/utils/result.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 /// Today's Tasks, each a small window that lights when it's Done, and the
@@ -157,7 +158,7 @@ Future<void> _start(BuildContext context, Task task) async {
   if (!context.mounted) return;
   if (vm.start.result case Ok(:final value)) {
     unawaited(HapticFeedback.lightImpact());
-    await openSession(context, value);
+    await context.push<void>('/reading/$value');
   }
 }
 
