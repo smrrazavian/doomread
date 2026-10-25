@@ -20,7 +20,7 @@ class WorkDraft {
   final int totalPages;
 
   /// Ignored for a series, whose Checkpoints are its episodes. With
-  /// [chapters], only the ones already known, kept as they are.
+  /// [chapters], the known ones are kept as they are.
   final List<int> checkpoints;
 
   /// About how many chapters, when the user gave a count instead of the
@@ -33,15 +33,22 @@ class WorkDraft {
 
   bool get _counted => chapters != null && kind.unit == WorkUnit.page;
 
-  /// The Checkpoints to save: with a chapter count, the rest spread evenly
-  /// as estimates; otherwise the typed list, known but for [estimates]
-  /// left unchanged at its end.
+  /// How many of [checkpoints] at its end are [estimates] left unchanged.
+  int get _trailingEstimates =>
+      checkpoints.reversed.takeWhile(estimates.contains).length;
+
+  /// The Checkpoints to save. Typed ones are known, but for [estimates]
+  /// left unchanged at the end; with a chapter count, the rest after the
+  /// known ones are spread evenly as estimates.
   Checkpoints get toSave => _counted
-      ? spreadCheckpoints(totalPages, chapters!, known: checkpoints)
-      : (
-          checkpoints: checkpoints,
-          estimated: checkpoints.reversed.takeWhile(estimates.contains).length,
-        );
+      ? spreadCheckpoints(
+          totalPages,
+          chapters!,
+          known: checkpoints
+              .take(checkpoints.length - _trailingEstimates)
+              .toList(),
+        )
+      : (checkpoints: checkpoints, estimated: _trailingEstimates);
 
   /// The user typed Checkpoints that couldn't be read; [checkpoints] is moot.
   final bool checkpointsUnreadable;

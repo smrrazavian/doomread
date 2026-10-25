@@ -186,4 +186,29 @@ void main() {
     expect(dune.checkpoints, '90,200,300');
     expect(dune.estimated, 2, reason: 'Chapter done still asks for those');
   });
+
+  testApp('back to Just a count keeps the pages typed', (tester, db) async {
+    await openApp(tester, db);
+    await tester.tap(find.text(en.tonightAddBook));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('title')), 'Dune');
+    await tester.enterText(find.byKey(const Key('pages')), '400');
+    for (var i = 0; i < 6; i++) {
+      await tester.tap(find.byKey(const Key('fewerChapters')));
+    }
+    await tester.tap(find.text(en.editChapterPages));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const Key('checkpoints')),
+      '90, 200, 300',
+    );
+    await tester.tap(find.text(en.useChapterCount));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(en.save));
+    await tester.pumpAndSettle();
+
+    final dune = await db.select(db.works).getSingle();
+    expect(dune.checkpoints, startsWith('90,'), reason: 'typed, so kept');
+    expect(dune.estimated, 2, reason: 'the rest spread from the count');
+  });
 }

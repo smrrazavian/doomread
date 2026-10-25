@@ -19,9 +19,9 @@ class WorkFormViewModel extends ChangeNotifier {
 
   /// Saves what the user typed: the length and Checkpoints in the [kind]'s
   /// unit (timestamps for a film or podcast), in either language's digits.
-  /// With [chapters], a count stands in for the Checkpoints: they're spread
-  /// evenly, after the ones already marked on the Work being edited.
-  /// Without, [estimates] are the pages the list was shown as estimates.
+  /// [estimates] are the pages the list was shown as estimates; the rest
+  /// typed are known. With [chapters], a count stands in for those
+  /// estimates: they're spread evenly after the known ones.
   Future<void> saveTyped({
     required String title,
     required String length,
@@ -32,9 +32,11 @@ class WorkFormViewModel extends ChangeNotifier {
     List<int> estimates = const [],
   }) {
     final timed = kind.unit == WorkUnit.second;
-    final marks = chapters != null
+    final typed = (timed ? parseClocks : parseNumbers)(checkpoints);
+    // With a count and no readable list, what's known on the Work stays.
+    final marks = chapters != null && (typed ?? const []).isEmpty
         ? known(editing)
-        : (timed ? parseClocks : parseNumbers)(checkpoints);
+        : typed;
     return save.execute(
       WorkDraft(
         title: title,

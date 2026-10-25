@@ -104,6 +104,18 @@ void main() {
       expect(typed([100, 250, 300]).toSave, isCheckpoints([100, 250, 300], 1));
     });
 
+    test('with a count, typed pages stay known but for the estimates', () {
+      final d = WorkDraft(
+        title: 'Dune',
+        author: '',
+        totalPages: 400,
+        checkpoints: const [90, 200, 300],
+        estimates: const [200, 300],
+        chapters: 3,
+      );
+      expect(d.toSave, isCheckpoints([90, 245], 1));
+    });
+
     test('timestamps and a series never take a count', () {
       final film = WorkDraft(
         title: 'Dune',
