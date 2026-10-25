@@ -87,6 +87,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get taskClockPaused => 'Paused. Tap to keep going, no harm done';
 
   @override
+  String stretchSoFar(int n, int minutes) {
+    final intl.NumberFormat nNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String nString = nNumberFormat.format(n);
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'Stretch $nString · $minutesString min on this in all';
+  }
+
+  @override
   String get taskPause => 'Pause';
 
   @override

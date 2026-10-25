@@ -80,6 +80,20 @@
   "@taskClockPaused": {
     "description": "Under the clock while a Task's Session is paused."
   },
+  "stretchSoFar": "Stretch {n} · {minutes} min on this in all",
+  "@stretchSoFar": {
+    "description": "Under the clock once some time is banked: which Stretch this is, and all the time on the Work so far, Pauses left out.",
+    "placeholders": {
+      "n": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "taskPause": "Pause",
   "@taskPause": {
     "description": "The clock as a button, read aloud while it runs."

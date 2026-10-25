@@ -87,6 +87,19 @@ class AppLocalizationsFa extends AppLocalizations {
   String get taskClockPaused => 'مکث. بزن که ادامه بدی، هیچ اشکالی نداره';
 
   @override
+  String stretchSoFar(int n, int minutes) {
+    final intl.NumberFormat nNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String nString = nNumberFormat.format(n);
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'دور $nString، تا حالا روی هم $minutesString دقیقه پاش بودی';
+  }
+
+  @override
   String get taskPause => 'مکث';
 
   @override

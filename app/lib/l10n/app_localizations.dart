@@ -224,6 +224,12 @@ abstract class AppLocalizations {
   /// **'Paused. Tap to keep going, no harm done'**
   String get taskClockPaused;
 
+  /// Under the clock once some time is banked: which Stretch this is, and all the time on the Work so far, Pauses left out.
+  ///
+  /// In en, this message translates to:
+  /// **'Stretch {n} · {minutes} min on this in all'**
+  String stretchSoFar(int n, int minutes);
+
   /// The clock as a button, read aloud while it runs.
   ///
   /// In en, this message translates to:

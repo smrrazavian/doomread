@@ -96,6 +96,21 @@ class ReadingViewModel extends ChangeNotifier {
   /// The clock: the Stretch running now, or while paused, the last one.
   Duration get shown => session?.stretches.lastOrNull?.length ?? Duration.zero;
 
+  /// All the time on this Work, Pauses left out: every Stretch of this
+  /// Session and of the ones before it. Unlike [shown], it never goes back.
+  Duration get onThis {
+    final now = _sessions.now();
+    final work = record?.road.work.id;
+    return [
+      ?session,
+      for (final r in _before)
+        if (r.road.work.id == work) r.at(now),
+    ].fold(Duration.zero, (sum, s) => sum + s.reading);
+  }
+
+  /// Which Stretch of this Session the clock is on, from 1.
+  int get stretchNo => session?.stretches.length ?? 0;
+
   Future<Result<void>> _add(SessionEventKind kind) async {
     await _sessions.add(record!, kind);
     return const Result.ok(null);

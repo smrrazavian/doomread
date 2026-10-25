@@ -81,8 +81,16 @@ void main() {
     expect(find.text(en.taskClockPaused), findsOne);
     await wait(tester, const Duration(minutes: 2));
     expect(find.text('6:00'), findsOne, reason: 'paused');
+    expect(find.text(en.stretchSoFar(1, 6)), findsNothing, reason: 'the same');
     await tap(tester, find.byKey(const Key('taskClock')));
     expect(find.text(en.taskClockRunning), findsOne);
+    await wait(tester, const Duration(minutes: 1));
+    expect(find.text('1:00'), findsOne, reason: 'a new Stretch');
+    expect(
+      find.text(en.stretchSoFar(2, 7)),
+      findsOne,
+      reason: 'the time before the Pause still counts',
+    );
 
     await tap(tester, find.text(en.taskStop));
     expect(find.text(en.taskAdd), findsOne, reason: 'back on Today');

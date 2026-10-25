@@ -5,6 +5,7 @@ import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/planned_break/widgets/next_break_card.dart';
 import 'package:doomread/ui/reading/view_models/reading_view_model.dart';
 import 'package:doomread/ui/reading/widgets/desk_view.dart';
+import 'package:doomread/ui/reading/widgets/so_far_line.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -61,6 +62,7 @@ class TaskSessionView extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: text.bodySmall?.copyWith(color: Palette.mute),
               ),
+              const SoFarLine(textAlign: TextAlign.center),
               const SizedBox(height: 20),
               const _AimCard(),
               const SizedBox(height: 8),

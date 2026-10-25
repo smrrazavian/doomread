@@ -21,6 +21,7 @@
   "taskWorkingOn": "مشغولِ",
   "taskClockRunning": "یه‌سره. برای مکث، ساعت رو بزن",
   "taskClockPaused": "مکث. بزن که ادامه بدی، هیچ اشکالی نداره",
+  "stretchSoFar": "دور {n}، تا حالا روی هم {minutes} دقیقه پاش بودی",
   "taskPause": "مکث",
   "taskResume": "ادامه",
   "taskAim": "هدف: {minutes} دقیقه کار یه‌سره",
