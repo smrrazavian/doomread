@@ -92,6 +92,10 @@ class Session {
     var urgeOpen = false;
     var slipped = false;
     var letPass = 0;
+    // What the last Stop closed, for a Reopen to open again.
+    var stoppedOnBreak = false;
+    var stoppedUrging = false;
+    var stoppedSlipped = false;
     final stretches = <Stretch>[];
     final breaks = <BreakTaken>[];
     final nudges = <DateTime>[];
@@ -111,7 +115,8 @@ class Session {
 
     for (final (_, e) in indexed) {
       // After Stop only a Reopen counts. It takes the Stop back, so a
-      // Stretch the Stop ended goes on, as if it never stopped.
+      // Stretch, a Planned break or an Urge the Stop ended goes on, as if
+      // it never stopped.
       if (stopped) {
         if (e.kind != SessionEventKind.reopen) continue;
         stopped = false;
@@ -122,6 +127,9 @@ class Session {
           stretches.removeLast();
           runningSince = start;
         }
+        if (stoppedOnBreak) breaks.last = (start: breaks.last.start, end: null);
+        urgeOpen = stoppedUrging;
+        slipped = stoppedSlipped;
         continue;
       }
       switch (e.kind) {
@@ -170,6 +178,9 @@ class Session {
         case SessionEventKind.reopen:
           continue;
         case SessionEventKind.stop:
+          stoppedOnBreak = onBreak();
+          stoppedUrging = urgeOpen;
+          stoppedSlipped = slipped;
           close(e.at, StretchEnd.stop);
           endBreak(e.at);
           runningSince = null;

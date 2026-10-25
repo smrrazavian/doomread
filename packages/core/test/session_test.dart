@@ -152,6 +152,41 @@ void main() {
       expect(s.current, isNotNull);
     });
 
+    SessionEvent ev(SessionEventKind kind, int m) => SessionEvent(kind, t(m));
+
+    test('a Stop on a Planned break reopens still on it', () {
+      final s = reduce([
+        start(0),
+        ev(SessionEventKind.breakStart, 5),
+        stop(9),
+        reopen(10),
+      ]);
+      expect(s.onBreak, isTrue);
+      expect(s.current, isNull);
+      expect(s.breaks.single.end, isNull);
+    });
+
+    test('an Urge or a Slip a Stop cut short is open again', () {
+      final urging = reduce([
+        start(0),
+        ev(SessionEventKind.urge, 5),
+        stop(9),
+        reopen(10),
+      ]);
+      expect(urging.urgeOpen, isTrue);
+      expect(urging.current, isNotNull);
+
+      final slipped = reduce([
+        start(0),
+        ev(SessionEventKind.urge, 5),
+        ev(SessionEventKind.slip, 6),
+        stop(9),
+        reopen(10),
+      ]);
+      expect(slipped.slipped, isTrue);
+      expect(slipped.current, isNull);
+    });
+
     test('the reopened Session can stop again', () {
       final s = reduce([start(0), stop(9), reopen(10), stop(20)]);
       expect(s.stopped, isTrue);
