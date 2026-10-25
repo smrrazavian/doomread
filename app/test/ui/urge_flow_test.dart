@@ -145,10 +145,11 @@ void main() {
 
   testApp('nothing is raised while paused', (tester, db) async {
     final w = await startReading(tester, db);
-    await tap(tester, l10n.pause);
+    await tester.tap(find.byKey(const Key('sessionClock')));
+    await tester.pumpAndSettle();
     await open(tester, w, instagram);
     expect(w.fronts, 0);
-    expect(find.text(l10n.paused), findsOne);
+    expect(find.text(l10n.taskClockPaused), findsOne);
   });
 
   testApp('nothing is raised on a Planned break', (tester, db) async {

@@ -192,7 +192,7 @@ void main() {
       await openIn(tester, db, lang);
       await tap(tester, find.byType(FilledButton));
       now = now.add(const Duration(minutes: 50));
-      await tap(tester, find.byType(OutlinedButton).last);
+      await tap(tester, find.byType(FilledButton).last);
       await tester.enterText(find.byKey(const Key('page')), fa ? '۸' : '8');
       await tester.enterText(
         find.byKey(const Key('note')),
@@ -216,7 +216,7 @@ void main() {
       await openIn(tester, db, lang);
       await tap(tester, find.byType(FilledButton));
       now = now.add(const Duration(minutes: 20, seconds: 5));
-      await tap(tester, find.byType(OutlinedButton).last);
+      await tap(tester, find.byType(FilledButton).last);
       // Before where it started: refused, with the range in timestamps.
       await tester.enterText(
         find.byKey(const Key('page')),
@@ -269,7 +269,7 @@ void main() {
       await openIn(tester, db, lang);
       await tap(tester, find.byType(FilledButton));
       now = now.add(const Duration(minutes: 52));
-      await tap(tester, find.byType(OutlinedButton).last);
+      await tap(tester, find.byType(FilledButton).last);
       await tester.enterText(find.byKey(const Key('page')), fa ? '۱۰' : '10');
       await tester.tap(find.byType(FilledButton));
       await tester.pumpAndSettle();

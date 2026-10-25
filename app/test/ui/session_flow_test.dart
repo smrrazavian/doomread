@@ -38,6 +38,11 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  Future<void> tapClock(WidgetTester tester) async {
+    await tester.tap(find.byKey(const Key('sessionClock')));
+    await tester.pumpAndSettle();
+  }
+
   testApp('a Session from Start to Stop moves the Position and sets the Aim', (
     tester,
     db,
@@ -53,12 +58,14 @@ void main() {
     expect(find.text('5:12'), findsOne);
     expect(find.text(voice(Moment.newBest, Tone.spicy, 'en')), findsOne);
 
-    await tap(tester, l10n.pause);
-    expect(find.text(l10n.paused), findsOne);
+    // The clock is the pause button.
+    await tapClock(tester);
+    expect(find.text(l10n.taskClockPaused), findsOne);
     await wait(tester, const Duration(minutes: 2));
     expect(find.text('5:12'), findsOne, reason: 'a Pause stops the clock');
 
-    await tap(tester, l10n.resume);
+    await tapClock(tester);
+    expect(find.text(l10n.taskClockRunning), findsOne);
     await wait(tester, const Duration(minutes: 3));
     expect(find.text('3:00'), findsOne, reason: 'a Pause ends the Stretch');
 
@@ -121,5 +128,69 @@ void main() {
 
     await tap(tester, l10n.backToReading);
     expect(find.text('2:00'), findsOne);
+  });
+
+  testApp('Stop is the one filled button, and the old Pause is gone', (
+    tester,
+    db,
+  ) async {
+    await openWithBook(tester, db);
+    await tap(tester, l10n.startReading);
+    expect(find.widgetWithText(FilledButton, l10n.stopForTonight), findsOne);
+    expect(
+      find.widgetWithText(OutlinedButton, l10n.stopForTonight),
+      findsNothing,
+    );
+    expect(find.text(l10n.taskPause), findsNothing);
+  });
+
+  testApp('a Stop by mistake is taken back from End of the evening', (
+    tester,
+    db,
+  ) async {
+    await openWithBook(tester, db);
+    await tap(tester, l10n.startReading);
+    await wait(tester, const Duration(minutes: 3));
+    await tap(tester, l10n.stopForTonight);
+    expect(find.text(l10n.stoppedByMistake), findsOne);
+
+    now = now.add(const Duration(seconds: 2));
+    await tap(tester, l10n.resume);
+    expect(find.text(l10n.stopForTonight), findsOne);
+    expect(find.text(l10n.taskClockRunning), findsOne);
+    await wait(tester, const Duration(minutes: 1));
+    expect(
+      find.text('4:02'),
+      findsOne,
+      reason: 'the Stretch goes on, as if it never stopped',
+    );
+
+    await tap(tester, l10n.stopForTonight);
+    await tester.enterText(find.byKey(const Key('page')), '150');
+    await tap(tester, l10n.saveAndLightsOut);
+    expect(find.text(l10n.stoppedByMistake), findsNothing);
+    // 4:02 in one go, plus a minute, rounded up.
+    expect(find.text(l10n.aim(6)), findsOne);
+  });
+
+  testApp('back says once that the Session keeps running', (tester, db) async {
+    await openWithBook(tester, db);
+    await tap(tester, l10n.startReading);
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    // Today reads the journal first.
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text(l10n.sessionKeepsRunning), findsOne);
+
+    // Gone after a while, and never again.
+    await tester.pump(const Duration(seconds: 10));
+    await tester.pumpAndSettle();
+    expect(find.text(l10n.sessionKeepsRunning), findsNothing);
+    await tap(tester, l10n.backToReading);
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text(l10n.sessionKeepsRunning), findsNothing);
+    expect(find.text(l10n.backToReading), findsOne);
   });
 }

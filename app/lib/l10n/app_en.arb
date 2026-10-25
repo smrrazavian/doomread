@@ -74,11 +74,11 @@
   },
   "taskClockRunning": "in one go, tap the clock to pause",
   "@taskClockRunning": {
-    "description": "Under the big clock on a Task's Session: the clock is the pause button."
+    "description": "Under the big clock on a Session, a book's or a Task's: the clock is the pause button."
   },
   "taskClockPaused": "Paused. Tap to keep going, no harm done",
   "@taskClockPaused": {
-    "description": "Under the clock while a Task's Session is paused."
+    "description": "Under the clock while a Session, a book's or a Task's, is paused."
   },
   "stretchSoFar": "Stretch {n} · {minutes} min on this in all",
   "@stretchSoFar": {
@@ -288,11 +288,17 @@
       }
     }
   },
-  "paused": "Paused. Take your time, it doesn't count against you.",
   "faceDown": "Turn the phone face down.",
-  "pause": "Pause",
   "resume": "Resume",
   "stopForTonight": "Stop for tonight",
+  "stoppedByMistake": "Stopped by mistake?",
+  "@stoppedByMistake": {
+    "description": "Snackbar right after Stop, with Resume to take the Stop back and carry on the Session."
+  },
+  "sessionKeepsRunning": "Your Session keeps running. Back to it from here.",
+  "@sessionKeepsRunning": {
+    "description": "Snackbar, once ever, when the user leaves a running Session with back: the timer is still going."
+  },
   "newBestStretch": "New best stretch",
   "inOneGoTonight": "{minutes, plural, =0{Under a minute in one go tonight.} =1{1 minute in one go tonight.} other{{minutes} minutes in one go tonight.}}",
   "@inOneGoTonight": {

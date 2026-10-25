@@ -6,6 +6,7 @@ import 'package:doomread_core/src/calendar.dart';
 /// Resume, or Stop). A [nudge] moves the offered Planned break later. An
 /// [urge] is the "not yet" screen coming up; it ends as [letPass] or [slip].
 /// A [checkpoint] is the user saying they reached the next Checkpoint.
+/// A [reopen] undoes the Stop just before it ("Stopped by mistake?").
 enum SessionEventKind {
   start,
   pause,
@@ -18,6 +19,7 @@ enum SessionEventKind {
   letPass,
   slip,
   checkpoint,
+  reopen,
 }
 
 /// One timestamped entry in a Session's journal. Entries are only ever
@@ -108,7 +110,20 @@ class Session {
     }
 
     for (final (_, e) in indexed) {
-      if (stopped) break;
+      // After Stop only a Reopen counts. It takes the Stop back, so a
+      // Stretch the Stop ended goes on, as if it never stopped.
+      if (stopped) {
+        if (e.kind != SessionEventKind.reopen) continue;
+        stopped = false;
+        if (stretches.lastOrNull case Stretch(
+          :final start,
+          endedBy: StretchEnd.stop,
+        )) {
+          stretches.removeLast();
+          runningSince = start;
+        }
+        continue;
+      }
       switch (e.kind) {
         case SessionEventKind.start:
           if (startedAt != null) continue;
@@ -151,6 +166,9 @@ class Session {
           if (e.page case final page? when !onBreak()) {
             checkpoints.add((at: e.at, page: page));
           }
+        // Only after a Stop, above.
+        case SessionEventKind.reopen:
+          continue;
         case SessionEventKind.stop:
           close(e.at, StretchEnd.stop);
           endBreak(e.at);

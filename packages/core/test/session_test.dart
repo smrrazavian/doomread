@@ -130,6 +130,48 @@ void main() {
     });
   });
 
+  group('Reopen', () {
+    SessionEvent reopen(int m) => SessionEvent(SessionEventKind.reopen, t(m));
+
+    test('undoes a Stop: the Stretch it ended goes on as if unbroken', () {
+      final s = reduce([start(0), stop(9), reopen(10)]);
+      expect(s.stopped, isFalse);
+      expect(s.current, isNotNull);
+      expect(minutes(s), [60]);
+    });
+
+    test('a Stop while paused reopens still paused', () {
+      final s = reduce([start(0), pause(5), stop(9), reopen(10)]);
+      expect(s.stopped, isFalse);
+      expect(s.paused, isTrue);
+      expect(minutes(s), [5]);
+    });
+
+    test('what comes between the Stop and the Reopen is ignored', () {
+      final s = reduce([start(0), stop(9), pause(9), reopen(10)]);
+      expect(s.current, isNotNull);
+    });
+
+    test('the reopened Session can stop again', () {
+      final s = reduce([start(0), stop(9), reopen(10), stop(20)]);
+      expect(s.stopped, isTrue);
+      expect(minutes(s), [20]);
+    });
+
+    test('a Reopen with no Stop, or a second one, changes nothing', () {
+      expect(minutes(reduce([start(0), pause(5), reopen(6)])), [5]);
+      final twice = reduce([
+        start(0),
+        stop(9),
+        reopen(10),
+        pause(12),
+        reopen(13),
+      ]);
+      expect(twice.paused, isTrue);
+      expect(minutes(twice), [12]);
+    });
+  });
+
   group('Longest stretch and Aim', () {
     final short = reduce([start(0), stop(4)]);
     final long = reduce([start(0), pause(9), resume(10), stop(12)]);

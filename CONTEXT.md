@@ -41,7 +41,7 @@ _Avoid_: Summary, review, journal entry
 ### An evening
 
 **Session**:
-One sitting with one **Work**, from Start to Stop. A Session can contain several **Stretches**, **Pauses**, **Urges** and **Planned breaks**.
+One sitting with one **Work**, from Start to Stop. A Session can contain several **Stretches**, **Pauses**, **Urges** and **Planned breaks**. A Stop tapped by mistake can be taken back right after ("Stopped by mistake? Resume"): that Reopen carries the Session on as if it never stopped.
 _Avoid_: Evening (an evening can hold several Sessions), focus session, timer
 
 **Stretch**:

@@ -355,19 +355,20 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get paused => 'مکث کردی. عجله نکن، این به حسابت نمیاد.';
-
-  @override
   String get faceDown => 'گوشی رو برگردون رو به پایین.';
-
-  @override
-  String get pause => 'مکث';
 
   @override
   String get resume => 'ادامه';
 
   @override
   String get stopForTonight => 'برای امشب بسه';
+
+  @override
+  String get stoppedByMistake => 'اشتباهی بستیش؟';
+
+  @override
+  String get sessionKeepsRunning =>
+      'تایمرت هنوز داره می‌ره. از همین‌جا برگرد سراغش.';
 
   @override
   String get newBestStretch => 'بهترین تمرکزت تا حالا';

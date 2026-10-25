@@ -77,12 +77,12 @@ void main() {
     expect(find.text('6:00'), findsOne);
     expect(find.text(en.taskClockRunning), findsOne);
 
-    await tap(tester, find.byKey(const Key('taskClock')));
+    await tap(tester, find.byKey(const Key('sessionClock')));
     expect(find.text(en.taskClockPaused), findsOne);
     await wait(tester, const Duration(minutes: 2));
     expect(find.text('6:00'), findsOne, reason: 'paused');
     expect(find.text(en.stretchSoFar(1, 6)), findsNothing, reason: 'the same');
-    await tap(tester, find.byKey(const Key('taskClock')));
+    await tap(tester, find.byKey(const Key('sessionClock')));
     expect(find.text(en.taskClockRunning), findsOne);
     await wait(tester, const Duration(minutes: 1));
     expect(find.text('1:00'), findsOne, reason: 'a new Stretch');
@@ -97,6 +97,50 @@ void main() {
     expect(find.text(en.whichPage), findsNothing, reason: 'nothing asked');
     expect((await task(db)).done, isFalse);
     expect(start, findsOne);
+  });
+
+  testApp('a Stop for now by mistake is taken back from Today', (
+    tester,
+    db,
+  ) async {
+    await addReport(db);
+    await open(tester, db);
+    await tap(tester, start);
+    await wait(tester, const Duration(minutes: 4));
+    await tap(tester, find.text(en.taskStop));
+    expect(find.text(en.stoppedByMistake), findsOne);
+
+    await tap(tester, find.text(en.resume));
+    expect(find.text(en.taskWorkingOn), findsOne);
+    expect(find.text(en.taskClockRunning), findsOne);
+    final sessions = await SessionRepository(db, clock: () => now).all();
+    expect(sessions.single.at(now).stopped, isFalse);
+  });
+
+  testApp('the Stop is offered back on Today however the Session opened', (
+    tester,
+    db,
+  ) async {
+    final id = await addReport(db);
+    final session = await SessionRepository(db, clock: () => now).start(id);
+    final notification = FakeSessionNotification(opened: session);
+    await pumpApp(tester, db, clock: () => now, notification: notification);
+    await tester.pumpAndSettle();
+    expect(find.text(en.taskWorkingOn), findsOne);
+
+    await tap(tester, find.text(en.taskStop));
+    expect(find.text(en.taskAdd), findsOne, reason: 'on Today');
+    expect(find.text(en.stoppedByMistake), findsOne);
+  });
+
+  testApp('a clock past an hour still fits', (tester, db) async {
+    await addReport(db);
+    await open(tester, db);
+    await tap(tester, start);
+    await wait(tester, const Duration(hours: 1, minutes: 5, seconds: 12));
+    expect(find.text('1:05:12'), findsOne);
+    await tap(tester, find.byKey(const Key('sessionClock')));
+    expect(find.text(en.taskClockPaused), findsOne);
   });
 
   testApp('Done ends the Session and lights the Task on Today', (

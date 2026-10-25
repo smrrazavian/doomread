@@ -103,7 +103,7 @@ void main() {
 
     final sent = widget.sent.length;
     await wait(tester, const Duration(minutes: 5));
-    await tap(tester, find.text(en.pause));
+    await tap(tester, find.byKey(const Key('sessionClock')));
     expect(widget.sent, hasLength(sent), reason: 'nothing on it changed');
 
     await tap(tester, find.text(en.stopForTonight));

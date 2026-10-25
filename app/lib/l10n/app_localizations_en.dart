@@ -380,19 +380,20 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get paused => 'Paused. Take your time, it doesn\'t count against you.';
-
-  @override
   String get faceDown => 'Turn the phone face down.';
-
-  @override
-  String get pause => 'Pause';
 
   @override
   String get resume => 'Resume';
 
   @override
   String get stopForTonight => 'Stop for tonight';
+
+  @override
+  String get stoppedByMistake => 'Stopped by mistake?';
+
+  @override
+  String get sessionKeepsRunning =>
+      'Your Session keeps running. Back to it from here.';
 
   @override
   String get newBestStretch => 'New best stretch';

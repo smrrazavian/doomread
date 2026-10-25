@@ -259,7 +259,7 @@ void main() {
       await openIn(tester, db, lang);
       await tap(tester, find.byType(FilledButton));
       now = now.add(const Duration(minutes: 3, seconds: 5));
-      await tap(tester, find.byType(OutlinedButton).first);
+      await tap(tester, find.byKey(const Key('sessionClock')));
       await expectLater(
         find.byType(MaterialApp),
         matchesGoldenFile('reading_paused_$lang.png'),
@@ -274,7 +274,7 @@ void main() {
       await openIn(tester, db, lang);
       await tap(tester, find.byType(FilledButton));
       now = now.add(const Duration(minutes: 9, seconds: 20));
-      await tap(tester, find.byType(OutlinedButton).last);
+      await tap(tester, find.byType(FilledButton).last);
       await tester.enterText(
         find.byKey(const Key('page')),
         lang == 'fa' ? '۱۵۶' : '156',

@@ -37,6 +37,13 @@ class EveningViewModel extends ChangeNotifier {
     return record == null ? null : (record, record.at(_sessions.now()));
   }
 
+  /// Takes the Stop back: the user tapped it by mistake.
+  Future<void> reopen() async {
+    if (_record case final record?) {
+      await _sessions.add(record, SessionEventKind.reopen);
+    }
+  }
+
   /// Saves the page and the Note.
   late final Command1<void, ({int? page, String note})> save;
 

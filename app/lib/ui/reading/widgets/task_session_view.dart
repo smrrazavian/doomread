@@ -5,6 +5,7 @@ import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/planned_break/widgets/next_break_card.dart';
 import 'package:doomread/ui/reading/view_models/reading_view_model.dart';
 import 'package:doomread/ui/reading/widgets/desk_view.dart';
+import 'package:doomread/ui/reading/widgets/session_clock.dart';
 import 'package:doomread/ui/reading/widgets/so_far_line.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -33,10 +34,9 @@ class TaskSessionView extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final text = Theme.of(context).textTheme;
-    final vm = context.watch<ReadingViewModel>();
-    final running = vm.session?.current != null;
     return Scaffold(
-      // Back to Today leaves the Session running; Today offers it again.
+      // Back to Today leaves the Session running, and says so the first
+      // time; Today offers it again.
       appBar: AppBar(),
       body: SafeArea(
         child: Padding(
@@ -55,13 +55,7 @@ class TaskSessionView extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              _Clock(running: running),
-              const SizedBox(height: 4),
-              Text(
-                running ? l10n.taskClockRunning : l10n.taskClockPaused,
-                textAlign: TextAlign.center,
-                style: text.bodySmall?.copyWith(color: Palette.mute),
-              ),
+              const SessionClock(centered: true),
               const SoFarLine(textAlign: TextAlign.center),
               const SizedBox(height: 20),
               const _AimCard(),
@@ -95,43 +89,6 @@ class TaskSessionView extends StatelessWidget {
                 ],
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// The time in one go, big; a tap pauses it, and paused, it goes quiet
-/// until a tap keeps it going.
-class _Clock extends StatelessWidget {
-  const _Clock({required this.running});
-
-  final bool running;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final locale = Localizations.localeOf(context);
-    final vm = context.watch<ReadingViewModel>();
-    return Semantics(
-      button: true,
-      label: running ? l10n.taskPause : l10n.taskResume,
-      excludeSemantics: true,
-      child: InkWell(
-        key: const Key('taskClock'),
-        borderRadius: BorderRadius.circular(24),
-        onTap: running ? vm.pause.execute : vm.resume.execute,
-        child: Text(
-          formatClock(vm.shown, locale),
-          textAlign: TextAlign.center,
-          // Clocks don't mirror in Persian.
-          textDirection: TextDirection.ltr,
-          style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-            fontSize: locale.languageCode == 'fa' ? 68 : 72,
-            height: 1.1,
-            color: running ? Palette.paper : Palette.mute,
-            fontFeatures: const [FontFeature.tabularFigures()],
           ),
         ),
       ),

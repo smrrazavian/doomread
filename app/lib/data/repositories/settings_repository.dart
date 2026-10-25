@@ -35,6 +35,7 @@ class SettingsRepository {
   static const _toneKey = 'tone';
   static const _introSeenKey = 'introSeen';
   static const _hintsSeenKey = 'hintsSeen';
+  static const _keepsRunningSaidKey = 'keepsRunningSaid';
 
   /// The language the user picked, or null if they never picked one.
   Future<Locale?> locale() async {
@@ -125,6 +126,17 @@ class SettingsRepository {
       .into(_db.settings)
       .insertOnConflictUpdate(
         SettingsCompanion.insert(key: _introSeenKey, value: '1'),
+      );
+
+  /// Whether Today has said, once, that a Session left with back keeps
+  /// running.
+  Future<bool> keepsRunningSaid() async =>
+      await _db.setting(_keepsRunningSaidKey) != null;
+
+  Future<void> setKeepsRunningSaid() => _db
+      .into(_db.settings)
+      .insertOnConflictUpdate(
+        SettingsCompanion.insert(key: _keepsRunningSaidKey, value: '1'),
       );
 
   /// The tour's one-line explainers already shown, so each shows once.

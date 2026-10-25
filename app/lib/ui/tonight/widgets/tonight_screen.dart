@@ -43,8 +43,67 @@ class TonightScreen extends StatelessWidget {
       c.read<SessionNotification>(),
     ),
     // Its own messenger, so a deleted Task's Undo shows over Today.
-    child: const ScaffoldMessenger(child: _Tonight()),
+    child: ScaffoldMessenger(
+      child: _OfferReopen(
+        sessionId: GoRouterState.of(context).uri.queryParameters[_reopen],
+        child: const _Tonight(),
+      ),
+    ),
   );
+}
+
+/// Where Today is. With [reopen], a Task's Session was just stopped, so
+/// Today offers it back, in case that was a mistake.
+String todayPath({String? reopen}) =>
+    reopen == null ? '/tonight' : '/tonight?$_reopen=$reopen';
+
+const _reopen = 'reopen';
+
+/// Offers the Session [sessionId] back once, right after its Stop, and
+/// takes it out of Today's location, so it isn't offered again.
+class _OfferReopen extends StatefulWidget {
+  const _OfferReopen({required this.sessionId, required this.child});
+
+  final String? sessionId;
+  final Widget child;
+
+  @override
+  State<_OfferReopen> createState() => _OfferReopenState();
+}
+
+class _OfferReopenState extends State<_OfferReopen> {
+  @override
+  void initState() {
+    super.initState();
+    _offer();
+  }
+
+  @override
+  void didUpdateWidget(_OfferReopen old) {
+    super.didUpdateWidget(old);
+    if (widget.sessionId != old.sessionId) _offer();
+  }
+
+  void _offer() {
+    final id = widget.sessionId;
+    if (id == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      context.go(todayPath());
+      final sessions = context.read<SessionRepository>();
+      final record = (await sessions.all())
+          .where((r) => r.id == id)
+          .firstOrNull;
+      if (record == null || !mounted) return;
+      offerReopen(context, () async {
+        await sessions.add(record, SessionEventKind.reopen);
+        if (mounted) await openSession(context, id);
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
 
 class _Tonight extends StatelessWidget {
@@ -170,7 +229,7 @@ Future<void> _start(BuildContext context, TonightViewModel vm) async {
   if (vm.start.result case Ok(:final value)) {
     // The click of the lamp: Reading opens with the user's Window coming on.
     unawaited(HapticFeedback.lightImpact());
-    await context.push('/reading/$value');
+    await openSession(context, value);
   }
 }
 

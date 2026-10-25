@@ -47,7 +47,7 @@ void main() {
 
     testApp('a Task Session, paused, in $lang', (tester, db) async {
       await workOnReport(tester, db, lang);
-      await tester.tap(find.byKey(const Key('taskClock')));
+      await tester.tap(find.byKey(const Key('sessionClock')));
       await tester.pumpAndSettle();
       await expectLater(
         find.byType(MaterialApp),

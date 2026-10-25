@@ -52,12 +52,12 @@ void main() {
     expect(notification.shown?.runningSince, start);
 
     await wait(tester, const Duration(minutes: 5, seconds: 12));
-    await tap(tester, find.text(en.pause));
+    await tap(tester, find.byKey(const Key('sessionClock')));
     expect(notification.shown?.runningSince, isNull, reason: 'paused');
     expect(notification.shown?.text, en.notificationPaused('5:12'));
 
     await wait(tester, const Duration(minutes: 2));
-    await tap(tester, find.text(en.resume));
+    await tap(tester, find.byKey(const Key('sessionClock')));
     expect(
       notification.shown?.runningSince,
       start.add(const Duration(minutes: 7, seconds: 12)),
@@ -77,7 +77,7 @@ void main() {
     await pumpApp(tester, db, clock: () => now, notification: notification);
     await tap(tester, startButton);
     await wait(tester, const Duration(minutes: 5, seconds: 12));
-    await tap(tester, find.text(fa.pause));
+    await tap(tester, find.byKey(const Key('sessionClock')));
     expect(notification.shown?.text, fa.notificationPaused('۵:۱۲'));
   });
 

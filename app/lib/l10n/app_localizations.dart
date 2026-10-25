@@ -212,13 +212,13 @@ abstract class AppLocalizations {
   /// **'Working on'**
   String get taskWorkingOn;
 
-  /// Under the big clock on a Task's Session: the clock is the pause button.
+  /// Under the big clock on a Session, a book's or a Task's: the clock is the pause button.
   ///
   /// In en, this message translates to:
   /// **'in one go, tap the clock to pause'**
   String get taskClockRunning;
 
-  /// Under the clock while a Task's Session is paused.
+  /// Under the clock while a Session, a book's or a Task's, is paused.
   ///
   /// In en, this message translates to:
   /// **'Paused. Tap to keep going, no harm done'**
@@ -602,23 +602,11 @@ abstract class AppLocalizations {
   /// **'{minutes, plural, =1{1 minute to go.} other{{minutes} minutes to go.}}'**
   String aimToGo(int minutes);
 
-  /// No description provided for @paused.
-  ///
-  /// In en, this message translates to:
-  /// **'Paused. Take your time, it doesn\'t count against you.'**
-  String get paused;
-
   /// No description provided for @faceDown.
   ///
   /// In en, this message translates to:
   /// **'Turn the phone face down.'**
   String get faceDown;
-
-  /// No description provided for @pause.
-  ///
-  /// In en, this message translates to:
-  /// **'Pause'**
-  String get pause;
 
   /// No description provided for @resume.
   ///
@@ -631,6 +619,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Stop for tonight'**
   String get stopForTonight;
+
+  /// Snackbar right after Stop, with Resume to take the Stop back and carry on the Session.
+  ///
+  /// In en, this message translates to:
+  /// **'Stopped by mistake?'**
+  String get stoppedByMistake;
+
+  /// Snackbar, once ever, when the user leaves a running Session with back: the timer is still going.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Session keeps running. Back to it from here.'**
+  String get sessionKeepsRunning;
 
   /// No description provided for @newBestStretch.
   ///

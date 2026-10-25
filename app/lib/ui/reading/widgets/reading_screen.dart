@@ -13,9 +13,11 @@ import 'package:doomread/ui/evening/widgets/evening_screen.dart';
 import 'package:doomread/ui/planned_break/widgets/next_break_card.dart';
 import 'package:doomread/ui/reading/view_models/reading_view_model.dart';
 import 'package:doomread/ui/reading/widgets/house_view.dart';
+import 'package:doomread/ui/reading/widgets/session_clock.dart';
 import 'package:doomread/ui/reading/widgets/so_far_line.dart';
 import 'package:doomread/ui/reading/widgets/task_session_view.dart';
 import 'package:doomread/ui/reading/widgets/work_app_card.dart';
+import 'package:doomread/ui/tonight/widgets/tonight_screen.dart';
 import 'package:doomread/ui/tour/view_models/tour_view_model.dart';
 import 'package:doomread/ui/tour/widgets/hint_card.dart';
 import 'package:doomread/ui/urge/urge_watch.dart';
@@ -27,7 +29,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-/// The Reading screen: a quiet timer, the Aim, the House, Pause and Stop.
+/// The Reading screen: a quiet timer that's the pause button too, the Aim,
+/// the House, and Stop.
 /// While an Urge is open it's the "not yet" screen, and after a Slip the
 /// kind After-a-slip one, both straight from the journal.
 class ReadingScreen extends StatelessWidget {
@@ -48,7 +51,8 @@ class _Reading extends StatelessWidget {
   /// Stops the Session for End of the evening; [finishing] when the user
   /// said "I finished it!", so the page there starts at the end. A Task's
   /// Session has no End of the evening: it goes back to Today, asking
-  /// nothing, and the Task stays undone.
+  /// nothing, and the Task stays undone. Either way the Stop can be taken
+  /// back from there.
   Future<void> _stop(
     BuildContext context,
     ReadingViewModel vm, {
@@ -57,9 +61,11 @@ class _Reading extends StatelessWidget {
     await vm.stop.execute();
     if (!context.mounted || !vm.stop.completed) return;
     if (vm.record?.road.work.kind == WorkKind.task) {
-      context.go('/tonight');
+      context.go(todayPath(reopen: vm.id));
     } else {
-      context.pushReplacement(eveningPath(vm.id, finishing: finishing));
+      context.pushReplacement(
+        eveningPath(vm.id, finishing: finishing, reopen: true),
+      );
     }
   }
 
@@ -76,7 +82,6 @@ class _Reading extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final text = Theme.of(context).textTheme;
-    final locale = Localizations.localeOf(context);
     final vm = context.watch<ReadingViewModel>();
     final record = vm.record;
     final session = vm.session;
@@ -127,7 +132,7 @@ class _Reading extends StatelessWidget {
     final aim = vm.aim;
     final String aimLine;
     if (current == null) {
-      aimLine = l10n.paused;
+      aimLine = l10n.aim(aim.inMinutes);
     } else if (current.length >= aim) {
       aimLine = say(context, Moment.newBest);
     } else {
@@ -137,7 +142,8 @@ class _Reading extends StatelessWidget {
     }
 
     return Scaffold(
-      // Back to Tonight leaves the Session running; Tonight offers it again.
+      // Back to Today leaves the Session running, and says so the first
+      // time; Today offers it again.
       appBar: AppBar(),
       body: SafeArea(
         child: Padding(
@@ -147,20 +153,7 @@ class _Reading extends StatelessWidget {
             children: [
               Text(record.road.work.title, style: text.bodySmall),
               const SizedBox(height: 8),
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: Text(
-                  formatClock(vm.shown, locale),
-                  // Clocks don't mirror in Persian.
-                  textDirection: TextDirection.ltr,
-                  style: text.headlineSmall!.copyWith(
-                    fontSize: locale.languageCode == 'fa' ? 68 : 72,
-                    height: 1.1,
-                    color: current == null ? Palette.mute : Palette.paper,
-                    fontFeatures: const [FontFeature.tabularFigures()],
-                  ),
-                ),
-              ),
+              const SessionClock(),
               const SizedBox(height: 8),
               Text(aimLine, style: text.bodyMedium),
               const SoFarLine(),
@@ -194,27 +187,9 @@ class _Reading extends StatelessWidget {
                     child: Text(l10n.eveningFinished),
                   ),
                 ),
-              Row(
-                children: [
-                  Expanded(
-                    child: current == null
-                        ? OutlinedButton(
-                            onPressed: vm.resume.execute,
-                            child: Text(l10n.resume),
-                          )
-                        : OutlinedButton(
-                            onPressed: vm.pause.execute,
-                            child: Text(l10n.pause),
-                          ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => _stop(context, vm),
-                      child: Text(l10n.stopForTonight),
-                    ),
-                  ),
-                ],
+              FilledButton(
+                onPressed: vm.stop.running ? null : () => _stop(context, vm),
+                child: Text(l10n.stopForTonight),
               ),
             ],
           ),

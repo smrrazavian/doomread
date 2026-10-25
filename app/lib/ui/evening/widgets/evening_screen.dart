@@ -1,6 +1,7 @@
 import 'package:doomread/data/repositories/session_repository.dart';
 import 'package:doomread/l10n/app_localizations.dart';
 import 'package:doomread/ui/core/number_format.dart';
+import 'package:doomread/ui/core/one_session.dart';
 import 'package:doomread/ui/core/theme.dart';
 import 'package:doomread/ui/core/voice_text.dart';
 import 'package:doomread/ui/core/work_text.dart';
@@ -25,25 +26,39 @@ class EveningScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ChangeNotifierProvider(
     create: (c) => EveningViewModel(c.read<SessionRepository>(), sessionId),
-    child: _Evening(
-      finishing: GoRouterState.of(context).uri.queryParameters
-          .containsKey(_finishing),
+    // Its own messenger, so the Stop's Resume goes when this screen does.
+    child: ScaffoldMessenger(
+      child: _Evening(
+        finishing: GoRouterState.of(context).uri.queryParameters
+            .containsKey(_finishing),
+        reopen: GoRouterState.of(context).uri.queryParameters
+            .containsKey(_reopen),
+      ),
     ),
   );
 }
 
 /// Where End of the evening is for [sessionId]. When [finishing], the user
 /// said "I finished it!" already, so the page starts at the Work's end and
-/// what's left is the Note; saving is then the Finish.
-String eveningPath(String sessionId, {bool finishing = false}) =>
-    '/evening/$sessionId${finishing ? '?$_finishing' : ''}';
+/// what's left is the Note; saving is then the Finish. With [reopen], the
+/// user just tapped Stop, so it's offered back, in case that was a mistake.
+String eveningPath(
+  String sessionId, {
+  bool finishing = false,
+  bool reopen = false,
+}) {
+  final flags = [if (finishing) _finishing, if (reopen) _reopen];
+  return '/evening/$sessionId${flags.isEmpty ? '' : '?${flags.join('&')}'}';
+}
 
 const _finishing = 'finishing';
+const _reopen = 'reopen';
 
 class _Evening extends StatefulWidget {
-  const _Evening({required this.finishing});
+  const _Evening({required this.finishing, required this.reopen});
 
   final bool finishing;
+  final bool reopen;
 
   @override
   State<_Evening> createState() => _EveningState();
@@ -64,6 +79,23 @@ class _EveningState extends State<_Evening>
 
   // Lights out, before leaving for Tonight.
   late final _dim = AnimationController(vsync: this, duration: _lightsOutTime);
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.reopen) {
+      // "Stopped by mistake?": Resume takes the Stop back, and goes back
+      // to the Session.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        final vm = context.read<EveningViewModel>();
+        offerReopen(context, () async {
+          await vm.reopen();
+          if (mounted) context.pushReplacement('/reading/${vm.id}');
+        });
+      });
+    }
+  }
 
   @override
   void dispose() {

@@ -173,7 +173,7 @@ void main() {
       await tester.pumpAndSettle();
       now = now.add(const Duration(minutes: 11, seconds: 20));
       await tester.pump(const Duration(seconds: 1));
-      await tester.tap(find.byType(OutlinedButton).last);
+      await tester.tap(find.byType(FilledButton).last);
       await tester.pumpAndSettle();
       await tester.pump(const Duration(seconds: 1));
       await tester.enterText(find.byKey(const Key('page')), fa ? '۲۴۵' : '245');
