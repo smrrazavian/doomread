@@ -117,6 +117,28 @@ void main() {
     expect(sessions.single.at(now).stopped, isFalse);
   });
 
+  testApp('taking a Stop back while another runs asks to stop that one '
+      'first', (tester, db) async {
+    await addReport(db);
+    await WorkRepository(db).addTask(name: 'Call the bank', day: today);
+    await SettingsRepository(db).setKeepsRunningSaid();
+    await open(tester, db);
+    await tap(tester, start.first);
+    await tap(tester, find.text(en.taskStop));
+    // The other Task starts while "Stopped by mistake?" is still up.
+    await tap(tester, find.text(en.startWork('task')).last);
+    expect(find.text('Call the bank'), findsOne);
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+
+    await tap(tester, find.text(en.resume));
+    expect(find.text(en.oneSessionTitle('Call the bank')), findsOne);
+    await tap(tester, find.byKey(const Key('oneSessionStop')));
+    expect(find.text(report), findsOne);
+    final all = await SessionRepository(db, clock: () => now).all();
+    expect([for (final r in all) r.at(now).stopped], [false, true]);
+  });
+
   testApp('the Stop is offered back on Today however the Session opened', (
     tester,
     db,

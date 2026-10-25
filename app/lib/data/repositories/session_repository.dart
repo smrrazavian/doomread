@@ -149,6 +149,10 @@ class SessionRepository {
     }).firstOrNull;
   }
 
+  /// The Session [id], or null if it isn't in the journal.
+  Future<SessionRecord?> byId(String id) async =>
+      (await all()).where((r) => r.id == id).firstOrNull;
+
   /// Every Session, oldest first.
   Stream<List<SessionRecord>> watchAll() => _all().watch().map(_records);
 

@@ -91,11 +91,9 @@ class _OfferReopenState extends State<_OfferReopen> {
       if (!mounted) return;
       context.go(todayPath());
       final sessions = context.read<SessionRepository>();
-      final record = (await sessions.all())
-          .where((r) => r.id == id)
-          .firstOrNull;
+      final record = await sessions.byId(id);
       if (record == null || !mounted) return;
-      offerReopen(context, () async {
+      offerReopen(context, id, () async {
         await sessions.add(record, SessionEventKind.reopen);
         if (mounted) await openSession(context, id);
       });

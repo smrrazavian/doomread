@@ -89,7 +89,7 @@ class _EveningState extends State<_Evening>
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         final vm = context.read<EveningViewModel>();
-        offerReopen(context, () async {
+        offerReopen(context, vm.id, () async {
           await vm.reopen();
           if (mounted) context.pushReplacement('/reading/${vm.id}');
         });

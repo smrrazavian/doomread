@@ -57,9 +57,7 @@ Future<void> openSession(BuildContext context, String sessionId) async {
   await context.push<void>('/reading/$sessionId');
   if (!context.mounted) return;
   final sessions = context.read<SessionRepository>();
-  final record = (await sessions.all())
-      .where((r) => r.id == sessionId)
-      .firstOrNull;
+  final record = await sessions.byId(sessionId);
   if (record == null || record.at(sessions.now()).stopped) return;
   if (!context.mounted) return;
   final settings = context.read<SettingsRepository>();
@@ -73,8 +71,14 @@ Future<void> openSession(BuildContext context, String sessionId) async {
 }
 
 /// Right after a Stop: "Stopped by mistake? Resume", where Resume is
-/// [resume]: take the Stop back and go back to the Session.
-void offerReopen(BuildContext context, Future<void> Function() resume) {
+/// [resume]: take the Stop back and go back to the Session [sessionId].
+/// One Session at a time holds here too, so Resume first asks to stop one
+/// started since.
+void offerReopen(
+  BuildContext context,
+  String sessionId,
+  Future<void> Function() resume,
+) {
   final l10n = AppLocalizations.of(context);
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
@@ -83,7 +87,15 @@ void offerReopen(BuildContext context, Future<void> Function() resume) {
         Text(l10n.stoppedByMistake),
         action: SnackBarAction(
           label: l10n.resume,
-          onPressed: () => unawaited(resume()),
+          onPressed: () => unawaited(() async {
+            final record = await context.read<SessionRepository>().byId(
+              sessionId,
+            );
+            if (record == null || !context.mounted) return;
+            if (await stopOtherSessionFirst(context, record.road.work.id)) {
+              await resume();
+            }
+          }()),
         ),
       ),
     );

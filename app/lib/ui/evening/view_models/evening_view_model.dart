@@ -33,7 +33,7 @@ class EveningViewModel extends ChangeNotifier {
   /// This Session as saved, with the pages it covered, measured now: what
   /// tonight's receipt shows. Null if it isn't in the journal.
   Future<(SessionRecord, Session)?> saved() async {
-    final record = (await _sessions.all()).where((r) => r.id == id).firstOrNull;
+    final record = await _sessions.byId(id);
     return record == null ? null : (record, record.at(_sessions.now()));
   }
 
