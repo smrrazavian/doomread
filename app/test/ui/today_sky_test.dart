@@ -73,6 +73,35 @@ void main() {
     expect(find.text('Saturday night'), findsOne);
   });
 
+  testApp('glides on through an evening, but never backwards into the '
+      'next', (tester, db) async {
+    var now = DateTime(2026, 10, 24, 14);
+    await pumpApp(tester, db, clock: () => now, reduceMotion: false);
+    void resume() => [
+      AppLifecycleState.resumed,
+      AppLifecycleState.inactive,
+      AppLifecycleState.hidden,
+      AppLifecycleState.paused,
+      AppLifecycleState.hidden,
+      AppLifecycleState.inactive,
+      AppLifecycleState.resumed,
+    ].forEach(tester.binding.handleAppLifecycleStateChanged);
+
+    now = DateTime(2026, 10, 24, 23);
+    resume();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(tester.hasRunningAnimations, isTrue, reason: 'on to the night');
+    await tester.pumpAndSettle();
+
+    now = DateTime(2026, 10, 25, 8);
+    resume();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(tester.hasRunningAnimations, isFalse, reason: 'a new day');
+    expect(find.text('Sunday morning'), findsOne);
+  });
+
   testApp("says what's left today, then the book", (tester, db) async {
     final day = DateTime(2026, 10, 22);
     final works = WorkRepository(db);

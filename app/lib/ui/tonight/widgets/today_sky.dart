@@ -92,7 +92,9 @@ class _Sky extends StatelessWidget {
         children: [
           // Back from the background, the sky moves on to the time it is,
           // lighting windows as it goes; with reduced motion it's just there.
+          // A new evening starts its own sky rather than run this one back.
           TweenAnimationBuilder<double>(
+            key: ValueKey(eveningOf(vm.now)),
             tween: Tween(end: hour),
             duration: MediaQuery.disableAnimationsOf(context)
                 ? Duration.zero
