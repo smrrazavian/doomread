@@ -2,10 +2,12 @@ import 'package:doomread/data/repositories/settings_repository.dart';
 import 'package:doomread/data/repositories/work_repository.dart';
 import 'package:doomread/data/services/app_database.dart';
 import 'package:doomread/l10n/app_localizations.dart';
+import 'package:doomread/ui/tour/view_models/tour_view_model.dart';
 import 'package:doomread_core/doomread_core.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
 
 import '../helpers.dart';
 
@@ -191,6 +193,23 @@ void main() {
     await tester.pumpAndSettle();
     await tester.pump(const Duration(seconds: 1));
     expect(find.text(l10n.sessionKeepsRunning), findsNothing);
+    expect(find.text(l10n.backToReading), findsOne);
+  });
+
+  testApp('a tour hint seen after back leaves Reading closed', (
+    tester,
+    db,
+  ) async {
+    await openWithBook(tester, db);
+    await tap(tester, l10n.startReading);
+    final tour = tester
+        .element(find.text(l10n.stopForTonight))
+        .read<TourViewModel>();
+    // Right as Reading closes, in the same frame.
+    await tester.pageBack();
+    await tour.seen(Hint.aim);
+    await tester.pumpAndSettle();
+    expect(find.text(l10n.stopForTonight), findsNothing);
     expect(find.text(l10n.backToReading), findsOne);
   });
 }

@@ -26,10 +26,14 @@ import 'package:provider/provider.dart';
 /// leads to it.
 GoRouter buildRouter(TourViewModel tour) {
   final root = GlobalKey<NavigatorState>();
+  // Only the intro redirects, so only its coming and going refreshes the
+  // routes; a refresh on every hint seen could bring back a screen closed.
+  final introDue = ValueNotifier(tour.introDue);
+  tour.addListener(() => introDue.value = tour.introDue);
   return GoRouter(
     navigatorKey: root,
     initialLocation: '/tonight',
-    refreshListenable: tour,
+    refreshListenable: introDue,
     redirect: (_, state) =>
         tour.introDue && state.matchedLocation != '/intro' ? '/intro' : null,
     routes: _routes(root),
